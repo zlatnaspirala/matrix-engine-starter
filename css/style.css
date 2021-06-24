@@ -1,0 +1,57 @@
+
+body {
+  color: lime;
+  font-family: Monospace;
+  font-size: 13px;
+  background-color: black;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+a {
+  color: #0080ff;
+}
+
+.btnShadow {
+  display: none;
+  cursor: pointer; cursor: hand;
+  color: lime;
+}
+
+div.btnShadow:hover {
+  background-color: lime;
+  color:black;
+}
+
+.debugBox {
+  position:absolute;
+  left:0;
+  top:0;
+  font-size: 12px;
+  width:200px;
+  height: 15px;
+  background-color: black;
+  color: lime;
+}
+
+.textEditor {
+  font-size: 10px;
+  width : 100%;
+  max-width: 850px !important;
+  min-width: 550px !important;
+}
+
+textarea {
+  background-color: black;
+  color: lime;
+}
+
+.textureCanvas2d {
+  display:none;
+  position:absolute;
+  left:-3000px;
+  top:0px;
+  width:512px;
+  height:512px;
+}

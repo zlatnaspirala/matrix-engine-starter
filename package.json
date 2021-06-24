@@ -1,0 +1,31 @@
+{
+  "name": "matrix-engine-examples",
+  "version": "1.0.0",
+  "description": "TEST npm integration .",
+  "main": "app.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zlatnaspirala/webgl2-glmatrix2-engine.git"
+  },
+  "keywords": [
+    "webgl",
+    "webgl2",
+    "glmatrix",
+    "opengles2"
+  ],
+  "author": "Nikola Lukic Zlatnaspirala",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine/issues"
+  },
+  "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
+  "dependencies": {
+    "matrix-engine": "^1.0.4"
+  }
+}
