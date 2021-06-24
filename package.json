@@ -1,7 +1,7 @@
 {
   "name": "matrix-engine-examples",
   "version": "1.0.0",
-  "description": "TEST npm integration .",
+  "description": "TEST npm integration.",
   "main": "app.js",
   "directories": {
     "lib": "lib"
@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
   "dependencies": {
-    "matrix-engine": "^1.0.4"
+    "matrix-engine": "^1.0.5"
   }
 }
