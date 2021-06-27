@@ -12,14 +12,16 @@ if ("serviceWorker" in navigator) {
 }
 
 function webGLStart() {
+
+  matrixEngine.Engine.drawFPS();
   world = matrixEngine.matrixWorld.defineworld(canvas);
   world.callReDraw();
 
+  // from here you can put code from examples
   world.Add("cube", 1, "MyColoredCube1");
   world.Add("triangle", 1, "MyColoredCube3");
   world.Add("pyramid", 1, "MyColoredCube2");
 
-  // SET POSITION
   App.scene.MyColoredCube1.position.SetX(0);
   App.scene.MyColoredCube2.position.SetX(-2.5);
   App.scene.MyColoredCube3.position.SetX(2.5);
@@ -31,16 +33,11 @@ function webGLStart() {
   window.App = App;
 }
 
-window.Start = function () {
-  matrixEngine.Engine.drawFPS();
-  webGLStart();
-};
-
 matrixEngine.Engine.load_shaders("shaders/shaders.html");
 window.matrixEngine = matrixEngine;
 
 window.addEventListener("load", () => {
-  matrixEngine.Engine.initApp();
+  matrixEngine.Engine.initApp(webGLStart);
 }, false);
 
 var App = matrixEngine.App;
