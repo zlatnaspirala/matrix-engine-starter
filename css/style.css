@@ -1,7 +1,8 @@
 
 body {
   color: lime;
-  font-family: Monospace;
+  background-color:black;
+  font-family: "Courier New";
   font-size: 13px;
   background-color: black;
   margin: 0;
@@ -10,18 +11,27 @@ body {
 }
 
 a {
+  font-family: "Courier New";
   color: #0080ff;
 }
 
 .btnShadow {
-  display: none;
+  -webkit-box-shadow: inset 0px 0px 22px 2px rgba(0,255,30,1);
+  -moz-box-shadow: inset 0px 0px 22px 2px rgba(0,255,30,1);
+  box-shadow: inset 0px 0px 22px 1px rgba(0,255,30,1);
   cursor: pointer; cursor: hand;
   color: lime;
+  text-shadow: 1px 0px 0px #0BFF03;
 }
 
 div.btnShadow:hover {
   background-color: lime;
   color:black;
+  text-shadow: 1px 1px 1px #0BFF03;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  -webkit-box-shadow: 0 0 10px 3px #47FF19;
+  box-shadow: 0 0 10px 3px #47FF19;
 }
 
 .debugBox {
@@ -31,6 +41,9 @@ div.btnShadow:hover {
   font-size: 12px;
   width:200px;
   height: 15px;
+  -webkit-box-shadow: inset 0px 0px 22px 2px rgba(0,255,30,1);
+  -moz-box-shadow: inset 0px 0px 22px 2px rgba(0,255,30,1);
+  box-shadow: inset 0px 0px 22px 1px rgba(0,255,30,1);
   background-color: black;
   color: lime;
 }
@@ -43,6 +56,9 @@ div.btnShadow:hover {
 }
 
 textarea {
+  -webkit-box-shadow: inset 0px 0px 22px 2px rgba(0,255,30,1);
+  -moz-box-shadow: inset 0px 0px 22px 2px rgba(0,255,30,1);
+  box-shadow: inset 0px 0px 22px 1px rgba(0,255,30,1);
   background-color: black;
   color: lime;
 }
