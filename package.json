@@ -1,13 +1,14 @@
 {
   "name": "matrix-engine-examples",
   "version": "1.0.0",
-  "description": "TEST npm integration.",
+  "description": "MatrixEngine is opengles2.0/3.0 ObjectOriented scene engine based on glmatrix engine lib. PWA Fully powered with static/dynamic cache , add to home page in same time fixed autoplay audio/video context construction.",
   "main": "app.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "info": "echo \"Matrix engine writen in ECMA6. Because today is 2021 year i will get out every useless dev tools for now.  \n  Enjoy!!  \n  Nikola Lukic @zlatnaspirala  \""
   },
   "repository": {
     "type": "git",
