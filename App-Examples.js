@@ -73,12 +73,17 @@ var App = matrixEngine.App;
 
 matrixEngine.Engine.load_shaders("shaders/shaders.html")
 
+const addBtn = document.querySelector(".button1");
+const regularBtn = document.querySelector(".button2");
+
+addBtn.style.display = "none";
+regularBtn.style.display = "none";
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
 
     navigator.serviceWorker.register("worker.js");
-
-    setTimeout( () => { matrixEngine.Engine.initApp(webGLStart) }, 1000)
+    setTimeout(() => { matrixEngine.Engine.initApp(webGLStart) }, 50)
 
   });
 } else {
