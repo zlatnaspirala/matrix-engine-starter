@@ -7,8 +7,10 @@
     "lib": "lib"
   },
   "scripts": {
+    "build.examples": "browserify App-Examples.js -p esmify > builds/examples.me.js",
+    "build.app": "browserify App.js -p esmify > builds/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "info": "echo \"Matrix engine writen in ECMA6. Because today is 2021 year i will get out every useless dev tools for now.  \n  Enjoy!!  \n  Nikola Lukic @zlatnaspirala  \""
+    "info": "echo \"Matrix engine writen in ECMA6. \n  Enjoy!  \n  Nikola Lukic @zlatnaspirala  \""
   },
   "repository": {
     "type": "git",
@@ -27,6 +29,9 @@
   },
   "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
   "dependencies": {
-    "matrix-engine": "^1.1.2"
+    "matrix-engine": "^1.2.0"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0"
   }
 }
