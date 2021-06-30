@@ -83,7 +83,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
 
     navigator.serviceWorker.register("worker.js");
-    setTimeout(() => { matrixEngine.Engine.initApp(webGLStart) }, 50)
+    setTimeout(() => { matrixEngine.Engine.initApp(webGLStart) }, 250);
 
   });
 } else {

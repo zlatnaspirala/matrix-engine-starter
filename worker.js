@@ -15,8 +15,6 @@ self.addEventListener("install", function (event) {
         offlineUrl,
         "./css/style.css",
         "./node_modules/matrix-engine/lib/gl-matrix-min.js",
-        "./node_modules/matrix-engine/lib/matrix-geometry",
-        "./node_modules/matrix-engine/lib/engine",
       ]);
     })
   );
@@ -36,7 +34,12 @@ self.addEventListener("fetch", function (event) {
             // statusText: "Partial Content"
             return response;
           } else {
-          cache.put(event.request, response.clone());
+            if (event.request.destination == "iframe" ||
+                response.statusText == "Not Found") {
+              return response;
+            } else {
+              cache.put(event.request, response.clone());
+            }
           }
           return response;
         });

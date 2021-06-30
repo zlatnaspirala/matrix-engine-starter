@@ -118,7 +118,7 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("worker.js");
     setTimeout(() => {
       matrixEngine.Engine.initApp(webGLStart);
-    }, 50);
+    }, 250);
   });
 } else {
   console.warn("Matrix Engine: No support for web workers in this browser.");
@@ -1539,7 +1539,7 @@ var runThis = matrixEngine => {
   /////////////////////////////////////////
 
   E("HOLDER_STREAMS").style.display = "block";
-  App.scene.outsideBox.streamTextures = new CANVAS2d_SURFACE_TEXTURE("app/canvas2d/build.html", "starter/run.js");
+  App.scene.outsideBox.streamTextures = new CANVAS2d_SURFACE_TEXTURE("apps/canvas2d/build.html", "starter/run.js");
   setTimeout(function () {
     App.scene.outsideBox.streamTextures.showTextureEditor();
   }, 1000);
@@ -1582,7 +1582,7 @@ var runThis = matrixEngine => {
   App.scene.outsideBox.rotation.SetDirection(1, 1, 0.5); // CANVAS2D_SURFACE - IS TEXTURE EDITOR
 
   E("HOLDER_STREAMS").style.display = "block";
-  App.scene.outsideBox.streamTextures = new CANVAS2d_SURFACE_TEXTURE("app/canvas2d/build.html", "starter/particle.js");
+  App.scene.outsideBox.streamTextures = new CANVAS2d_SURFACE_TEXTURE("apps/canvas2d/build.html", "starter/particle.js");
   setTimeout(function () {
     App.scene.outsideBox.streamTextures.showTextureEditor();
   }, 1000);
@@ -1625,7 +1625,7 @@ var runThis = matrixEngine => {
   App.scene.outsideBox.rotation.SetDirection(1, 1, 0.5); // CANVAS2D_SURFACE - IS TEXTURE EDITOR
 
   E("HOLDER_STREAMS").style.display = "block";
-  App.scene.outsideBox.streamTextures = new CANVAS2d_SURFACE_TEXTURE("app/canvas2d/build.html", "starter/text.js");
+  App.scene.outsideBox.streamTextures = new CANVAS2d_SURFACE_TEXTURE("apps/canvas2d/build.html", "starter/text.js");
   setTimeout(function () {
     App.scene.outsideBox.streamTextures.showTextureEditor();
   }, 1000);
