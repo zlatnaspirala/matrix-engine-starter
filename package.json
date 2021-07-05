@@ -29,6 +29,6 @@
   },
   "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
   "dependencies": {
-    "matrix-engine": "^1.2.0"
+    "matrix-engine": "^1.2.7"
   }
 }
