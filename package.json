@@ -9,6 +9,7 @@
   "scripts": {
     "build.examples": "browserify App-Examples.js -p esmify > builds/examples.me.js",
     "build.app": "browserify App.js -p esmify > builds/app.js",
+    "build.all": "npm run build.examples | npm run build.app",
     "test": "echo \"Error: no test specified\" && exit 1",
     "info": "echo \"Matrix engine writen in ECMA6. \n  Enjoy!  \n  Nikola Lukic @zlatnaspirala  \""
   },
