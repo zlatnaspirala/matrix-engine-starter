@@ -4,56 +4,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
-
-var matrixEngine = _interopRequireWildcard(require("./node_modules/matrix-engine/index.js"));
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-var world;
-var App = matrixEngine.App;
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("worker.js");
-  });
-} else {
-  console.warn("Matrix Engine: No support for web workers in this browser.");
-}
-
-function webGLStart() {
-  world = matrixEngine.matrixWorld.defineworld(canvas);
-  world.callReDraw(); // from here you can put code from examples
-
-  world.Add("cube", 1, "MyColoredCube1");
-  world.Add("triangle", 1, "MyColoredCube3");
-  world.Add("pyramid", 1, "MyColoredCube2");
-  App.scene.MyColoredCube1.position.SetX(0);
-  App.scene.MyColoredCube2.position.SetX(-2.5);
-  App.scene.MyColoredCube3.position.SetX(2.5);
-  App.scene.MyColoredCube1.rotation.rotationSpeed.x = 15;
-  App.scene.MyColoredCube2.rotation.rotationSpeed.y = 15;
-  App.scene.MyColoredCube3.rotation.rotationSpeed.z = 15;
-  window.App = App;
-}
-
-matrixEngine.Engine.load_shaders("shaders/shaders.html");
-window.matrixEngine = matrixEngine;
-window.addEventListener("load", () => {
-  matrixEngine.Engine.initApp(webGLStart);
-}, false);
-var App = matrixEngine.App;
-var _default = App;
-exports.default = _default;
-
-},{"./node_modules/matrix-engine/index.js":2}],2:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 Object.defineProperty(exports, "App", {
   enumerable: true,
   get: function () {
@@ -118,7 +68,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":3,"./lib/events":4,"./lib/loader-obj":5,"./lib/matrix-buffers":6,"./lib/matrix-geometry":8,"./lib/matrix-render":9,"./lib/matrix-textures":10,"./lib/matrix-world":11,"./lib/utility":12,"./program/manifest":14}],3:[function(require,module,exports){
+},{"./lib/engine":2,"./lib/events":3,"./lib/loader-obj":4,"./lib/matrix-buffers":5,"./lib/matrix-geometry":7,"./lib/matrix-render":8,"./lib/matrix-textures":9,"./lib/matrix-world":10,"./lib/utility":11,"./program/manifest":13}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1022,7 +972,7 @@ function CANVAS2d_SURFACE_TEXTURE(path_, path_to_run_script) {
   };
 }
 
-},{"../program/manifest":14,"./events":4,"./matrix-render":9,"./matrix-world":11,"./utility":12,"./webgl-utils":13}],4:[function(require,module,exports){
+},{"../program/manifest":13,"./events":3,"./matrix-render":8,"./matrix-world":10,"./utility":11,"./webgl-utils":12}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1404,7 +1354,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":14,"./matrix-world":11,"./utility":12}],5:[function(require,module,exports){
+},{"../program/manifest":13,"./matrix-world":10,"./utility":11}],4:[function(require,module,exports){
 /* globals module */
 'use strict';
 
@@ -1797,7 +1747,7 @@ OBJ.deleteMeshBuffers = function (gl, mesh) {
 var _default = OBJ;
 exports.default = _default;
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2187,7 +2137,7 @@ _manifest.default.operation.sphere_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":14,"./matrix-world":11}],7:[function(require,module,exports){
+},{"../program/manifest":13,"./matrix-world":10}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3181,7 +3131,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":14,"./events":4,"./matrix-world":11}],8:[function(require,module,exports){
+},{"../program/manifest":13,"./events":3,"./matrix-world":10}],7:[function(require,module,exports){
 /* eslint-disable no-redeclare */
 
 /* eslint-disable no-unused-vars */
@@ -4605,7 +4555,7 @@ exports.customVertex_1 = customVertex_1;
 
 function ring(innerRadius, outerRadius, slices) {}
 
-},{"../program/manifest":14,"./utility":12}],9:[function(require,module,exports){
+},{"../program/manifest":13,"./utility":11}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4719,7 +4669,7 @@ var callReDraw_ = function () {
 
 exports.callReDraw_ = callReDraw_;
 
-},{"../program/manifest":14,"./engine":3,"./matrix-world":11}],10:[function(require,module,exports){
+},{"../program/manifest":13,"./engine":2,"./matrix-world":10}],9:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
@@ -4812,7 +4762,7 @@ _manifest.default.tools.loadVideoTexture = function (name, image) {
 var _default = _manifest.default.textools;
 exports.default = _default;
 
-},{"../program/manifest":14,"./matrix-world":11}],11:[function(require,module,exports){
+},{"../program/manifest":13,"./matrix-world":10}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5651,7 +5601,7 @@ function defineworld(canvas) {
 
 /*****************************************************/
 
-},{"../program/manifest":14,"./engine":3,"./matrix-draws":7,"./matrix-geometry":8,"./matrix-render":9,"./utility":12}],12:[function(require,module,exports){
+},{"../program/manifest":13,"./engine":2,"./matrix-draws":6,"./matrix-geometry":7,"./matrix-render":8,"./utility":11}],11:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -6231,7 +6181,7 @@ const BiquadFilterType = {
 };
 exports.BiquadFilterType = BiquadFilterType;
 
-},{"../program/manifest":14,"./events":4}],13:[function(require,module,exports){
+},{"../program/manifest":13,"./events":3}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6420,7 +6370,7 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6484,4 +6434,102 @@ var App = {
 var _default = App;
 exports.default = _default;
 
-},{}]},{},[1]);
+},{}],14:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("../../node_modules/matrix-engine/index"));
+
+var _mashine = _interopRequireDefault(require("./scripts/mashine"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var world, mashine;
+var App = matrixEngine.App;
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("worker.js");
+  });
+} else {
+  console.warn("Matrix Engine: No support for web workers in this browser.");
+}
+
+function webGLStart() {
+  matrixEngine.Engine.drawFPS();
+  world = matrixEngine.matrixWorld.defineworld(canvas);
+  world.callReDraw(); // Type here
+
+  mashine = new _mashine.default(world);
+  window.App = App;
+  window.world = world;
+}
+
+matrixEngine.Engine.load_shaders("shaders/shaders.html"); // window.matrixEngine = matrixEngine;
+
+window.addEventListener("load", () => {
+  matrixEngine.Engine.initApp(webGLStart);
+}, false); // Not in use
+
+var _default = App;
+exports.default = _default;
+
+},{"../../node_modules/matrix-engine/index":1,"./scripts/mashine":15}],15:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var world, mashine;
+var App = matrixEngine.App;
+
+class Mashines {
+  constructor(world) {
+    this.addMashine(world);
+    this.addWheel(world);
+  }
+
+  addMashine = function (world) {
+    function onLoadObj(meshes) {
+      App.meshes = meshes;
+      OBJ.initMeshBuffers(world.GL.gl, App.meshes.mainMashineBlock);
+      var textuteImageSamplers2 = {
+        source: ["assets/main-plane/main-plane-tex.png"],
+        mix_operation: "multiply"
+      };
+      world.Add("obj", 1, "mainMashineBlock", textuteImageSamplers2, App.meshes.mainMashineBlock);
+      App.scene.mainMashineBlock.position.y = 0;
+      App.scene.mainMashineBlock.position.z = -20;
+      App.scene.mainMashineBlock.rotation.rotationSpeed.y = 0;
+      App.scene.mainMashineBlock.LightsData.ambientLight.set(1, 1, 1);
+    }
+
+    matrixEngine.OBJ.downloadMeshes({
+      mainMashineBlock: "assets/main-plane/main-plane-base-test-tex1.obj"
+    }, onLoadObj);
+  };
+  addWheel = function (world) {
+    world.Add("square", 0.2, "Wheel1");
+    App.scene.Wheel1.position.x = -2;
+  };
+}
+
+exports.default = Mashines;
+
+},{"matrix-engine":1}]},{},[14]);

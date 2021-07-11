@@ -9,7 +9,8 @@
   "scripts": {
     "build.examples": "browserify App-Examples.js -p esmify > builds/examples.me.js",
     "build.app": "browserify App.js -p esmify > builds/app.js",
-    "build.all": "npm run build.examples | npm run build.app",
+    "build.slot": "browserify projects/matrix-slot/App.js -p esmify > builds/slot.js",
+    "build.all": "npm run build.examples | npm run build.app | npm run build.slot",
     "test": "echo \"Error: no test specified\" && exit 1",
     "info": "echo \"Matrix engine writen in ECMA6. \n  Enjoy!  \n  Nikola Lukic @zlatnaspirala  \""
   },
@@ -21,7 +22,8 @@
     "webgl",
     "webgl2",
     "glmatrix",
-    "opengles2"
+    "opengles2",
+    "opengles300"
   ],
   "author": "Nikola Lukic Zlatnaspirala",
   "license": "MIT",
@@ -30,6 +32,6 @@
   },
   "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
   "dependencies": {
-    "matrix-engine": "^1.2.7"
+    "matrix-engine": "^1.3.0"
   }
 }

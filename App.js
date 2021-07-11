@@ -12,8 +12,6 @@ if ("serviceWorker" in navigator) {
 }
 
 function webGLStart() {
-
-  matrixEngine.Engine.drawFPS();
   world = matrixEngine.matrixWorld.defineworld(canvas);
   world.callReDraw();
 
