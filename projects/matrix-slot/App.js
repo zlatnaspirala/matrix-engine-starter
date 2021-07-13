@@ -1,23 +1,58 @@
-import * as matrixEngine from "../../node_modules/matrix-engine/index";
+
+/**
+ * @description Matrix Engine Project
+ * Template demostration of power.
+ * @name Slot
+ * @author Nikola Lukic
+ * @license MIT
+ */
+
+import * as matrixEngine from "matrix-engine";
 import Mashines from "./scripts/mashine";
 
 var world, mashine;
 var App = matrixEngine.App;
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
+  window.addEventListener("load", function() {
     navigator.serviceWorker.register("worker.js");
   });
-} else {
-  console.warn("Matrix Engine: No support for web workers in this browser.");
 }
 
 function webGLStart() {
   world = matrixEngine.matrixWorld.defineworld(canvas);
   world.callReDraw();
 
-  // Type here
+  /**
+   * @description Use global object App 
+   * App object no need to be in global scope `window.App`
+   * It is our application global object and it is good 
+   * to put all of high level code in App object.
+   * Use pattern App.<name-of-project> = { ... }
+   */
+  App.slot = {};
+
+  /**
+   * @description Slot mashine can be configured from
+   * external (web server/ some other way)
+   */
+  var fieldRed = { id: 1, desc: 'red'};
+  var fieldBlue = { id: 2, desc: 'blue'};
+  var fieldGreen = { id: 3, desc: 'green'};
+  var fieldPurple = { id: 4, desc: 'purple'};
+  var fieldLime = { id: 5, desc: 'lime'};
+
+  App.slot.config = {
+    wheels: [
+      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldPurple, fieldGreen],
+      [fieldRed, fieldGreen, fieldLime, fieldPurple, fieldGreen , fieldGreen],
+      [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen]
+    ],
+
+  };
+
   mashine = new Mashines(world);
+  App.slot.mashine = mashine;
 
   window.App = App;
   window.world = world;

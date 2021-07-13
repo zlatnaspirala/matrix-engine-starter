@@ -3471,6 +3471,30 @@ class SquareVertex {
     this.texCoordsPoints.right_bottom.y = 0 - newScaleFactror;
   }
 
+  setScaleByX(scale) {
+    this.pointA.x = scale;
+    this.pointB.x = -scale;
+    this.pointC.x = scale;
+    this.pointD.x = -scale;
+    if (this.dynamicBuffer == true) return;
+
+    _manifest.default.operation.square_buffer_procedure(this.root);
+
+    return "dynamicBuffer is false but i will update vertex array prototypical.";
+  }
+
+  setScaleByY(scale) {
+    this.pointA.y = scale;
+    this.pointB.y = scale;
+    this.pointC.y = -scale;
+    this.pointD.y = -scale;
+    if (this.dynamicBuffer == true) return;
+
+    _manifest.default.operation.square_buffer_procedure(this.root);
+
+    return "dynamicBuffer is false but i will update vertex array prototypical.";
+  }
+
   setScale(scale) {
     this.size = scale;
     if (this.dynamicBuffer == true) return;
@@ -6442,7 +6466,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var matrixEngine = _interopRequireWildcard(require("../../node_modules/matrix-engine/index"));
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _mashine = _interopRequireDefault(require("./scripts/mashine"));
 
@@ -6452,6 +6476,13 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+/**
+ * @description Matrix Engine Project
+ * Template demostration of power.
+ * @name Slot
+ * @author Nikola Lukic
+ * @license MIT
+ */
 var world, mashine;
 var App = matrixEngine.App;
 
@@ -6459,16 +6490,50 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
     navigator.serviceWorker.register("worker.js");
   });
-} else {
-  console.warn("Matrix Engine: No support for web workers in this browser.");
 }
 
 function webGLStart() {
-  matrixEngine.Engine.drawFPS();
   world = matrixEngine.matrixWorld.defineworld(canvas);
-  world.callReDraw(); // Type here
+  world.callReDraw();
+  /**
+   * @description Use global object App 
+   * App object no need to be in global scope `window.App`
+   * It is our application global object and it is good 
+   * to put all of high level code in App object.
+   * Use pattern App.<name-of-project> = { ... }
+   */
 
+  App.slot = {};
+  /**
+   * @description Slot mashine can be configured from
+   * external (web server/ some other way)
+   */
+
+  var fieldRed = {
+    id: 1,
+    desc: 'red'
+  };
+  var fieldBlue = {
+    id: 2,
+    desc: 'blue'
+  };
+  var fieldGreen = {
+    id: 3,
+    desc: 'green'
+  };
+  var fieldPurple = {
+    id: 4,
+    desc: 'purple'
+  };
+  var fieldLime = {
+    id: 5,
+    desc: 'lime'
+  };
+  App.slot.config = {
+    wheels: [[fieldRed, fieldBlue, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldLime, fieldPurple, fieldGreen, fieldGreen], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen]]
+  };
   mashine = new _mashine.default(world);
+  App.slot.mashine = mashine;
   window.App = App;
   window.world = world;
 }
@@ -6482,7 +6547,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"../../node_modules/matrix-engine/index":1,"./scripts/mashine":15}],15:[function(require,module,exports){
+},{"./scripts/mashine":15,"matrix-engine":1}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6501,6 +6566,9 @@ var App = matrixEngine.App;
 
 class Mashines {
   constructor(world) {
+    this.speed = 0.1;
+    this.thread = null;
+    this.accessKeys = [];
     this.addMashine(world);
     this.addWheel(world);
   }
@@ -6515,7 +6583,7 @@ class Mashines {
       };
       world.Add("obj", 1, "mainMashineBlock", textuteImageSamplers2, App.meshes.mainMashineBlock);
       App.scene.mainMashineBlock.position.y = 0;
-      App.scene.mainMashineBlock.position.z = -20;
+      App.scene.mainMashineBlock.position.z = -9;
       App.scene.mainMashineBlock.rotation.rotationSpeed.y = 0;
       App.scene.mainMashineBlock.LightsData.ambientLight.set(1, 1, 1);
     }
@@ -6525,8 +6593,32 @@ class Mashines {
     }, onLoadObj);
   };
   addWheel = function (world) {
-    world.Add("square", 0.2, "Wheel1");
-    App.scene.Wheel1.position.x = -2;
+    console.info("Number of wheels: ", App.slot.config.wheels.length);
+    App.slot.config.wheels.forEach((wheel, indexWheel) => {
+      var localHandler = [];
+      wheel.forEach((field, indexField) => {
+        var name = "wheel" + indexWheel + "field" + indexField;
+        world.Add("square", 2.15, name);
+        localHandler.push(name);
+        App.scene[name].position.z = -9;
+        App.scene[name].position.x = -6 + indexWheel * 6;
+        App.scene[name].position.y = -2.5 + indexField * 2.5;
+        App.scene[name].geometry.setScaleByY(0.4);
+      });
+      this.accessKeys.push(localHandler);
+    });
+  };
+  activateSpining = () => {
+    this.thread = setInterval(() => {
+      this.accessKeys.forEach((accessWheelNames, indexWheel) => {
+        accessWheelNames.forEach((fieldname, indexWheel) => {
+          App.scene[fieldname].position.y -= this.speed;
+        });
+      });
+    }, 1);
+  };
+  activateSpiningThread = () => {
+    clearInterval(this.thread);
   };
 }
 
