@@ -1,6 +1,6 @@
 {
-  "name": "Matrix Engine",
-  "short_name": "matrix-engine",
+  "name": "Matrix Engine SlotMashine",
+  "short_name": "matrix-engine-slot",
   "start_url": "build.html",
   "orientation": "any",
   "theme_color": "lime",
