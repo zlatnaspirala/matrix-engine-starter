@@ -8,6 +8,8 @@
   let world = matrixEngine.matrixWorld.world;
   let App = matrixEngine.App;
 
+  window.App = App;
+
   function onLoadObj(meshes) {
     App.meshes = meshes;
     OBJ.initMeshBuffers(world.GL.gl, App.meshes.female);
@@ -55,6 +57,29 @@
       App.scene.female.position.y = -3;
       App.scene.female.rotation.rotationSpeed.z = 20;
       App.scene.female.position.z = -13;
+
+      // Test
+      var animation_construct2 = {
+        id: "female",
+        sumOfAniFrames: 18,
+        currentAni: 0,
+        speed: 2,
+      };
+
+      world.Add(
+        "obj",
+        1,
+        "femaleClone",
+        textuteImageSamplers2,
+        App.meshes.female,
+        animation_construct2
+      );
+
+      App.scene.femaleClone.position.y = -3;
+      App.scene.femaleClone.position.SetX(-2);
+      App.scene.femaleClone.rotation.rotationSpeed.z = 20;
+      App.scene.femaleClone.position.z = -13;
+
     }, 100);
   }
 

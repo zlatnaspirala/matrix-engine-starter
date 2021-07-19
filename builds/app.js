@@ -2451,6 +2451,7 @@ _manifest.default.operation.draws.piramide = function (object) {
 
 
 _manifest.default.operation.draws.square = function (object) {
+  var localLooper = 0;
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
@@ -2474,6 +2475,10 @@ _manifest.default.operation.draws.square = function (object) {
   }
 
   _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+  _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
+
+  localLooper = localLooper + 1;
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
 
@@ -3390,22 +3395,78 @@ exports.RotationVector = RotationVector;
 
 class Position {
   constructor(x, y, z) {
-    if (typeof x == "undefined") {
+    if (typeof x == 'undefined') {
       x = 0;
     }
 
-    if (typeof y == "undefined") {
+    if (typeof y == 'undefined') {
       y = 0;
     }
 
-    if (typeof z == "undefined") {
+    if (typeof z == 'undefined') {
       z = 0;
     }
 
     this.x = x;
     this.y = y;
-    this.z = z;
+    this.z = z; // update
+
+    this.velY = 0;
+    this.velX = 0;
+    this.inMove = false;
+    this.targetX = x;
+    this.targetY = y;
+    this.targetZ = z;
+    this.thrust = 0.01;
     return this;
+  }
+
+  setSpeed(n) {
+    if (typeof n === 'number') {
+      this.thrust = n;
+    } else {
+      SYS.DEBUG.WARNING('Description: arguments (w, h) must be type of number.');
+    }
+  }
+
+  translateByX = function (x) {
+    this.inMove = true;
+    this.targetX = x;
+  };
+
+  translateByY(y) {
+    this.inMove = true;
+    this.targetY = y;
+  }
+
+  translateByXY(x, y) {
+    this.inMove = true;
+    this.targetX = x;
+    this.targetY = y;
+  }
+
+  onTargetPositionReach() {}
+
+  update() {
+    var tx = this.targetX - this.x,
+        ty = this.targetY - this.y,
+        dist = Math.sqrt(tx * tx + ty * ty),
+        rad = Math.atan2(ty, tx),
+        angle = rad / Math.PI * 180;
+    this.velX = tx / dist * this.thrust;
+    this.velY = ty / dist * this.thrust;
+
+    if (this.inMove == true) {
+      if (dist > this.thrust) {
+        this.x += this.velX;
+        this.y += this.velY;
+      } else {
+        this.x = this.targetX;
+        this.y = this.targetY;
+        this.inMove = false;
+        this.onTargetPositionReach();
+      }
+    }
   }
 
   get worldLocation() {
@@ -3414,20 +3475,30 @@ class Position {
 
   SetX(newx) {
     this.x = newx;
+    this.targetX = newx;
+    this.inMove = false;
   }
 
   SetY(newy) {
     this.y = newy;
+    this.targetY = newy;
+    this.inMove = false;
   }
 
   SetZ(newz) {
     this.z = newz;
+    this.targetZ = newz;
+    this.inMove = false;
   }
 
   setPosition(newx, newy, newz) {
     this.x = newx;
     this.y = newy;
     this.z = newz;
+    this.targetX = newx;
+    this.targetY = newy;
+    this.targetZ = newz;
+    this.inMove = false;
   }
 
 }
@@ -4814,6 +4885,7 @@ var animate = function (rotationObject) {
     rotationObject.rotation.rotx += rotationObject.rotation.rotSpeedX * elapsed / 1000.0;
     rotationObject.rotation.roty += rotationObject.rotation.rotSpeedY * elapsed / 1000.0;
     rotationObject.rotation.rotz += rotationObject.rotation.rotSpeedZ * elapsed / 1000.0;
+    rotationObject.position.update();
   }
 };
 

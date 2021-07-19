@@ -4,6 +4,205 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "planeFont", {
+  enumerable: true,
+  get: function () {
+    return _dPlaneFont.planeFont;
+  }
+});
+Object.defineProperty(exports, "planeUVFont", {
+  enumerable: true,
+  get: function () {
+    return _dUVPlaneFont.planeUVFont;
+  }
+});
+
+var _dPlaneFont = require("./matrix-fonts/2dPlaneFont/access/2dPlaneFont");
+
+var _dUVPlaneFont = require("./matrix-fonts/2dUVPlaneFont/access/2dUVPlaneFont");
+
+},{"./matrix-fonts/2dPlaneFont/access/2dPlaneFont":2,"./matrix-fonts/2dUVPlaneFont/access/2dUVPlaneFont":3}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.planeFont = void 0;
+
+class planeFont {
+  onLoadObj(meshes) {
+    // App.meshes = meshes;
+    // Default
+    var tex = {
+      source: ["./../../node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/sample1.png"],
+      mix_operation: "multiply"
+    };
+    var All = Object.keys(meshes);
+    All.forEach(item => {
+      OBJ.initMeshBuffers(world.GL.gl, meshes[item]);
+      world.Add("obj", 1, item, tex, meshes[item]);
+      App.scene[item].position.y = 0;
+    }); // App.scene.mCharA.LightsData.ambientLight.set(1, 1, 1);
+  }
+  /**
+   * @description Load 3d alphabet objects
+   * Because Slot source is not in same folder
+   * with node_modules we can fix error path with
+   * prefix path.
+   * Default value "./../../"
+   */
+
+
+  loadFullFont = (OBJ, prefixPath) => {
+    if (typeof prefixPath === 'undefined') {
+      var prefixPath = "./../../";
+    }
+
+    OBJ.downloadMeshes({
+      mCharA: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/a.obj",
+      mCharB: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/b.obj",
+      mCharC: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/c.obj",
+      mCharD: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/d.obj",
+      mCharE: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/e.obj",
+      mCharF: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/f.obj",
+      mCharG: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/g.obj",
+      mCharH: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/h.obj",
+      mCharI: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/i.obj",
+      mCharJ: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/j.obj",
+      mCharK: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/k.obj",
+      mCharL: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/l.obj",
+      mCharM: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/m.obj",
+      mCharN: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/n.obj",
+      mCharO: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/o.obj",
+      mCharP: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/p.obj",
+      mCharR: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/r.obj",
+      mCharS: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/s.obj",
+      mCharT: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/t.obj",
+      mCharU: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/u.obj",
+      mCharW: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/w.obj",
+      mCharX: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/x.obj",
+      mCharY: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/y.obj",
+      mCharZ: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/z.obj",
+      mCharQ: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/b.obj"
+    }, this.onLoadObj);
+  };
+  loadChar = (OBJ, myChar, identity, prefixPath) => {
+    if (typeof myChar === 'undefined') {
+      console.error('You miss main argument myChar =>  loadChar = (OBJ, myChar)');
+      return false;
+    }
+
+    if (typeof prefixPath === 'undefined') {
+      var prefixPath = "./../../";
+    }
+
+    if (typeof identity === 'undefined') {
+      var identity = "mChar";
+    }
+
+    var injectArg = {};
+    injectArg["mChar" + myChar.toUpperCase()] = prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/" + myChar + ".obj";
+    OBJ.downloadMeshes(injectArg, this.onLoadObj);
+  };
+}
+
+exports.planeFont = planeFont;
+;
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.planeUVFont = void 0;
+
+class planeUVFont {
+  constructor(prefixPath) {
+    if (typeof prefixPath === 'undefined') {
+      this.prefixPath = "./../../";
+    } else {
+      this.prefixPath = prefixPath;
+    }
+  }
+
+  charLoaded = () => {};
+  onLoadObj = meshes => {
+    // Default tex
+    var tex = {
+      source: [this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/sample1.png"],
+      mix_operation: "multiply"
+    };
+    var All = Object.keys(meshes);
+    All.forEach(item => {
+      OBJ.initMeshBuffers(world.GL.gl, meshes[item]);
+      world.Add("obj", 1, item, tex, meshes[item]);
+      App.scene[item].position.SetY(0);
+      this.charLoaded(App.scene[item]);
+    }); // App.scene.mCharA.LightsData.ambientLight.set(1, 1, 1);
+  };
+  /**
+   * @description Load 3d alphabet objects
+   * Because Slot source is not in same folder
+   * with node_modules we can fix error path with
+   * prefix path.
+   * Default value "./../../"
+   */
+
+  loadFullFont = OBJ => {
+    OBJ.downloadMeshes({
+      mCharA: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/a.obj",
+      mCharB: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/b.obj",
+      mCharC: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/c.obj",
+      mCharD: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/d.obj",
+      mCharE: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/e.obj",
+      mCharF: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/f.obj",
+      mCharG: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/g.obj",
+      mCharH: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/h.obj",
+      mCharI: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/i.obj",
+      mCharJ: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/j.obj",
+      mCharK: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/k.obj",
+      mCharL: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/l.obj",
+      mCharM: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/m.obj",
+      mCharN: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/n.obj",
+      mCharO: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/o.obj",
+      mCharP: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/p.obj",
+      mCharR: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/r.obj",
+      mCharS: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/s.obj",
+      mCharT: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/t.obj",
+      mCharU: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/u.obj",
+      mCharW: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/w.obj",
+      mCharX: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/x.obj",
+      mCharY: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/y.obj",
+      mCharZ: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/z.obj",
+      mCharQ: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/b.obj"
+    }, this.onLoadObj);
+  };
+  loadChar = (OBJ, myChar, identity) => {
+    if (typeof myChar === 'undefined') {
+      console.error('You miss main argument myChar =>  loadChar = (OBJ, myChar)');
+      return false;
+    }
+
+    if (typeof identity === 'undefined') {
+      var identity = "mChar";
+    }
+
+    var injectArg = {};
+    injectArg[identity + myChar.toUpperCase()] = this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/" + myChar + ".obj";
+    OBJ.downloadMeshes(injectArg, this.onLoadObj);
+  };
+}
+
+exports.planeUVFont = planeUVFont;
+;
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 Object.defineProperty(exports, "App", {
   enumerable: true,
   get: function () {
@@ -68,7 +267,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":2,"./lib/events":3,"./lib/loader-obj":4,"./lib/matrix-buffers":5,"./lib/matrix-geometry":7,"./lib/matrix-render":8,"./lib/matrix-textures":9,"./lib/matrix-world":10,"./lib/utility":11,"./program/manifest":13}],2:[function(require,module,exports){
+},{"./lib/engine":5,"./lib/events":6,"./lib/loader-obj":7,"./lib/matrix-buffers":8,"./lib/matrix-geometry":10,"./lib/matrix-render":11,"./lib/matrix-textures":12,"./lib/matrix-world":13,"./lib/utility":14,"./program/manifest":16}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -972,7 +1171,7 @@ function CANVAS2d_SURFACE_TEXTURE(path_, path_to_run_script) {
   };
 }
 
-},{"../program/manifest":13,"./events":3,"./matrix-render":8,"./matrix-world":10,"./utility":11,"./webgl-utils":12}],3:[function(require,module,exports){
+},{"../program/manifest":16,"./events":6,"./matrix-render":11,"./matrix-world":13,"./utility":14,"./webgl-utils":15}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1354,7 +1553,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":13,"./matrix-world":10,"./utility":11}],4:[function(require,module,exports){
+},{"../program/manifest":16,"./matrix-world":13,"./utility":14}],7:[function(require,module,exports){
 /* globals module */
 'use strict';
 
@@ -1747,7 +1946,7 @@ OBJ.deleteMeshBuffers = function (gl, mesh) {
 var _default = OBJ;
 exports.default = _default;
 
-},{}],5:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2123,7 +2322,7 @@ _manifest.default.operation.sphere_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":13,"./matrix-world":10}],6:[function(require,module,exports){
+},{"../program/manifest":16,"./matrix-world":13}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3122,7 +3321,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":13,"./events":3,"./matrix-world":10}],7:[function(require,module,exports){
+},{"../program/manifest":16,"./events":6,"./matrix-world":13}],10:[function(require,module,exports){
 /* eslint-disable no-redeclare */
 
 /* eslint-disable no-unused-vars */
@@ -3345,22 +3544,78 @@ exports.RotationVector = RotationVector;
 
 class Position {
   constructor(x, y, z) {
-    if (typeof x == "undefined") {
+    if (typeof x == 'undefined') {
       x = 0;
     }
 
-    if (typeof y == "undefined") {
+    if (typeof y == 'undefined') {
       y = 0;
     }
 
-    if (typeof z == "undefined") {
+    if (typeof z == 'undefined') {
       z = 0;
     }
 
     this.x = x;
     this.y = y;
-    this.z = z;
+    this.z = z; // update
+
+    this.velY = 0;
+    this.velX = 0;
+    this.inMove = false;
+    this.targetX = x;
+    this.targetY = y;
+    this.targetZ = z;
+    this.thrust = 0.01;
     return this;
+  }
+
+  setSpeed(n) {
+    if (typeof n === 'number') {
+      this.thrust = n;
+    } else {
+      SYS.DEBUG.WARNING('Description: arguments (w, h) must be type of number.');
+    }
+  }
+
+  translateByX = function (x) {
+    this.inMove = true;
+    this.targetX = x;
+  };
+
+  translateByY(y) {
+    this.inMove = true;
+    this.targetY = y;
+  }
+
+  translateByXY(x, y) {
+    this.inMove = true;
+    this.targetX = x;
+    this.targetY = y;
+  }
+
+  onTargetPositionReach() {}
+
+  update() {
+    var tx = this.targetX - this.x,
+        ty = this.targetY - this.y,
+        dist = Math.sqrt(tx * tx + ty * ty),
+        rad = Math.atan2(ty, tx),
+        angle = rad / Math.PI * 180;
+    this.velX = tx / dist * this.thrust;
+    this.velY = ty / dist * this.thrust;
+
+    if (this.inMove == true) {
+      if (dist > this.thrust) {
+        this.x += this.velX;
+        this.y += this.velY;
+      } else {
+        this.x = this.targetX;
+        this.y = this.targetY;
+        this.inMove = false;
+        this.onTargetPositionReach();
+      }
+    }
   }
 
   get worldLocation() {
@@ -3369,20 +3624,30 @@ class Position {
 
   SetX(newx) {
     this.x = newx;
+    this.targetX = newx;
+    this.inMove = false;
   }
 
   SetY(newy) {
     this.y = newy;
+    this.targetY = newy;
+    this.inMove = false;
   }
 
   SetZ(newz) {
     this.z = newz;
+    this.targetZ = newz;
+    this.inMove = false;
   }
 
   setPosition(newx, newy, newz) {
     this.x = newx;
     this.y = newy;
     this.z = newz;
+    this.targetX = newx;
+    this.targetY = newy;
+    this.targetZ = newz;
+    this.inMove = false;
   }
 
 }
@@ -4740,7 +5005,7 @@ exports.customVertex_1 = customVertex_1;
 
 function ring(innerRadius, outerRadius, slices) {}
 
-},{"../program/manifest":13,"./utility":11}],8:[function(require,module,exports){
+},{"../program/manifest":16,"./utility":14}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4769,6 +5034,7 @@ var animate = function (rotationObject) {
     rotationObject.rotation.rotx += rotationObject.rotation.rotSpeedX * elapsed / 1000.0;
     rotationObject.rotation.roty += rotationObject.rotation.rotSpeedY * elapsed / 1000.0;
     rotationObject.rotation.rotz += rotationObject.rotation.rotSpeedZ * elapsed / 1000.0;
+    rotationObject.position.update();
   }
 };
 
@@ -4854,7 +5120,7 @@ var callReDraw_ = function () {
 
 exports.callReDraw_ = callReDraw_;
 
-},{"../program/manifest":13,"./engine":2,"./matrix-world":10}],9:[function(require,module,exports){
+},{"../program/manifest":16,"./engine":5,"./matrix-world":13}],12:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
@@ -4947,7 +5213,7 @@ _manifest.default.tools.loadVideoTexture = function (name, image) {
 var _default = _manifest.default.textools;
 exports.default = _default;
 
-},{"../program/manifest":13,"./matrix-world":10}],10:[function(require,module,exports){
+},{"../program/manifest":16,"./matrix-world":13}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5755,7 +6021,7 @@ function defineworld(canvas) {
 
 /*****************************************************/
 
-},{"../program/manifest":13,"./engine":2,"./matrix-draws":6,"./matrix-geometry":7,"./matrix-render":8,"./utility":11}],11:[function(require,module,exports){
+},{"../program/manifest":16,"./engine":5,"./matrix-draws":9,"./matrix-geometry":10,"./matrix-render":11,"./utility":14}],14:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -6336,7 +6602,7 @@ const BiquadFilterType = {
 };
 exports.BiquadFilterType = BiquadFilterType;
 
-},{"../program/manifest":13,"./events":3}],12:[function(require,module,exports){
+},{"../program/manifest":16,"./events":6}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6525,7 +6791,7 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],13:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6589,7 +6855,7 @@ var App = {
 var _default = App;
 exports.default = _default;
 
-},{}],14:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6598,6 +6864,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+var matrixEnginePlugins = _interopRequireWildcard(require("matrix-engine-plugins"));
 
 var _mashine = _interopRequireDefault(require("./scripts/mashine"));
 
@@ -6702,7 +6970,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":15,"matrix-engine":1}],15:[function(require,module,exports){
+},{"./scripts/mashine":18,"matrix-engine":4,"matrix-engine-plugins":1}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6712,6 +6980,8 @@ exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
+var _matrixEnginePlugins = require("matrix-engine-plugins");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -6720,63 +6990,47 @@ var App = matrixEngine.App;
 
 class Mashines {
   constructor(world) {
+    this.font = new _matrixEnginePlugins.planeUVFont();
     this.speed = 0.08;
     this.thread = null;
     this.preThread = null;
     this.accessKeys = [];
     this.spinHandler = {
       lastInitY: [],
-      bottomLimitY: -3.99
+      bottomLimitY: -3.99,
+      orderPositions: []
     };
     this.addMashine(world);
     this.addWheel(world);
-    this.load2dPlaneFonts(world);
+    this.addHudText();
   }
 
-  load2dPlaneFonts = function (world) {
-    function onLoadObj(meshes) {
-      App.meshes = meshes;
-      OBJ.initMeshBuffers(world.GL.gl, App.meshes.typoA);
-      var textuteImageSamplers2 = {
-        source: ["res/icons/512.png"],
-        mix_operation: "multiply"
-      };
-      world.Add("obj", 1, "typoA", textuteImageSamplers2, App.meshes.typoA);
-      App.scene.typoA.position.y = 3;
-      App.scene.typoA.LightsData.ambientLight.set(1, 1, 1);
-    }
-
-    OBJ.downloadMeshes({
-      typoA: "assets/2dplanefont/a.obj"
-    }, onLoadObj);
-  };
   addMashine = function (world) {
     world.Add("square", 1, "topHeader");
     App.scene.topHeader.geometry.setScaleByX(5.7);
-    App.scene.topHeader.geometry.setScaleByY(0.225);
-    App.scene.topHeader.position.y = 1.9;
+    App.scene.topHeader.geometry.setScaleByY(0.39);
+    App.scene.topHeader.position.y = 3;
+    App.scene.topHeader.position.z = -8;
     var textuteImageSamplers2 = {
       source: ["res/icons/512.png"],
       mix_operation: "multiply"
     };
     world.Add("square", 1, "footerHeader");
     App.scene.footerHeader.geometry.setScaleByX(5.8);
-    App.scene.footerHeader.geometry.setScaleByY(0.22);
-    App.scene.footerHeader.position.y = -1.85;
-    /*
-    // Style color buttom of footer
-    App.scene.topHeader.geometry.colorData.color[2].set(1,0,0);
-    App.scene.topHeader.geometry.colorData.color[3].set(1,0,0);
-    App.scene.topHeader.geometry.colorData.color[0].set(0,0,0);
-    App.scene.topHeader.geometry.colorData.color[1].set(0,0,0);
-      App.scene.footerHeader.geometry.colorData.color[0].set(1,0,0);
-    App.scene.footerHeader.geometry.colorData.color[1].set(1,0,0);
-    App.scene.footerHeader.geometry.colorData.color[2].set(0,0,0);
-    App.scene.footerHeader.geometry.colorData.color[3].set(0,0,0);
-    */
-    //App.operation.square_buffer_procedure(App.scene.topHeader);
-    //App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
+    App.scene.footerHeader.geometry.setScaleByY(0.39);
+    App.scene.footerHeader.position.y = -3;
+    App.scene.footerHeader.position.z = -8; // Style color buttom of footer
 
+    App.scene.topHeader.geometry.colorData.color[2].set(0.3, 1, 0);
+    App.scene.topHeader.geometry.colorData.color[3].set(0, 1, 0.3);
+    App.scene.topHeader.geometry.colorData.color[0].set(0, 0.2, 0);
+    App.scene.topHeader.geometry.colorData.color[1].set(0, 0, 0);
+    App.scene.footerHeader.geometry.colorData.color[0].set(1, 1, 0);
+    App.scene.footerHeader.geometry.colorData.color[1].set(1, 1, 0);
+    App.scene.footerHeader.geometry.colorData.color[2].set(0, 0, 0);
+    App.scene.footerHeader.geometry.colorData.color[3].set(0, 0, 0);
+    App.operation.square_buffer_procedure(App.scene.topHeader);
+    App.operation.square_buffer_procedure(App.scene.footerHeader);
     console.info("Mashine is constructed.");
   };
   addWheel = function (world) {
@@ -6790,6 +7044,7 @@ class Mashines {
     };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
       var localHandler = [],
+          localHandlerPos = [],
           lastY = 0;
       wheel.forEach((field, indexField) => {
         var name = "wheel" + indexWheel + "field" + indexField;
@@ -6798,9 +7053,21 @@ class Mashines {
 
         var O = window.innerWidth / 1000 * WW;
         var O2 = window.innerWidth / 1005 * WW;
-        App.scene[name].position.z = -9;
-        App.scene[name].position.x = -O * 0.86 + indexWheel * O2 * 0.862;
-        App.scene[name].position.y = -2 + indexField * 2;
+
+        var _x = -O * 0.86 + indexWheel * O2 * 0.862;
+
+        var _y = -2 + indexField * 2;
+
+        var _z = -9;
+
+        App.scene[name].position.z = _z;
+        App.scene[name].position.x = _x;
+        App.scene[name].position.y = _y;
+        localHandlerPos.push({
+          _x,
+          _y,
+          _z
+        });
         lastY = App.scene[name].position.y;
         App.scene[name].geometry.setScaleByX(O / 2.356);
         App.scene[name].geometry.setScaleByY(2.97 / VW);
@@ -6812,9 +7079,23 @@ class Mashines {
         App.operation.square_buffer_procedure(App.scene[name]);
         */
       });
+      this.spinHandler.orderPositions.push(localHandlerPos);
       this.spinHandler.lastInitY.push(lastY);
       this.accessKeys.push(localHandler);
     });
+  };
+  addHudText = function () {
+    var c = -1;
+
+    this.font.charLoaded = objChar => {
+      objChar.position.SetZ(-7.9);
+      objChar.position.translateByXY(-2 + c++, 2.6); // App.scene.headerTitleS.position.translateX(-1); 
+    };
+
+    this.font.loadChar(matrixEngine.OBJ, "s", "headerTitle");
+    this.font.loadChar(matrixEngine.OBJ, "l", "headerTitle");
+    this.font.loadChar(matrixEngine.OBJ, "o", "headerTitle");
+    this.font.loadChar(matrixEngine.OBJ, "t", "headerTitle");
   };
   activateSpinning = () => {
     this.preSpinning(0).then(() => {
@@ -6874,4 +7155,4 @@ class Mashines {
 
 exports.default = Mashines;
 
-},{"matrix-engine":1}]},{},[14]);
+},{"matrix-engine":4,"matrix-engine-plugins":1}]},{},[17]);
