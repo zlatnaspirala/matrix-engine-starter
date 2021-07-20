@@ -11,7 +11,6 @@
 // import matrixEngine from "/node_modules/matrix-engine/index.js";
 // prod
 import * as matrixEngine from "matrix-engine";
-import * as matrixEnginePlugins from "matrix-engine-plugins";
 import Mashines from "./scripts/mashine";
 
 var world, mashine;
@@ -49,7 +48,7 @@ function webGLStart() {
   App.slot.config = {
     verticalSize: 3,
     wheels: [
-      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldPurple, fieldGreen],
+      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen],
       [fieldRed, fieldGreen, fieldLime, fieldPurple, fieldGreen , fieldGreen],
       [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen]
     ]

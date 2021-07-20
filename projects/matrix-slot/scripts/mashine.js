@@ -27,7 +27,7 @@ export default class Mashines {
 
   addMashine = function (world) {
     world.Add("square", 1, "topHeader");
-    App.scene.topHeader.geometry.setScaleByX(5.7);
+    App.scene.topHeader.geometry.setScaleByX(6.6);
     App.scene.topHeader.geometry.setScaleByY(0.39);
     App.scene.topHeader.position.y = 3;
     App.scene.topHeader.position.z = -8;
@@ -38,19 +38,19 @@ export default class Mashines {
     };
 
     world.Add("square", 1, "footerHeader");
-    App.scene.footerHeader.geometry.setScaleByX(5.8);
+    App.scene.footerHeader.geometry.setScaleByX(6.6);
     App.scene.footerHeader.geometry.setScaleByY(0.39);
     App.scene.footerHeader.position.y = -3;
     App.scene.footerHeader.position.z = -8;
 
     // Style color buttom of footer
-    App.scene.topHeader.geometry.colorData.color[2].set(0.3, 1, 0);
-    App.scene.topHeader.geometry.colorData.color[3].set(0, 1, 0.3);
+    App.scene.topHeader.geometry.colorData.color[2].set(0.3, 0.6, 0);
+    App.scene.topHeader.geometry.colorData.color[3].set(0, 0.8, 0.3);
     App.scene.topHeader.geometry.colorData.color[0].set(0, 0.2, 0);
     App.scene.topHeader.geometry.colorData.color[1].set(0, 0, 0);
 
-    App.scene.footerHeader.geometry.colorData.color[0].set(1, 1, 0);
-    App.scene.footerHeader.geometry.colorData.color[1].set(1, 1, 0);
+    App.scene.footerHeader.geometry.colorData.color[0].set(0.5, 1, 0);
+    App.scene.footerHeader.geometry.colorData.color[1].set(0.5, 1, 0);
     App.scene.footerHeader.geometry.colorData.color[2].set(0, 0, 0);
     App.scene.footerHeader.geometry.colorData.color[3].set(0, 0, 0);
 
@@ -116,7 +116,7 @@ export default class Mashines {
   addHudText = function () {
 
     var c = -1;
-    this.font.charLoaded = (objChar) => {
+    this.font.charLoaded = function (objChar) {
       objChar.position.SetZ(-7.9);
       objChar.position.translateByXY(-2 + (c++) , 2.6);
       // App.scene.headerTitleS.position.translateX(-1); 

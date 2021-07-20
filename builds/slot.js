@@ -130,7 +130,9 @@ class planeUVFont {
     this.currentFontTexture = this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/sample2.png";
   }
 
-  charLoaded = () => {};
+  charLoaded = default_value => {
+    console.log(default_value);
+  };
   onLoadObj = meshes => {
     // Default tex
     var tex = {
@@ -6818,8 +6820,6 @@ exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
-var matrixEnginePlugins = _interopRequireWildcard(require("matrix-engine-plugins"));
-
 var _mashine = _interopRequireDefault(require("./scripts/mashine"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -6905,7 +6905,7 @@ function webGLStart() {
   };
   App.slot.config = {
     verticalSize: 3,
-    wheels: [[fieldRed, fieldBlue, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldLime, fieldPurple, fieldGreen, fieldGreen], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen]]
+    wheels: [[fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldLime, fieldPurple, fieldGreen, fieldGreen], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen]]
   };
   mashine = new _mashine.default(world);
   App.slot.mashine = mashine;
@@ -6923,7 +6923,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":18,"matrix-engine":4,"matrix-engine-plugins":1}],18:[function(require,module,exports){
+},{"./scripts/mashine":18,"matrix-engine":4}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6960,7 +6960,7 @@ class Mashines {
 
   addMashine = function (world) {
     world.Add("square", 1, "topHeader");
-    App.scene.topHeader.geometry.setScaleByX(5.7);
+    App.scene.topHeader.geometry.setScaleByX(6.6);
     App.scene.topHeader.geometry.setScaleByY(0.39);
     App.scene.topHeader.position.y = 3;
     App.scene.topHeader.position.z = -8;
@@ -6969,17 +6969,17 @@ class Mashines {
       mix_operation: "multiply"
     };
     world.Add("square", 1, "footerHeader");
-    App.scene.footerHeader.geometry.setScaleByX(5.8);
+    App.scene.footerHeader.geometry.setScaleByX(6.6);
     App.scene.footerHeader.geometry.setScaleByY(0.39);
     App.scene.footerHeader.position.y = -3;
     App.scene.footerHeader.position.z = -8; // Style color buttom of footer
 
-    App.scene.topHeader.geometry.colorData.color[2].set(0.3, 1, 0);
-    App.scene.topHeader.geometry.colorData.color[3].set(0, 1, 0.3);
+    App.scene.topHeader.geometry.colorData.color[2].set(0.3, 0.6, 0);
+    App.scene.topHeader.geometry.colorData.color[3].set(0, 0.8, 0.3);
     App.scene.topHeader.geometry.colorData.color[0].set(0, 0.2, 0);
     App.scene.topHeader.geometry.colorData.color[1].set(0, 0, 0);
-    App.scene.footerHeader.geometry.colorData.color[0].set(1, 1, 0);
-    App.scene.footerHeader.geometry.colorData.color[1].set(1, 1, 0);
+    App.scene.footerHeader.geometry.colorData.color[0].set(0.5, 1, 0);
+    App.scene.footerHeader.geometry.colorData.color[1].set(0.5, 1, 0);
     App.scene.footerHeader.geometry.colorData.color[2].set(0, 0, 0);
     App.scene.footerHeader.geometry.colorData.color[3].set(0, 0, 0);
     App.operation.square_buffer_procedure(App.scene.topHeader);
@@ -7040,7 +7040,7 @@ class Mashines {
   addHudText = function () {
     var c = -1;
 
-    this.font.charLoaded = objChar => {
+    this.font.charLoaded = function (objChar) {
       objChar.position.SetZ(-7.9);
       objChar.position.translateByXY(-2 + c++, 2.6); // App.scene.headerTitleS.position.translateX(-1); 
     };
