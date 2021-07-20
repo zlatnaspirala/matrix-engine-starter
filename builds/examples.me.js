@@ -16,8 +16,6 @@ var _adding_color_piramyde = require("./apps/adding_color_piramyde");
 
 var _adding_color_triangle = require("./apps/adding_color_triangle");
 
-var _adding_geometry = require("./apps/adding_geometry");
-
 var _adding_more_texture_samplers = require("./apps/adding_more_texture_samplers");
 
 var _adding_square_texture = require("./apps/adding_square_texture");
@@ -74,7 +72,6 @@ var Examples = {
   adding_color_piramyde: _adding_color_piramyde.runThis,
   adding_color_triangle: _adding_color_triangle.runThis,
   adding_color_square: _adding_color_square.runThis,
-  adding_geometry: _adding_geometry.runThis,
   adding_more_texture_samplers: _adding_more_texture_samplers.runThis,
   adding_square_texture: _adding_square_texture.runThis,
   all_variant_of_blending: _all_variant_of_blending.runThis,
@@ -149,7 +146,7 @@ var App = matrixEngine.App;
 var _default = App;
 exports.default = _default;
 
-},{"./apps/adding_color_cube":2,"./apps/adding_color_piramyde":3,"./apps/adding_color_square":4,"./apps/adding_color_triangle":5,"./apps/adding_geometry":6,"./apps/adding_more_texture_samplers":7,"./apps/adding_square_texture":8,"./apps/all_variant_of_blending":9,"./apps/audio_manipulation":10,"./apps/camera_texture":11,"./apps/cube_experimental":12,"./apps/cube_geometry":13,"./apps/cube_light_and_texture":14,"./apps/cube_light_dinamic":15,"./apps/cube_tex_arrays":16,"./apps/custom_texture":17,"./apps/first_person_controller":18,"./apps/load_obj_file":19,"./apps/my_world":20,"./apps/obj_animation":21,"./apps/obj_animation_build_mesh_effect":22,"./apps/one-kilo":23,"./apps/porting2d":24,"./apps/porting2d_particle":25,"./apps/porting2d_text":26,"./apps/sphere_geometry":27,"./apps/texture_dinamic_manipulation":28,"./apps/video_texture":29,"./node_modules/matrix-engine/index":30}],2:[function(require,module,exports){
+},{"./apps/adding_color_cube":2,"./apps/adding_color_piramyde":3,"./apps/adding_color_square":4,"./apps/adding_color_triangle":5,"./apps/adding_more_texture_samplers":6,"./apps/adding_square_texture":7,"./apps/all_variant_of_blending":8,"./apps/audio_manipulation":9,"./apps/camera_texture":10,"./apps/cube_experimental":11,"./apps/cube_geometry":12,"./apps/cube_light_and_texture":13,"./apps/cube_light_dinamic":14,"./apps/cube_tex_arrays":15,"./apps/custom_texture":16,"./apps/first_person_controller":17,"./apps/load_obj_file":18,"./apps/my_world":19,"./apps/obj_animation":20,"./apps/obj_animation_build_mesh_effect":21,"./apps/one-kilo":22,"./apps/porting2d":23,"./apps/porting2d_particle":24,"./apps/porting2d_text":25,"./apps/sphere_geometry":26,"./apps/texture_dinamic_manipulation":27,"./apps/video_texture":28,"./node_modules/matrix-engine/index":29}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -277,57 +274,6 @@ exports.runThis = void 0;
 var runThis = matrixEngine => {
   let world = matrixEngine.matrixWorld.world;
   let App = matrixEngine.App;
-
-  function onLoadObj(meshes) {
-    App.meshes = meshes;
-    OBJ.initMeshBuffers(world.GL.gl, App.meshes.church);
-
-    do {
-      console.log("...");
-    } while (!App.meshes.church.textureBuffer);
-
-    do {
-      console.log("...");
-    } while (typeof App.meshes.church.indexBuffer === "undefined");
-
-    var textuteImageSamplers2 = {
-      source: ["res/images/texture_metalic1.jpg"],
-      mix_operation: "multiply" // ENUM : multiply , divide ,
-
-    };
-    setTimeout(function () {
-      world.Add("obj", 1, "objectFileChurch", textuteImageSamplers2, App.meshes.church);
-    }, 2000);
-  }
-
-  OBJ.downloadMeshes({
-    "church": "res/3d-objects/monkey.obj"
-  }, onLoadObj); // eslint-disable-next-line no-unused-vars
-
-  var textuteImageSamplers = {
-    source: ["res/images/complex_texture_1/diffuse.png"],
-    mix_operation: "multiply" // ENUM : multiply , divide ,
-
-  };
-};
-
-exports.runThis = runThis;
-
-},{}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.runThis = void 0;
-
-/**
- *@Author Nikola Lukic
- *@Description Matrix Engine Api Example
- */
-var runThis = matrixEngine => {
-  let world = matrixEngine.matrixWorld.world;
-  let App = matrixEngine.App;
   var textuteImageSamplers = {
     source: ["res/images/complex_texture_1/diffuse.png", "res/images/texture_spiral1.png"],
     mix_operation: "multiply"
@@ -344,7 +290,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -369,7 +315,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -415,7 +361,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -488,7 +434,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -531,7 +477,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -572,7 +518,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -603,7 +549,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -637,7 +583,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -671,7 +617,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -709,7 +655,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -757,7 +703,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -839,7 +785,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -895,7 +841,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1106,7 +1052,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1167,11 +1113,11 @@ var runThis = matrixEngine => {
         currentAni: 0,
         speed: 2
       };
-      world.Add("obj", 1, "femaleLLL", textuteImageSamplers2, App.meshes.female, animation_construct2);
-      App.scene.female_clone.position.y = -3;
-      App.scene.female_clone.position.SetX(-2);
-      App.scene.female_clone.rotation.rotationSpeed.z = 20;
-      App.scene.female_clone.position.z = -13;
+      world.Add("obj", 1, "femaleClone", textuteImageSamplers2, App.meshes.female, animation_construct2);
+      App.scene.femaleClone.position.y = -3;
+      App.scene.femaleClone.position.SetX(-2);
+      App.scene.femaleClone.rotation.rotationSpeed.z = 20;
+      App.scene.femaleClone.position.z = -13;
     }, 100);
   }
 
@@ -1200,7 +1146,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1329,7 +1275,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1513,7 +1459,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1559,7 +1505,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1602,7 +1548,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1645,7 +1591,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1671,7 +1617,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1734,7 +1680,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1771,7 +1717,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1841,7 +1787,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":31,"./lib/events":32,"./lib/loader-obj":33,"./lib/matrix-buffers":34,"./lib/matrix-geometry":36,"./lib/matrix-render":37,"./lib/matrix-textures":38,"./lib/matrix-world":39,"./lib/utility":40,"./program/manifest":42}],31:[function(require,module,exports){
+},{"./lib/engine":30,"./lib/events":31,"./lib/loader-obj":32,"./lib/matrix-buffers":33,"./lib/matrix-geometry":35,"./lib/matrix-render":36,"./lib/matrix-textures":37,"./lib/matrix-world":38,"./lib/utility":39,"./program/manifest":41}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2745,7 +2691,7 @@ function CANVAS2d_SURFACE_TEXTURE(path_, path_to_run_script) {
   };
 }
 
-},{"../program/manifest":42,"./events":32,"./matrix-render":37,"./matrix-world":39,"./utility":40,"./webgl-utils":41}],32:[function(require,module,exports){
+},{"../program/manifest":41,"./events":31,"./matrix-render":36,"./matrix-world":38,"./utility":39,"./webgl-utils":40}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3127,7 +3073,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":42,"./matrix-world":39,"./utility":40}],33:[function(require,module,exports){
+},{"../program/manifest":41,"./matrix-world":38,"./utility":39}],32:[function(require,module,exports){
 /* globals module */
 'use strict';
 
@@ -3520,7 +3466,7 @@ OBJ.deleteMeshBuffers = function (gl, mesh) {
 var _default = OBJ;
 exports.default = _default;
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3535,8 +3481,7 @@ var _matrixWorld = require("./matrix-world");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _manifest.default.operation.cube_buffer_procedure = function (object) {
-  /* Vertex                                        */
-  // // console.log("        Buffer the " + object.type + "'s vertex");
+  /* Vertex */
   object.vertexPositionBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -3545,37 +3490,22 @@ _manifest.default.operation.cube_buffer_procedure = function (object) {
 
   object.vertexPositionBuffer.itemSize = 3;
   object.vertexPositionBuffer.numItems = 24;
-  /* Color                                         */
+  /* Color */
 
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
-    // console.log("        Buffer the " + object.type + "'s color");
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
-    /*
-        var unpackedColors = [];
-        for (var i in object.geometry.color) {
-        var color = object.geometry.color[i];
-        var looperLocal = 0;
-        while (4 > looperLocal) {
-        unpackedColors = unpackedColors.concat(color);
-        looperLocal = looperLocal + 1;
-        }
-        }
-         */
-    //world.GL.gl.bufferData(world.GL.gl.ARRAY_BUFFER, new Float32Array(unpackedColors), world.GL.gl.STATIC_DRAW);
-
 
     _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.geometry.color, _matrixWorld.world.GL.gl.STATIC_DRAW);
 
     object.vertexColorBuffer.itemSize = 4;
     object.vertexColorBuffer.numItems = 24;
   }
-  /* Texture                                       */
+  /* Texture */
 
 
   if (object.texture) {
-    // console.log("        Buffer the " + object.type + "'s texture");
     object.vertexTexCoordBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
@@ -3585,11 +3515,10 @@ _manifest.default.operation.cube_buffer_procedure = function (object) {
     object.vertexTexCoordBuffer.itemSize = 2;
     object.vertexTexCoordBuffer.numItems = 24;
   }
-  /* Normals                                   */
+  /* Normals */
 
 
   if (object.shaderProgram.useLightingUniform) {
-    // console.log("        Buffer the " + object.type + "'s normals");
     object.vertexNormalBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexNormalBuffer);
@@ -3599,8 +3528,7 @@ _manifest.default.operation.cube_buffer_procedure = function (object) {
     object.vertexNormalBuffer.itemSize = 3;
     object.vertexNormalBuffer.numItems = 24;
   }
-  /* Indices                                       */
-  // console.log("        Buffer the " + object.type + "'s indices");
+  /* Indices */
 
 
   object.vertexIndexBuffer = _matrixWorld.world.GL.gl.createBuffer();
@@ -3657,6 +3585,7 @@ _manifest.default.operation.square_buffer_procedure = function (object) {
 
   object.vertexColorBuffer.itemSize = 4;
   object.vertexColorBuffer.numItems = object.geometry.colorData.color.length;
+  /* Normals                                   */
 };
 
 _manifest.default.operation.triangle_buffer_procedure = function (object) {
@@ -3682,10 +3611,8 @@ _manifest.default.operation.triangle_buffer_procedure = function (object) {
 };
 
 _manifest.default.operation.obj_buffer_procedure = function (object) {
-  /* Vertex          not here for obj                */
-  // Color
+  /* Vertex */
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
-    // console.log("        Buffer the " + object.type + "'s color");
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
@@ -3741,8 +3668,7 @@ _manifest.default.operation.obj_buffer_procedure = function (object) {
 };
 
 _manifest.default.operation.squareTex_buffer_procedure = function (object) {
-  /* Vertex                                        */
-  // console.log("        Buffer the " + object.type + "'s vertex");
+  /* Vertex */
   object.vertexPositionBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -3751,10 +3677,9 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
 
   object.vertexPositionBuffer.itemSize = 3;
   object.vertexPositionBuffer.numItems = 4;
-  /* Color                                         */
+  /* Color */
 
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
-    // console.log("        Buffer the " + object.type + "'s color");
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
@@ -3776,11 +3701,10 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
     object.vertexColorBuffer.itemSize = 3;
     object.vertexColorBuffer.numItems = 4;
   }
-  /* Texture                                       */
+  /* Texture */
 
 
   if (object.texture) {
-    // console.log("        Buffer the " + object.type + "'s texture");
     object.vertexTexCoordBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
@@ -3790,11 +3714,10 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
     object.vertexTexCoordBuffer.itemSize = 2;
     object.vertexTexCoordBuffer.numItems = 4;
   }
-  /* Normals                                   */
+  /* Normals */
 
 
   if (object.shaderProgram.useLightingUniform) {
-    // console.log("        Buffer the " + object.type + "'s normals");
     object.vertexNormalBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexNormalBuffer);
@@ -3804,8 +3727,7 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
     object.vertexNormalBuffer.itemSize = 4;
     object.vertexNormalBuffer.numItems = 4;
   }
-  /* Indices                                       */
-  // console.log("        Buffer the " + object.type + "'s indices");
+  /* Indices */
 
 
   object.vertexIndexBuffer = _matrixWorld.world.GL.gl.createBuffer();
@@ -3896,7 +3818,7 @@ _manifest.default.operation.sphere_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":42,"./matrix-world":39}],35:[function(require,module,exports){
+},{"../program/manifest":41,"./matrix-world":38}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3912,8 +3834,7 @@ var _events = require("./events");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* globals App mat4 camera degToRad vec3 world mat3 */
-_manifest.default.operation.draws = new Object(); // Cube
+_manifest.default.operation.draws = new Object();
 
 _manifest.default.operation.draws.cube = function (object) {
   var lighting = true;
@@ -3928,7 +3849,7 @@ _manifest.default.operation.draws.cube = function (object) {
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); //VERTEX BUFFER
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // VERTEX
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -3942,7 +3863,7 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
 
     localLooper = localLooper + 1;
-  } //COLOR BUFFER
+  } // COLOR
 
 
   if (object.vertexColorBuffer) {
@@ -3953,12 +3874,12 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
 
     localLooper = localLooper + 1;
-  } //LIGHT STAFF
+  } // LIGHT
 
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.vertexNormalBuffer) {
@@ -3970,7 +3891,7 @@ _manifest.default.operation.draws.cube = function (object) {
 
       localLooper = localLooper + 1;
     }
-    /* Set the ambient light                 */
+    /* Set the ambient light */
 
 
     if (object.shaderProgram.ambientColorUniform) {
@@ -3981,7 +3902,7 @@ _manifest.default.operation.draws.cube = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
     }
-    /* Set the directional light             */
+    /* Directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -3992,7 +3913,7 @@ _manifest.default.operation.draws.cube = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -4020,7 +3941,7 @@ _manifest.default.operation.draws.cube = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
       }
     }
-  } //TEXTURES
+  } // TEXTURES
 
 
   if (object.vertexTexCoordBuffer) {
@@ -4035,7 +3956,7 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // video webcam textures
+      // video/webcam textures
       _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
@@ -4095,18 +4016,13 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-  } // smoothstep(T edge0, T edge1, T x);
-  // world.GL.gl.drawElements( world.GL.gl.TRIANGLES, object.vertexIndexBuffer.numItems,  world.GL.gl.UNSIGNED_SHORT, 0);
-
+  }
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// PIRAMIDE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.piramide = function (object) {
   mat4.identity(object.mvMatrix);
@@ -4154,27 +4070,15 @@ _manifest.default.operation.draws.piramide = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); // world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-
+  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawArrays(_matrixWorld.world.GL.gl[object.glDrawElements.mode], 0, object.vertexPositionBuffer.numItems);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
-  /*
-    world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-    mat4.translate(object.mvMatrix, object.mvMatrix, [2,1,1] );
-    world.setMatrixUniforms(object,this.pMatrix,object.mvMatrix)
-    world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-  */
-
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// SQUARE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.square = function (object) {
-  var localLooper = 0;
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
@@ -4199,20 +4103,16 @@ _manifest.default.operation.draws.square = function (object) {
 
   _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
 
-  _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
+  if (object.vertexColorBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
 
-  localLooper = localLooper + 1;
-
-  _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
-
-  _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+  }
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
-      // world.GL.gl.disable(world.GL.gl.DEPTH_TEST);
       _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
-    } //world.GL.gl.blendColor ( 1,1,1,0.5)
-    // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
+    } // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
 
 
     _matrixWorld.world.GL.gl.blendFunc(_matrixWorld.world.GL.gl[object.glBlend.blendParamSrc], _matrixWorld.world.GL.gl[object.glBlend.blendParamDest]);
@@ -4222,17 +4122,13 @@ _manifest.default.operation.draws.square = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); //world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-
+  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawArrays(_matrixWorld.world.GL.gl[object.glDrawElements.mode], 0, object.vertexPositionBuffer.numItems);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// TRIANGLE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.triangle = function (object) {
   mat4.identity(object.mvMatrix);
@@ -4264,8 +4160,7 @@ _manifest.default.operation.draws.triangle = function (object) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
       // world.GL.gl.disable(world.GL.gl.DEPTH_TEST);
       _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
-    } //world.GL.gl.blendColor ( 1,1,1,0.5)
-    // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
+    } // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
 
 
     _matrixWorld.world.GL.gl.blendFunc(_matrixWorld.world.GL.gl[object.glBlend.blendParamSrc], _matrixWorld.world.GL.gl[object.glBlend.blendParamDest]);
@@ -4275,24 +4170,19 @@ _manifest.default.operation.draws.triangle = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); // world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
+  this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawArrays(_matrixWorld.world.GL.gl[object.glDrawElements.mode], 0, object.vertexPositionBuffer.numItems);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// OBJ MESH
-//##############################################
-
+};
 
 _manifest.default.operation.draws.drawObj = function (object) {
   var lighting = 1; // eslint-disable-next-line no-unused-vars
 
-  var localLooper = 0; // if (true) {
-
-  lighting = true; // }
-
+  var localLooper = 0;
+  lighting = true;
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
@@ -4329,12 +4219,14 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.mesh.vertexBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
       }
     } else {
-      // now to render the mesh
+      // now to render the mesh test
       _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertexBuffer);
+
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertices, _matrixWorld.world.GL.gl.STATIC_DRAW);
 
       _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.mesh.vertexBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
     }
-  } //COLOR BUFFER
+  } // COLOR BUFFER
 
   /* if (object.vertexColorBuffer) {
       world.GL.gl.bindBuffer( world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
@@ -4348,7 +4240,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.mesh.normalBuffer) {
@@ -4370,7 +4262,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.R(), object.LightsData.ambientLight.G(), object.LightsData.ambientLight.B());
       }
     }
-    /* Set the directional light             */
+    /* Directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -4380,7 +4272,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -4408,8 +4300,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(1), parseFloat(0));
       }
     }
-  } // it's possible that the mesh doesn't contain
-  // any texture coordinates
+  } // it's possible that the mesh doesn't contain any texture coordinates
   // in this case, the texture vertexAttribArray will need to be disabled
   // before the call to drawElements
 
@@ -4460,7 +4351,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
       localLooper = localLooper + 1;
     } else {// world.GL.gl.disableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
     }
-  } //normals
+  } // Normals
   //  world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, object.mesh.normalBuffer);
   //  world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexNormalAttribute, object.mesh.normalBuffer.itemSize, world.GL.gl.FLOAT, false, 0, 0);
 
@@ -4482,24 +4373,17 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
   this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 3); //'POINTS' , 'LINE_STRIP', 'LINE_LOOP', 'LINES', 'TRIANGLE_STRIP', 'TRIANGLE_FAN' , 'TRIANGLES'
-
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 3);
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// SQUARE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.drawSquareTex = function (object) {
-  var lighting = 1; // eslint-disable-next-line no-unused-vars
+  var lighting = true; // eslint-disable-next-line no-unused-vars
 
-  var localLooper = 0; // if (true) {
-
-  lighting = true; // }
-
+  var localLooper = 0;
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
@@ -4510,7 +4394,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); //VERTEX BUFFER
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // VERTEX
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -4524,7 +4408,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
 
     localLooper = localLooper + 1;
-  } //COLOR BUFFER
+  } // COLOR
 
 
   if (object.vertexColorBuffer) {
@@ -4535,12 +4419,12 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
 
     localLooper = localLooper + 1;
-  } //LIGHT STAFF
+  } // LIGHT
 
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.vertexNormalBuffer) {
@@ -4552,7 +4436,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
       localLooper = localLooper + 1;
     }
-    /* Set the ambient light                 */
+    /* Ambient light - posible deplaced */
 
 
     if (object.shaderProgram.ambientColorUniform) {
@@ -4562,7 +4446,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
     }
-    /* Set the directional light             */
+    /* Directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -4572,7 +4456,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -4600,7 +4484,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
       }
     }
-  } // TEX
+  } // TEXTURE
 
 
   if (object.vertexTexCoordBuffer) {
@@ -4615,7 +4499,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // video webcam textures
+      // video/webcam tex
       _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
@@ -4681,24 +4565,17 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-  } //world.GL.gl.drawElements( world.GL.gl.TRIANGLES, object.vertexIndexBuffer.numItems,  world.GL.gl.UNSIGNED_SHORT, 0);
-
+  }
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// sphere
-//##############################################
-
+};
 
 _manifest.default.operation.draws.sphere = function (object) {
-  var lighting = 1;
-  var localLooper = 0; // if (true) {
-
-  lighting = true; // }
-
+  var lighting = true;
+  var localLooper = 0;
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
@@ -4709,7 +4586,7 @@ _manifest.default.operation.draws.sphere = function (object) {
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); //VERTEX BUFFER
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // VERTEX
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -4723,7 +4600,7 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
 
     localLooper = localLooper + 1;
-  } //COLOR BUFFER
+  } // COLOR
 
 
   if (object.vertexColorBuffer) {
@@ -4734,12 +4611,12 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
 
     localLooper = localLooper + 1;
-  } //LIGHT STAFF
+  } // LIGHT
 
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.vertexNormalBuffer) {
@@ -4751,7 +4628,7 @@ _manifest.default.operation.draws.sphere = function (object) {
 
       localLooper = localLooper + 1;
     }
-    /* Set the ambient light                 */
+    /* Set the ambient light */
 
 
     if (object.shaderProgram.ambientColorUniform) {
@@ -4762,7 +4639,7 @@ _manifest.default.operation.draws.sphere = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
     }
-    /* Set the directional light             */
+    /* Set the directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -4773,7 +4650,7 @@ _manifest.default.operation.draws.sphere = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -4801,7 +4678,7 @@ _manifest.default.operation.draws.sphere = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
       }
     }
-  } //TEXTURES
+  } // TEXTURES
 
 
   if (object.vertexTexCoordBuffer) {
@@ -4816,7 +4693,6 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // video webcam textures
       _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
@@ -4834,11 +4710,7 @@ _manifest.default.operation.draws.sphere = function (object) {
 
         _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE);
 
-        _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE); // -- Allocate storage for the texture
-        //world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-        //world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, image);
-        //world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
-
+        _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE);
 
         _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
       }
@@ -4866,7 +4738,7 @@ _manifest.default.operation.draws.sphere = function (object) {
     console.warn('WTF - ERROR10001');
   }
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper); //world.disableUnusedAttr( world.GL.gl, 3 );
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper); // world.disableUnusedAttr( world.GL.gl, 3 );
 
 
   if (object.glBlend.blendEnabled == true) {
@@ -4882,8 +4754,7 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); //world.GL.gl.drawElements( world.GL.gl.TRIANGLES, object.vertexIndexBuffer.numItems,  world.GL.gl.UNSIGNED_SHORT, 0);
-
+  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
@@ -4895,7 +4766,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":42,"./events":32,"./matrix-world":39}],36:[function(require,module,exports){
+},{"../program/manifest":41,"./events":31,"./matrix-world":38}],35:[function(require,module,exports){
 /* eslint-disable no-redeclare */
 
 /* eslint-disable no-unused-vars */
@@ -5113,6 +4984,10 @@ class RotationVector {
   }
 
 }
+/**
+ * @description Base class
+ */
+
 
 exports.RotationVector = RotationVector;
 
@@ -5132,10 +5007,10 @@ class Position {
 
     this.x = x;
     this.y = y;
-    this.z = z; // update
-
+    this.z = z;
     this.velY = 0;
     this.velX = 0;
+    this.velZ = 0;
     this.inMove = false;
     this.targetX = x;
     this.targetY = y;
@@ -5162,10 +5037,27 @@ class Position {
     this.targetY = y;
   }
 
+  translateByZ(z) {
+    this.inMove = true;
+    this.targetZ = z;
+  }
+
   translateByXY(x, y) {
     this.inMove = true;
     this.targetX = x;
     this.targetY = y;
+  }
+
+  translateByXZ(x, z) {
+    this.inMove = true;
+    this.targetX = x;
+    this.targetZ = z;
+  }
+
+  translateByYZ(y, z) {
+    this.inMove = true;
+    this.targetY = y;
+    this.targetZ = z;
   }
 
   onTargetPositionReach() {}
@@ -5173,19 +5065,23 @@ class Position {
   update() {
     var tx = this.targetX - this.x,
         ty = this.targetY - this.y,
-        dist = Math.sqrt(tx * tx + ty * ty),
-        rad = Math.atan2(ty, tx),
-        angle = rad / Math.PI * 180;
+        tz = this.targetZ - this.z,
+        dist = Math.sqrt(tx * tx + ty * ty + tz * tz); // rad = Math.atan2(ty, tx),
+    // angle = (rad / Math.PI) * 180;
+
     this.velX = tx / dist * this.thrust;
     this.velY = ty / dist * this.thrust;
+    this.velZ = tz / dist * this.thrust;
 
     if (this.inMove == true) {
       if (dist > this.thrust) {
         this.x += this.velX;
         this.y += this.velY;
+        this.z += this.velZ;
       } else {
         this.x = this.targetX;
         this.y = this.targetY;
+        this.z = this.targetZ;
         this.inMove = false;
         this.onTargetPositionReach();
       }
@@ -6579,7 +6475,7 @@ exports.customVertex_1 = customVertex_1;
 
 function ring(innerRadius, outerRadius, slices) {}
 
-},{"../program/manifest":42,"./utility":40}],37:[function(require,module,exports){
+},{"../program/manifest":41,"./utility":39}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6608,7 +6504,6 @@ var animate = function (rotationObject) {
     rotationObject.rotation.rotx += rotationObject.rotation.rotSpeedX * elapsed / 1000.0;
     rotationObject.rotation.roty += rotationObject.rotation.rotSpeedY * elapsed / 1000.0;
     rotationObject.rotation.rotz += rotationObject.rotation.rotSpeedZ * elapsed / 1000.0;
-    rotationObject.position.update();
   }
 };
 
@@ -6694,7 +6589,7 @@ var callReDraw_ = function () {
 
 exports.callReDraw_ = callReDraw_;
 
-},{"../program/manifest":42,"./engine":31,"./matrix-world":39}],38:[function(require,module,exports){
+},{"../program/manifest":41,"./engine":30,"./matrix-world":38}],37:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
@@ -6787,7 +6682,7 @@ _manifest.default.tools.loadVideoTexture = function (name, image) {
 var _default = _manifest.default.textools;
 exports.default = _default;
 
-},{"../program/manifest":42,"./matrix-world":39}],39:[function(require,module,exports){
+},{"../program/manifest":41,"./matrix-world":38}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7328,7 +7223,8 @@ function defineworld(canvas) {
       objObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       objObject.position = new _matrixGeometry.Position(0, -5, -8.0);
       objObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      objObject.color = new _matrixGeometry.GeoOfColor('4x4'); // custom textures
+      objObject.color = false; // new GeoOfColor('4x4');
+      // custom textures
 
       objObject.custom = new Object();
       objObject.custom.gl_texture = null;
@@ -7366,7 +7262,7 @@ function defineworld(canvas) {
       } else {
         // no textures , use default single textures
         //objObject.texture = undefined;
-        objObject.texture = this.initTexture(this.GL.gl, 'res/images/black_white.png');
+        objObject.texture = this.initTexture(this.GL.gl, 'res/images/texture_spiral1.png');
         objObject.textures = [];
         objObject.textures[0] = objObject.texture;
       }
@@ -7383,8 +7279,7 @@ function defineworld(canvas) {
         this.shaderProgram = world.initShaders(world.GL.gl, this.type + '-shader-fs', this.type + '-shader-vs');
       };
 
-      objObject.mvMatrix = mat4.create(); /// objObject.mesh     = App.meshes.skeleton;
-      // eslint-disable-next-line valid-typeof
+      objObject.mvMatrix = mat4.create(); // eslint-disable-next-line valid-typeof
 
       if (typeof animationConstruct_ == 'undefined' || typeof animationConstruct_ == null) {
         objObject.animation = null;
@@ -7595,7 +7490,7 @@ function defineworld(canvas) {
 
 /*****************************************************/
 
-},{"../program/manifest":42,"./engine":31,"./matrix-draws":35,"./matrix-geometry":36,"./matrix-render":37,"./utility":40}],40:[function(require,module,exports){
+},{"../program/manifest":41,"./engine":30,"./matrix-draws":34,"./matrix-geometry":35,"./matrix-render":36,"./utility":39}],39:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -8176,7 +8071,7 @@ const BiquadFilterType = {
 };
 exports.BiquadFilterType = BiquadFilterType;
 
-},{"../program/manifest":42,"./events":32}],41:[function(require,module,exports){
+},{"../program/manifest":41,"./events":31}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8365,7 +8260,7 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

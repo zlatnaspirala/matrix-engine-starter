@@ -30,18 +30,28 @@ Object.defineProperty(exports, "__esModule", {
 exports.planeFont = void 0;
 
 class planeFont {
+  constructor(prefixPath) {
+    if (typeof prefixPath === 'undefined') {
+      this.prefixPath = "./../../";
+    } else {
+      this.prefixPath = prefixPath;
+    }
+
+    this.currentFontTexture = this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/sample1.png";
+  }
+
   onLoadObj(meshes) {
-    // App.meshes = meshes;
     // Default
     var tex = {
-      source: ["./../../node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/sample1.png"],
+      source: [this.currentFontTexture],
       mix_operation: "multiply"
     };
     var All = Object.keys(meshes);
     All.forEach(item => {
       OBJ.initMeshBuffers(world.GL.gl, meshes[item]);
       world.Add("obj", 1, item, tex, meshes[item]);
-      App.scene[item].position.y = 0;
+      App.scene[item].position.setY(0);
+      this.charLoaded(App.scene[item]);
     }); // App.scene.mCharA.LightsData.ambientLight.set(1, 1, 1);
   }
   /**
@@ -53,47 +63,39 @@ class planeFont {
    */
 
 
-  loadFullFont = (OBJ, prefixPath) => {
-    if (typeof prefixPath === 'undefined') {
-      var prefixPath = "./../../";
-    }
-
+  loadFullFont = OBJ => {
     OBJ.downloadMeshes({
-      mCharA: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/a.obj",
-      mCharB: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/b.obj",
-      mCharC: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/c.obj",
-      mCharD: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/d.obj",
-      mCharE: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/e.obj",
-      mCharF: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/f.obj",
-      mCharG: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/g.obj",
-      mCharH: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/h.obj",
-      mCharI: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/i.obj",
-      mCharJ: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/j.obj",
-      mCharK: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/k.obj",
-      mCharL: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/l.obj",
-      mCharM: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/m.obj",
-      mCharN: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/n.obj",
-      mCharO: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/o.obj",
-      mCharP: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/p.obj",
-      mCharR: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/r.obj",
-      mCharS: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/s.obj",
-      mCharT: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/t.obj",
-      mCharU: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/u.obj",
-      mCharW: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/w.obj",
-      mCharX: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/x.obj",
-      mCharY: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/y.obj",
-      mCharZ: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/z.obj",
-      mCharQ: prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/b.obj"
+      mCharA: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/a.obj",
+      mCharB: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/b.obj",
+      mCharC: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/c.obj",
+      mCharD: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/d.obj",
+      mCharE: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/e.obj",
+      mCharF: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/f.obj",
+      mCharG: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/g.obj",
+      mCharH: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/h.obj",
+      mCharI: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/i.obj",
+      mCharJ: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/j.obj",
+      mCharK: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/k.obj",
+      mCharL: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/l.obj",
+      mCharM: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/m.obj",
+      mCharN: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/n.obj",
+      mCharO: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/o.obj",
+      mCharP: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/p.obj",
+      mCharR: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/r.obj",
+      mCharS: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/s.obj",
+      mCharT: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/t.obj",
+      mCharU: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/u.obj",
+      mCharW: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/w.obj",
+      mCharX: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/x.obj",
+      mCharY: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/y.obj",
+      mCharZ: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/z.obj",
+      mCharQ: this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/b.obj"
     }, this.onLoadObj);
   };
-  loadChar = (OBJ, myChar, identity, prefixPath) => {
+  loadChar = (OBJ, myChar, identity) => {
     if (typeof myChar === 'undefined') {
       console.error('You miss main argument myChar =>  loadChar = (OBJ, myChar)');
       return false;
-    }
-
-    if (typeof prefixPath === 'undefined') {
-      var prefixPath = "./../../";
     }
 
     if (typeof identity === 'undefined') {
@@ -101,7 +103,7 @@ class planeFont {
     }
 
     var injectArg = {};
-    injectArg["mChar" + myChar.toUpperCase()] = prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/" + myChar + ".obj";
+    injectArg["mChar" + myChar.toUpperCase()] = this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dPlaneFont/data/" + myChar + ".obj";
     OBJ.downloadMeshes(injectArg, this.onLoadObj);
   };
 }
@@ -124,13 +126,15 @@ class planeUVFont {
     } else {
       this.prefixPath = prefixPath;
     }
+
+    this.currentFontTexture = this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/sample2.png";
   }
 
   charLoaded = () => {};
   onLoadObj = meshes => {
     // Default tex
     var tex = {
-      source: [this.prefixPath + "node_modules/matrix-engine-plugins/matrix-fonts/2dUVPlaneFont/data/sample1.png"],
+      source: [this.currentFontTexture],
       mix_operation: "multiply"
     };
     var All = Object.keys(meshes);
@@ -139,7 +143,7 @@ class planeUVFont {
       world.Add("obj", 1, item, tex, meshes[item]);
       App.scene[item].position.SetY(0);
       this.charLoaded(App.scene[item]);
-    }); // App.scene.mCharA.LightsData.ambientLight.set(1, 1, 1);
+    });
   };
   /**
    * @description Load 3d alphabet objects
@@ -1961,8 +1965,7 @@ var _matrixWorld = require("./matrix-world");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _manifest.default.operation.cube_buffer_procedure = function (object) {
-  /* Vertex                                        */
-  // // console.log("        Buffer the " + object.type + "'s vertex");
+  /* Vertex */
   object.vertexPositionBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -1971,37 +1974,22 @@ _manifest.default.operation.cube_buffer_procedure = function (object) {
 
   object.vertexPositionBuffer.itemSize = 3;
   object.vertexPositionBuffer.numItems = 24;
-  /* Color                                         */
+  /* Color */
 
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
-    // console.log("        Buffer the " + object.type + "'s color");
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
-    /*
-        var unpackedColors = [];
-        for (var i in object.geometry.color) {
-        var color = object.geometry.color[i];
-        var looperLocal = 0;
-        while (4 > looperLocal) {
-        unpackedColors = unpackedColors.concat(color);
-        looperLocal = looperLocal + 1;
-        }
-        }
-         */
-    //world.GL.gl.bufferData(world.GL.gl.ARRAY_BUFFER, new Float32Array(unpackedColors), world.GL.gl.STATIC_DRAW);
-
 
     _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.geometry.color, _matrixWorld.world.GL.gl.STATIC_DRAW);
 
     object.vertexColorBuffer.itemSize = 4;
     object.vertexColorBuffer.numItems = 24;
   }
-  /* Texture                                       */
+  /* Texture */
 
 
   if (object.texture) {
-    // console.log("        Buffer the " + object.type + "'s texture");
     object.vertexTexCoordBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
@@ -2011,11 +1999,10 @@ _manifest.default.operation.cube_buffer_procedure = function (object) {
     object.vertexTexCoordBuffer.itemSize = 2;
     object.vertexTexCoordBuffer.numItems = 24;
   }
-  /* Normals                                   */
+  /* Normals */
 
 
   if (object.shaderProgram.useLightingUniform) {
-    // console.log("        Buffer the " + object.type + "'s normals");
     object.vertexNormalBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexNormalBuffer);
@@ -2025,8 +2012,7 @@ _manifest.default.operation.cube_buffer_procedure = function (object) {
     object.vertexNormalBuffer.itemSize = 3;
     object.vertexNormalBuffer.numItems = 24;
   }
-  /* Indices                                       */
-  // console.log("        Buffer the " + object.type + "'s indices");
+  /* Indices */
 
 
   object.vertexIndexBuffer = _matrixWorld.world.GL.gl.createBuffer();
@@ -2083,6 +2069,7 @@ _manifest.default.operation.square_buffer_procedure = function (object) {
 
   object.vertexColorBuffer.itemSize = 4;
   object.vertexColorBuffer.numItems = object.geometry.colorData.color.length;
+  /* Normals                                   */
 };
 
 _manifest.default.operation.triangle_buffer_procedure = function (object) {
@@ -2108,10 +2095,8 @@ _manifest.default.operation.triangle_buffer_procedure = function (object) {
 };
 
 _manifest.default.operation.obj_buffer_procedure = function (object) {
-  /* Vertex          not here for obj                */
-  // Color
+  /* Vertex */
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
-    // console.log("        Buffer the " + object.type + "'s color");
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
@@ -2167,8 +2152,7 @@ _manifest.default.operation.obj_buffer_procedure = function (object) {
 };
 
 _manifest.default.operation.squareTex_buffer_procedure = function (object) {
-  /* Vertex                                        */
-  // console.log("        Buffer the " + object.type + "'s vertex");
+  /* Vertex */
   object.vertexPositionBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -2177,10 +2161,9 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
 
   object.vertexPositionBuffer.itemSize = 3;
   object.vertexPositionBuffer.numItems = 4;
-  /* Color                                         */
+  /* Color */
 
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
-    // console.log("        Buffer the " + object.type + "'s color");
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
@@ -2202,11 +2185,10 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
     object.vertexColorBuffer.itemSize = 3;
     object.vertexColorBuffer.numItems = 4;
   }
-  /* Texture                                       */
+  /* Texture */
 
 
   if (object.texture) {
-    // console.log("        Buffer the " + object.type + "'s texture");
     object.vertexTexCoordBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
@@ -2216,11 +2198,10 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
     object.vertexTexCoordBuffer.itemSize = 2;
     object.vertexTexCoordBuffer.numItems = 4;
   }
-  /* Normals                                   */
+  /* Normals */
 
 
   if (object.shaderProgram.useLightingUniform) {
-    // console.log("        Buffer the " + object.type + "'s normals");
     object.vertexNormalBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexNormalBuffer);
@@ -2230,8 +2211,7 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
     object.vertexNormalBuffer.itemSize = 4;
     object.vertexNormalBuffer.numItems = 4;
   }
-  /* Indices                                       */
-  // console.log("        Buffer the " + object.type + "'s indices");
+  /* Indices */
 
 
   object.vertexIndexBuffer = _matrixWorld.world.GL.gl.createBuffer();
@@ -2338,8 +2318,7 @@ var _events = require("./events");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* globals App mat4 camera degToRad vec3 world mat3 */
-_manifest.default.operation.draws = new Object(); // Cube
+_manifest.default.operation.draws = new Object();
 
 _manifest.default.operation.draws.cube = function (object) {
   var lighting = true;
@@ -2354,7 +2333,7 @@ _manifest.default.operation.draws.cube = function (object) {
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); //VERTEX BUFFER
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // VERTEX
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -2368,7 +2347,7 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
 
     localLooper = localLooper + 1;
-  } //COLOR BUFFER
+  } // COLOR
 
 
   if (object.vertexColorBuffer) {
@@ -2379,12 +2358,12 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
 
     localLooper = localLooper + 1;
-  } //LIGHT STAFF
+  } // LIGHT
 
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.vertexNormalBuffer) {
@@ -2396,7 +2375,7 @@ _manifest.default.operation.draws.cube = function (object) {
 
       localLooper = localLooper + 1;
     }
-    /* Set the ambient light                 */
+    /* Set the ambient light */
 
 
     if (object.shaderProgram.ambientColorUniform) {
@@ -2407,7 +2386,7 @@ _manifest.default.operation.draws.cube = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
     }
-    /* Set the directional light             */
+    /* Directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -2418,7 +2397,7 @@ _manifest.default.operation.draws.cube = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -2446,7 +2425,7 @@ _manifest.default.operation.draws.cube = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
       }
     }
-  } //TEXTURES
+  } // TEXTURES
 
 
   if (object.vertexTexCoordBuffer) {
@@ -2461,7 +2440,7 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // video webcam textures
+      // video/webcam textures
       _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
@@ -2521,18 +2500,13 @@ _manifest.default.operation.draws.cube = function (object) {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-  } // smoothstep(T edge0, T edge1, T x);
-  // world.GL.gl.drawElements( world.GL.gl.TRIANGLES, object.vertexIndexBuffer.numItems,  world.GL.gl.UNSIGNED_SHORT, 0);
-
+  }
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// PIRAMIDE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.piramide = function (object) {
   mat4.identity(object.mvMatrix);
@@ -2580,27 +2554,15 @@ _manifest.default.operation.draws.piramide = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); // world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-
+  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawArrays(_matrixWorld.world.GL.gl[object.glDrawElements.mode], 0, object.vertexPositionBuffer.numItems);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
-  /*
-    world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-    mat4.translate(object.mvMatrix, object.mvMatrix, [2,1,1] );
-    world.setMatrixUniforms(object,this.pMatrix,object.mvMatrix)
-    world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-  */
-
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// SQUARE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.square = function (object) {
-  var localLooper = 0;
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
@@ -2625,20 +2587,16 @@ _manifest.default.operation.draws.square = function (object) {
 
   _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
 
-  _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
+  if (object.vertexColorBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
 
-  localLooper = localLooper + 1;
-
-  _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
-
-  _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+  }
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
-      // world.GL.gl.disable(world.GL.gl.DEPTH_TEST);
       _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
-    } //world.GL.gl.blendColor ( 1,1,1,0.5)
-    // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
+    } // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
 
 
     _matrixWorld.world.GL.gl.blendFunc(_matrixWorld.world.GL.gl[object.glBlend.blendParamSrc], _matrixWorld.world.GL.gl[object.glBlend.blendParamDest]);
@@ -2648,17 +2606,13 @@ _manifest.default.operation.draws.square = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); //world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
-
+  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawArrays(_matrixWorld.world.GL.gl[object.glDrawElements.mode], 0, object.vertexPositionBuffer.numItems);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// TRIANGLE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.triangle = function (object) {
   mat4.identity(object.mvMatrix);
@@ -2690,8 +2644,7 @@ _manifest.default.operation.draws.triangle = function (object) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
       // world.GL.gl.disable(world.GL.gl.DEPTH_TEST);
       _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
-    } //world.GL.gl.blendColor ( 1,1,1,0.5)
-    // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
+    } // world.GL.gl.blendColor( 1.0 , 1.0, 1.0, 0.3 );
 
 
     _matrixWorld.world.GL.gl.blendFunc(_matrixWorld.world.GL.gl[object.glBlend.blendParamSrc], _matrixWorld.world.GL.gl[object.glBlend.blendParamDest]);
@@ -2701,24 +2654,19 @@ _manifest.default.operation.draws.triangle = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); // world.GL.gl.drawArrays(world.GL.gl.TRIANGLES, 0, object.vertexPositionBuffer.numItems);
+  this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawArrays(_matrixWorld.world.GL.gl[object.glDrawElements.mode], 0, object.vertexPositionBuffer.numItems);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// OBJ MESH
-//##############################################
-
+};
 
 _manifest.default.operation.draws.drawObj = function (object) {
   var lighting = 1; // eslint-disable-next-line no-unused-vars
 
-  var localLooper = 0; // if (true) {
-
-  lighting = true; // }
-
+  var localLooper = 0;
+  lighting = true;
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
@@ -2755,12 +2703,14 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.mesh.vertexBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
       }
     } else {
-      // now to render the mesh
+      // now to render the mesh test
       _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertexBuffer);
+
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertices, _matrixWorld.world.GL.gl.STATIC_DRAW);
 
       _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.mesh.vertexBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
     }
-  } //COLOR BUFFER
+  } // COLOR BUFFER
 
   /* if (object.vertexColorBuffer) {
       world.GL.gl.bindBuffer( world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
@@ -2774,7 +2724,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.mesh.normalBuffer) {
@@ -2796,7 +2746,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.R(), object.LightsData.ambientLight.G(), object.LightsData.ambientLight.B());
       }
     }
-    /* Set the directional light             */
+    /* Directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -2806,7 +2756,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -2834,8 +2784,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(1), parseFloat(0));
       }
     }
-  } // it's possible that the mesh doesn't contain
-  // any texture coordinates
+  } // it's possible that the mesh doesn't contain any texture coordinates
   // in this case, the texture vertexAttribArray will need to be disabled
   // before the call to drawElements
 
@@ -2886,7 +2835,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
       localLooper = localLooper + 1;
     } else {// world.GL.gl.disableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
     }
-  } //normals
+  } // Normals
   //  world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, object.mesh.normalBuffer);
   //  world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexNormalAttribute, object.mesh.normalBuffer.itemSize, world.GL.gl.FLOAT, false, 0, 0);
 
@@ -2908,24 +2857,17 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
   this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 3); //'POINTS' , 'LINE_STRIP', 'LINE_LOOP', 'LINES', 'TRIANGLE_STRIP', 'TRIANGLE_FAN' , 'TRIANGLES'
-
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 3);
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// SQUARE
-//##############################################
-
+};
 
 _manifest.default.operation.draws.drawSquareTex = function (object) {
-  var lighting = 1; // eslint-disable-next-line no-unused-vars
+  var lighting = true; // eslint-disable-next-line no-unused-vars
 
-  var localLooper = 0; // if (true) {
-
-  lighting = true; // }
-
+  var localLooper = 0;
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
@@ -2936,7 +2878,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); //VERTEX BUFFER
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // VERTEX
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -2950,7 +2892,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
 
     localLooper = localLooper + 1;
-  } //COLOR BUFFER
+  } // COLOR
 
 
   if (object.vertexColorBuffer) {
@@ -2961,12 +2903,12 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
 
     localLooper = localLooper + 1;
-  } //LIGHT STAFF
+  } // LIGHT
 
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.vertexNormalBuffer) {
@@ -2978,7 +2920,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
       localLooper = localLooper + 1;
     }
-    /* Set the ambient light                 */
+    /* Ambient light - posible deplaced */
 
 
     if (object.shaderProgram.ambientColorUniform) {
@@ -2988,7 +2930,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
     }
-    /* Set the directional light             */
+    /* Directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -2998,7 +2940,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -3026,7 +2968,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
       }
     }
-  } // TEX
+  } // TEXTURE
 
 
   if (object.vertexTexCoordBuffer) {
@@ -3041,7 +2983,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // video webcam textures
+      // video/webcam tex
       _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
@@ -3107,24 +3049,17 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-  } //world.GL.gl.drawElements( world.GL.gl.TRIANGLES, object.vertexIndexBuffer.numItems,  world.GL.gl.UNSIGNED_SHORT, 0);
-
+  }
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
   object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
-}; //##############################################
-// sphere
-//##############################################
-
+};
 
 _manifest.default.operation.draws.sphere = function (object) {
-  var lighting = 1;
-  var localLooper = 0; // if (true) {
-
-  lighting = true; // }
-
+  var lighting = true;
+  var localLooper = 0;
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
@@ -3135,7 +3070,7 @@ _manifest.default.operation.draws.sphere = function (object) {
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); //VERTEX BUFFER
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // VERTEX
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -3149,7 +3084,7 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
 
     localLooper = localLooper + 1;
-  } //COLOR BUFFER
+  } // COLOR
 
 
   if (object.vertexColorBuffer) {
@@ -3160,12 +3095,12 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
 
     localLooper = localLooper + 1;
-  } //LIGHT STAFF
+  } // LIGHT
 
 
   if (lighting && object.shaderProgram.useLightingUniform) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
-    /* Set the normals                       */
+    /* Set the normals */
 
 
     if (object.vertexNormalBuffer) {
@@ -3177,7 +3112,7 @@ _manifest.default.operation.draws.sphere = function (object) {
 
       localLooper = localLooper + 1;
     }
-    /* Set the ambient light                 */
+    /* Set the ambient light */
 
 
     if (object.shaderProgram.ambientColorUniform) {
@@ -3188,7 +3123,7 @@ _manifest.default.operation.draws.sphere = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
     }
-    /* Set the directional light             */
+    /* Set the directional light */
 
 
     if (object.shaderProgram.directionalColorUniform) {
@@ -3199,7 +3134,7 @@ _manifest.default.operation.draws.sphere = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction               */
+    /* Normalize the direction */
 
 
     var lightingDirection = null;
@@ -3227,7 +3162,7 @@ _manifest.default.operation.draws.sphere = function (object) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
       }
     }
-  } //TEXTURES
+  } // TEXTURES
 
 
   if (object.vertexTexCoordBuffer) {
@@ -3242,7 +3177,6 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // video webcam textures
       _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
@@ -3260,11 +3194,7 @@ _manifest.default.operation.draws.sphere = function (object) {
 
         _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE);
 
-        _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE); // -- Allocate storage for the texture
-        //world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-        //world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, image);
-        //world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
-
+        _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE);
 
         _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
       }
@@ -3292,7 +3222,7 @@ _manifest.default.operation.draws.sphere = function (object) {
     console.warn('WTF - ERROR10001');
   }
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper); //world.disableUnusedAttr( world.GL.gl, 3 );
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper); // world.disableUnusedAttr( world.GL.gl, 3 );
 
 
   if (object.glBlend.blendEnabled == true) {
@@ -3308,8 +3238,7 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
-  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); //world.GL.gl.drawElements( world.GL.gl.TRIANGLES, object.vertexIndexBuffer.numItems,  world.GL.gl.UNSIGNED_SHORT, 0);
-
+  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
@@ -3539,6 +3468,10 @@ class RotationVector {
   }
 
 }
+/**
+ * @description Base class
+ */
+
 
 exports.RotationVector = RotationVector;
 
@@ -3558,10 +3491,10 @@ class Position {
 
     this.x = x;
     this.y = y;
-    this.z = z; // update
-
+    this.z = z;
     this.velY = 0;
     this.velX = 0;
+    this.velZ = 0;
     this.inMove = false;
     this.targetX = x;
     this.targetY = y;
@@ -3588,10 +3521,27 @@ class Position {
     this.targetY = y;
   }
 
+  translateByZ(z) {
+    this.inMove = true;
+    this.targetZ = z;
+  }
+
   translateByXY(x, y) {
     this.inMove = true;
     this.targetX = x;
     this.targetY = y;
+  }
+
+  translateByXZ(x, z) {
+    this.inMove = true;
+    this.targetX = x;
+    this.targetZ = z;
+  }
+
+  translateByYZ(y, z) {
+    this.inMove = true;
+    this.targetY = y;
+    this.targetZ = z;
   }
 
   onTargetPositionReach() {}
@@ -3599,19 +3549,23 @@ class Position {
   update() {
     var tx = this.targetX - this.x,
         ty = this.targetY - this.y,
-        dist = Math.sqrt(tx * tx + ty * ty),
-        rad = Math.atan2(ty, tx),
-        angle = rad / Math.PI * 180;
+        tz = this.targetZ - this.z,
+        dist = Math.sqrt(tx * tx + ty * ty + tz * tz); // rad = Math.atan2(ty, tx),
+    // angle = (rad / Math.PI) * 180;
+
     this.velX = tx / dist * this.thrust;
     this.velY = ty / dist * this.thrust;
+    this.velZ = tz / dist * this.thrust;
 
     if (this.inMove == true) {
       if (dist > this.thrust) {
         this.x += this.velX;
         this.y += this.velY;
+        this.z += this.velZ;
       } else {
         this.x = this.targetX;
         this.y = this.targetY;
+        this.z = this.targetZ;
         this.inMove = false;
         this.onTargetPositionReach();
       }
@@ -5034,7 +4988,6 @@ var animate = function (rotationObject) {
     rotationObject.rotation.rotx += rotationObject.rotation.rotSpeedX * elapsed / 1000.0;
     rotationObject.rotation.roty += rotationObject.rotation.rotSpeedY * elapsed / 1000.0;
     rotationObject.rotation.rotz += rotationObject.rotation.rotSpeedZ * elapsed / 1000.0;
-    rotationObject.position.update();
   }
 };
 
@@ -5754,7 +5707,8 @@ function defineworld(canvas) {
       objObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       objObject.position = new _matrixGeometry.Position(0, -5, -8.0);
       objObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      objObject.color = new _matrixGeometry.GeoOfColor('4x4'); // custom textures
+      objObject.color = false; // new GeoOfColor('4x4');
+      // custom textures
 
       objObject.custom = new Object();
       objObject.custom.gl_texture = null;
@@ -5792,7 +5746,7 @@ function defineworld(canvas) {
       } else {
         // no textures , use default single textures
         //objObject.texture = undefined;
-        objObject.texture = this.initTexture(this.GL.gl, 'res/images/black_white.png');
+        objObject.texture = this.initTexture(this.GL.gl, 'res/images/texture_spiral1.png');
         objObject.textures = [];
         objObject.textures[0] = objObject.texture;
       }
@@ -5809,8 +5763,7 @@ function defineworld(canvas) {
         this.shaderProgram = world.initShaders(world.GL.gl, this.type + '-shader-fs', this.type + '-shader-vs');
       };
 
-      objObject.mvMatrix = mat4.create(); /// objObject.mesh     = App.meshes.skeleton;
-      // eslint-disable-next-line valid-typeof
+      objObject.mvMatrix = mat4.create(); // eslint-disable-next-line valid-typeof
 
       if (typeof animationConstruct_ == 'undefined' || typeof animationConstruct_ == null) {
         objObject.animation = null;
