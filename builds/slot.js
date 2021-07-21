@@ -4982,14 +4982,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* eslint-disable no-unused-vars */
 
 /* global */
-var animate = function (rotationObject) {
+var animate = function (sceneObject) {
   var timeNow = new Date().getTime();
 
   if (_engine.lastTime != 0) {
     var elapsed = timeNow - _engine.lastTime;
-    rotationObject.rotation.rotx += rotationObject.rotation.rotSpeedX * elapsed / 1000.0;
-    rotationObject.rotation.roty += rotationObject.rotation.rotSpeedY * elapsed / 1000.0;
-    rotationObject.rotation.rotz += rotationObject.rotation.rotSpeedZ * elapsed / 1000.0;
+    sceneObject.rotation.rotx += sceneObject.rotation.rotSpeedX * elapsed / 1000.0;
+    sceneObject.rotation.roty += sceneObject.rotation.rotSpeedY * elapsed / 1000.0;
+    sceneObject.rotation.rotz += sceneObject.rotation.rotSpeedZ * elapsed / 1000.0;
+    sceneObject.position.update();
   }
 };
 
