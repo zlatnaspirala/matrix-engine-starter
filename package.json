@@ -19,6 +19,7 @@
     "url": "git+https://github.com/zlatnaspirala/webgl2-glmatrix2-engine.git"
   },
   "keywords": [
+    "raycast-triangle",
     "3d-font",
     "vertices-font",
     "plane-text",
@@ -34,7 +35,9 @@
     "glmatrix2",
     "opengles1.1",
     "opengles2",
-    "opengles300"
+    "opengles300",
+    "popMatrix",
+    "pushMatrix"
   ],
   "author": "Nikola Lukic Zlatnaspirala",
   "license": "MIT",
@@ -43,8 +46,9 @@
   },
   "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
   "dependencies": {
-    "matrix-engine": "^1.3.5",
-    "matrix-engine-plugins": "0.0.7"
+    "matrix-engine": "^1.4.0",
+    "matrix-engine-plugins": "0.0.7",
+    "voice-commander": "0.0.4"
   },
   "devDependencies": {
     "esmify": "^2.1.1"

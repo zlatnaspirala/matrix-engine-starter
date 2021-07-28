@@ -7,6 +7,7 @@ export default class Mashines {
 
   constructor(world) {
 
+    this.status = "free";
     this.font = new planeUVFont();
     this.speed = 0.08;
     this.thread = null;
@@ -20,17 +21,17 @@ export default class Mashines {
 
     this.addMashine(world);
     this.addWheel(world);
-    this.addHudText();
+    this.addHeaderText();
 
  
   }
 
   addMashine = function (world) {
     world.Add("square", 1, "topHeader");
-    App.scene.topHeader.geometry.setScaleByX(6.6);
+    App.scene.topHeader.geometry.setScaleByX(11);
     App.scene.topHeader.geometry.setScaleByY(0.39);
-    App.scene.topHeader.position.y = 3;
-    App.scene.topHeader.position.z = -8;
+    App.scene.topHeader.position.y = 2.56;
+    App.scene.topHeader.position.z = -6.5;
 
     var textuteImageSamplers2 = {
       source: ["res/icons/512.png"],
@@ -38,10 +39,10 @@ export default class Mashines {
     };
 
     world.Add("square", 1, "footerHeader");
-    App.scene.footerHeader.geometry.setScaleByX(6.6);
+    App.scene.footerHeader.geometry.setScaleByX(11);
     App.scene.footerHeader.geometry.setScaleByY(0.39);
-    App.scene.footerHeader.position.y = -3;
-    App.scene.footerHeader.position.z = -8;
+    App.scene.footerHeader.position.y = -2.56;
+    App.scene.footerHeader.position.z = -6.5;
 
     // Style color buttom of footer
     App.scene.topHeader.geometry.colorData.color[2].set(0.3, 0.6, 0);
@@ -113,16 +114,14 @@ export default class Mashines {
     });
   };
 
-  addHudText = function () {
+  addHeaderText = function () {
 
     var c = -1;
-    this.font.charLoaded = function (objChar) {
-      objChar.position.SetZ(-7.9);
-      objChar.position.translateByXY(-2 + (c++) , 2.6);
-      // App.scene.headerTitleS.position.translateX(-1); 
-
+    this.font.charLoaded = (objChar) => {
+      objChar.position.SetZ(-6.45);
+      objChar.position.translateByXY(-2 + (c++) , 2.1);
+      if (c == 3) this.addSpinText();
     }
-
     this.font.loadChar(matrixEngine.OBJ, "s", "headerTitle");
     this.font.loadChar(matrixEngine.OBJ, "l", "headerTitle");
     this.font.loadChar(matrixEngine.OBJ, "o", "headerTitle");
@@ -130,7 +129,29 @@ export default class Mashines {
 
   };
 
+  addSpinText = function () {
+
+    var c = -1;
+    this.font.charLoaded = function (objChar) {
+      objChar.position.SetZ(-6.45);
+      objChar.position.translateByXY(-2 + (c++) , -2.1);
+      // App.scene.headerTitleS.position.translateX(-1); 
+
+    }
+
+    this.font.loadChar(matrixEngine.OBJ, "s", "footerSpinText");
+    this.font.loadChar(matrixEngine.OBJ, "p", "footerSpinText");
+    this.font.loadChar(matrixEngine.OBJ, "i", "footerSpinText");
+    this.font.loadChar(matrixEngine.OBJ, "n", "footerSpinText");
+
+  };
+
   activateSpinning = () => {
+    if (this.status != "free") {
+      console.info("Already spinning...");
+      return;
+    }
+    this.status = "spinning";
     this.preSpinning(0).then(() => {
       this.spinning(0);
       this.preSpinning(1).then(() => {

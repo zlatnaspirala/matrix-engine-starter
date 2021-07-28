@@ -12,6 +12,13 @@
 // prod
 import * as matrixEngine from "matrix-engine";
 import Mashines from "./scripts/mashine";
+import { VoiceCommanderInstance } from "./scripts/voice-commander";
+
+// If you want make it global
+window.vc = VoiceCommanderInstance;
+
+// Activate listen operation
+VoiceCommanderInstance.run()
 
 var world, mashine;
 var App = matrixEngine.App;
@@ -56,6 +63,15 @@ function webGLStart() {
 
   mashine = new Mashines(world);
   App.slot.mashine = mashine;
+
+  var textuteImageSamplers = {
+    source: [
+      "res/images/gradiend1.png"
+    ],
+    mix_operation: "multiply",
+  };
+
+  world.Add("cubeTex", 1, "MyCubeTex", textuteImageSamplers);
 
   window.App = App;
   window.world = world;

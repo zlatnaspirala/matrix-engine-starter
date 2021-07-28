@@ -273,7 +273,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":5,"./lib/events":6,"./lib/loader-obj":7,"./lib/matrix-buffers":8,"./lib/matrix-geometry":10,"./lib/matrix-render":11,"./lib/matrix-textures":12,"./lib/matrix-world":13,"./lib/utility":14,"./program/manifest":16}],5:[function(require,module,exports){
+},{"./lib/engine":5,"./lib/events":6,"./lib/loader-obj":7,"./lib/matrix-buffers":8,"./lib/matrix-geometry":10,"./lib/matrix-render":11,"./lib/matrix-textures":12,"./lib/matrix-world":13,"./lib/utility":15,"./program/manifest":17}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1177,7 +1177,7 @@ function CANVAS2d_SURFACE_TEXTURE(path_, path_to_run_script) {
   };
 }
 
-},{"../program/manifest":16,"./events":6,"./matrix-render":11,"./matrix-world":13,"./utility":14,"./webgl-utils":15}],6:[function(require,module,exports){
+},{"../program/manifest":17,"./events":6,"./matrix-render":11,"./matrix-world":13,"./utility":15,"./webgl-utils":16}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1559,7 +1559,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":16,"./matrix-world":13,"./utility":14}],7:[function(require,module,exports){
+},{"../program/manifest":17,"./matrix-world":13,"./utility":15}],7:[function(require,module,exports){
 /* globals module */
 'use strict';
 
@@ -2304,7 +2304,7 @@ _manifest.default.operation.sphere_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":16,"./matrix-world":13}],9:[function(require,module,exports){
+},{"../program/manifest":17,"./matrix-world":13}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2317,6 +2317,12 @@ var _manifest = _interopRequireDefault(require("../program/manifest"));
 var _matrixWorld = require("./matrix-world");
 
 var _events = require("./events");
+
+var raycaster = _interopRequireWildcard(require("./raycast"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2629,6 +2635,7 @@ _manifest.default.operation.draws.triangle = function (object) {
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
 
@@ -3252,7 +3259,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":16,"./events":6,"./matrix-world":13}],10:[function(require,module,exports){
+},{"../program/manifest":17,"./events":6,"./matrix-world":13,"./raycast":14}],10:[function(require,module,exports){
 /* eslint-disable no-redeclare */
 
 /* eslint-disable no-unused-vars */
@@ -4961,7 +4968,7 @@ exports.customVertex_1 = customVertex_1;
 
 function ring(innerRadius, outerRadius, slices) {}
 
-},{"../program/manifest":16,"./utility":14}],11:[function(require,module,exports){
+},{"../program/manifest":17,"./utility":15}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5076,7 +5083,7 @@ var callReDraw_ = function () {
 
 exports.callReDraw_ = callReDraw_;
 
-},{"../program/manifest":16,"./engine":5,"./matrix-world":13}],12:[function(require,module,exports){
+},{"../program/manifest":17,"./engine":5,"./matrix-world":13}],12:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
@@ -5169,7 +5176,7 @@ _manifest.default.tools.loadVideoTexture = function (name, image) {
 var _default = _manifest.default.textools;
 exports.default = _default;
 
-},{"../program/manifest":16,"./matrix-world":13}],13:[function(require,module,exports){
+},{"../program/manifest":17,"./matrix-world":13}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5977,7 +5984,175 @@ function defineworld(canvas) {
 
 /*****************************************************/
 
-},{"../program/manifest":16,"./engine":5,"./matrix-draws":9,"./matrix-geometry":10,"./matrix-render":11,"./utility":14}],14:[function(require,module,exports){
+},{"../program/manifest":17,"./engine":5,"./matrix-draws":9,"./matrix-geometry":10,"./matrix-render":11,"./utility":15}],14:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.rayIntersectsTriangle = rayIntersectsTriangle;
+exports.unproject = unproject;
+exports.checkingProcedure = checkingProcedure;
+exports.checkingProcedureCalc = checkingProcedureCalc;
+exports.touchCoordinate = void 0;
+
+/**
+ * Ray triangle intersection algorithm
+ * 
+ * @param rayOrigin ray origin point
+ * @param rayVector ray direction
+ * @param triangle three points of triangle, should be ccw order
+ * @param out the intersection point
+ * @return intersects or not
+ * 
+ * Uses Möller–Trumbore intersection algorithm
+ */
+let touchCoordinate = {
+  enabled: false,
+  x: 0,
+  y: 0
+}; // export let rayVectorPassing = vec3.fromValues( 0, 0, -1)
+// window.rayVectorPassing = rayVectorPassing
+
+exports.touchCoordinate = touchCoordinate;
+
+function rayIntersectsTriangle(rayOrigin, // rayOrigin, // :vec3,
+rayVector, // :vec3,
+triangle, // :vec3[],
+out, //:vec3,
+objPos) // : boolean
+{
+  if (matrixEngine.Events.camera.zPos < objPos.z) {
+    console.log("special");
+    rayOrigin[2] = matrixEngine.Events.camera.zPos + -objPos.z;
+  } else {
+    rayOrigin[2] = matrixEngine.Events.camera.zPos + -objPos.z;
+  } // rayOrigin =  vec3.fromValues(0, 0, -objPos.z + matrixEngine.Events.camera.zPos);
+
+
+  rayOrigin[0] = matrixEngine.Events.camera.xPos;
+  rayOrigin[1] = matrixEngine.Events.camera.yPos; // rayOrigin =  vec3.fromValues(0, 0, -objPos.z + matrixEngine.Events.camera.zPos);
+  // rayVector = vec3.fromValues(0, 1, -1);
+  // rayVector = rayVectorPassing;
+
+  console.log(rayOrigin);
+  console.log(rayVector);
+  const EPSILON = 0.0000001;
+  const [v0, v1, v2] = triangle;
+  const edge1 = vec3.create();
+  const edge2 = vec3.create();
+  const h = vec3.create();
+  vec3.sub(edge1, v1, v0);
+  vec3.sub(edge2, v2, v0);
+  vec3.cross(h, rayVector, edge2);
+  const a = vec3.dot(edge1, h);
+
+  if (a > -EPSILON && a < EPSILON) {
+    return false;
+  }
+
+  const s = vec3.create();
+  vec3.sub(s, rayOrigin, v0);
+  const u = vec3.dot(s, h);
+
+  if (u < 0 || u > a) {
+    return false;
+  }
+
+  const q = vec3.create();
+  vec3.cross(q, s, edge1);
+  const v = vec3.dot(rayVector, q);
+
+  if (v < 0 || u + v > a) {
+    return false;
+  }
+
+  const t = vec3.dot(edge2, q) / a;
+
+  if (t > EPSILON) {
+    if (out) {
+      vec3.add(out, rayOrigin, [rayVector[0] * t, rayVector[1] * t, rayVector[2] * t]);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+/**
+* Unproject a 2D point into a 3D world.
+* 
+* @param screenCoord [screenX, screenY]
+* @param viewport [left, top, width, height]
+* @param invProjection invert projection matrix
+* @param invView invert view matrix
+* @return 3D point position
+*/
+
+
+function unproject(screenCoord, // :[number, number],
+viewport, //:[number, number, number, number],
+invProjection, // :mat4,
+invView) //:mat4,
+// : vec3 
+{
+  const [left, top, width, height] = viewport;
+  const [x, y] = screenCoord;
+  var x1 = x / width * 2 - 1;
+  var y1 = y / height * 2 - 1; //rayVectorPassing[0] =  (2 * x) / width - 1 - left;
+  //rayVectorPassing[1] =  (2 * (height - y - 1)) / height - 1;
+
+  const out = vec4.fromValues(2 * x / width - 1 - left, 2 * (height - y - 1) / height - 1, 1, 1);
+  vec4.transformMat4(out, out, invProjection);
+  out[3] = 0;
+  vec4.transformMat4(out, out, invView);
+  return vec3.normalize(vec3.create(), out);
+}
+
+function checkingProcedure(ev) {
+  const {
+    clientX,
+    clientY,
+    screenX,
+    screenY
+  } = ev;
+  touchCoordinate.x = clientX;
+  touchCoordinate.y = clientY;
+  touchCoordinate.w = ev.target.width;
+  touchCoordinate.h = ev.target.height;
+  touchCoordinate.enabled = true;
+}
+
+function checkingProcedureCalc(object) {
+  var mvMatrix = object.mvMatrix;
+  if (touchCoordinate.enabled == false) return;
+  if (touchCoordinate.enabled == true) touchCoordinate.enabled = false;
+  var outp = mat4.create();
+  var outv = mat4.create();
+  const ray = unproject([touchCoordinate.x, touchCoordinate.y], [0, 0, touchCoordinate.w, touchCoordinate.h], // world.pMatrix, // your invert projection matrix
+  // mvMatrix // your invert view matrix
+  mat4.invert(outp, world.pMatrix), // your invert projection matrix
+  mat4.invert(outv, mvMatrix) //your invert view matrix
+  );
+  const intersectionPoint = vec3.create();
+  /* const triangle = [ //example triangle
+    vec3.fromValues(-1, -1, 0),
+    vec3.fromValues(1, 1, 0),
+    vec3.fromValues(-1, 1, 0),
+  ]; */
+
+  const triangle = [[App.scene.MyColoredTriangle1.geometry.vertices[0], App.scene.MyColoredTriangle1.geometry.vertices[1], App.scene.MyColoredTriangle1.geometry.vertices[2]], [App.scene.MyColoredTriangle1.geometry.vertices[3], App.scene.MyColoredTriangle1.geometry.vertices[4], App.scene.MyColoredTriangle1.geometry.vertices[5]], [App.scene.MyColoredTriangle1.geometry.vertices[6], App.scene.MyColoredTriangle1.geometry.vertices[7], App.scene.MyColoredTriangle1.geometry.vertices[8]]];
+
+  if (rayIntersectsTriangle(vec3.fromValues(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.yPos, matrixEngine.Events.camera.zPos), // your camera position - rayOrigin
+  ray, triangle, intersectionPoint, object.position)) {
+    console.log('hits', intersectionPoint);
+    matrixEngine.utility.E('debugBox').style.background = 'red';
+  } else {
+    matrixEngine.utility.E('debugBox').style.background = 'green';
+  }
+}
+
+},{}],15:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -6558,7 +6733,7 @@ const BiquadFilterType = {
 };
 exports.BiquadFilterType = BiquadFilterType;
 
-},{"../program/manifest":16,"./events":6}],15:[function(require,module,exports){
+},{"../program/manifest":17,"./events":6}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6747,7 +6922,7 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6811,7 +6986,141 @@ var App = {
 var _default = App;
 exports.default = _default;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.colorNamesGrammars = void 0;
+const colorNamesGrammars = ['aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
+exports.colorNamesGrammars = colorNamesGrammars;
+
+},{}],19:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "VoiceCommander", {
+  enumerable: true,
+  get: function () {
+    return _voiceCommander.VoiceCommander;
+  }
+});
+Object.defineProperty(exports, "colorNamesGrammars", {
+  enumerable: true,
+  get: function () {
+    return _colors.colorNamesGrammars;
+  }
+});
+
+var _voiceCommander = require("./voice-commander.js");
+
+var _colors = require("./grammar-set/colors.js");
+
+},{"./grammar-set/colors.js":18,"./voice-commander.js":20}],20:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.VoiceCommander = void 0;
+
+/**
+ * Vanilla JavaScript ECMA6 variant of VoiceCommander
+ * class model.
+ */
+var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+var SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList; // var SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent
+
+class VoiceCommander {
+  constructor(options) {
+    this.grammarData = [];
+    this.queryType = '';
+
+    if (typeof options !== 'undefined' && typeof options.grammarData !== 'undefined') {
+      this.grammarData = options.grammarData;
+    }
+
+    if (typeof options !== 'undefined' && typeof options.callback !== 'undefined') {
+      this.callback = options.callback;
+    }
+
+    this.grammar = '#JSGF V1.0; grammar grammarData; public <color> = ' + this.grammarData.join(' | ') + ' ;';
+    this.recognition = new SpeechRecognition();
+    this.speechRecognitionList = new SpeechGrammarList();
+    this.speechRecognitionList.addFromString(this.grammar, 1);
+    this.recognition.grammars = this.speechRecognitionList;
+    this.recognition.continuous = false;
+    /**
+     * @description Must be 'en-US'
+     * because firefox native support limitation.
+     */
+
+    this.recognition.lang = 'en-US';
+    this.recognition.interimResults = false;
+    this.recognition.maxAlternatives = 1;
+    this.queryType = '';
+    this.grammarData.forEach(v => {
+      this.queryType += v + ' \n ';
+    });
+    console.log(this.queryType);
+    this.hints = 'VoiceCommander => ' + this.queryType + '.';
+
+    this.recognition.onresult = event => {
+      // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
+      // The SpeechRecognitionResultList object contains SpeechRecognitionResult objects.
+      // It has a getter so it can be accessed like an array
+      // The first [0] returns the SpeechRecognitionResult at the last position.
+      // Each SpeechRecognitionResult object contains SpeechRecognitionAlternative objects that contain individual results.
+      // These also have getters so they can be accessed like arrays.
+      // The second [0] returns the SpeechRecognitionAlternative at position 0.
+      // We then return the transcript property of the SpeechRecognitionAlternative object
+      const r = event.results[0][0].transcript;
+      this.diagnostic = 'VoiceCommander => Result => ' + r + '.';
+
+      if (typeof this.callback !== 'undefined') {
+        this.callback(r);
+      } // bg.style.backgroundColor = color;
+
+
+      console.log('Confidence => ' + event.results[0][0].confidence);
+      console.log('Diagnostic => ' + this.diagnostic);
+    };
+
+    this.recognition.onspeechend = event => {
+      this.recognition.stop();
+      console.log('VoiceCommander => Stoped ', event);
+    };
+
+    this.recognition.onnomatch = event => {
+      this.diagnostic = "I didn't recognise that color. event => " + event;
+      console.warn('Voice commander event => nomatch => ' + this.diagnostic);
+    };
+
+    this.recognition.onerror = event => {
+      this.diagnostic = 'Error occurred in recognition: ' + event;
+      console.log(this.diagnostic + ' onerror ' + this.hints);
+    };
+  }
+
+  run() {
+    // Better than flag
+    try {
+      this.recognition.start();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log('VoiceCommander => Ready to receive voice command.');
+    }
+  }
+
+}
+
+exports.VoiceCommander = VoiceCommander;
+
+},{}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6822,6 +7131,8 @@ exports.default = void 0;
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _mashine = _interopRequireDefault(require("./scripts/mashine"));
+
+var _voiceCommander = require("./scripts/voice-commander");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6839,6 +7150,11 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 // dev
 // import matrixEngine from "/node_modules/matrix-engine/index.js";
 // prod
+// If you want make it global
+window.vc = _voiceCommander.VoiceCommanderInstance; // Activate listen operation
+
+_voiceCommander.VoiceCommanderInstance.run();
+
 var world, mashine;
 var App = matrixEngine.App;
 
@@ -6910,6 +7226,11 @@ function webGLStart() {
   };
   mashine = new _mashine.default(world);
   App.slot.mashine = mashine;
+  var textuteImageSamplers = {
+    source: ["res/images/gradiend1.png"],
+    mix_operation: "multiply"
+  };
+  world.Add("cubeTex", 1, "MyCubeTex", textuteImageSamplers);
   window.App = App;
   window.world = world;
   window.matrixEngine = matrixEngine;
@@ -6924,7 +7245,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":18,"matrix-engine":4}],18:[function(require,module,exports){
+},{"./scripts/mashine":22,"./scripts/voice-commander":23,"matrix-engine":4}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6944,6 +7265,7 @@ var App = matrixEngine.App;
 
 class Mashines {
   constructor(world) {
+    this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
     this.speed = 0.08;
     this.thread = null;
@@ -6956,24 +7278,24 @@ class Mashines {
     };
     this.addMashine(world);
     this.addWheel(world);
-    this.addHudText();
+    this.addHeaderText();
   }
 
   addMashine = function (world) {
     world.Add("square", 1, "topHeader");
-    App.scene.topHeader.geometry.setScaleByX(6.6);
+    App.scene.topHeader.geometry.setScaleByX(11);
     App.scene.topHeader.geometry.setScaleByY(0.39);
-    App.scene.topHeader.position.y = 3;
-    App.scene.topHeader.position.z = -8;
+    App.scene.topHeader.position.y = 2.56;
+    App.scene.topHeader.position.z = -6.5;
     var textuteImageSamplers2 = {
       source: ["res/icons/512.png"],
       mix_operation: "multiply"
     };
     world.Add("square", 1, "footerHeader");
-    App.scene.footerHeader.geometry.setScaleByX(6.6);
+    App.scene.footerHeader.geometry.setScaleByX(11);
     App.scene.footerHeader.geometry.setScaleByY(0.39);
-    App.scene.footerHeader.position.y = -3;
-    App.scene.footerHeader.position.z = -8; // Style color buttom of footer
+    App.scene.footerHeader.position.y = -2.56;
+    App.scene.footerHeader.position.z = -6.5; // Style color buttom of footer
 
     App.scene.topHeader.geometry.colorData.color[2].set(0.3, 0.6, 0);
     App.scene.topHeader.geometry.colorData.color[3].set(0, 0.8, 0.3);
@@ -7038,12 +7360,13 @@ class Mashines {
       this.accessKeys.push(localHandler);
     });
   };
-  addHudText = function () {
+  addHeaderText = function () {
     var c = -1;
 
-    this.font.charLoaded = function (objChar) {
-      objChar.position.SetZ(-7.9);
-      objChar.position.translateByXY(-2 + c++, 2.6); // App.scene.headerTitleS.position.translateX(-1); 
+    this.font.charLoaded = objChar => {
+      objChar.position.SetZ(-6.45);
+      objChar.position.translateByXY(-2 + c++, 2.1);
+      if (c == 3) this.addSpinText();
     };
 
     this.font.loadChar(matrixEngine.OBJ, "s", "headerTitle");
@@ -7051,7 +7374,26 @@ class Mashines {
     this.font.loadChar(matrixEngine.OBJ, "o", "headerTitle");
     this.font.loadChar(matrixEngine.OBJ, "t", "headerTitle");
   };
+  addSpinText = function () {
+    var c = -1;
+
+    this.font.charLoaded = function (objChar) {
+      objChar.position.SetZ(-6.45);
+      objChar.position.translateByXY(-2 + c++, -2.1); // App.scene.headerTitleS.position.translateX(-1); 
+    };
+
+    this.font.loadChar(matrixEngine.OBJ, "s", "footerSpinText");
+    this.font.loadChar(matrixEngine.OBJ, "p", "footerSpinText");
+    this.font.loadChar(matrixEngine.OBJ, "i", "footerSpinText");
+    this.font.loadChar(matrixEngine.OBJ, "n", "footerSpinText");
+  };
   activateSpinning = () => {
+    if (this.status != "free") {
+      console.info("Already spinning...");
+      return;
+    }
+
+    this.status = "spinning";
     this.preSpinning(0).then(() => {
       this.spinning(0);
       this.preSpinning(1).then(() => {
@@ -7109,4 +7451,28 @@ class Mashines {
 
 exports.default = Mashines;
 
-},{"matrix-engine":4,"matrix-engine-plugins":1}]},{},[17]);
+},{"matrix-engine":4,"matrix-engine-plugins":1}],23:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.VoiceCommanderInstance = void 0;
+
+var _voiceCommander = require("voice-commander");
+
+const options = {
+  grammarData: _voiceCommander.colorNamesGrammars,
+  callback: r => {
+    if (r == 'spin') {
+      App.slot.mashine.activateSpinning();
+    }
+
+    console.log(r);
+  }
+};
+const VoiceCommanderInstance = new _voiceCommander.VoiceCommander(options);
+exports.VoiceCommanderInstance = VoiceCommanderInstance;
+console.log(VoiceCommanderInstance);
+
+},{"voice-commander":19}]},{},[21]);
