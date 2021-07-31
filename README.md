@@ -22,6 +22,9 @@ And navigate to app.html or examples.html
 
 #### Projects/Slot in underconstructing
 
+ - Slot mashine config constroctor.
+ - Voice commander [Say `spin` to act on begin].
+
 
 ### Demo links for engine:
 
