@@ -17,7 +17,7 @@ export var runThis = (matrixEngine) => {
 
   function onLoadObj(meshes) {
     App.meshes = meshes;
-    OBJ.initMeshBuffers(world.GL.gl, App.meshes.TV);
+    matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes.TV);
 
     setTimeout(function () {
       world.Add("obj", 1, "TV", textuteImageSamplers, App.meshes.TV);
@@ -29,5 +29,5 @@ export var runThis = (matrixEngine) => {
     }, 1000);
   }
 
-  OBJ.downloadMeshes({TV: "res/3d-objects/balltest2.obj"}, onLoadObj);
+  matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/balltest2.obj"}, onLoadObj);
 };

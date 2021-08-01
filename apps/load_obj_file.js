@@ -20,8 +20,8 @@
   // if you dont use obj or complex mesh you no need for this func
   function onLoadObj(meshes) {
     App.meshes = meshes;
-    OBJ.initMeshBuffers(world.GL.gl, App.meshes.armor);
-    OBJ.initMeshBuffers(world.GL.gl, App.meshes.mac);
+    matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes.armor);
+    matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes.mac);
 
     var textuteImageSamplers2 = {
       source: ["res/images/armor.png"],
@@ -45,7 +45,7 @@
     App.scene.mac.LightsData.ambientLight.set(1, 1, 1);
   }
 
-  OBJ.downloadMeshes(
+  matrixEngine.objLoader.downloadMeshes(
     {armor: "res/3d-objects/armor.obj", mac: "res/3d-objects/mac.obj"},
     onLoadObj
   );

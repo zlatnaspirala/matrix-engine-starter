@@ -116,16 +116,37 @@ export default class Mashines {
 
   addHeaderText = function () {
 
-    var c = -1;
+    var c = 0;
+    var count = 0;
     this.font.charLoaded = (objChar) => {
+
+      console.log(objChar.name);
+      // headerTitleS
+      objChar.mesh.setScale(0.6)
       objChar.position.SetZ(-6.45);
-      objChar.position.translateByXY(-2 + (c++) , 2.1);
+      switch(objChar.name) {
+        case 'headerTitleS':
+          count = 0;
+          break;
+        case 'headerTitleL':
+          count = 1;
+          break;
+        case 'headerTitleO':
+          count = 1.4;
+          break;
+        case 'headerTitleT':
+          count = 2.5;
+          break;
+      }
+      objChar.position.translateByXY(-2 + count*0.4 , 2.2);
+      objChar.glBlend.blendEnabled = true;
       if (c == 3) this.addSpinText();
+      c++;
     }
-    this.font.loadChar(matrixEngine.OBJ, "s", "headerTitle");
-    this.font.loadChar(matrixEngine.OBJ, "l", "headerTitle");
-    this.font.loadChar(matrixEngine.OBJ, "o", "headerTitle");
-    this.font.loadChar(matrixEngine.OBJ, "t", "headerTitle");
+    this.font.loadChar(matrixEngine.objLoader, "s", "headerTitle");
+    this.font.loadChar(matrixEngine.objLoader, "l", "headerTitle");
+    this.font.loadChar(matrixEngine.objLoader, "o", "headerTitle");
+    this.font.loadChar(matrixEngine.objLoader, "t", "headerTitle");
 
   };
 
@@ -133,16 +154,28 @@ export default class Mashines {
 
     var c = -1;
     this.font.charLoaded = function (objChar) {
+      objChar.mesh.setScale(0.6)
       objChar.position.SetZ(-6.45);
-      objChar.position.translateByXY(-2 + (c++) , -2.1);
+      objChar.glBlend.blendEnabled = true;
+      switch (objChar.name) {
+        case 'footerSpinTextS':
+          c = 0;
+        case 'footerSpinTextP':
+          c = 1;
+        case 'footerSpinTextI':
+          c = 2;
+        case 'footerSpinTextN':
+          c = 3;
+      }
+      objChar.position.translateByXY(-2 + (c*0.5) , -2.1);
       // App.scene.headerTitleS.position.translateX(-1); 
 
     }
 
-    this.font.loadChar(matrixEngine.OBJ, "s", "footerSpinText");
-    this.font.loadChar(matrixEngine.OBJ, "p", "footerSpinText");
-    this.font.loadChar(matrixEngine.OBJ, "i", "footerSpinText");
-    this.font.loadChar(matrixEngine.OBJ, "n", "footerSpinText");
+    this.font.loadChar(matrixEngine.objLoader, "s", "footerSpinText");
+    this.font.loadChar(matrixEngine.objLoader, "p", "footerSpinText");
+    this.font.loadChar(matrixEngine.objLoader, "i", "footerSpinText");
+    this.font.loadChar(matrixEngine.objLoader, "n", "footerSpinText");
 
   };
 

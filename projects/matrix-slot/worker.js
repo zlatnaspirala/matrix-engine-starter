@@ -1,11 +1,27 @@
 
 'use strict';
 
-var cacheVersion = 120;
-var currentCache = {
-  offline: 'offline-cache' + cacheVersion
-};
+/**
+ * @description cacheVersion
+ * This is not fiction. When you have your own already
+ * production running and you need to update frontend
+ * code. You will need only to change this number
+ * increment 1 for example old 1 replace with `2` 
+ * for `cacheVersion`.
+ * @param cacheVersion
+ */
+var cacheVersion = 2;
+var cacheName = 'static-files-v' + cacheVersion;
+
 const offlineUrl = 'offline.html';
+
+try {
+  for (var j = 0;j < cacheVersion;j++) {
+    var oldCacheName = 'static-files-v' + j;
+    caches.delete(oldCacheName);
+  }
+}
+catch(e) {}
 
 self.addEventListener("install", function (event) {
   self.skipWaiting();
