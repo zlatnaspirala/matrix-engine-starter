@@ -5,9 +5,10 @@
 
 // import App from "../program/manifest";
 
-export var runThis = (world) => {
+export var runThis = (matrixEngine) => {
 
   let world = matrixEngine.matrixWorld.world;
+  window.world = world;
   let App = matrixEngine.App;
 
   world.Add("square", 1, "MyColoredSquareRayObject");
