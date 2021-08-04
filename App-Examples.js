@@ -28,6 +28,7 @@ import {runThis as sphere_geometry} from "./apps/sphere_geometry";
 import {runThis as texture_dinamic_manipulation} from "./apps/texture_dinamic_manipulation";
 import {runThis as video_texture} from "./apps/video_texture";
 import {runThis as adding_color_square } from "./apps/adding_color_square";
+import {runThis as adding_color_square_raycast } from "./apps/adding_color_square_raycast";
 
 var Examples = {
   cube_tex_arrays: cube_tex_arrays,
@@ -57,6 +58,7 @@ var Examples = {
   sphere_geometry: sphere_geometry,
   texture_dinamic_manipulation: texture_dinamic_manipulation,
   video_texture: video_texture,
+  adding_color_square_raycast: adding_color_square_raycast
 };
 
 /**

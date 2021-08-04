@@ -22,11 +22,12 @@ export default class Mashines {
     this.addMashine(world);
     this.addWheel(world);
     this.addHeaderText();
+    this.addRaycaster();
 
- 
   }
 
   addMashine = function (world) {
+
     world.Add("square", 1, "topHeader");
     App.scene.topHeader.geometry.setScaleByX(11);
     App.scene.topHeader.geometry.setScaleByY(0.39);
@@ -45,8 +46,8 @@ export default class Mashines {
     App.scene.footerHeader.position.z = -6.5;
 
     // Style color buttom of footer
-    App.scene.topHeader.geometry.colorData.color[2].set(0.3, 0.6, 0);
-    App.scene.topHeader.geometry.colorData.color[3].set(0, 0.8, 0.3);
+    App.scene.topHeader.geometry.colorData.color[2].set(0.2, 0.2, 0);
+    App.scene.topHeader.geometry.colorData.color[3].set(0, 0.2, 0.2);
     App.scene.topHeader.geometry.colorData.color[0].set(0, 0.2, 0);
     App.scene.topHeader.geometry.colorData.color[1].set(0, 0, 0);
 
@@ -87,7 +88,11 @@ export default class Mashines {
         var O = (window.innerWidth / 1000) * WW;
         var O2 = (window.innerWidth / 1005) * WW;
 
-        var _x = -O * 0.86 + indexWheel * O2 * 0.862;
+        console.log("test .wheel____", wheel)
+        console.log("test .field", field)
+        App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
+
+        var _x = -O * 0.5 + indexWheel * O2 * 0.2;
         var _y = -2 + indexField * 2;
         var _z = -9;
         App.scene[name].position.z = _z;
@@ -97,7 +102,7 @@ export default class Mashines {
         localHandlerPos.push({ _x, _y, _z });
 
         lastY = App.scene[name].position.y;
-        App.scene[name].geometry.setScaleByX(O / 2.356);
+        App.scene[name].geometry.setScaleByX(O / 10);
         App.scene[name].geometry.setScaleByY(2.97 / VW);
         /*
         App.scene[name].geometry.colorData.color[0].set(field.color.r,field.color.b,field.color.g)
@@ -138,7 +143,7 @@ export default class Mashines {
           count = 2.5;
           break;
       }
-      objChar.position.translateByXY(-2 + count*0.4 , 2.2);
+      objChar.position.translateByXY(-1.8 + count*0.4 , 2.2);
       objChar.glBlend.blendEnabled = true;
       if (c == 3) this.addSpinText();
       c++;
@@ -150,32 +155,38 @@ export default class Mashines {
 
   };
 
+  addRaycaster = function() {
+
+    window.addEventListener("ray.hit.event", (matrixEngineRaycastEvent) => {
+      console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
+      var r =  matrixEngineRaycastEvent.detail.hitObject.name;
+      if (r == "spinBtn") {
+        alert();
+      }
+    });
+
+    canvas.addEventListener('mousedown', (ev) => {
+      matrixEngine.raycaster.checkingProcedure(ev);
+    });
+  }
+
   addSpinText = function () {
 
-    var c = -1;
-    this.font.charLoaded = function (objChar) {
-      objChar.mesh.setScale(0.6)
-      objChar.position.SetZ(-6.45);
-      objChar.glBlend.blendEnabled = true;
-      switch (objChar.name) {
-        case 'footerSpinTextS':
-          c = 0;
-        case 'footerSpinTextP':
-          c = 1;
-        case 'footerSpinTextI':
-          c = 2;
-        case 'footerSpinTextN':
-          c = 3;
-      }
-      objChar.position.translateByXY(-2 + (c*0.5) , -2.1);
-      // App.scene.headerTitleS.position.translateX(-1); 
+    var textuteImageSamplers = {
+      source: ["res/images/spinBtn1.png"],
+      mix_operation: "multiply", // ENUM : multiply , divide ,
+    };
 
-    }
-
-    this.font.loadChar(matrixEngine.objLoader, "s", "footerSpinText");
-    this.font.loadChar(matrixEngine.objLoader, "p", "footerSpinText");
-    this.font.loadChar(matrixEngine.objLoader, "i", "footerSpinText");
-    this.font.loadChar(matrixEngine.objLoader, "n", "footerSpinText");
+    world.Add("cubeLightTex", 1, "spinBtn", textuteImageSamplers);
+    App.scene.spinBtn.position.SetY(-1.87);
+    App.scene.spinBtn.position.SetX(2);
+    App.scene.spinBtn.position.SetZ(-5);
+    App.scene.spinBtn.geometry.setScaleByX(-1)
+    App.scene.spinBtn.geometry.setScaleByY(-0.76)
+    App.scene.spinBtn.glBlend.blendEnabled = true;
+    App.scene.spinBtn.rotation.rotx = -90;
+    App.scene.spinBtn.rotation.roty = 90;
+    App.scene.spinBtn.rotation.rotz = 90;
 
   };
 
@@ -191,10 +202,24 @@ export default class Mashines {
         this.spinning(1);
         this.preSpinning(2).then(() => {
           this.spinning(2);
+          this.preSpinning(3).then(() => {
+            this.spinning(3);
+            this.preSpinning(4).then(() => {
+              this.spinning(4);
+              this.preSpinning(5).then(() => {
+                this.spinning(5);
+                this.allWheelSpinningMoment();
+              });
+            });
+          });
         });
       });
     });
   };
+
+  allWheelSpinningMoment = () => {
+    console.info("All wheels spinning");
+  }
 
   spinning = wheelID => {
     this.thread = setInterval(() => {

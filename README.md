@@ -34,3 +34,8 @@ And navigate to app.html or examples.html
 
 ### Engine source link:
 https://github.com/zlatnaspirala/matrix-engine
+
+
+### Credits
+
+ - https://www.wildtextures.com

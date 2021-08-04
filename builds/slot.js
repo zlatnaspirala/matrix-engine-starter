@@ -5026,6 +5026,7 @@ var animate = function (sceneObject) {
 exports.animate = animate;
 var reDrawID = 0;
 exports.reDrawID = reDrawID;
+var secondPass = 0;
 
 _manifest.default.operation.reDrawGlobal = function () {
   (0, _engine.modifyLooper)(0);
@@ -5085,7 +5086,15 @@ _manifest.default.operation.reDrawGlobal = function () {
     (0, _engine.modifyLooper)(_engine.looper + 1);
   }
 
-  if (_manifest.default.raycast) raycaster.touchCoordinate.enabled = false; // setTimeout(App.operation.reDrawGlobal, 20)
+  if (_manifest.default.raycast) {
+    if (secondPass <= 2) {
+      raycaster.touchCoordinate.enabled = false;
+      secondPass = 0;
+    } else {
+      secondPass++;
+    }
+  } // setTimeout(App.operation.reDrawGlobal, 20)
+
 
   (0, _engine.updateFPS)(1);
 };
@@ -6014,7 +6023,8 @@ let rayHitEvent;
 let touchCoordinate = {
   enabled: false,
   x: 0,
-  y: 0
+  y: 0,
+  stopOnFirstDetectedHit: false
 };
 /**
  * Ray triangle intersection algorithm
@@ -6159,7 +6169,11 @@ function checkingProcedureCalc(object) {
         }
       });
       dispatchEvent(rayHitEvent);
-      if (touchCoordinate.enabled == true) touchCoordinate.enabled = false;
+
+      if (touchCoordinate.enabled == true && touchCoordinate.stopOnFirstDetectedHit == true) {
+        touchCoordinate.enabled = false;
+      }
+
       console.info('raycast hits for Object: ' + object.name + '  -> face[/3]  : ' + f + ' -> intersectionPoint: ' + intersectionPoint);
     }
   }
@@ -7173,8 +7187,7 @@ var world, mashine;
 var App = matrixEngine.App;
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("worker.js");
+  window.addEventListener("load", function () {// navigator.serviceWorker.register("worker.js");
   });
 }
 
@@ -7198,33 +7211,33 @@ function webGLStart() {
   var fieldRed = {
     id: 1,
     color: {
-      r: 1,
-      g: 0.1,
-      b: 0.1
+      r: 20,
+      g: 1,
+      b: 1
     }
   };
   var fieldBlue = {
     id: 2,
     color: {
-      r: 0.1,
-      g: 0,
-      b: 1
+      r: 0.7,
+      g: 1,
+      b: 22
     }
   };
   var fieldGreen = {
     id: 3,
     color: {
       r: 1,
-      g: 1,
-      b: 0.1
+      g: 1.1,
+      b: 1
     }
   };
   var fieldPurple = {
     id: 4,
     color: {
-      r: 1,
+      r: 5,
       g: 0.1,
-      b: 1
+      b: 5
     }
   };
   var fieldLime = {
@@ -7237,7 +7250,7 @@ function webGLStart() {
   };
   App.slot.config = {
     verticalSize: 3,
-    wheels: [[fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldLime, fieldPurple, fieldGreen, fieldGreen], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen]]
+    wheels: [[fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen], [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen]]
   };
   mashine = new _mashine.default(world);
   App.slot.mashine = mashine;
@@ -7294,6 +7307,7 @@ class Mashines {
     this.addMashine(world);
     this.addWheel(world);
     this.addHeaderText();
+    this.addRaycaster();
   }
 
   addMashine = function (world) {
@@ -7312,8 +7326,8 @@ class Mashines {
     App.scene.footerHeader.position.y = -2.56;
     App.scene.footerHeader.position.z = -6.5; // Style color buttom of footer
 
-    App.scene.topHeader.geometry.colorData.color[2].set(0.3, 0.6, 0);
-    App.scene.topHeader.geometry.colorData.color[3].set(0, 0.8, 0.3);
+    App.scene.topHeader.geometry.colorData.color[2].set(0.2, 0.2, 0);
+    App.scene.topHeader.geometry.colorData.color[3].set(0, 0.2, 0.2);
     App.scene.topHeader.geometry.colorData.color[0].set(0, 0.2, 0);
     App.scene.topHeader.geometry.colorData.color[1].set(0, 0, 0);
     App.scene.footerHeader.geometry.colorData.color[0].set(0.5, 1, 0);
@@ -7344,8 +7358,11 @@ class Mashines {
 
         var O = window.innerWidth / 1000 * WW;
         var O2 = window.innerWidth / 1005 * WW;
+        console.log("test .wheel____", wheel);
+        console.log("test .field", field);
+        App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
 
-        var _x = -O * 0.86 + indexWheel * O2 * 0.862;
+        var _x = -O * 0.5 + indexWheel * O2 * 0.2;
 
         var _y = -2 + indexField * 2;
 
@@ -7360,7 +7377,7 @@ class Mashines {
           _z
         });
         lastY = App.scene[name].position.y;
-        App.scene[name].geometry.setScaleByX(O / 2.356);
+        App.scene[name].geometry.setScaleByX(O / 10);
         App.scene[name].geometry.setScaleByY(2.97 / VW);
         /*
         App.scene[name].geometry.colorData.color[0].set(field.color.r,field.color.b,field.color.g)
@@ -7403,7 +7420,7 @@ class Mashines {
           break;
       }
 
-      objChar.position.translateByXY(-2 + count * 0.4, 2.2);
+      objChar.position.translateByXY(-1.8 + count * 0.4, 2.2);
       objChar.glBlend.blendEnabled = true;
       if (c == 3) this.addSpinText();
       c++;
@@ -7414,35 +7431,35 @@ class Mashines {
     this.font.loadChar(matrixEngine.objLoader, "o", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "t", "headerTitle");
   };
-  addSpinText = function () {
-    var c = -1;
+  addRaycaster = function () {
+    window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
+      console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
+      var r = matrixEngineRaycastEvent.detail.hitObject.name;
 
-    this.font.charLoaded = function (objChar) {
-      objChar.mesh.setScale(0.6);
-      objChar.position.SetZ(-6.45);
-      objChar.glBlend.blendEnabled = true;
-
-      switch (objChar.name) {
-        case 'footerSpinTextS':
-          c = 0;
-
-        case 'footerSpinTextP':
-          c = 1;
-
-        case 'footerSpinTextI':
-          c = 2;
-
-        case 'footerSpinTextN':
-          c = 3;
+      if (r == "spinBtn") {
+        alert();
       }
+    });
+    canvas.addEventListener('mousedown', ev => {
+      matrixEngine.raycaster.checkingProcedure(ev);
+    });
+  };
+  addSpinText = function () {
+    var textuteImageSamplers = {
+      source: ["res/images/spinBtn1.png"],
+      mix_operation: "multiply" // ENUM : multiply , divide ,
 
-      objChar.position.translateByXY(-2 + c * 0.5, -2.1); // App.scene.headerTitleS.position.translateX(-1); 
     };
-
-    this.font.loadChar(matrixEngine.objLoader, "s", "footerSpinText");
-    this.font.loadChar(matrixEngine.objLoader, "p", "footerSpinText");
-    this.font.loadChar(matrixEngine.objLoader, "i", "footerSpinText");
-    this.font.loadChar(matrixEngine.objLoader, "n", "footerSpinText");
+    world.Add("cubeLightTex", 1, "spinBtn", textuteImageSamplers);
+    App.scene.spinBtn.position.SetY(-1.87);
+    App.scene.spinBtn.position.SetX(2);
+    App.scene.spinBtn.position.SetZ(-5);
+    App.scene.spinBtn.geometry.setScaleByX(-1);
+    App.scene.spinBtn.geometry.setScaleByY(-0.76);
+    App.scene.spinBtn.glBlend.blendEnabled = true;
+    App.scene.spinBtn.rotation.rotx = -90;
+    App.scene.spinBtn.rotation.roty = 90;
+    App.scene.spinBtn.rotation.rotz = 90;
   };
   activateSpinning = () => {
     if (this.status != "free") {
@@ -7457,9 +7474,22 @@ class Mashines {
         this.spinning(1);
         this.preSpinning(2).then(() => {
           this.spinning(2);
+          this.preSpinning(3).then(() => {
+            this.spinning(3);
+            this.preSpinning(4).then(() => {
+              this.spinning(4);
+              this.preSpinning(5).then(() => {
+                this.spinning(5);
+                this.allWheelSpinningMoment();
+              });
+            });
+          });
         });
       });
     });
+  };
+  allWheelSpinningMoment = () => {
+    console.info("All wheels spinning");
   };
   spinning = wheelID => {
     this.thread = setInterval(() => {
@@ -7521,7 +7551,7 @@ var _voiceCommander = require("voice-commander");
 const options = {
   grammarData: _voiceCommander.colorNamesGrammars,
   callback: r => {
-    if (r == 'spin') {
+    if (r == 'spin' || r == 'play') {
       App.slot.mashine.activateSpinning();
     }
 

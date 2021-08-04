@@ -25,7 +25,7 @@ var App = matrixEngine.App;
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
-    navigator.serviceWorker.register("worker.js");
+    // navigator.serviceWorker.register("worker.js");
   });
 }
 
@@ -46,18 +46,21 @@ function webGLStart() {
    * @description Slot mashine can be configured from
    * external (web server/ some other way)
    */
-  var fieldRed = { id: 1, color: {r: 1, g: 0.1 , b: 0.1}};
-  var fieldBlue = { id: 2, color: {r: 0.1, g: 0 , b: 1}};
-  var fieldGreen = { id: 3, color: {r: 1, g: 1 , b: 0.1}};
-  var fieldPurple = { id: 4, color: {r: 1, g: 0.1 , b: 1}};
+  var fieldRed = { id: 1, color: {r: 20, g: 1 , b: 1}};
+  var fieldBlue = { id: 2, color: {r: 0.7, g: 1 , b: 22}};
+  var fieldGreen = { id: 3, color: {r: 1, g: 1.1 , b: 1}};
+  var fieldPurple = { id: 4, color: {r: 5, g: 0.1 , b: 5}};
   var fieldLime = { id: 5, color: {r: 0.4, g: 1 , b: 0.4}};
 
   App.slot.config = {
     verticalSize: 3,
     wheels: [
       [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen],
-      [fieldRed, fieldGreen, fieldLime, fieldPurple, fieldGreen , fieldGreen],
-      [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen]
+      [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen , fieldGreen],
+      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen],
+      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen],
+      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen],
+      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen]
     ]
   };
 
