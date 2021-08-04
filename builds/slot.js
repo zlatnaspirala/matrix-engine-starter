@@ -2904,9 +2904,10 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // V
+  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object); // V
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -5090,11 +5091,10 @@ _manifest.default.operation.reDrawGlobal = function () {
     if (secondPass <= 2) {
       raycaster.touchCoordinate.enabled = false;
       secondPass = 0;
-    } else {
-      secondPass++;
     }
-  } // setTimeout(App.operation.reDrawGlobal, 20)
+  }
 
+  secondPass++; // setTimeout(App.operation.reDrawGlobal, 20)
 
   (0, _engine.updateFPS)(1);
 };
