@@ -7211,9 +7211,9 @@ function webGLStart() {
   var fieldRed = {
     id: 1,
     color: {
-      r: 20,
-      g: 1,
-      b: 1
+      r: 2,
+      g: 0,
+      b: 0.1
     }
   };
   var fieldBlue = {
@@ -7235,9 +7235,9 @@ function webGLStart() {
   var fieldPurple = {
     id: 4,
     color: {
-      r: 5,
+      r: 1,
       g: 0.1,
-      b: 5
+      b: 0.5
     }
   };
   var fieldLime = {
@@ -7326,14 +7326,14 @@ class Mashines {
     App.scene.footerHeader.position.y = -2.56;
     App.scene.footerHeader.position.z = -6.5; // Style color buttom of footer
 
-    App.scene.topHeader.geometry.colorData.color[2].set(0.2, 0.2, 0);
-    App.scene.topHeader.geometry.colorData.color[3].set(0, 0.2, 0.2);
-    App.scene.topHeader.geometry.colorData.color[0].set(0, 0.2, 0);
-    App.scene.topHeader.geometry.colorData.color[1].set(0, 0, 0);
-    App.scene.footerHeader.geometry.colorData.color[0].set(0.5, 1, 0);
-    App.scene.footerHeader.geometry.colorData.color[1].set(0.5, 1, 0);
-    App.scene.footerHeader.geometry.colorData.color[2].set(0, 0, 0);
-    App.scene.footerHeader.geometry.colorData.color[3].set(0, 0, 0);
+    App.scene.topHeader.geometry.colorData.color[2].set(0.2, 0.2, 0.2);
+    App.scene.topHeader.geometry.colorData.color[3].set(0.2, 0.2, 0.2);
+    App.scene.topHeader.geometry.colorData.color[0].set(0.2, 0, 0);
+    App.scene.topHeader.geometry.colorData.color[1].set(0.2, 0.2, 0.2);
+    App.scene.footerHeader.geometry.colorData.color[0].set(0.1, .1, 0.1);
+    App.scene.footerHeader.geometry.colorData.color[1].set(0.1, .1, 0.1);
+    App.scene.footerHeader.geometry.colorData.color[2].set(0.1, .1, 0.1);
+    App.scene.footerHeader.geometry.colorData.color[3].set(0.1, .1, 0.1);
     App.operation.square_buffer_procedure(App.scene.topHeader);
     App.operation.square_buffer_procedure(App.scene.footerHeader);
     console.info("Mashine is constructed.");
@@ -7344,7 +7344,7 @@ class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
     var textuteImageSamplers2 = {
-      source: ["res/icons/512.png"],
+      source: ["res/images/nidza.png"],
       mix_operation: "multiply"
     };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -7378,7 +7378,11 @@ class Mashines {
         });
         lastY = App.scene[name].position.y;
         App.scene[name].geometry.setScaleByX(O / 10);
-        App.scene[name].geometry.setScaleByY(2.97 / VW);
+        App.scene[name].geometry.setScaleByY(2.97 / VW); //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5] ;
+        // App.scene.spinBtn.geometry.setScaleByY(-0.76)
+        //App.scene[name].glBlend.blendEnabled = true;
+
         /*
         App.scene[name].geometry.colorData.color[0].set(field.color.r,field.color.b,field.color.g)
         App.scene[name].geometry.colorData.color[1].set(field.color.r,field.color.b,field.color.g)
@@ -7431,13 +7435,13 @@ class Mashines {
     this.font.loadChar(matrixEngine.objLoader, "o", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "t", "headerTitle");
   };
-  addRaycaster = function () {
+  addRaycaster = () => {
     window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
       console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
       var r = matrixEngineRaycastEvent.detail.hitObject.name;
 
       if (r == "spinBtn") {
-        alert();
+        this.activateSpinning();
       }
     });
     canvas.addEventListener('mousedown', ev => {
@@ -7450,16 +7454,15 @@ class Mashines {
       mix_operation: "multiply" // ENUM : multiply , divide ,
 
     };
-    world.Add("cubeLightTex", 1, "spinBtn", textuteImageSamplers);
+    world.Add("squareTex", 1, "spinBtn", textuteImageSamplers);
     App.scene.spinBtn.position.SetY(-1.87);
     App.scene.spinBtn.position.SetX(2);
     App.scene.spinBtn.position.SetZ(-5);
-    App.scene.spinBtn.geometry.setScaleByX(-1);
-    App.scene.spinBtn.geometry.setScaleByY(-0.76);
-    App.scene.spinBtn.glBlend.blendEnabled = true;
-    App.scene.spinBtn.rotation.rotx = -90;
-    App.scene.spinBtn.rotation.roty = 90;
-    App.scene.spinBtn.rotation.rotz = 90;
+    App.scene.spinBtn.geometry.setScale(0.3);
+    App.scene.spinBtn.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    App.scene.spinBtn.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4]; // App.scene.spinBtn.geometry.setScaleByY(-0.76)
+
+    App.scene.spinBtn.glBlend.blendEnabled = true; // App.scene.spinBtn.rotation.rotz = 90;
   };
   activateSpinning = () => {
     if (this.status != "free") {

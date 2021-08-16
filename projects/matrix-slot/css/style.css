@@ -35,7 +35,7 @@ div.btnShadow:hover {
 }
 
 .debugBox {
-  position:absolute;
+  display: none;
   left:0;
   top:0;
   font-size: 12px;
