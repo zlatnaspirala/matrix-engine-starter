@@ -46,6 +46,7 @@
   },
   "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
   "dependencies": {
+    "audio-commander": "^1.0.0",
     "matrix-engine": "^1.4.11",
     "matrix-engine-plugins": "0.0.8",
     "voice-commander": "0.0.4"

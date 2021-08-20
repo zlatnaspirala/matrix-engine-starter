@@ -7249,6 +7249,9 @@ function webGLStart() {
     }
   };
   App.slot.config = {
+    // Count after all wheels spinning moment
+    spinningInterval: 1000,
+    stopingInterval: 1000,
     verticalSize: 3,
     wheels: [[fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen], [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen]]
   };
@@ -7296,7 +7299,9 @@ class Mashines {
     this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
     this.speed = 0.08;
-    this.thread = null;
+    this.thread = {
+      control: {}
+    };
     this.preThread = null;
     this.accessKeys = [];
     this.spinHandler = {
@@ -7308,33 +7313,72 @@ class Mashines {
     this.addWheel(world);
     this.addHeaderText();
     this.addRaycaster();
+
+    this.constructWinningObject = event => {
+      console.log("constructWinningObject wheel id=>  ", event.detail.wheelID);
+      console.log("constructWinningObject field name=> ", event.detail.fieldname);
+    };
+
+    window.addEventListener("wheel.stoped", this.constructWinningObject);
   }
 
   addMashine = function (world) {
-    world.Add("square", 1, "topHeader");
+    var texTopHeader = {
+      source: ["res/images/metal-sheet.jpg"],
+      mix_operation: "multiply"
+    };
+    world.Add("squareTex", 1, "topHeader", texTopHeader);
     App.scene.topHeader.geometry.setScaleByX(11);
     App.scene.topHeader.geometry.setScaleByY(0.39);
     App.scene.topHeader.position.y = 2.56;
     App.scene.topHeader.position.z = -6.5;
-    var textuteImageSamplers2 = {
-      source: ["res/icons/512.png"],
-      mix_operation: "multiply"
+
+    App.scene.topHeader.custom.gl_texture = function (object, t) {
+      world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
+      world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MAG_FILTER, world.GL.gl.LINEAR);
+      world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MIN_FILTER, world.GL.gl.LINEAR); //  world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, world.GL.gl.MIRRORED_REPEAT);
+      //  world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, world.GL.gl.MIRRORED_REPEAT);
+
+      world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, world.GL.gl.REPEAT);
+      world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, world.GL.gl.REPEAT);
+      world.GL.gl.texImage2D(world.GL.gl.TEXTURE_2D, 0, world.GL.gl.RGBA, world.GL.gl.RGBA, world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+      world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
     };
+
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -10.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -10.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -10.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = 11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -10.4; // Addin anything at all
+
+    App.scene.topHeader.shake = false;
+    var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001);
+
+    App.scene.topHeader.runShake = function () {
+      if (this.shake == false) return;
+      setTimeout(() => {
+        this.geometry.texCoordsPoints.right_top.x += osc_var.UPDATE();
+        this.geometry.texCoordsPoints.left_bottom.x += osc_var.UPDATE();
+        this.geometry.texCoordsPoints.left_top.x += osc_var.UPDATE();
+        this.geometry.texCoordsPoints.right_bottom.x += osc_var.UPDATE();
+        this.runShake();
+      }, 20);
+    };
+
     world.Add("square", 1, "footerHeader");
     App.scene.footerHeader.geometry.setScaleByX(11);
     App.scene.footerHeader.geometry.setScaleByY(0.39);
     App.scene.footerHeader.position.y = -2.56;
     App.scene.footerHeader.position.z = -6.5; // Style color buttom of footer
 
-    App.scene.topHeader.geometry.colorData.color[2].set(0.2, 0.2, 0.2);
-    App.scene.topHeader.geometry.colorData.color[3].set(0.2, 0.2, 0.2);
-    App.scene.topHeader.geometry.colorData.color[0].set(0.2, 0, 0);
-    App.scene.topHeader.geometry.colorData.color[1].set(0.2, 0.2, 0.2);
-    App.scene.footerHeader.geometry.colorData.color[0].set(0.1, .1, 0.1);
-    App.scene.footerHeader.geometry.colorData.color[1].set(0.1, .1, 0.1);
-    App.scene.footerHeader.geometry.colorData.color[2].set(0.1, .1, 0.1);
-    App.scene.footerHeader.geometry.colorData.color[3].set(0.1, .1, 0.1);
-    App.operation.square_buffer_procedure(App.scene.topHeader);
+    App.scene.footerHeader.geometry.colorData.color[0].set(0.1, 0.1, 0.1);
+    App.scene.footerHeader.geometry.colorData.color[1].set(0.1, 0.1, 0.1);
+    App.scene.footerHeader.geometry.colorData.color[2].set(0.1, 0.1, 0.1);
+    App.scene.footerHeader.geometry.colorData.color[3].set(0.1, 0.1, 0.1);
+    App.operation.squareTex_buffer_procedure(App.scene.topHeader);
     App.operation.square_buffer_procedure(App.scene.footerHeader);
     console.info("Mashine is constructed.");
   };
@@ -7344,7 +7388,7 @@ class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
     var textuteImageSamplers2 = {
-      source: ["res/images/nidza.png"],
+      source: ["res/icons/512.png"],
       mix_operation: "multiply"
     };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -7357,9 +7401,9 @@ class Mashines {
         localHandler.push(name); // Referent done for default camera position.
 
         var O = window.innerWidth / 1000 * WW;
-        var O2 = window.innerWidth / 1005 * WW;
-        console.log("test .wheel____", wheel);
-        console.log("test .field", field);
+        var O2 = window.innerWidth / 1005 * WW; // console.log("test .wheel____", wheel)
+        // console.log("test .field", field)
+
         App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
 
         var _x = -O * 0.5 + indexWheel * O2 * 0.2;
@@ -7407,19 +7451,19 @@ class Mashines {
       objChar.position.SetZ(-6.45);
 
       switch (objChar.name) {
-        case 'headerTitleS':
+        case "headerTitleS":
           count = 0;
           break;
 
-        case 'headerTitleL':
+        case "headerTitleL":
           count = 1;
           break;
 
-        case 'headerTitleO':
+        case "headerTitleO":
           count = 1.4;
           break;
 
-        case 'headerTitleT':
+        case "headerTitleT":
           count = 2.5;
           break;
       }
@@ -7435,6 +7479,13 @@ class Mashines {
     this.font.loadChar(matrixEngine.objLoader, "o", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "t", "headerTitle");
   };
+  fieldOnClick = function (hitObject) {
+    var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.02);
+    hitObject.rotation.rotationSpeed.y = 100;
+    var timer = setInterval(() => {
+      hitObject.geometry.setScale(oscAng.UPDATE()); //  clearInterval(timer)
+    }, 1);
+  };
   addRaycaster = () => {
     window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
       console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
@@ -7442,9 +7493,11 @@ class Mashines {
 
       if (r == "spinBtn") {
         this.activateSpinning();
+      } else if (r.indexOf("wheel") != -1) {
+        this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
       }
     });
-    canvas.addEventListener('mousedown', ev => {
+    canvas.addEventListener("mousedown", ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
   };
@@ -7459,7 +7512,7 @@ class Mashines {
     App.scene.spinBtn.position.SetX(2);
     App.scene.spinBtn.position.SetZ(-5);
     App.scene.spinBtn.geometry.setScale(0.3);
-    App.scene.spinBtn.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    App.scene.spinBtn.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene.spinBtn.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4]; // App.scene.spinBtn.geometry.setScaleByY(-0.76)
 
     App.scene.spinBtn.glBlend.blendEnabled = true; // App.scene.spinBtn.rotation.rotz = 90;
@@ -7493,28 +7546,51 @@ class Mashines {
   };
   allWheelSpinningMoment = () => {
     console.info("All wheels spinning");
+    setTimeout(() => {
+      var index = 0;
+
+      for (let key in this.thread.control) {
+        setTimeout(() => {
+          this.thread.control[key] = true;
+        }, App.slot.config.stopingInterval * index++);
+      }
+    }, App.slot.config.spinningInterval);
   };
   spinning = wheelID => {
-    this.thread = setInterval(() => {
+    this.thread.control['ctrl' + wheelID] = false;
+    this.thread['timer' + wheelID] = setInterval(() => {
       this.accessKeys.forEach((accessWheelNames, indexWheel) => {
         if (wheelID == indexWheel) {
           accessWheelNames.forEach((fieldname, indexField) => {
             App.scene[fieldname].position.y -= this.speed;
 
-            if (wheelID == 0) {
-              App.scene[fieldname].rotation.rotationSpeed.x = 100;
-            } else if (wheelID == 1) {
-              App.scene[fieldname].rotation.rotationSpeed.y = 100;
-            } else if (wheelID == 2) {
-              App.scene[fieldname].rotation.rotationSpeed.x = -100;
+            if (wheelID == 0) {// App.scene[fieldname].rotation.rotationSpeed.x = 100;
+            } else if (wheelID == 1) {// App.scene[fieldname].rotation.rotationSpeed.y = 100;
+            } else if (wheelID == 2) {// App.scene[fieldname].rotation.rotationSpeed.x = -100;
             }
 
             if (App.scene[fieldname].position.y < this.spinHandler.bottomLimitY) {
-              App.scene[fieldname].position.y = App.slot.mashine.spinHandler.lastInitY[indexWheel];
+              App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel]; // moment
+
+              if (this.thread.control['ctrl' + wheelID] == true) {
+                clearInterval(this.thread['timer' + wheelID]);
+                App.scene[fieldname].rotation.rotationSpeed.x = 0;
+                App.scene[fieldname].rotation.rotationSpeed.y = 0; // get winning for wheel id and fieldname
+
+                let wheelStoped = new CustomEvent('wheel.stoped', {
+                  detail: {
+                    wheelID: wheelID,
+                    fieldname: fieldname
+                  }
+                });
+                dispatchEvent(wheelStoped);
+              }
             }
           });
         }
-      });
+      }); // test to disable
+
+      clearInterval(this.preThread);
     }, 1);
   };
   preSpinning = wheelID => {

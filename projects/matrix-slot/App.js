@@ -53,6 +53,9 @@ function webGLStart() {
   var fieldLime = { id: 5, color: {r: 0.4, g: 1 , b: 0.4}};
 
   App.slot.config = {
+    // Count after all wheels spinning moment
+    spinningInterval : 1000,
+    stopingInterval: 1000,
     verticalSize: 3,
     wheels: [
       [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen],
