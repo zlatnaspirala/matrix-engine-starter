@@ -4,6 +4,106 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "AudioMatrix", {
+  enumerable: true,
+  get: function () {
+    return _audioResource.default;
+  }
+});
+
+var _audioResource = _interopRequireDefault(require("./src/audioResource"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+},{"./src/audioResource":2}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AudioMatrix = void 0;
+
+class AudioMatrix {
+  audios = [];
+  logs = false;
+
+  constructor() {
+    !this.logs || console.info('Audio resopurce constructed.');
+    !this.logs || console.info('Create event for fix buffering on oldies browsers.');
+    window.addEventListener('click', this.cheker, false);
+  }
+
+  cheker = () => {
+    this.audios.forEach(audioELement => {
+      audioELement.play();
+      audioELement.pause();
+    });
+    window.removeEventListener('click', this.cheker);
+  };
+  getSoundById = function (id) {
+    audios.forEach(element => {
+      console.log(element.id);
+
+      if (id == element.id) {
+        console.log('Found', element.id);
+        return element;
+      }
+    });
+  };
+  createAudioResource = function (options) {
+    if (typeof options == "object" && typeof options.length == 'undefined') {
+      var sound = document.createElement('audio');
+      sound.id = options.id;
+      if (options.controls) sound.controls = 'controls';
+      sound.src = options.srcPath;
+      sound.type = options.myneType | 'audio/mpeg';
+
+      sound.onabort = function () {
+        console.warn("Video load aborted");
+      };
+
+      this.audios.push(sound);
+      !this.logs || console.info('Audio resopurce created with option -> ', options);
+
+      if (options.parent) {
+        options.parent.appendChild(sound);
+        return sound;
+      } // default
+
+
+      document.getElementById('audioResource').appendChild(sound);
+      return sound;
+    } else if (typeof options.length !== 'undefined') {
+      return options.map(option => {
+        var sound = document.createElement('audio');
+        sound.id = option.id;
+        if (option.controls) sound.controls = 'controls';
+        sound.src = option.srcPath;
+        sound.type = option.myneType || 'audio/mpeg';
+        this.audios.push(sound);
+        !this.logs | console.info('Audio resopurce created with option -> ', option);
+
+        if (option.parent) {
+          option.parent.appendChild(sound);
+          return sound;
+        } // default
+
+
+        document.getElementById('audioResource').appendChild(sound);
+        return sound;
+      });
+    }
+  };
+}
+
+exports.AudioMatrix = AudioMatrix;
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 Object.defineProperty(exports, "planeFont", {
   enumerable: true,
   get: function () {
@@ -21,7 +121,7 @@ var _dPlaneFont = require("./matrix-fonts/2dPlaneFont/access/2dPlaneFont");
 
 var _dUVPlaneFont = require("./matrix-fonts/2dUVPlaneFont/access/2dUVPlaneFont");
 
-},{"./matrix-fonts/2dPlaneFont/access/2dPlaneFont":2,"./matrix-fonts/2dUVPlaneFont/access/2dUVPlaneFont":3}],2:[function(require,module,exports){
+},{"./matrix-fonts/2dPlaneFont/access/2dPlaneFont":4,"./matrix-fonts/2dUVPlaneFont/access/2dUVPlaneFont":5}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -111,7 +211,7 @@ class planeFont {
 exports.planeFont = planeFont;
 ;
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -201,7 +301,7 @@ class planeUVFont {
 exports.planeUVFont = planeUVFont;
 ;
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -271,7 +371,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":5,"./lib/events":6,"./lib/loader-obj":7,"./lib/matrix-buffers":8,"./lib/matrix-geometry":10,"./lib/matrix-render":11,"./lib/matrix-textures":12,"./lib/matrix-world":13,"./lib/raycast":14,"./lib/utility":15,"./program/manifest":17}],5:[function(require,module,exports){
+},{"./lib/engine":7,"./lib/events":8,"./lib/loader-obj":9,"./lib/matrix-buffers":10,"./lib/matrix-geometry":12,"./lib/matrix-render":13,"./lib/matrix-textures":14,"./lib/matrix-world":15,"./lib/raycast":16,"./lib/utility":17,"./program/manifest":19}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1175,7 +1275,7 @@ function CANVAS2d_SURFACE_TEXTURE(path_, path_to_run_script) {
   };
 }
 
-},{"../program/manifest":17,"./events":6,"./matrix-render":11,"./matrix-world":13,"./utility":15,"./webgl-utils":16}],6:[function(require,module,exports){
+},{"../program/manifest":19,"./events":8,"./matrix-render":13,"./matrix-world":15,"./utility":17,"./webgl-utils":18}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1557,7 +1657,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":17,"./matrix-world":13,"./utility":15}],7:[function(require,module,exports){
+},{"../program/manifest":19,"./matrix-world":15,"./utility":17}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1971,7 +2071,7 @@ var deleteMeshBuffers = function (gl, mesh) {
 
 exports.deleteMeshBuffers = deleteMeshBuffers;
 
-},{"./matrix-world":13}],8:[function(require,module,exports){
+},{"./matrix-world":15}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2323,7 +2423,7 @@ _manifest.default.operation.sphere_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":17,"./matrix-world":13}],9:[function(require,module,exports){
+},{"../program/manifest":19,"./matrix-world":15}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2358,10 +2458,10 @@ _manifest.default.operation.draws.cube = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object); // V
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // V
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -2545,10 +2645,10 @@ _manifest.default.operation.draws.piramide = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
 
   if (object.geometry.dynamicBuffer == true) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -2599,10 +2699,10 @@ _manifest.default.operation.draws.square = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
 
   if (object.geometry.dynamicBuffer == true) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -2651,10 +2751,10 @@ _manifest.default.operation.draws.triangle = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
 
@@ -2904,10 +3004,10 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object); // V
+  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY()); // V
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -3274,7 +3374,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":17,"./events":6,"./matrix-world":13,"./raycast":14}],10:[function(require,module,exports){
+},{"../program/manifest":19,"./events":8,"./matrix-world":15,"./raycast":16}],12:[function(require,module,exports){
 /* eslint-disable no-redeclare */
 
 /* eslint-disable no-unused-vars */
@@ -4987,7 +5087,7 @@ exports.customVertex_1 = customVertex_1;
 
 function ring(innerRadius, outerRadius, slices) {}
 
-},{"../program/manifest":17,"./utility":15}],11:[function(require,module,exports){
+},{"../program/manifest":19,"./utility":17}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5113,7 +5213,7 @@ var callReDraw_ = function () {
 
 exports.callReDraw_ = callReDraw_;
 
-},{"../program/manifest":17,"./engine":5,"./matrix-world":13,"./raycast":14}],12:[function(require,module,exports){
+},{"../program/manifest":19,"./engine":7,"./matrix-world":15,"./raycast":16}],14:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
@@ -5206,7 +5306,7 @@ _manifest.default.tools.loadVideoTexture = function (name, image) {
 var _default = _manifest.default.textools;
 exports.default = _default;
 
-},{"../program/manifest":17,"./matrix-world":13}],13:[function(require,module,exports){
+},{"../program/manifest":19,"./matrix-world":15}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6008,7 +6108,7 @@ function defineworld(canvas) {
   return world;
 }
 
-},{"../program/manifest":17,"./engine":5,"./matrix-draws":9,"./matrix-geometry":10,"./matrix-render":11,"./utility":15}],14:[function(require,module,exports){
+},{"../program/manifest":19,"./engine":7,"./matrix-draws":11,"./matrix-geometry":12,"./matrix-render":13,"./utility":17}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6016,6 +6116,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.rayIntersectsTriangle = rayIntersectsTriangle;
 exports.unproject = unproject;
+exports.rotate2dPlot = rotate2dPlot;
 exports.checkingProcedure = checkingProcedure;
 exports.checkingProcedureCalc = checkingProcedureCalc;
 exports.touchCoordinate = void 0;
@@ -6094,22 +6195,22 @@ objPos) {
   return false;
 }
 /**
-* Unproject a 2D point into a 3D world.
-* 
-* @param screenCoord [screenX, screenY]
-* @param viewport [left, top, width, height]
-* @param invProjection invert projection matrix
-* @param invView invert view matrix
-* @return 3D point position
-*/
+ * Unproject a 2D point into a 3D world.
+ *
+ * @param screenCoord [screenX, screenY]
+ * @param viewport [left, top, width, height]
+ * @param invProjection invert projection matrix
+ * @param invView invert view matrix
+ * @return 3D point position
+ */
 
 
 function unproject(screenCoord, // :[number, number],
 viewport, // :[number, number, number, number],
 invProjection, // :mat4,
-invView) // :mat4,
-// : vec3
-{
+invView // :mat4,
+) {
+  // : vec3
   const [left, top, width, height] = viewport;
   const [x, y] = screenCoord;
   const out = vec4.fromValues(2 * x / width - 1 - left, 2 * (height - y - 1) / height - 1, 1, 1);
@@ -6117,6 +6218,19 @@ invView) // :mat4,
   out[3] = 0;
   vec4.transformMat4(out, out, invView);
   return vec3.normalize(vec3.create(), out);
+}
+/**
+ * @description Fix local rotation raycast bug test.
+ */
+
+
+function rotate2dPlot(cx, cy, x, y, angle) {
+  var radians = Math.PI / 180 * -angle,
+      cos = Math.cos(radians),
+      sin = Math.sin(radians),
+      nx = cos * (x - cx) + sin * (y - cy) + cx,
+      ny = cos * (y - cy) - sin * (x - cx) + cy;
+  return [nx, ny];
 }
 
 function checkingProcedure(ev) {
@@ -6134,13 +6248,14 @@ function checkingProcedure(ev) {
 }
 
 function checkingProcedureCalc(object) {
+  var world = matrixEngine.matrixWorld.world;
   if (touchCoordinate.enabled == false) return;
-  console.info('Raycast hits test...');
-  var mvMatrix = object.mvMatrix;
-  var outp = mat4.create();
-  var outv = mat4.create();
-  let ray;
-  var myRayOrigin = vec3.fromValues(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.yPos, matrixEngine.Events.camera.zPos);
+  let mvMatrix = [...object.mvMatrix];
+  let ray; // console.info('Raycast hits after test... -> ', mvMatrix)
+
+  let outp = mat4.create();
+  let outv = mat4.create();
+  let myRayOrigin = vec3.fromValues(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.yPos, matrixEngine.Events.camera.zPos);
 
   if (matrixEngine.Events.camera.zPos < object.position.z) {
     myRayOrigin = vec3.fromValues(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.yPos, -matrixEngine.Events.camera.zPos);
@@ -6148,15 +6263,102 @@ function checkingProcedureCalc(object) {
 
   ray = unproject([touchCoordinate.x, touchCoordinate.y], [0, 0, touchCoordinate.w, touchCoordinate.h], mat4.invert(outp, world.pMatrix), mat4.invert(outv, mvMatrix));
   const intersectionPoint = vec3.create();
+  object.raycastFace = [];
 
   for (var f = 0; f < object.geometry.indices.length; f = f + 3) {
     var a = object.geometry.indices[f];
     var b = object.geometry.indices[f + 1];
     var c = object.geometry.indices[f + 2];
-    const triangle = [[object.geometry.vertices[0 + a * 3] + object.position.worldLocation[0], object.geometry.vertices[1 + a * 3] + object.position.worldLocation[1], object.geometry.vertices[2 + a * 3]], [object.geometry.vertices[0 + b * 3] + object.position.worldLocation[0], object.geometry.vertices[1 + b * 3] + object.position.worldLocation[1], object.geometry.vertices[2 + b * 3]], [object.geometry.vertices[0 + c * 3] + object.position.worldLocation[0], object.geometry.vertices[1 + c * 3] + object.position.worldLocation[1], object.geometry.vertices[2 + c * 3]]];
+    let triangle = null;
+    const triangleInZero = [[object.geometry.vertices[0 + a * 3], object.geometry.vertices[1 + a * 3], object.geometry.vertices[2 + a * 3]], [object.geometry.vertices[0 + b * 3], object.geometry.vertices[1 + b * 3], object.geometry.vertices[2 + b * 3]], [object.geometry.vertices[0 + c * 3], object.geometry.vertices[1 + c * 3], object.geometry.vertices[2 + c * 3]]];
+    var rez0, rez1, rez2;
+
+    if (object.rotation.rx != 0) {
+      rez0 = rotate2dPlot(0, 0, triangleInZero[0][1], triangleInZero[0][2], object.rotation.rx);
+      rez1 = rotate2dPlot(0, 0, triangleInZero[1][1], triangleInZero[1][2], object.rotation.rx);
+      rez2 = rotate2dPlot(0, 0, triangleInZero[2][1], triangleInZero[2][2], object.rotation.rx);
+      triangle = [[triangleInZero[0][0] + object.position.worldLocation[0], rez0[0] + object.position.worldLocation[1], rez0[1]], [triangleInZero[1][0] + object.position.worldLocation[0], rez1[0] + object.position.worldLocation[1], rez1[1]], [triangleInZero[2][0] + object.position.worldLocation[0], rez2[0] + object.position.worldLocation[1], rez2[1]]]; // console.log("only x rot => ", triangle);
+    } // y z changed - rez0[1] is z
+
+
+    if (object.rotation.ry != 0) {
+      if (object.rotation.rx != 0) {
+        // Y i Z
+        // get y
+        rez0 = rotate2dPlot(0, 0, triangleInZero[0][1], triangleInZero[0][2], object.rotation.rx - 90);
+        rez1 = rotate2dPlot(0, 0, triangleInZero[1][1], triangleInZero[1][2], object.rotation.rx - 90);
+        rez2 = rotate2dPlot(0, 0, triangleInZero[2][1], triangleInZero[2][2], object.rotation.rx - 90);
+        const detY0 = rez0[0];
+        const detY1 = rez1[0];
+        const detY2 = rez2[0];
+        const detZ0 = rez0[1];
+        const detZ1 = rez1[1];
+        const detZ2 = rez2[1]; //                          X INITIAL             Z
+
+        rez0 = rotate2dPlot(0, 0, triangleInZero[0][0], detZ0, object.rotation.ry - 90);
+        rez1 = rotate2dPlot(0, 0, triangleInZero[1][0], detZ1, object.rotation.ry - 90);
+        rez2 = rotate2dPlot(0, 0, triangleInZero[2][0], detZ2, object.rotation.ry - 90);
+        const detZ00 = rez0[1];
+        const detZ11 = rez1[1];
+        const detZ22 = rez2[1];
+        rez0 = rotate2dPlot(0, 0, rez0[0], detY0, object.rotation.rz - 90);
+        rez1 = rotate2dPlot(0, 0, rez1[0], detY1, object.rotation.rz - 90);
+        rez2 = rotate2dPlot(0, 0, rez2[0], detY2, object.rotation.rz - 90);
+        triangle = [[rez0[0] + object.position.worldLocation[0], rez0[1] + object.position.worldLocation[1], detZ00], [rez1[0] + object.position.worldLocation[0], rez1[1] + object.position.worldLocation[1], detZ11], [rez2[0] + object.position.worldLocation[0], rez2[1] + object.position.worldLocation[1], detZ22]];
+      } else if (object.rotation.rz == 0) {
+        rez0 = rotate2dPlot(0, 0, triangleInZero[0][0], triangleInZero[0][2], -object.rotation.ry);
+        rez1 = rotate2dPlot(0, 0, triangleInZero[1][0], triangleInZero[1][2], -object.rotation.ry);
+        rez2 = rotate2dPlot(0, 0, triangleInZero[2][0], triangleInZero[2][2], -object.rotation.ry);
+        triangle = [[rez0[0] + object.position.worldLocation[0], triangleInZero[0][1] + object.position.worldLocation[1], rez0[1]], [rez1[0] + object.position.worldLocation[0], triangleInZero[1][1] + object.position.worldLocation[1], rez1[1]], [rez2[0] + object.position.worldLocation[0], triangleInZero[2][1] + object.position.worldLocation[1], rez2[1]]];
+      }
+    }
+
+    if (object.rotation.rz != 0) {
+      if (object.rotation.ry != 0) {
+        if (object.rotation.rx == 180) {
+          rez0 = rotate2dPlot(0, 0, triangleInZero[0][0], triangleInZero[0][2], object.rotation.ry);
+          rez1 = rotate2dPlot(0, 0, triangleInZero[1][0], triangleInZero[1][2], object.rotation.ry);
+          rez2 = rotate2dPlot(0, 0, triangleInZero[2][0], triangleInZero[2][2], object.rotation.ry);
+          let detZ00 = rez0[1];
+          let detZ11 = rez1[1];
+          let detZ22 = rez2[1];
+          rez0 = rotate2dPlot(0, 0, rez0[0], triangleInZero[0][1], object.rotation.rz);
+          rez1 = rotate2dPlot(0, 0, rez1[0], triangleInZero[1][1], object.rotation.rz);
+          rez2 = rotate2dPlot(0, 0, rez2[0], triangleInZero[2][1], object.rotation.rz);
+          const detZ0 = rez0[1];
+          const detZ1 = rez1[1];
+          const detZ2 = rez2[1]; // rez0 = rotate2dPlot(0, 0,rez0[0], detZ00, object.rotation.rx - 180);
+          // rez1 = rotate2dPlot(0, 0,rez0[0], detZ11, object.rotation.rx - 180);
+          // rez2 = rotate2dPlot(0, 0, rez0[0], detZ22, object.rotation.rx - 180);
+          // detZ00 = rez0[1];
+          // detZ11 = rez1[1];
+          // detZ22 = rez2[1];
+
+          triangle = [[rez0[0] + object.position.worldLocation[0], detZ0 + object.position.worldLocation[1], detZ00], [rez1[0] + object.position.worldLocation[0], detZ1 + object.position.worldLocation[1], detZ11], [rez2[0] + object.position.worldLocation[0], detZ2 + object.position.worldLocation[1], detZ22]];
+        } else {
+          console.info('unhandled ray cast');
+        }
+      } else {
+        if (object.rotation.rx == 0) {
+          rez0 = rotate2dPlot(0, +0, triangleInZero[0][0], triangleInZero[0][1], object.rotation.rz);
+          rez1 = rotate2dPlot(0, 0, triangleInZero[1][0], triangleInZero[1][1], object.rotation.rz);
+          rez2 = rotate2dPlot(0, 0, triangleInZero[2][0], triangleInZero[2][1], object.rotation.rz);
+          triangle = [[rez0[0] + object.position.worldLocation[0], rez0[1] + object.position.worldLocation[1], triangleInZero[0][2]], [rez1[0] + object.position.worldLocation[0], rez1[1] + object.position.worldLocation[1], triangleInZero[1][2]], [rez2[0] + object.position.worldLocation[0], rez2[1] + object.position.worldLocation[1], triangleInZero[2][2]]];
+        } else {
+          console.info('must be handled rz vs rx');
+        }
+      }
+    } // no rot
+
+
+    if (object.rotation.rx == 0 && object.rotation.ry == 0 && object.rotation.rz == 0) {
+      triangle = [[triangleInZero[0][0] + object.position.worldLocation[0], triangleInZero[0][1] + object.position.worldLocation[1], triangleInZero[0][2]], [triangleInZero[1][0] + object.position.worldLocation[0], triangleInZero[1][1] + object.position.worldLocation[1], triangleInZero[1][2]], [triangleInZero[2][0] + object.position.worldLocation[0], triangleInZero[2][1] + object.position.worldLocation[1], triangleInZero[2][2]]];
+    }
+
+    object.raycastFace.push(triangle);
 
     if (rayIntersectsTriangle(myRayOrigin, ray, triangle, intersectionPoint, object.position)) {
-      rayHitEvent = new CustomEvent("ray.hit.event", {
+      rayHitEvent = new CustomEvent('ray.hit.event', {
         detail: {
           touchCoordinate: {
             x: touchCoordinate.x,
@@ -6179,7 +6381,7 @@ function checkingProcedureCalc(object) {
   }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -6760,7 +6962,7 @@ const BiquadFilterType = {
 };
 exports.BiquadFilterType = BiquadFilterType;
 
-},{"../program/manifest":17,"./events":6}],16:[function(require,module,exports){
+},{"../program/manifest":19,"./events":8}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6949,7 +7151,7 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7014,7 +7216,7 @@ var App = {
 var _default = App;
 exports.default = _default;
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7024,7 +7226,7 @@ exports.colorNamesGrammars = void 0;
 const colorNamesGrammars = ['aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
 exports.colorNamesGrammars = colorNamesGrammars;
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7047,7 +7249,7 @@ var _voiceCommander = require("./voice-commander.js");
 
 var _colors = require("./grammar-set/colors.js");
 
-},{"./grammar-set/colors.js":18,"./voice-commander.js":20}],20:[function(require,module,exports){
+},{"./grammar-set/colors.js":20,"./voice-commander.js":22}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7148,7 +7350,7 @@ class VoiceCommander {
 
 exports.VoiceCommander = VoiceCommander;
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7236,16 +7438,16 @@ function webGLStart() {
     id: 4,
     color: {
       r: 1,
-      g: 0.1,
-      b: 0.5
+      g: 0,
+      b: 1
     }
   };
   var fieldLime = {
     id: 5,
     color: {
-      r: 0.4,
-      g: 1,
-      b: 0.4
+      r: 1,
+      g: 0.2,
+      b: 0
     }
   };
   App.slot.config = {
@@ -7253,9 +7455,12 @@ function webGLStart() {
     spinningInterval: 1000,
     stopingInterval: 1000,
     verticalSize: 3,
-    wheels: [[fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen], [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen], [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen]]
+    wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime]],
+    winnigLines: [[1, 1, 1, 1, 1, 1] // [0,0,0,0,0,0],
+    // [2,2,2,2,2,2]
+    ]
   };
-  mashine = new _mashine.default(world);
+  mashine = new _mashine.default(world, App.slot.config);
   App.slot.mashine = mashine;
   var textuteImageSamplers = {
     source: ["res/images/gradiend1.png"],
@@ -7270,13 +7475,15 @@ function webGLStart() {
 matrixEngine.Engine.load_shaders("shaders/shaders.html"); // window.matrixEngine = matrixEngine;
 
 window.addEventListener("load", () => {
-  matrixEngine.Engine.initApp(webGLStart);
+  setTimeout(() => {
+    matrixEngine.Engine.initApp(webGLStart);
+  }, 200);
 }, false); // Not in use
 
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":22,"./scripts/voice-commander":23,"matrix-engine":4}],22:[function(require,module,exports){
+},{"./scripts/mashine":24,"./scripts/voice-commander":26,"matrix-engine":6}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7288,6 +7495,8 @@ var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _matrixEnginePlugins = require("matrix-engine-plugins");
 
+var _matrixAudio = require("./matrix-audio");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -7295,7 +7504,9 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 var App = matrixEngine.App;
 
 class Mashines {
-  constructor(world) {
+  constructor(world, config) {
+    console.info(_matrixAudio.rightHereRightNow + " rightHereRightNow test the sound.");
+    this.config = config;
     this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
     this.speed = 0.08;
@@ -7309,6 +7520,9 @@ class Mashines {
       bottomLimitY: -3.99,
       orderPositions: []
     };
+    this.winningHandler = {
+      order: []
+    };
     this.addMashine(world);
     this.addWheel(world);
     this.addHeaderText();
@@ -7317,9 +7531,102 @@ class Mashines {
     this.constructWinningObject = event => {
       console.log("constructWinningObject wheel id=>  ", event.detail.wheelID);
       console.log("constructWinningObject field name=> ", event.detail.fieldname);
+      console.log("constructWinningObject isLast=> ", event.detail.isLast);
+      let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]]; // transform
+
+      var newOrder = App.slot.mashine.arrayRotate(localHolder);
+
+      while (newOrder[newOrder.length - 1] != event.detail.fieldname) {
+        newOrder = App.slot.mashine.arrayRotate(localHolder);
+      }
+
+      this.winningHandler.order.push(newOrder);
+      console.log(newOrder + " newOrder CALCULATED ");
+
+      if (event.detail.isLast) {
+        console.log(newOrder + " newOrder CHECK THE ");
+        let countLineWins = [];
+        this.winningHandler.order.forEach((wheelData, index) => {
+          console.log(wheelData[this.config.winnigLines[0][index]] + " newOrder CHECK THE wheel data ");
+          let accessName = wheelData[this.config.winnigLines[0][index]];
+          console.log(App.scene[accessName]);
+          countLineWins.push(App.scene[accessName].specialId);
+        });
+        var finalResult = this.findMAX(countLineWins);
+        console.log("final ", finalResult);
+      }
     };
 
     window.addEventListener("wheel.stoped", this.constructWinningObject);
+  }
+  /**
+   * @description
+   * Add this to untility matrix engine
+   */
+
+
+  arrayRotate(arr, reverse) {
+    if (reverse) arr.unshift(arr.pop());else arr.push(arr.shift());
+    return arr;
+  }
+
+  findMAX(arr) {
+    var counts = {},
+        max = 0,
+        res;
+
+    for (var v in arr) {
+      counts[arr[v]] = (counts[arr[v]] || 0) + 1;
+
+      if (counts[arr[v]] > max) {
+        max = counts[arr[v]];
+        res = arr[v];
+      }
+    }
+
+    var results = [];
+
+    for (var k in counts) {
+      if (counts[k] == max) {
+        //console.log(k + " occurs " + counts[k] + " times");
+        var localRes = {
+          wheelId: k,
+          repeat: counts[k]
+        };
+        results.push(localRes);
+      }
+    }
+
+    console.log(results);
+    return results;
+  }
+
+  findMaxNumOfDuplicates(argArray) {
+    var name;
+    var map = new Map();
+    var max = 1;
+    var maxRecurringString = "";
+
+    for (name of argArray) {
+      if (map.get(name) === undefined) {
+        map.set(name, 1);
+      } else {
+        var count = map.get(name);
+        count = count + 1;
+        map.set(name, count);
+
+        if (max < count) {
+          max = count;
+          maxRecurringString = name;
+        }
+      }
+    }
+
+    console.log("Maximum recurring string is ", maxRecurringString, ". Max number of times :" + max);
+    return {
+      maxRecurringString,
+      max
+    };
   }
 
   addMashine = function (world) {
@@ -7405,6 +7712,7 @@ class Mashines {
         // console.log("test .field", field)
 
         App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
+        App.scene[name].specialId = field.id;
 
         var _x = -O * 0.5 + indexWheel * O2 * 0.2;
 
@@ -7559,9 +7867,9 @@ class Mashines {
   spinning = wheelID => {
     this.thread.control['ctrl' + wheelID] = false;
     this.thread['timer' + wheelID] = setInterval(() => {
-      this.accessKeys.forEach((accessWheelNames, indexWheel) => {
+      this.accessKeys.forEach((accessWheelNames, indexWheel, accessKeysArray) => {
         if (wheelID == indexWheel) {
-          accessWheelNames.forEach((fieldname, indexField) => {
+          accessWheelNames.forEach((fieldname, indexField, accessWheelNames) => {
             App.scene[fieldname].position.y -= this.speed;
 
             if (wheelID == 0) {// App.scene[fieldname].rotation.rotationSpeed.x = 100;
@@ -7575,12 +7883,20 @@ class Mashines {
               if (this.thread.control['ctrl' + wheelID] == true) {
                 clearInterval(this.thread['timer' + wheelID]);
                 App.scene[fieldname].rotation.rotationSpeed.x = 0;
-                App.scene[fieldname].rotation.rotationSpeed.y = 0; // get winning for wheel id and fieldname
+                App.scene[fieldname].rotation.rotationSpeed.y = 0;
+                console.log(fieldname);
+                var isLast = false; // wheel0field5 parse 5 + 1 = 0  or 
+
+                if (indexWheel == accessKeysArray.length - 1) {
+                  isLast = true;
+                } // get winning for wheel id and fieldname
+
 
                 let wheelStoped = new CustomEvent('wheel.stoped', {
                   detail: {
                     wheelID: wheelID,
-                    fieldname: fieldname
+                    fieldname: fieldname,
+                    isLast: isLast
                   }
                 });
                 dispatchEvent(wheelStoped);
@@ -7617,7 +7933,21 @@ class Mashines {
 
 exports.default = Mashines;
 
-},{"matrix-engine":4,"matrix-engine-plugins":1}],23:[function(require,module,exports){
+},{"./matrix-audio":25,"matrix-engine":6,"matrix-engine-plugins":3}],25:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.rightHereRightNow = void 0;
+
+var _audioCommander = require("audio-commander");
+
+console.log("AudioMatrix", _audioCommander.AudioMatrix);
+let rightHereRightNow = 'Sound operation';
+exports.rightHereRightNow = rightHereRightNow;
+
+},{"audio-commander":1}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7641,4 +7971,4 @@ const VoiceCommanderInstance = new _voiceCommander.VoiceCommander(options);
 exports.VoiceCommanderInstance = VoiceCommanderInstance;
 console.log(VoiceCommanderInstance);
 
-},{"voice-commander":19}]},{},[21]);
+},{"voice-commander":21}]},{},[23]);

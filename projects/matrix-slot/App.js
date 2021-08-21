@@ -49,8 +49,8 @@ function webGLStart() {
   var fieldRed = { id: 1, color: {r: 2, g: 0 , b: 0.1}};
   var fieldBlue = { id: 2, color: {r: 0.7, g: 1 , b: 22}};
   var fieldGreen = { id: 3, color: {r: 1, g: 1.1 , b: 1}};
-  var fieldPurple = { id: 4, color: {r: 1, g: 0.1 , b: 0.5}};
-  var fieldLime = { id: 5, color: {r: 0.4, g: 1 , b: 0.4}};
+  var fieldPurple = { id: 4, color: {r: 1, g: 0 , b: 1}};
+  var fieldLime = { id: 5, color: {r: 1, g: 0.2 , b: 0}};
 
   App.slot.config = {
     // Count after all wheels spinning moment
@@ -58,16 +58,21 @@ function webGLStart() {
     stopingInterval: 1000,
     verticalSize: 3,
     wheels: [
-      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen],
-      [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen , fieldGreen],
-      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen],
-      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen],
-      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen],
-      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen]
+      [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
+      [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime],
+      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime],
+      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime],
+      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime],
+      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime]
+    ],
+    winnigLines: [
+      [1,1,1,1,1,1],
+      // [0,0,0,0,0,0],
+      // [2,2,2,2,2,2]
     ]
   };
 
-  mashine = new Mashines(world);
+  mashine = new Mashines(world, App.slot.config);
   App.slot.mashine = mashine;
 
   var textuteImageSamplers = {
@@ -88,7 +93,9 @@ matrixEngine.Engine.load_shaders("shaders/shaders.html");
 // window.matrixEngine = matrixEngine;
 
 window.addEventListener("load", () => {
-  matrixEngine.Engine.initApp(webGLStart);
+  setTimeout(() => {
+    matrixEngine.Engine.initApp(webGLStart);
+  }, 200);
 }, false);
 
 // Not in use
