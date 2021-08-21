@@ -1,13 +1,15 @@
+
 import * as matrixEngine from "matrix-engine";
 import {planeFont, planeUVFont} from "matrix-engine-plugins";
-import {rightHereRightNow} from "./matrix-audio";
+import {mashineAudio} from "./matrix-audio";
 
+let OSC = matrixEngine.utility.OSCILLATOR;
 var App = matrixEngine.App;
 
 export default class Mashines {
   constructor( world, config ) {
 
-    console.info( rightHereRightNow + " rightHereRightNow test the sound." );
+    console.info( mashineAudio + " rightHereRightNow test the sound." );
 
     this.config = config;
     this.status = "free";
@@ -24,9 +26,14 @@ export default class Mashines {
       orderPositions: [],
     };
 
+    this.mashineAudio = mashineAudio;
+
     this.winningHandler = {
       order: []
     };
+
+    // hold threads - clear it
+    this.winningVisualEffect = { threads : [] , ids: [] };
 
     this.addMashine( world );
     this.addWheel( world );
@@ -43,25 +50,82 @@ export default class Mashines {
         newOrder = App.slot.mashine.arrayRotate( localHolder )
       }
       this.winningHandler.order.push( newOrder );
-
       if (event.detail.isLast) {
-
         let countLineWins = [];
+        let collectWinObjs = [];
         this.winningHandler.order.forEach((wheelData, index) => {
-          let accessName = wheelData[this.config.winnigLines[0][index]];
-          // console.log(App.scene[accessName])
+          // hard code
+          let accessName = wheelData[this.config.winnigLines[0][0]];
           countLineWins.push(App.scene[accessName].specialId);
+          collectWinObjs.push(App.scene[accessName]);
         });
-
         var finalResult = this.findMax(countLineWins);
-        console.log("final " , finalResult)
-
+        this.checkForWinCombination(finalResult, collectWinObjs);
       }
-
     };
 
     window.addEventListener( "wheel.stoped", this.constructWinningObject );
+  }
 
+  activateWinningVisualEffect(worldObj, comb) {
+    let oscilltor_variable = new OSC(0, 2, 0.004);
+    this.winningVisualEffect.threads.push(setInterval(() => {
+      worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
+      worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+    }, 10));
+
+    this.winningVisualEffect.ids.push(worldObj)
+
+  }
+
+  killWinThreads() {
+    this.winningVisualEffect.threads.forEach((threadTimer) => {
+      clearInterval(threadTimer);
+    });
+    // Becouse all wheels contain at list one of all kindof field types
+    this.config.wheels[0].forEach((fieldOriginal) => {
+      this.winningVisualEffect.ids.forEach((obj) => {
+        if (fieldOriginal.id == obj.specialId) {
+          obj.LightsData.ambientLight.r = fieldOriginal.color.r;
+          obj.LightsData.ambientLight.b = fieldOriginal.color.b;
+          return;
+        }
+      });
+    });
+
+  }
+
+  separateWinLineObjs(lineWinObjCollect, comb) {
+    for (var j=0;j < lineWinObjCollect.length;j++) {
+      if (lineWinObjCollect[j].specialId == comb.fieldId) {
+        this.activateWinningVisualEffect(lineWinObjCollect[j], comb);
+      }
+    }
+  }
+
+  checkForWinCombination (rez, lineWinObjCollect) {
+    console.log("final " , rez)
+    rez.forEach((comb) => {
+      if (comb.repeat == 3) {
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+        console.info("3 in line small win with field :", comb.fieldId);
+      } else if (comb.repeat == 4) {
+        console.info("4 in line small win with field :", comb.fieldId);
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+      } else if (comb.repeat == 5) {
+        console.info("5 in line small win with field :", comb.fieldId);
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+      } else if (comb.repeat == 6) {
+        console.info("6 in line x win with field :", comb.fieldId);
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+      }
+    });
+
+    setTimeout(() => {
+      this.status = "free";
+      this.winningHandler.order = [];
+      this.killWinThreads();
+     }, this.config.waitForNextSpin);
   }
 
   /**
@@ -85,14 +149,12 @@ export default class Mashines {
 
     }
     var results = [];
-    for (var k in counts){
-      if (counts[k] == max){
-        //console.log(k + " occurs " + counts[k] + " times");
-        var localRes = {wheelId: k, repeat: counts[k] };
+    for (var k in counts) {
+      if (counts[k] == max) {
+        var localRes = {fieldId: k, repeat: counts[k] };
         results.push(localRes);
       }
     }
-    console.log(results);
     return results;
   }
 
@@ -220,7 +282,7 @@ export default class Mashines {
     var VW = App.slot.config.verticalSize;
 
     var textuteImageSamplers2 = {
-      source: ["res/icons/512.png"],
+      source: ["res/images/field3.png"],
       mix_operation: "multiply",
     };
 
@@ -345,7 +407,7 @@ export default class Mashines {
 
   addSpinText = function () {
     var textuteImageSamplers = {
-      source: ["res/images/spinBtn1.png"],
+      source: ["res/images/nidza.png"],
       mix_operation: "multiply", // ENUM : multiply , divide ,
     };
 
@@ -459,6 +521,9 @@ export default class Mashines {
 
   preSpinning = wheelID => {
     return new Promise( ( resolve, reject ) => {
+
+      this.mashineAudio[wheelID].play();
+
       this.preThread = setInterval( () => {
         this.accessKeys.forEach( ( accessWheelNames, indexWheel ) => {
           if ( indexWheel == wheelID ) {

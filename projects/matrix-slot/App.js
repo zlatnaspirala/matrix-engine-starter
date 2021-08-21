@@ -46,24 +46,25 @@ function webGLStart() {
    * @description Slot mashine can be configured from
    * external (web server/ some other way)
    */
-  var fieldRed = { id: 1, color: {r: 2, g: 0 , b: 0.1}};
-  var fieldBlue = { id: 2, color: {r: 0.7, g: 1 , b: 22}};
-  var fieldGreen = { id: 3, color: {r: 1, g: 1.1 , b: 1}};
-  var fieldPurple = { id: 4, color: {r: 1, g: 0 , b: 1}};
-  var fieldLime = { id: 5, color: {r: 1, g: 0.2 , b: 0}};
+  var fieldRed    = { id: 1, color: {r: 2,   g: 0 ,   b: 0.1}, winCoefficient: 100 };
+  var fieldBlue   = { id: 2, color: {r: 0.7, g: 1 ,   b: 22 }, winCoefficient: 25 };
+  var fieldGreen  = { id: 3, color: {r: 0.2,   g: 1 , b: 0.2  }, winCoefficient: 10 };
+  var fieldPurple = { id: 4, color: {r: 1,   g: 0.2 ,   b: 0  }, winCoefficient: 5 };
+  var fieldLime   = { id: 5, color: {r: 0.5,   g: 2 , b: 0.2  }, winCoefficient: 2 };
 
   App.slot.config = {
     // Count after all wheels spinning moment
     spinningInterval : 1000,
     stopingInterval: 1000,
+    waitForNextSpin: 6000,
     verticalSize: 3,
     wheels: [
-      [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
-      [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime],
-      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime],
-      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime],
-      [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime],
-      [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime]
+      [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
+      [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime, fieldPurple, fieldPurple],
+      [fieldGreen, fieldPurple,fieldLime,  fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple],
+      [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue,  fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple],
+      [fieldGreen, fieldPurple,fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple],
+      [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen,fieldBlue, fieldLime, fieldLime, fieldPurple]
     ],
     winnigLines: [
       [1,1,1,1,1,1],

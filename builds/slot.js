@@ -7,13 +7,17 @@ Object.defineProperty(exports, "__esModule", {
 Object.defineProperty(exports, "AudioMatrix", {
   enumerable: true,
   get: function () {
-    return _audioResource.default;
+    return _audioResource.AudioMatrix;
   }
 });
+exports.voodoo = void 0;
 
-var _audioResource = _interopRequireDefault(require("./src/audioResource"));
+var _audioResource = require("./src/audioResource");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+let voodoo = {
+  mikseta: 0
+};
+exports.voodoo = voodoo;
 
 },{"./src/audioResource":2}],2:[function(require,module,exports){
 "use strict";
@@ -7416,7 +7420,8 @@ function webGLStart() {
       r: 2,
       g: 0,
       b: 0.1
-    }
+    },
+    winCoefficient: 100
   };
   var fieldBlue = {
     id: 2,
@@ -7424,38 +7429,43 @@ function webGLStart() {
       r: 0.7,
       g: 1,
       b: 22
-    }
+    },
+    winCoefficient: 25
   };
   var fieldGreen = {
     id: 3,
     color: {
-      r: 1,
-      g: 1.1,
-      b: 1
-    }
+      r: 0.2,
+      g: 1,
+      b: 0.2
+    },
+    winCoefficient: 10
   };
   var fieldPurple = {
     id: 4,
     color: {
       r: 1,
-      g: 0,
-      b: 1
-    }
+      g: 0.2,
+      b: 0
+    },
+    winCoefficient: 5
   };
   var fieldLime = {
     id: 5,
     color: {
-      r: 1,
-      g: 0.2,
-      b: 0
-    }
+      r: 0.5,
+      g: 2,
+      b: 0.2
+    },
+    winCoefficient: 2
   };
   App.slot.config = {
     // Count after all wheels spinning moment
     spinningInterval: 1000,
     stopingInterval: 1000,
+    waitForNextSpin: 6000,
     verticalSize: 3,
-    wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldGreen, fieldPurple, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldRed, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime]],
+    wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime, fieldPurple, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldBlue, fieldLime, fieldLime, fieldPurple]],
     winnigLines: [[1, 1, 1, 1, 1, 1] // [0,0,0,0,0,0],
     // [2,2,2,2,2,2]
     ]
@@ -7501,11 +7511,12 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+let OSC = matrixEngine.utility.OSCILLATOR;
 var App = matrixEngine.App;
 
 class Mashines {
   constructor(world, config) {
-    console.info(_matrixAudio.rightHereRightNow + " rightHereRightNow test the sound.");
+    console.info(_matrixAudio.mashineAudio + " rightHereRightNow test the sound.");
     this.config = config;
     this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
@@ -7520,8 +7531,14 @@ class Mashines {
       bottomLimitY: -3.99,
       orderPositions: []
     };
+    this.mashineAudio = _matrixAudio.mashineAudio;
     this.winningHandler = {
       order: []
+    }; // hold threads - clear it
+
+    this.winningVisualEffect = {
+      threads: [],
+      ids: []
     };
     this.addMashine(world);
     this.addWheel(world);
@@ -7529,11 +7546,10 @@ class Mashines {
     this.addRaycaster();
 
     this.constructWinningObject = event => {
-      console.log("constructWinningObject wheel id=>  ", event.detail.wheelID);
-      console.log("constructWinningObject field name=> ", event.detail.fieldname);
-      console.log("constructWinningObject isLast=> ", event.detail.isLast);
-      let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]]; // transform
-
+      //console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
+      //console.log( "constructWinningObject field name=> ", event.detail.fieldname );
+      //console.log( "constructWinningObject isLast=> ", event.detail.isLast );
+      let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
       var newOrder = App.slot.mashine.arrayRotate(localHolder);
 
       while (newOrder[newOrder.length - 1] != event.detail.fieldname) {
@@ -7541,23 +7557,79 @@ class Mashines {
       }
 
       this.winningHandler.order.push(newOrder);
-      console.log(newOrder + " newOrder CALCULATED ");
 
       if (event.detail.isLast) {
-        console.log(newOrder + " newOrder CHECK THE ");
         let countLineWins = [];
+        let collectWinObjs = [];
         this.winningHandler.order.forEach((wheelData, index) => {
-          console.log(wheelData[this.config.winnigLines[0][index]] + " newOrder CHECK THE wheel data ");
-          let accessName = wheelData[this.config.winnigLines[0][index]];
-          console.log(App.scene[accessName]);
+          // hard code
+          let accessName = wheelData[this.config.winnigLines[0][0]];
           countLineWins.push(App.scene[accessName].specialId);
+          collectWinObjs.push(App.scene[accessName]);
         });
-        var finalResult = this.findMAX(countLineWins);
-        console.log("final ", finalResult);
+        var finalResult = this.findMax(countLineWins);
+        this.checkForWinCombination(finalResult, collectWinObjs);
       }
     };
 
     window.addEventListener("wheel.stoped", this.constructWinningObject);
+  }
+
+  activateWinningVisualEffect(worldObj, comb) {
+    let oscilltor_variable = new OSC(0, 2, 0.004);
+    this.winningVisualEffect.threads.push(setInterval(() => {
+      worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
+      worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+    }, 10));
+    this.winningVisualEffect.ids.push(worldObj);
+  }
+
+  killWinThreads() {
+    this.winningVisualEffect.threads.forEach(threadTimer => {
+      clearInterval(threadTimer);
+    }); // Becouse all wheels contain at list one of all kindof field types
+
+    this.config.wheels[0].forEach(fieldOriginal => {
+      this.winningVisualEffect.ids.forEach(obj => {
+        if (fieldOriginal.id == obj.specialId) {
+          obj.LightsData.ambientLight.r = fieldOriginal.color.r;
+          obj.LightsData.ambientLight.b = fieldOriginal.color.b;
+          return;
+        }
+      });
+    });
+  }
+
+  separateWinLineObjs(lineWinObjCollect, comb) {
+    for (var j = 0; j < lineWinObjCollect.length; j++) {
+      if (lineWinObjCollect[j].specialId == comb.fieldId) {
+        this.activateWinningVisualEffect(lineWinObjCollect[j], comb);
+      }
+    }
+  }
+
+  checkForWinCombination(rez, lineWinObjCollect) {
+    console.log("final ", rez);
+    rez.forEach(comb => {
+      if (comb.repeat == 3) {
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+        console.info("3 in line small win with field :", comb.fieldId);
+      } else if (comb.repeat == 4) {
+        console.info("4 in line small win with field :", comb.fieldId);
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+      } else if (comb.repeat == 5) {
+        console.info("5 in line small win with field :", comb.fieldId);
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+      } else if (comb.repeat == 6) {
+        console.info("6 in line x win with field :", comb.fieldId);
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+      }
+    });
+    setTimeout(() => {
+      this.status = "free";
+      this.winningHandler.order = [];
+      this.killWinThreads();
+    }, this.config.waitForNextSpin);
   }
   /**
    * @description
@@ -7570,7 +7642,7 @@ class Mashines {
     return arr;
   }
 
-  findMAX(arr) {
+  findMax(arr) {
     var counts = {},
         max = 0,
         res;
@@ -7588,20 +7660,18 @@ class Mashines {
 
     for (var k in counts) {
       if (counts[k] == max) {
-        //console.log(k + " occurs " + counts[k] + " times");
         var localRes = {
-          wheelId: k,
+          fieldId: k,
           repeat: counts[k]
         };
         results.push(localRes);
       }
     }
 
-    console.log(results);
     return results;
   }
 
-  findMaxNumOfDuplicates(argArray) {
+  findMaxOfStrDuplicates(argArray) {
     var name;
     var map = new Map();
     var max = 1;
@@ -7695,7 +7765,7 @@ class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
     var textuteImageSamplers2 = {
-      source: ["res/icons/512.png"],
+      source: ["res/images/field3.png"],
       mix_operation: "multiply"
     };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -7811,7 +7881,7 @@ class Mashines {
   };
   addSpinText = function () {
     var textuteImageSamplers = {
-      source: ["res/images/spinBtn1.png"],
+      source: ["res/images/nidza.png"],
       mix_operation: "multiply" // ENUM : multiply , divide ,
 
     };
@@ -7911,6 +7981,7 @@ class Mashines {
   };
   preSpinning = wheelID => {
     return new Promise((resolve, reject) => {
+      this.mashineAudio[wheelID].play();
       this.preThread = setInterval(() => {
         this.accessKeys.forEach((accessWheelNames, indexWheel) => {
           if (indexWheel == wheelID) {
@@ -7939,13 +8010,59 @@ exports.default = Mashines;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.rightHereRightNow = void 0;
+exports.mashineAudio = void 0;
 
-var _audioCommander = require("audio-commander");
+var AudioSystem = _interopRequireWildcard(require("audio-commander"));
 
-console.log("AudioMatrix", _audioCommander.AudioMatrix);
-let rightHereRightNow = 'Sound operation';
-exports.rightHereRightNow = rightHereRightNow;
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var myAudioResources = new AudioSystem.AudioMatrix();
+const audioOption1 = {
+  id: "shootSpin",
+  srcPath: "res/audios/wheel-start.mp3"
+};
+const audioOption2 = {
+  id: "shootSpin2",
+  srcPath: "res/audios/wheel-start.mp3"
+};
+const audioOption3 = {
+  id: "shootSpin3",
+  srcPath: "res/audios/wheel-start.mp3"
+};
+const audioOption4 = {
+  id: "shootSpin4",
+  srcPath: "res/audios/wheel-start.mp3"
+};
+const audioOption5 = {
+  id: "shootSpin5",
+  srcPath: "res/audios/wheel-start.mp3"
+};
+const audioOption6 = {
+  id: "shootSpin6",
+  srcPath: "res/audios/wheel-start.mp3"
+};
+let options = [audioOption1, audioOption2, audioOption3, audioOption4, audioOption5, audioOption6];
+let mashineAudio = myAudioResources.createAudioResource(options);
+exports.mashineAudio = mashineAudio;
+window.mashineAudio = mashineAudio;
+/*
+var myPromiseCheck = testMyAudio[0].play();
+myPromiseCheck.then( () => {
+  alert('You are using auto play allowed browser version or you are lucky.')
+})
+
+myPromiseCheck.catch((e) => {
+  console.info("Auto play is disabled by browser.");
+})
+
+// testMyAudio[0].onerror = function() { console.error("error audio")}
+
+testMyAudio[0].onended = function() {
+  console.warn("The audio has ended");
+};
+*/
 
 },{"audio-commander":1}],26:[function(require,module,exports){
 "use strict";
