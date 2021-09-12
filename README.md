@@ -29,7 +29,8 @@ And navigate to app.html or examples.html
  - Video presentation 
    https://www.youtube.com/watch?v=SG7jid1IDkA&ab_channel=javascriptfanatic
 
-   
+   [](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-slot.gif)
+
 
 
 ### Demo links for engine:
