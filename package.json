@@ -49,9 +49,11 @@
     "audio-commander": "^1.0.3",
     "matrix-engine": "^1.4.11",
     "matrix-engine-plugins": "0.0.8",
-    "voice-commander": "0.0.4"
+    "nidza": "^1.2.2",
+    "voice-commander": "0.0.5"
   },
   "devDependencies": {
+    "browserify": "^17.0.0",
     "esmify": "^2.1.1"
   }
 }

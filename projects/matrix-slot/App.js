@@ -14,9 +14,8 @@ import * as matrixEngine from "matrix-engine";
 import Mashines from "./scripts/mashine";
 import { VoiceCommanderInstance } from "./scripts/voice-commander";
 
-// If you want make it global
-window.vc = VoiceCommanderInstance;
-
+//
+VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
 // Activate listen operation
 VoiceCommanderInstance.run()
 
@@ -41,6 +40,9 @@ function webGLStart() {
    * Use pattern App.<name-of-project> = { ... }
    */
   App.slot = {};
+
+  // Data about user.
+  App.slot.user = {};
 
   /**
    * @description Slot mashine can be configured from
@@ -74,6 +76,7 @@ function webGLStart() {
   };
 
   mashine = new Mashines(world, App.slot.config);
+  mashine.vc = VoiceCommanderInstance;
   App.slot.mashine = mashine;
 
   var textuteImageSamplers = {

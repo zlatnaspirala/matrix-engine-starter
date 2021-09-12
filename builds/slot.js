@@ -7226,11 +7226,1558 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "Nidza", {
+  enumerable: true,
+  get: function () {
+    return _nidza.Nidza;
+  }
+});
+exports.Utility = void 0;
+
+var _nidza = require("./src/nidza");
+
+var Utility = _interopRequireWildcard(require("./src/lib/utility"));
+
+exports.Utility = Utility;
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+},{"./src/lib/utility":31,"./src/nidza":32}],21:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NidzaElement = void 0;
+
+var _position = require("./position");
+
+var _dimension = require("./dimension");
+
+class NidzaElement {
+  constructor(arg) {
+    this.position = new _position.Position(arg.position.x, arg.position.y);
+    this.dimension = new _dimension.Dimension(100, 100);
+    this.position.setReferent(arg.canvasDom);
+    this.position.elementIdentity = arg.id;
+  }
+
+}
+
+exports.NidzaElement = NidzaElement;
+
+},{"./dimension":23,"./position":27}],22:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setReferent = setReferent;
+
+/**
+ * @description No need class for this.
+ * Use bind is easy in ECMA6.
+ */
+function setReferent(canvasDom) {
+  this.canvasDom = canvasDom; // this.pIdentity = canvasDom.id;
+
+  this.referentCanvasWidth = () => {
+    return this.canvasDom.width;
+  };
+
+  this.referentCanvasHeight = () => {
+    return this.canvasDom.height;
+  };
+}
+
+},{}],23:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Dimension = void 0;
+
+var _baseReferent = require("./base-referent");
+
+class Dimension {
+  constructor(curentWidth, curentHeight) {
+    this.width = curentWidth;
+    this.height = curentHeight;
+    this.targetX = curentWidth;
+    this.targetY = curentHeight;
+    this.velX = 0;
+    this.velY = 0;
+    this.thrust = 0.1;
+    this.IN_MOVE = false;
+
+    this.onTargetReached = function () {};
+
+    this.referentCanvasWidth = () => 250;
+
+    this.referentCanvasHeight = () => 250;
+
+    this.setReferent = _baseReferent.setReferent;
+    this.elementIdentity = null;
+  }
+
+  getKey(action) {
+    return action + this.canvasDom.id;
+  }
+
+  setSpeed(num_) {
+    if (typeof num_ === "number") {
+      this.thrust = num_;
+    } else {
+      console.warn("nidza raport : warning for method 'Position.setSpeed'  Desciption : arguments (w , h ) must be type of number.");
+    }
+  }
+
+  smoothWidth(x) {
+    dispatchEvent(new CustomEvent("activate-updater", {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+    this.IN_MOVE = true;
+    this.targetX = x;
+  }
+
+  smoothHeight(y) {
+    dispatchEvent(new CustomEvent("activate-updater", {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+    this.IN_MOVE = true;
+    this.targetY = y;
+  }
+
+  smooth(x_, y_) {
+    dispatchEvent(new CustomEvent("activate-updater", {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+    this.IN_MOVE = true;
+    this.targetX = x_;
+    this.targetY = y_;
+  }
+
+  setDimension(x_, y_, type_) {
+    this.targetX = x_;
+    this.targetY = y_;
+    this.width = x_;
+    this.height = y_;
+    this.IN_MOVE = false;
+    dispatchEvent(new CustomEvent("activate-updater", {
+      detail: {
+        id: this.elementIdentity,
+        oneDraw: true
+      }
+    }));
+  }
+
+  onDone() {
+    dispatchEvent(new CustomEvent("deactivate-updater", {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+  }
+
+  update() {
+    var tx = this.targetX - this.width,
+        ty = this.targetY - this.height,
+        dist = Math.sqrt(tx * tx + ty * ty),
+        rad = Math.atan2(ty, tx),
+        angle = rad / Math.PI * 180;
+    this.velX = tx / dist * this.thrust;
+    this.velY = ty / dist * this.thrust;
+
+    if (this.IN_MOVE == true) {
+      if (dist > this.thrust) {
+        this.width += this.velX;
+        this.height += this.velY;
+      } else {
+        this.width = this.targetX;
+        this.height = this.targetY;
+        this.IN_MOVE = false;
+        this.onDone();
+        this.onTargetReached();
+      }
+    }
+  }
+
+  getWidth() {
+    return this.referentCanvasWidth() / 100 * this.width;
+  }
+
+  getHeight() {
+    return this.referentCanvasHeight() / 100 * this.height;
+  }
+
+}
+
+exports.Dimension = Dimension;
+
+},{"./base-referent":22}],24:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NidzaIdentity = void 0;
+
+var _textComponent = require("./text-component");
+
+var _starComponent = require("./star-component");
+
+var _matrixComponent = require("./matrix-component");
+
+var _utility = require("./utility");
+
+class NidzaIdentity {
+  constructor(arg) {
+    this.canvasDom = arg.canvasDom;
+    this.ctx = arg.ctx;
+    this.elements = arg.elements;
+    this.clearOnUpdate = true;
+    this.updaterIsLive = false;
+    this.updater = null;
+    this.updaterInterval = 1;
+    this.uRegister = [];
+    console.info("Construct uniq acess key for nidza instance.");
+    addEventListener(this.getKey('activate-updater'), this.activateUpdater, {
+      passive: true
+    });
+    addEventListener(this.getKey('deactivate-updater'), this.deactivateUpdater, {
+      passive: true
+    });
+    this.setupGlobalCtx();
+  }
+
+  attachClickEvent(callback) {
+    if ((0, _utility.isMobile)()) {
+      this.canvasDom.addEventListener("touchstart", callback, {
+        passive: true
+      });
+    } else {
+      this.canvasDom.addEventListener("click", callback, {
+        passive: true
+      });
+    }
+  }
+
+  attachMoveEvent(callback) {
+    if ((0, _utility.isMobile)()) {
+      this.canvasDom.addEventListener("touchmove", callback, {
+        passive: true
+      });
+    } else {
+      this.canvasDom.addEventListener("mousemove", callback, {
+        passive: true
+      });
+    }
+  }
+
+  onClick() {
+    console.info('default indentity click event call.');
+  }
+
+  setBackground(arg) {
+    this.canvasDom.style.background = arg;
+  }
+
+  getKey(action) {
+    return action + this.canvasDom.id;
+  }
+
+  setupGlobalCtx() {
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+  }
+
+  setCanvasBgColor(color) {
+    arg.canvasDom.style.background = color;
+  }
+
+  addTextComponent(arg) {
+    arg.ctx = this.ctx;
+    arg.canvasDom = this.canvasDom;
+    let textComponent = new _textComponent.NidzaTextComponent(arg);
+    textComponent.draw();
+    this.elements.push(textComponent);
+    return textComponent;
+  }
+
+  addStarComponent(arg) {
+    arg.ctx = this.ctx;
+    arg.canvasDom = this.canvasDom;
+    let starComponent = new _starComponent.NidzaStarComponent(arg);
+    starComponent.draw();
+    this.elements.push(starComponent);
+    return starComponent;
+  }
+
+  addMatrixComponent(arg) {
+    arg.ctx = this.ctx;
+    arg.canvasDom = this.canvasDom;
+    let starComponent = new _matrixComponent.NidzaMatrixComponent(arg);
+    starComponent.draw();
+    this.elements.push(starComponent);
+    return starComponent;
+  }
+
+  activateUpdater = e => {
+    var data = e.detail;
+
+    if (data) {
+      if (this.uRegister.indexOf(data.id) == -1) {
+        if (data.oneDraw) {
+          this.updateScene();
+          return;
+        } else {
+          // resister
+          this.uRegister.push(data.id);
+        }
+      }
+    }
+
+    if (!this.isUpdaterActive()) {
+      this.updater = setInterval(() => {
+        this.updateScene();
+      }, this.updaterInterval);
+    }
+  };
+  deactivateUpdater = e => {
+    var data = e.detail;
+
+    if (data) {
+      var loc = this.uRegister.indexOf(data.id);
+
+      if (loc == -1) {
+        console.warn("remove event but not exist", data.id);
+      } else {
+        this.uRegister.splice(loc, 1);
+
+        if (this.uRegister.length == 0) {
+          clearInterval(this.updater);
+          this.updater = null;
+          console.info("There is no registred active elements -> deactivate updater.");
+        }
+      }
+    }
+  };
+
+  isUpdaterActive() {
+    if (this.updater == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  updateScene() {
+    if (this.clearOnUpdate) {
+      this.ctx.clearRect(0, 0, this.canvasDom.width, this.canvasDom.height);
+    }
+
+    this.elements.forEach(e => {
+      e.position.update();
+      e.dimension.update();
+      e.rotation.update();
+      e.draw();
+    });
+  }
+
+  print() {
+    console.log('I am big holder nothing else.');
+  }
+
+  getElementById(id) {
+    return this.elements.filter(element => element.id == id)[0];
+  }
+
+  setupMatrix1() {
+    this.canvasDom.style.background = "";
+    this.canvasDom.className = "matrix1";
+  }
+
+}
+
+exports.NidzaIdentity = NidzaIdentity;
+
+},{"./matrix-component":25,"./star-component":29,"./text-component":30,"./utility":31}],25:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NidzaMatrixComponent = void 0;
+
+var _baseComponent = require("./base-component");
+
+var _operations = require("./operations");
+
+var _utility = require("./utility");
+
+var _rotation = require("./rotation");
+
+class NidzaMatrixComponent extends _baseComponent.NidzaElement {
+  constructor(arg) {
+    const eArg = {
+      position: arg.position,
+      id: arg.id,
+      canvasDom: arg.canvasDom
+    };
+    super(eArg);
+    this.id = arg.id;
+    this.text = arg.text;
+    this.color = arg.color || 'black';
+    this.centralObjectS = new _operations.Osc(0, 360, 1);
+    this.centralObjectS.setDelay(110);
+    this.centralObjectE = new _operations.Osc(0, 360, 1.2);
+    this.centralObjectE.setDelay(110);
+    this.centralObjectRadius = new _operations.Osc(0, 22, 1);
+    this.centralObjectRadius.regimeType = "oscMin";
+    this.centralObjectRadius.setDelay(330);
+    this.centralObjectRadiusLocal = new _operations.Osc(10, 15, 1);
+    this.centralObjectRadiusLocal.regimeType = "oscMin";
+    this.centralObjectRadiusLocal.setDelay(22);
+    this.centralObjectLineW = new _operations.Osc(1, 44, 1);
+    this.centralObjectLineW.regimeType = "oscMin";
+    this.centralObjectLineW.setDelay(11);
+    this.objectLineW = new _operations.Osc(2, 4, 1);
+    this.objectLineW.setDelay(22);
+    this.objectGlobalAlpha = new _operations.Osc(0, 1, 0.01);
+    this.objectGlobalAlpha.regimeType = "oscMin";
+    this.objectGlobalAlpha.setDelay(11);
+    this.colorR = new _operations.Osc(0, 11, 1);
+    this.colorR.regimeType = "oscMin";
+    this.colorG = new _operations.Osc(77, 222, 1);
+    this.colorG.regimeType = "oscMin";
+    this.colorB = new _operations.Osc(0, 11, 1);
+    this.colorB.regimeType = "oscMin";
+    this.colorR.setDelay(0);
+    this.colorB.setDelay(0);
+    this.colorG.setDelay(0);
+    this.fontSizeInternal = 28;
+    this.columns = Math.floor(this.dimension.getWidth() / 2);
+    this.drops = [];
+
+    for (var i = 0; i < this.columns / 1.77; i++) {
+      this.drops.push(0);
+    } // Must be optimized with new override draws who setup font
+    // for now i use flag `isActive`.
+
+
+    this.font = {
+      isActive: false,
+      fontSize: "30px",
+      fontStyle: "bold",
+      fontName: "serif"
+    };
+
+    if (arg.font) {
+      this.font = {
+        isActive: true,
+        fontSize: arg.font.fontSize,
+        fontStyle: arg.font.fontStyle,
+        fontName: arg.font.fontName
+      };
+    }
+
+    this.ctx = arg.ctx;
+    this.canvasDom = arg.canvasDom;
+    this.draw = this.drawSimpleMatrix;
+    this.drawRotatedText = this.drawRotatedMatrix; // this.drawRotatedBorderText = drawRotatedBorderText;
+    // this.drawBorder = drawBorder;
+    // this.drawWithBorder = drawWithBorder;
+
+    this.border = {
+      typeOfDraw: 'fill-stroke',
+      isActive: true,
+      fillColor: 'gold',
+      strokeColor: 'red',
+      radius: 10
+    };
+
+    if (arg.border) {
+      this.border = {
+        typeOfDraw: arg.border.typeOfDraw || 'fill-stroke',
+        isActive: true,
+        fillColor: arg.border.fillColor || 'gold',
+        strokeColor: arg.border.strokeColor || 'red',
+        radius: arg.border.radius || 10
+      };
+      this.setBorder(this.border);
+    }
+
+    this.rotation = new _rotation.Rotator(this.id, this.canvasDom.id);
+    this.rotation.setId(this.id);
+    addEventListener(this.getKey("activate-rotator"), this.activateRotator, false);
+    var newW = 20,
+        newH = 20;
+
+    if (arg.dimension) {
+      newW = arg.dimension.width || 20;
+      newH = arg.dimension.height || 20;
+    }
+
+    this.dimension.setReferent(this.canvasDom);
+    this.dimension.elementIdentity = this.id;
+    this.dimension.setDimension(newW, newH);
+  }
+
+  getColor() {
+    return "rgb(" + this.colorR.getValue() + ", " + this.colorG.getValue() + ", " + this.colorB.getValue() + ")";
+  }
+
+  getKey(action) {
+    return action + this.canvasDom.id;
+  }
+
+  getFont() {
+    return this.font.fontStyle + " " + this.font.fontSize + " " + this.font.fontName;
+  }
+
+  setBorder(arg) {
+    if (arg) {
+      this.border = {
+        typeOfDraw: arg.typeOfDraw || 'fill-stroke',
+        isActive: true,
+        fillColor: arg.fillColor || 'gold',
+        strokeColor: arg.strokeColor || 'red',
+        radius: arg.radius || 10
+      };
+    }
+
+    this.border.isActive = true;
+
+    if (this.rotation && this.rotation.isActive) {// this.draw = this.drawRotatedBorderText;
+    } else {// this.draw = this.drawWithBorder;
+      }
+  } // Important - overriding is here
+  // flag rotation.isActive indicate
+
+
+  activateRotator = () => {
+    if (this.rotation.isActive == false) {
+      this.rotation.isActive = true;
+      this.draw = this.drawRotatedText;
+    }
+
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity // oneDraw: true
+
+      }
+    }));
+  };
+  /**
+   * @description Draw Matrix effect component:
+   *  - Simple
+   */
+
+  drawSimpleMatrix() {
+    this.ctx.save();
+    if (this.font.isActive) this.ctx.font = this.getFont();
+    this.ctx.fillStyle = this.getColor(); // this.ctx.fillRect(0, 0, this.canvasDom.width, this.canvasDom.height);
+
+    this.ctx.fontSize = "700 " + this.fontSizeInternal + "px"; // this.ctx.fillStyle = "#00cc33";
+
+    for (var i = 0; i < this.columns; i++) {
+      var index = Math.floor(Math.random() * this.text.length);
+      var x = i * this.fontSizeInternal;
+      var y = this.drops[i] * this.fontSizeInternal;
+      this.ctx.shadowBlur = 122;
+      this.ctx.fillText(this.text[index], x, y - 35, this.dimension.getWidth() * 10);
+      this.ctx.shadowBlur = 22;
+      this.ctx.shadowColor = 'lime';
+      this.ctx.fillText(this.text[index], x, y - 15, this.dimension.getWidth() * 10);
+      this.ctx.fillText(this.text[index], x, y + 10, this.dimension.getWidth());
+      this.ctx.shadowBlur = 15;
+      this.ctx.fillText(this.text[index], x, y + 30, this.dimension.getWidth());
+      this.ctx.fillStyle = this.getColor();
+      this.ctx.font = "bold " + (0, _utility.getRandomIntFromTo)(9, 30) + "px " + this.font.fontName;
+      this.ctx.strokeStyle = this.getColor();
+      this.ctx.shadowBlur = 25;
+      this.ctx.shadowColor = 'black';
+      this.ctx.fillText(this.text[index], y, x, this.dimension.getWidth());
+      this.ctx.strokeText(this.text[index], y + 5, x + 5, this.dimension.getWidth());
+      this.ctx.strokeText(this.text[index], y + 25, x + 25, this.dimension.getWidth());
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, (0, _utility.getRandomArbitrary)(1, 50), 0, (0, _utility.getRandomArbitrary)(1, 2) * Math.PI);
+      this.ctx.stroke();
+      this.ctx.shadowBlur = 1;
+      this.ctx.globalAlpha = this.objectGlobalAlpha.getValue();
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, this.centralObjectRadiusLocal.getValue(), this.centralObjectS.getValue() * Math.PI / 180, this.centralObjectE.getValue() * Math.PI / 180);
+      this.ctx.arc(x, y, this.centralObjectRadiusLocal.getValue(), this.centralObjectS.getValue() * Math.PI / 180, this.centralObjectE.getValue() * Math.PI / 180, true);
+      this.ctx.closePath();
+      this.ctx.lineWidth = this.centralObjectLineW.getValue();
+      this.ctx.stroke();
+      this.ctx.fillStyle = this.getColor();
+      this.ctx.fill();
+      this.ctx.shadowBlur = 0;
+      this.ctx.globalAlpha = 1;
+      this.ctx.fillStyle = this.getColor();
+      this.ctx.beginPath();
+      this.ctx.arc(this.position.getX(), this.position.getY(), this.centralObjectRadius.getValue(), this.centralObjectS.getValue() * Math.PI / 180, this.centralObjectE.getValue() * Math.PI / 180);
+      this.ctx.arc(this.position.getX(), this.position.getY(), this.centralObjectRadius.getValue(), this.centralObjectS.getValue() * Math.PI / 180, this.centralObjectE.getValue() * Math.PI / 180, true);
+      this.ctx.closePath();
+      this.ctx.lineWidth = this.centralObjectLineW.getValue();
+      this.ctx.stroke();
+      this.ctx.fillStyle = this.getColor();
+      this.ctx.fill();
+      this.ctx.lineWidth = this.objectLineW.getValue();
+      ;
+
+      if (y >= this.canvasDom.height && Math.random() > 0.99) {
+        this.drops[i] = 0;
+      }
+
+      this.drops[i]++;
+    } // this.ctx.fillText(this.text, this.position.getX(), this.position.getY(), this.dimension.getWidth(), this.dimension.getHeight());
+
+
+    this.ctx.restore();
+  }
+
+  drawRotatedMatrix() {
+    this.ctx.save();
+    this.ctx.translate(this.position.getX(), this.position.getY());
+    this.ctx.rotate(toRad(this.rotation.angle));
+    if (this.font.isActive) this.ctx.font = this.getFont(); // this.ctx.fillRect(0, 0, this.canvasDom.width, this.canvasDom.height);
+
+    this.ctx.fontSize = "700 " + this.fontSizeInternal + "px";
+    this.ctx.fillStyle = "#00cc33";
+
+    for (var i = 0; i < this.columns; i++) {
+      var index = Math.floor(Math.random() * this.text.length);
+      var x = i * this.fontSizeInternal;
+      var y = this.drops[i] * this.fontSizeInternal;
+      this.ctx.shadowBlur = 15;
+      this.ctx.shadowColor = '#fff';
+      this.ctx.fillText(this.text[index], x, y, this.dimension.getWidth() * 10);
+      this.ctx.shadowBlur = 15;
+      this.ctx.shadowColor = 'lime';
+      this.ctx.fillText(this.text[index], x + 2, y + 2, this.dimension.getWidth() * 10);
+
+      if (y >= this.canvasDom.height && Math.random() > 0.99) {
+        this.drops[i] = 0;
+      }
+
+      this.drops[i]++;
+    }
+
+    this.ctx.restore();
+  }
+
+}
+
+exports.NidzaMatrixComponent = NidzaMatrixComponent;
+
+},{"./base-component":21,"./operations":26,"./rotation":28,"./utility":31}],26:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.toRad = toRad;
+exports.drawRotatedText = drawRotatedText;
+exports.drawRotatedBorderText = drawRotatedBorderText;
+exports.drawBorder = drawBorder;
+exports.drawWithBorder = drawWithBorder;
+exports.drawSimpleText = drawSimpleText;
+exports.drawStar = drawStar;
+exports.drawStarRotation = drawStarRotation;
+exports.Osc = void 0;
+
+var _utility = require("./utility");
+
+/**
+ * @description Diffrent variant of math and
+ * draws calculation data.
+ */
+
+/**
+ * @description
+ * Osc is math Value Oscilator.
+ * Argument regimeType is optimal
+ */
+class Osc {
+  constructor(start, finish, step, regimeType) {
+    this.elementIdentity = null;
+    this.step = 1;
+    this.start = 0;
+    this.finish = 10;
+    this.value = 0;
+    this.delay = 2;
+    this.delayInitial = 2;
+    this.regimeType = "REPEAT";
+    this.value = start;
+    this.start = start;
+    this.finish = finish;
+    this.step = step;
+
+    if (regimeType) {
+      this.regimeType = regimeType;
+    }
+
+    this.ciklus = 0;
+  }
+
+  resetCiklus() {
+    this.ciklus = 0;
+  }
+
+  setNewSeqFrameRegimeType(newSeqType) {
+    this.regimeType = newSeqType;
+  }
+
+  setNewValue(newValue) {
+    this.value = newValue;
+  }
+
+  setDelay(newDelay) {
+    this.delay = newDelay;
+    this.delayInitial = newDelay;
+  }
+
+  getRawValue() {
+    return this.value;
+  }
+
+  getValue() {
+    if (this.regimeType === "CONST") {
+      return this.value;
+    }
+
+    if (this.delay > 0) {
+      this.delay--;
+      return this.value;
+    }
+
+    this.delay = this.delayInitial;
+
+    if (this.regimeType !== "oscMin" && this.regimeType !== "oscMax") {
+      if (this.value + this.step <= this.finish) {
+        this.value = this.value + this.step;
+        return this.value;
+      } else {
+        switch (this.regimeType) {
+          case "STOP":
+            {
+              this.ciklus++;
+              this.onStop(this);
+              return this.value;
+            }
+
+          case "REPEAT":
+            {
+              this.ciklus++;
+              this.value = this.start;
+              this.onRepeat(this);
+              return this.value;
+            }
+
+          default:
+            console.warn("NO CASE");
+        }
+      }
+    } else {
+      if (this.regimeType === "oscMin") {
+        if (this.value - this.step >= this.start) {
+          this.value = this.value - this.step;
+          return this.value;
+        } else {
+          this.regimeType = "oscMax";
+          if (this.ciklus > 0) this.onReachMin(this);
+          return this.value;
+        }
+      } else if (this.regimeType === "oscMax") {
+        if (this.value + this.step <= this.finish) {
+          this.value = this.value + this.step;
+          return this.value;
+        } else {
+          this.onReachMax(this);
+          this.regimeType = "oscMin";
+          this.ciklus++;
+          return this.value;
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  onReachMax() {// console.info( 'on reach max default log' )
+  }
+
+  onReachMin() {// console.info( 'on reach min default log' )
+  }
+
+  onStop() {
+    console.info('on stop default log');
+  }
+
+  onRepeat() {// console.info('on repeat default log');
+  }
+
+}
+/**
+ * @description Convert angle to radians
+ */
+
+
+exports.Osc = Osc;
+
+function toRad(angle) {
+  if (typeof angle === "string" || typeof angle === "number") {
+    return angle * (Math.PI / 180);
+  } else {
+    console.warn("toRad, Input arg angle " + typeof angle + " << must be string or number.");
+  }
+}
+/**
+ * @description Draw Text with:
+ *  - rotation procedure
+ */
+
+
+function drawRotatedText() {
+  this.ctx.save();
+  this.ctx.translate(this.position.getX(), this.position.getY());
+  this.ctx.rotate(toRad(this.rotation.angle));
+  if (this.font.isActive) this.ctx.font = this.getFont();
+  this.ctx.fillText(this.text, 0, 0, this.dimension.getWidth(), this.dimension.getHeight());
+  this.ctx.restore();
+}
+/**
+ * @description Draw Text with:
+ *  - rotation procedure
+ *  - Border procedure
+ */
+
+
+function drawRotatedBorderText() {
+  this.ctx.save();
+  this.ctx.translate(this.position.getX(), this.position.getY());
+  this.ctx.rotate(toRad(this.rotation.angle));
+  if (this.font.isActive) this.ctx.font = this.getFont();
+  this.drawBorder(0, 0, this.dimension.getWidth(), this.dimension.getHeight(), 10, this.border.fillColor, this.border.strokeColor, this.border.typeOfDraw);
+  this.ctx.fillStyle = this.color;
+  this.ctx.fillText(this.text, 0, 0, this.dimension.getWidth(), this.dimension.getHeight());
+  this.ctx.restore();
+}
+/**
+ * @description Draw Text vs Border with
+ * radius option for rounded corners
+ */
+
+
+function drawBorder(x, y, width, height, radius, fillColor, strokeColor, type) {
+  this.ctx.save();
+  this.ctx.strokeStyle = strokeColor;
+  this.ctx.fillStyle = fillColor;
+  x -= width / 2;
+  y -= height / 2;
+  this.ctx.beginPath();
+  this.ctx.moveTo(x, y + radius);
+  this.ctx.lineTo(x, y + height - radius);
+  this.ctx.quadraticCurveTo(x, y + height, x + radius, y + height);
+  this.ctx.lineTo(x + width - radius, y + height);
+  this.ctx.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
+  this.ctx.lineTo(x + width, y + radius);
+  this.ctx.quadraticCurveTo(x + width, y, x + width - radius, y);
+  this.ctx.lineTo(x + radius, y);
+  this.ctx.quadraticCurveTo(x, y, x, y + radius);
+
+  if (type == "fill-stroke") {
+    this.ctx.fill();
+    this.ctx.stroke();
+  } else if (type == "stroke") {
+    this.ctx.stroke();
+  } else if (type == "fill") {
+    this.ctx.fill();
+  }
+
+  this.ctx.restore();
+}
+/**
+ * @description Draw Text:
+ *  - Border procedure
+ */
+
+
+function drawWithBorder() {
+  this.ctx.save();
+  if (this.font.isActive) this.ctx.font = this.getFont();
+  this.drawBorder(this.position.getX(), this.position.getY(), this.dimension.getWidth(), this.dimension.getHeight(), 10, this.border.fillColor, this.border.strokeColor, this.border.typeOfDraw);
+  this.ctx.fillStyle = this.color;
+  this.ctx.fillText(this.text, this.position.getX(), this.position.getY(), this.dimension.getWidth(), this.dimension.getHeight());
+  this.ctx.restore();
+}
+/**
+ * @description Draw Text:
+ *  - Simple
+ */
+
+
+function drawSimpleText() {
+  this.ctx.save();
+  if (this.font.isActive) this.ctx.font = this.getFont();
+  this.ctx.fillStyle = this.color;
+  this.ctx.fillText(this.text, this.position.getX(), this.position.getY(), this.dimension.getWidth(), this.dimension.getHeight());
+  this.ctx.restore();
+}
+
+function drawStar() {
+  this.ctx.beginPath();
+  this.ctx.save();
+  this.fillStyle = this.color;
+  this.ctx.translate(this.position.getX(), this.position.getY());
+  this.ctx.moveTo(0, 0 - this.radius);
+
+  for (let i = 0; i < this.n; i++) {
+    this.ctx.rotate(Math.PI / this.n);
+    this.ctx.lineTo(0, 0 - this.radius * this.inset);
+    this.ctx.rotate(Math.PI / this.n);
+    this.ctx.lineTo(0, 0 - this.radius);
+  }
+
+  this.ctx.closePath();
+  this.ctx.stroke();
+  this.ctx.fill();
+  this.ctx.restore();
+}
+
+function drawStarRotation() {
+  this.ctx.beginPath();
+  this.ctx.save();
+  this.ctx.fillStyle = this.color;
+  this.ctx.translate(0, 0);
+  this.ctx.moveTo(0, 0 - this.radius);
+
+  for (let i = 0; i < this.n; i++) {
+    this.ctx.rotate(Math.PI / this.n);
+    this.ctx.lineTo(0, 0 - this.radius * this.inset);
+    this.ctx.rotate(Math.PI / this.n);
+    this.ctx.lineTo(0, 0 - this.radius);
+  }
+
+  this.ctx.closePath();
+  this.ctx.stroke();
+  this.ctx.fill();
+  this.ctx.restore();
+}
+
+},{"./utility":31}],27:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Position = void 0;
+
+var _baseReferent = require("./base-referent");
+
+class Position {
+  constructor(curentX, curentY) {
+    this.x = curentX;
+    this.y = curentY;
+    this.targetX = curentX;
+    this.targetY = curentY;
+    this.velX = 0;
+    this.velY = 0;
+    this.thrust = 0.1;
+    this.IN_MOVE = false;
+
+    this.onTargetReached = function () {};
+
+    this.setReferent = _baseReferent.setReferent;
+
+    this.referentCanvasWidth = () => 250;
+
+    this.referentCanvasHeight = () => 250;
+
+    this.elementIdentity = null;
+    this.pIdentity = null;
+  }
+
+  getKey(action) {
+    return action + this.canvasDom.id;
+  }
+
+  onDone() {
+    dispatchEvent(new CustomEvent(this.getKey("deactivate-updater"), {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+  }
+
+  setSpeed(num_) {
+    if (typeof num_ === "number") {
+      this.thrust = num_;
+    } else {
+      console.warn("Warning for method 'Position.setSpeed' : args (w, h) must be type of number.");
+    }
+  }
+
+  translateX(x) {
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+    this.IN_MOVE = true;
+    this.targetX = x;
+  }
+
+  translateY(y) {
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+    this.IN_MOVE = true;
+    this.targetY = y;
+  }
+
+  translate(x_, y_) {
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+    this.IN_MOVE = true;
+    this.targetX = x_;
+    this.targetY = y_;
+  }
+
+  setPosition(x_, y_, type_) {
+    this.targetX = x_;
+    this.targetY = y_;
+    this.x = x_;
+    this.y = y_;
+    this.IN_MOVE = false;
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity,
+        oneDraw: true
+      }
+    }));
+  }
+
+  update() {
+    var tx = this.targetX - this.x,
+        ty = this.targetY - this.y,
+        dist = Math.sqrt(tx * tx + ty * ty),
+        rad = Math.atan2(ty, tx),
+        angle = rad / Math.PI * 180;
+    this.velX = tx / dist * this.thrust;
+    this.velY = ty / dist * this.thrust;
+
+    if (this.IN_MOVE == true) {
+      if (dist > this.thrust) {
+        this.x += this.velX;
+        this.y += this.velY;
+      } else {
+        this.x = this.targetX;
+        this.y = this.targetY;
+        this.IN_MOVE = false;
+        this.onDone();
+        this.onTargetReached();
+      }
+    }
+  }
+
+  getX() {
+    return this.referentCanvasWidth() / 100 * this.x;
+  }
+
+  getY() {
+    return this.referentCanvasHeight() / 100 * this.y;
+  }
+
+}
+
+exports.Position = Position;
+
+},{"./base-referent":22}],28:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Rotator = void 0;
+
+var _operations = require("./operations");
+
+class Rotator {
+  constructor(eleId, identityId) {
+    this.isActive = false;
+    this.angle = 0;
+    this.osc = null;
+    this.elementIdentity = null;
+
+    this.updateOrigin = () => {};
+
+    this.update = () => {};
+
+    this.elementIdentity = eleId;
+    this.nIndentity = identityId;
+  }
+
+  getKey(action) {
+    return action + this.nIndentity;
+  }
+
+  clearUpdate() {
+    this.update = this.updateOrigin;
+  }
+
+  setId(id) {
+    if (this.osc != null) this.osc.elementIdentity = id;
+  }
+
+  setAngle(angle) {
+    this.clearUpdate();
+
+    if (!this.isActive) {
+      dispatchEvent(new CustomEvent(this.getKey("activate-rotator"), {
+        detail: {
+          id: this.elementIdentity
+        }
+      }));
+    }
+
+    this.angle = angle;
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity,
+        oneDraw: true
+      }
+    }));
+  }
+
+  setRotation(osc) {
+    if (osc instanceof _operations.Osc) {
+      this.osc = osc;
+      this.osc.elementIdentity = this.elementIdentity;
+    } else {
+      console.warn("Rotator use default rotation setup.");
+      this.osc = new _operations.Osc(0, 360, 0.5);
+    } // can be handled more...
+    // no need always 
+
+
+    this.update = this.updateOsc;
+
+    if (!this.isActive) {
+      dispatchEvent(new CustomEvent(this.getKey("activate-rotator"), {
+        detail: {
+          id: this.elementIdentity
+        }
+      }));
+    }
+
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity
+      }
+    }));
+  }
+
+  updateOsc() {
+    this.angle = this.osc.getValue();
+  }
+
+}
+
+exports.Rotator = Rotator;
+
+},{"./operations":26}],29:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NidzaStarComponent = void 0;
+
+var _baseComponent = require("./base-component");
+
+var _operations = require("./operations");
+
+var _rotation = require("./rotation");
+
+class NidzaStarComponent extends _baseComponent.NidzaElement {
+  constructor(arg) {
+    const eArg = {
+      position: arg.position,
+      id: arg.id,
+      canvasDom: arg.canvasDom
+    };
+    super(eArg);
+    this.id = arg.id;
+    this.radius = arg.radius;
+    this.n = arg.n;
+    this.inset = arg.inset;
+    this.ctx = arg.ctx;
+    this.canvasDom = arg.canvasDom;
+    this.color = arg.color;
+    this.rotation = new _rotation.Rotator(this.id, this.canvasDom.id);
+    this.rotation.setId(this.id);
+    addEventListener(this.getKey("activate-rotator"), this.activateRotator, false);
+    this.draw = _operations.drawStar;
+    this.drawStarRotation = _operations.drawStarRotation;
+  }
+
+  getKey(action) {
+    return action + this.canvasDom.id;
+  }
+
+  activateRotator = angle => {
+    if (!this.rotation.isActive) {
+      this.draw = this.drawRotatedStar;
+      this.rotation.isActive = true;
+    }
+
+    this.rotation.angle = angle;
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity,
+        oneDraw: true
+      }
+    }));
+  };
+
+  drawRotatedStar() {
+    this.ctx.save();
+    this.ctx.translate(this.position.getX(), this.position.getY());
+    this.ctx.rotate((0, _operations.toRad)(this.rotation.angle));
+    this.drawStarRotation();
+    this.ctx.restore();
+  }
+
+}
+
+exports.NidzaStarComponent = NidzaStarComponent;
+
+},{"./base-component":21,"./operations":26,"./rotation":28}],30:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.NidzaTextComponent = void 0;
+
+var _baseComponent = require("./base-component");
+
+var _operations = require("./operations");
+
+var _rotation = require("./rotation");
+
+class NidzaTextComponent extends _baseComponent.NidzaElement {
+  constructor(arg) {
+    const eArg = {
+      position: arg.position,
+      id: arg.id,
+      canvasDom: arg.canvasDom
+    };
+    super(eArg);
+    this.id = arg.id;
+    this.text = arg.text;
+    this.color = arg.color || 'black'; // Must be optimized with new override draws who setup font
+    // for now i use flag `isActive`.
+
+    this.font = {
+      isActive: false,
+      fontSize: "30px",
+      fontStyle: "bold",
+      fontName: "serif"
+    };
+
+    if (arg.font) {
+      this.font = {
+        isActive: true,
+        fontSize: arg.font.fontSize,
+        fontStyle: arg.font.fontStyle,
+        fontName: arg.font.fontName
+      };
+    }
+
+    this.ctx = arg.ctx;
+    this.canvasDom = arg.canvasDom;
+    this.draw = _operations.drawSimpleText;
+    this.drawRotatedText = _operations.drawRotatedText;
+    this.drawRotatedBorderText = _operations.drawRotatedBorderText;
+    this.drawBorder = _operations.drawBorder;
+    this.drawWithBorder = _operations.drawWithBorder;
+    this.border = {
+      typeOfDraw: 'fill-stroke',
+      isActive: true,
+      fillColor: 'gold',
+      strokeColor: 'red',
+      radius: 10
+    };
+
+    if (arg.border) {
+      this.border = {
+        typeOfDraw: arg.border.typeOfDraw || 'fill-stroke',
+        isActive: true,
+        fillColor: arg.border.fillColor || 'gold',
+        strokeColor: arg.border.strokeColor || 'red',
+        radius: arg.border.radius || 10
+      };
+      this.setBorder(this.border);
+    }
+
+    this.rotation = new _rotation.Rotator(this.id, this.canvasDom.id);
+    this.rotation.setId(this.id);
+    addEventListener(this.getKey("activate-rotator"), this.activateRotator, false);
+    var newW = 20,
+        newH = 20;
+
+    if (arg.dimension) {
+      newW = arg.dimension.width || 20;
+      newH = arg.dimension.height || 20;
+    }
+
+    this.dimension.setReferent(this.canvasDom);
+    this.dimension.elementIdentity = this.id;
+    this.dimension.setDimension(newW, newH);
+  }
+
+  getKey(action) {
+    return action + this.canvasDom.id;
+  }
+
+  getFont() {
+    return this.font.fontStyle + " " + this.font.fontSize + " " + this.font.fontName;
+  }
+
+  setBorder(arg) {
+    if (arg) {
+      this.border = {
+        typeOfDraw: arg.typeOfDraw || 'fill-stroke',
+        isActive: true,
+        fillColor: arg.fillColor || 'gold',
+        strokeColor: arg.strokeColor || 'red',
+        radius: arg.radius || 10
+      };
+    }
+
+    this.border.isActive = true;
+
+    if (this.rotation && this.rotation.isActive) {
+      this.draw = this.drawRotatedBorderText;
+    } else {
+      this.draw = this.drawWithBorder;
+    }
+  } // Important - overriding is here
+  // flag rotation.isActive indicate
+
+
+  activateRotator = () => {
+    if (this.rotation.isActive == false) {
+      this.rotation.isActive = true;
+
+      if (this.border.isActive) {
+        this.draw = this.drawRotatedBorderText;
+      } else {
+        this.draw = this.drawRotatedText;
+      }
+    }
+
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity,
+        oneDraw: true
+      }
+    }));
+  };
+}
+
+exports.NidzaTextComponent = NidzaTextComponent;
+
+},{"./base-component":21,"./operations":26,"./rotation":28}],31:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.importAsync = importAsync;
+exports.loadAsync = loadAsync;
+exports.isMobile = isMobile;
+exports.getRandomIntFromTo = getRandomIntFromTo;
+exports.getRandomArbitrary = getRandomArbitrary;
+exports.convert = exports.QueryUrl = void 0;
+
+function importAsync(src, callback) {
+  var s, r, t;
+  r = false;
+  s = document.createElement('script'); // s.type = 'text/javascript';
+
+  s.type = 'module';
+  s.src = src;
+
+  s.onload = s.onreadystatechange = function () {
+    if (!r && (!this.readyState || this.readyState == 'complete')) {
+      r = true;
+      callback();
+    }
+  };
+
+  t = document.getElementsByTagName('script')[0];
+  t.parentNode.insertBefore(s, t);
+}
+
+function loadAsync(src, callback) {
+  var s, r, t;
+  r = false;
+  s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.src = src;
+
+  s.onload = s.onreadystatechange = function () {
+    if (!r && (!this.readyState || this.readyState == 'complete')) {
+      r = true;
+      callback();
+    }
+  };
+
+  t = document.getElementsByTagName('script')[0];
+  t.parentNode.insertBefore(s, t);
+}
+
+var QueryUrl = function () {
+  var query_string = {};
+  var query = window.location.search.substring(1);
+  var vars = query.split('&');
+
+  for (var i = 0; i < vars.length; i++) {
+    var pair = vars[i].split('=');
+
+    if (typeof query_string[pair[0]] === 'undefined') {
+      query_string[pair[0]] = decodeURIComponent(pair[1]);
+    } else if (typeof query_string[pair[0]] === 'string') {
+      var arr = [query_string[pair[0]], decodeURIComponent(pair[1])];
+      query_string[pair[0]] = arr;
+    } else {
+      query_string[pair[0]].push(decodeURIComponent(pair[1]));
+    }
+  }
+
+  return query_string;
+};
+
+exports.QueryUrl = QueryUrl;
+
+function isMobile() {
+  const toMatch = [/Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i];
+  return toMatch.some(toMatchItem => {
+    return navigator.userAgent.match(toMatchItem);
+  });
+}
+
+let convert = {
+  PER_TO_PIX: function (v) {
+    var o = window.innerWidth / 100;
+    return v * o;
+  },
+  PIX_TO_PER: function (v) {
+    var o = window.innerWidth / 100;
+    return v / o;
+  },
+  PER_TO_PIY: function (v) {
+    var o = window.innerHeight / 100;
+    return v * o;
+  },
+  PIY_TO_PER: function (v) {
+    var o = window.innerHeight / 100;
+    return v / o;
+  }
+};
+exports.convert = convert;
+
+function getRandomIntFromTo(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+},{}],32:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Nidza = void 0;
+
+var _identity = require("./lib/identity");
+
+var _operations = require("./lib/operations");
+
+class Nidza {
+  constructor() {
+    this.access = {}; // Reference
+
+    this.Osc = _operations.Osc;
+    console.info("Nidza engine constructed.");
+  }
+
+  createNidzaIndentity(arg) {
+    let c = document.createElement('canvas');
+    let cStyle = "background: linear-gradient(-90deg, black, red);"; // cStyle    += "border:solid red 1px;";
+
+    c.id = arg.id;
+    c.setAttribute("style", cStyle);
+    c.width = arg.size.width;
+    c.height = arg.size.height;
+    var ctx = c.getContext("2d");
+    this.canvasDom = c;
+
+    if (arg.parentDom) {
+      arg.parentDom.append(c);
+    } else {
+      document.body.append(c);
+    }
+
+    let nidzaIntentityInstance = new _identity.NidzaIdentity({
+      canvasDom: c,
+      ctx: ctx,
+      elements: [],
+      parentDom: arg.parentDom
+    });
+    this.access[arg.id] = nidzaIntentityInstance;
+    return nidzaIntentityInstance;
+  }
+
+}
+
+exports.Nidza = Nidza;
+
+},{"./lib/identity":24,"./lib/operations":26}],33:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.colorNamesGrammars = void 0;
 const colorNamesGrammars = ['aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
 exports.colorNamesGrammars = colorNamesGrammars;
 
-},{}],21:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7253,7 +8800,7 @@ var _voiceCommander = require("./voice-commander.js");
 
 var _colors = require("./grammar-set/colors.js");
 
-},{"./grammar-set/colors.js":20,"./voice-commander.js":22}],22:[function(require,module,exports){
+},{"./grammar-set/colors.js":33,"./voice-commander.js":35}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7298,8 +8845,8 @@ class VoiceCommander {
     this.queryType = '';
     this.grammarData.forEach(v => {
       this.queryType += v + ' \n ';
-    });
-    console.log(this.queryType);
+    }); // console.log(this.queryType)
+
     this.hints = 'VoiceCommander => ' + this.queryType + '.';
 
     this.recognition.onresult = event => {
@@ -7335,7 +8882,7 @@ class VoiceCommander {
 
     this.recognition.onerror = event => {
       this.diagnostic = 'Error occurred in recognition: ' + event;
-      console.log(this.diagnostic + ' onerror ' + this.hints);
+      console.log(' onerror ', event);
     };
   }
 
@@ -7354,7 +8901,7 @@ class VoiceCommander {
 
 exports.VoiceCommander = VoiceCommander;
 
-},{}],23:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7384,8 +8931,8 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 // dev
 // import matrixEngine from "/node_modules/matrix-engine/index.js";
 // prod
-// If you want make it global
-window.vc = _voiceCommander.VoiceCommanderInstance; // Activate listen operation
+//
+_voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
 
 _voiceCommander.VoiceCommanderInstance.run();
 
@@ -7408,7 +8955,9 @@ function webGLStart() {
    * Use pattern App.<name-of-project> = { ... }
    */
 
-  App.slot = {};
+  App.slot = {}; // Data about user.
+
+  App.slot.user = {};
   /**
    * @description Slot mashine can be configured from
    * external (web server/ some other way)
@@ -7471,6 +9020,7 @@ function webGLStart() {
     ]
   };
   mashine = new _mashine.default(world, App.slot.config);
+  mashine.vc = _voiceCommander.VoiceCommanderInstance;
   App.slot.mashine = mashine;
   var textuteImageSamplers = {
     source: ["res/images/gradiend1.png"],
@@ -7493,7 +9043,71 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":24,"./scripts/voice-commander":26,"matrix-engine":6}],24:[function(require,module,exports){
+},{"./scripts/mashine":38,"./scripts/voice-commander":40,"matrix-engine":6}],37:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createNidzaTextureText = createNidzaTextureText;
+
+function createNidzaTextureText(nidza) {
+  return new Promise((resolve, reject) => {
+    let myFirstNidzaObjectOptions = {
+      id: "footerLabel",
+      size: {
+        width: window.innerWidth,
+        height: 135
+      }
+    }; //  object.streamTextures.videoImage
+
+    nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
+    let texCanvas = document.getElementById('footerLabel');
+    let statusMessageBox = nidza.access.footerLabel.addTextComponent({
+      id: "zlatna",
+      text: "welcome here i am mashine , whats you name ?",
+      color: "yellow",
+      position: {
+        x: 50,
+        y: 10
+      },
+      dimension: {
+        width: 65,
+        height: 20
+      },
+      border: {
+        fillColor: "black",
+        strokeColor: "lime"
+      },
+      font: {
+        fontSize: "130%",
+        fontStyle: "bold",
+        fontName: "helvetica"
+      }
+    }); // Create one simple oscillator
+
+    let rotationOption = new nidza.Osc(0, 360, 2);
+
+    rotationOption.onRepeat = function (osc) {
+      console.info("Values reached onrepeat targets osc: ", osc);
+      statusMessageBox.rotation.clearUpdate();
+      dispatchEvent(new CustomEvent("deactivate-updater", {
+        detail: {
+          id: osc.elementIdentity
+        }
+      }));
+    };
+
+    statusMessageBox.rotation.setRotation(rotationOption);
+    statusMessageBox.rotation.osc.setDelay(0);
+    nidza.access.footerLabel.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    window.footerLabel = nidza.access.footerLabel;
+    resolve(texCanvas);
+    return texCanvas;
+  });
+}
+
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7507,6 +9121,10 @@ var _matrixEnginePlugins = require("matrix-engine-plugins");
 
 var _matrixAudio = require("./matrix-audio");
 
+var _activeTextures = require("./active-textures");
+
+var _nidza = require("nidza");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -7516,7 +9134,6 @@ var App = matrixEngine.App;
 
 class Mashines {
   constructor(world, config) {
-    console.info(_matrixAudio.mashineAudio + " rightHereRightNow test the sound.");
     this.config = config;
     this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
@@ -7531,7 +9148,6 @@ class Mashines {
       bottomLimitY: -3.99,
       orderPositions: []
     };
-    this.mashineAudio = _matrixAudio.mashineAudio;
     this.winningHandler = {
       order: []
     }; // hold threads - clear it
@@ -7539,16 +9155,22 @@ class Mashines {
     this.winningVisualEffect = {
       threads: [],
       ids: []
-    };
+    }; // inject voice commander
+
+    this.vc = {};
+    this.nidza = new _nidza.Nidza();
+    this.createNidzaTextureText = _activeTextures.createNidzaTextureText;
     this.addMashine(world);
     this.addWheel(world);
     this.addHeaderText();
     this.addRaycaster();
 
     this.constructWinningObject = event => {
-      //console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
+      _matrixAudio.stopSpin[event.detail.wheelID].play(); //console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
       //console.log( "constructWinningObject field name=> ", event.detail.fieldname );
       //console.log( "constructWinningObject isLast=> ", event.detail.isLast );
+
+
       let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
       var newOrder = App.slot.mashine.arrayRotate(localHolder);
 
@@ -7629,6 +9251,7 @@ class Mashines {
       this.status = "free";
       this.winningHandler.order = [];
       this.killWinThreads();
+      this.vc.run();
     }, this.config.waitForNextSpin);
   }
   /**
@@ -7722,14 +9345,14 @@ class Mashines {
       world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
     };
 
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -10.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -10.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -10.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -10.4; // Addin anything at all
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -11.4; // Addin anything at all
 
     App.scene.topHeader.shake = false;
     var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001);
@@ -7745,18 +9368,26 @@ class Mashines {
       }, 20);
     };
 
-    world.Add("square", 1, "footerHeader");
-    App.scene.footerHeader.geometry.setScaleByX(11);
+    let streamTex1 = this.createNidzaTextureText(this.nidza).then(what => {
+      console.log("what", what);
+      App.scene.footerHeader.streamTextures = {
+        videoImage: what
+      };
+    });
+    world.Add("squareTex", 1, "footerHeader", texTopHeader);
+    App.scene.footerHeader.geometry.setScaleByX(6);
     App.scene.footerHeader.geometry.setScaleByY(0.39);
     App.scene.footerHeader.position.y = -2.56;
-    App.scene.footerHeader.position.z = -6.5; // Style color buttom of footer
+    App.scene.footerHeader.position.z = -6.5; // Adapt active textures because it is inverted by nature.
 
-    App.scene.footerHeader.geometry.colorData.color[0].set(0.1, 0.1, 0.1);
-    App.scene.footerHeader.geometry.colorData.color[1].set(0.1, 0.1, 0.1);
-    App.scene.footerHeader.geometry.colorData.color[2].set(0.1, 0.1, 0.1);
-    App.scene.footerHeader.geometry.colorData.color[3].set(0.1, 0.1, 0.1);
+    App.scene.footerHeader.rotation.rotx = 180; // Style color buttom of footer
+    //App.scene.footerHeader.geometry.colorData.color[0].set( 0.1, 0.1, 0.1 );
+    //App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
+    //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
+    //App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
+
     App.operation.squareTex_buffer_procedure(App.scene.topHeader);
-    App.operation.square_buffer_procedure(App.scene.footerHeader);
+    App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
     console.info("Mashine is constructed.");
   };
   addWheel = function (world) {
@@ -7858,11 +9489,13 @@ class Mashines {
     this.font.loadChar(matrixEngine.objLoader, "t", "headerTitle");
   };
   fieldOnClick = function (hitObject) {
-    var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.02);
-    hitObject.rotation.rotationSpeed.y = 100;
-    var timer = setInterval(() => {
-      hitObject.geometry.setScale(oscAng.UPDATE()); //  clearInterval(timer)
-    }, 1);
+    var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.038);
+    hitObject.rotation.rotationSpeed.y = 200;
+    setTimeout(() => {
+      // hitObject.geometry.setScale( oscAng.UPDATE() )
+      hitObject.rotation.rotationSpeed.y = 0;
+      hitObject.rotation.roty = 0;
+    }, 2000);
   };
   addRaycaster = () => {
     window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
@@ -7881,7 +9514,7 @@ class Mashines {
   };
   addSpinText = function () {
     var textuteImageSamplers = {
-      source: ["res/images/nidza.png"],
+      source: ["res/images/spinBtn1.png"],
       mix_operation: "multiply" // ENUM : multiply , divide ,
 
     };
@@ -7890,10 +9523,10 @@ class Mashines {
     App.scene.spinBtn.position.SetX(2);
     App.scene.spinBtn.position.SetZ(-5);
     App.scene.spinBtn.geometry.setScale(0.3);
-    App.scene.spinBtn.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-    App.scene.spinBtn.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4]; // App.scene.spinBtn.geometry.setScaleByY(-0.76)
-
-    App.scene.spinBtn.glBlend.blendEnabled = true; // App.scene.spinBtn.rotation.rotz = 90;
+    App.scene.spinBtn.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    App.scene.spinBtn.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3]; // App.scene.spinBtn.geometry.setScaleByY(-0.76)
+    // App.scene.spinBtn.glBlend.blendEnabled = true;
+    // App.scene.spinBtn.rotation.rotz = 90;
   };
   activateSpinning = () => {
     if (this.status != "free") {
@@ -7981,7 +9614,8 @@ class Mashines {
   };
   preSpinning = wheelID => {
     return new Promise((resolve, reject) => {
-      this.mashineAudio[wheelID].play();
+      _matrixAudio.startSpin[wheelID].play();
+
       this.preThread = setInterval(() => {
         this.accessKeys.forEach((accessWheelNames, indexWheel) => {
           if (indexWheel == wheelID) {
@@ -8004,13 +9638,13 @@ class Mashines {
 
 exports.default = Mashines;
 
-},{"./matrix-audio":25,"matrix-engine":6,"matrix-engine-plugins":3}],25:[function(require,module,exports){
+},{"./active-textures":37,"./matrix-audio":39,"matrix-engine":6,"matrix-engine-plugins":3,"nidza":20}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mashineAudio = void 0;
+exports.stopSpin = exports.startSpin = void 0;
 
 var AudioSystem = _interopRequireWildcard(require("audio-commander"));
 
@@ -8018,35 +9652,60 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var myAudioResources = new AudioSystem.AudioMatrix();
+var myAudioSystem = new AudioSystem.AudioMatrix();
 const audioOption1 = {
   id: "shootSpin",
-  srcPath: "res/audios/wheel-start.mp3"
+  srcPath: "res/audios/laser6.mp3"
 };
 const audioOption2 = {
   id: "shootSpin2",
-  srcPath: "res/audios/wheel-start.mp3"
+  srcPath: "res/audios/laser7.mp3"
 };
 const audioOption3 = {
   id: "shootSpin3",
-  srcPath: "res/audios/wheel-start.mp3"
+  srcPath: "res/audios/laser6.mp3"
 };
 const audioOption4 = {
   id: "shootSpin4",
-  srcPath: "res/audios/wheel-start.mp3"
+  srcPath: "res/audios/laser7.mp3"
 };
 const audioOption5 = {
   id: "shootSpin5",
-  srcPath: "res/audios/wheel-start.mp3"
+  srcPath: "res/audios/laser6.mp3"
 };
 const audioOption6 = {
   id: "shootSpin6",
-  srcPath: "res/audios/wheel-start.mp3"
+  srcPath: "res/audios/laser7.mp3"
 };
 let options = [audioOption1, audioOption2, audioOption3, audioOption4, audioOption5, audioOption6];
-let mashineAudio = myAudioResources.createAudioResource(options);
-exports.mashineAudio = mashineAudio;
-window.mashineAudio = mashineAudio;
+let startSpin = myAudioSystem.createAudioResource(options);
+exports.startSpin = startSpin;
+const audioOptionStop1 = {
+  id: "stopSpin",
+  srcPath: "res/audios/laser8.mp3"
+};
+const audioOptionStop2 = {
+  id: "stopSpin2",
+  srcPath: "res/audios/laser8.mp3"
+};
+const audioOptionStop3 = {
+  id: "stopSpin3",
+  srcPath: "res/audios/laser8.mp3"
+};
+const audioOptionStop4 = {
+  id: "stopSpin4",
+  srcPath: "res/audios/laser8.mp3"
+};
+const audioOptionStop5 = {
+  id: "stopSpin5",
+  srcPath: "res/audios/laser8.mp3"
+};
+const audioOptionStop6 = {
+  id: "stopSpin6",
+  srcPath: "res/audios/laser8.mp3"
+};
+let options2 = [audioOptionStop1, audioOptionStop2, audioOptionStop3, audioOptionStop4, audioOptionStop5, audioOptionStop6];
+let stopSpin = myAudioSystem.createAudioResource(options2);
 /*
 var myPromiseCheck = testMyAudio[0].play();
 myPromiseCheck.then( () => {
@@ -8064,7 +9723,9 @@ testMyAudio[0].onended = function() {
 };
 */
 
-},{"audio-commander":1}],26:[function(require,module,exports){
+exports.stopSpin = stopSpin;
+
+},{"audio-commander":1}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8074,8 +9735,9 @@ exports.VoiceCommanderInstance = void 0;
 
 var _voiceCommander = require("voice-commander");
 
+const grammars = ["spin", "play"];
 const options = {
-  grammarData: _voiceCommander.colorNamesGrammars,
+  grammarData: grammars,
   callback: r => {
     if (r == 'spin' || r == 'play') {
       App.slot.mashine.activateSpinning();
@@ -8086,6 +9748,27 @@ const options = {
 };
 const VoiceCommanderInstance = new _voiceCommander.VoiceCommander(options);
 exports.VoiceCommanderInstance = VoiceCommanderInstance;
+window.VoiceCommanderInstance = VoiceCommanderInstance;
 console.log(VoiceCommanderInstance);
+/**
+ * @description Voice command procedures.
+ * Will be bind direct on object.
+ */
 
-},{"voice-commander":21}]},{},[23]);
+VoiceCommanderInstance.setInteraction = function (newInterAct) {
+  VoiceCommanderInstance.callback = newInterAct;
+};
+
+VoiceCommanderInstance.whatisyourname = r => {
+  // global for now
+  App.slot.user = r;
+  App.slot.mashine.nidza.access.footerLabel.elements[0].text = "You are welcome Mr/Mrs. " + r + ". Voice command: spin or play ";
+  console.log(App.slot.mashine.nidza + " <<<< ");
+  console.warn("Tell me your nickname.");
+  VoiceCommanderInstance.setInteraction(options.callback);
+  setTimeout(() => {
+    VoiceCommanderInstance.run();
+  }, 1000);
+};
+
+},{"voice-commander":34}]},{},[36]);

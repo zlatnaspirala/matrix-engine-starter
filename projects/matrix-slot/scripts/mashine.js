@@ -1,16 +1,15 @@
 
 import * as matrixEngine from "matrix-engine";
 import {planeFont, planeUVFont} from "matrix-engine-plugins";
-import {mashineAudio} from "./matrix-audio";
+import {startSpin, stopSpin} from "./matrix-audio";
+import {createNidzaTextureText} from "./active-textures";
+import {Nidza} from "nidza";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
 var App = matrixEngine.App;
 
 export default class Mashines {
   constructor( world, config ) {
-
-    console.info( mashineAudio + " rightHereRightNow test the sound." );
-
     this.config = config;
     this.status = "free";
     this.font = new planeUVFont();
@@ -26,14 +25,18 @@ export default class Mashines {
       orderPositions: [],
     };
 
-    this.mashineAudio = mashineAudio;
-
     this.winningHandler = {
       order: []
     };
 
     // hold threads - clear it
-    this.winningVisualEffect = { threads : [] , ids: [] };
+    this.winningVisualEffect = {threads: [], ids: []};
+
+    // inject voice commander
+    this.vc = {};
+
+    this.nidza = new Nidza();
+    this.createNidzaTextureText = createNidzaTextureText;
 
     this.addMashine( world );
     this.addWheel( world );
@@ -41,91 +44,95 @@ export default class Mashines {
     this.addRaycaster();
 
     this.constructWinningObject = ( event ) => {
+
+      stopSpin[event.detail.wheelID].play();
+
       //console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
       //console.log( "constructWinningObject field name=> ", event.detail.fieldname );
       //console.log( "constructWinningObject isLast=> ", event.detail.isLast );
       let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
       var newOrder = App.slot.mashine.arrayRotate( localHolder );
-      while (newOrder[newOrder.length-1] != event.detail.fieldname) {
+      while ( newOrder[newOrder.length - 1] != event.detail.fieldname ) {
         newOrder = App.slot.mashine.arrayRotate( localHolder )
       }
       this.winningHandler.order.push( newOrder );
-      if (event.detail.isLast) {
+      if ( event.detail.isLast ) {
         let countLineWins = [];
         let collectWinObjs = [];
-        this.winningHandler.order.forEach((wheelData, index) => {
+        this.winningHandler.order.forEach( ( wheelData, index ) => {
           // hard code
           let accessName = wheelData[this.config.winnigLines[0][0]];
-          countLineWins.push(App.scene[accessName].specialId);
-          collectWinObjs.push(App.scene[accessName]);
-        });
-        var finalResult = this.findMax(countLineWins);
-        this.checkForWinCombination(finalResult, collectWinObjs);
+          countLineWins.push( App.scene[accessName].specialId );
+          collectWinObjs.push( App.scene[accessName] );
+        } );
+        var finalResult = this.findMax( countLineWins );
+        this.checkForWinCombination( finalResult, collectWinObjs );
       }
     };
 
     window.addEventListener( "wheel.stoped", this.constructWinningObject );
   }
 
-  activateWinningVisualEffect(worldObj, comb) {
-    let oscilltor_variable = new OSC(0, 2, 0.004);
-    this.winningVisualEffect.threads.push(setInterval(() => {
+  activateWinningVisualEffect( worldObj, comb ) {
+    let oscilltor_variable = new OSC( 0, 2, 0.004 );
+    this.winningVisualEffect.threads.push( setInterval( () => {
       worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
       worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
-    }, 10));
+    }, 10 ) );
 
-    this.winningVisualEffect.ids.push(worldObj)
+    this.winningVisualEffect.ids.push( worldObj )
 
   }
 
   killWinThreads() {
-    this.winningVisualEffect.threads.forEach((threadTimer) => {
-      clearInterval(threadTimer);
-    });
+    this.winningVisualEffect.threads.forEach( ( threadTimer ) => {
+      clearInterval( threadTimer );
+    } );
     // Becouse all wheels contain at list one of all kindof field types
-    this.config.wheels[0].forEach((fieldOriginal) => {
-      this.winningVisualEffect.ids.forEach((obj) => {
-        if (fieldOriginal.id == obj.specialId) {
+    this.config.wheels[0].forEach( ( fieldOriginal ) => {
+      this.winningVisualEffect.ids.forEach( ( obj ) => {
+        if ( fieldOriginal.id == obj.specialId ) {
           obj.LightsData.ambientLight.r = fieldOriginal.color.r;
           obj.LightsData.ambientLight.b = fieldOriginal.color.b;
           return;
         }
-      });
-    });
+      } );
+    } );
 
   }
 
-  separateWinLineObjs(lineWinObjCollect, comb) {
-    for (var j=0;j < lineWinObjCollect.length;j++) {
-      if (lineWinObjCollect[j].specialId == comb.fieldId) {
-        this.activateWinningVisualEffect(lineWinObjCollect[j], comb);
+  separateWinLineObjs( lineWinObjCollect, comb ) {
+    for ( var j = 0; j < lineWinObjCollect.length; j++ ) {
+      if ( lineWinObjCollect[j].specialId == comb.fieldId ) {
+        this.activateWinningVisualEffect( lineWinObjCollect[j], comb );
       }
     }
   }
 
-  checkForWinCombination (rez, lineWinObjCollect) {
-    console.log("final " , rez)
-    rez.forEach((comb) => {
-      if (comb.repeat == 3) {
-        this.separateWinLineObjs(lineWinObjCollect, comb);
-        console.info("3 in line small win with field :", comb.fieldId);
-      } else if (comb.repeat == 4) {
-        console.info("4 in line small win with field :", comb.fieldId);
-        this.separateWinLineObjs(lineWinObjCollect, comb);
-      } else if (comb.repeat == 5) {
-        console.info("5 in line small win with field :", comb.fieldId);
-        this.separateWinLineObjs(lineWinObjCollect, comb);
-      } else if (comb.repeat == 6) {
-        console.info("6 in line x win with field :", comb.fieldId);
-        this.separateWinLineObjs(lineWinObjCollect, comb);
+  checkForWinCombination( rez, lineWinObjCollect ) {
+    console.log( "final ", rez )
+    rez.forEach( ( comb ) => {
+      if ( comb.repeat == 3 ) {
+        this.separateWinLineObjs( lineWinObjCollect, comb );
+        console.info( "3 in line small win with field :", comb.fieldId );
+      } else if ( comb.repeat == 4 ) {
+        console.info( "4 in line small win with field :", comb.fieldId );
+        this.separateWinLineObjs( lineWinObjCollect, comb );
+      } else if ( comb.repeat == 5 ) {
+        console.info( "5 in line small win with field :", comb.fieldId );
+        this.separateWinLineObjs( lineWinObjCollect, comb );
+      } else if ( comb.repeat == 6 ) {
+        console.info( "6 in line x win with field :", comb.fieldId );
+        this.separateWinLineObjs( lineWinObjCollect, comb );
       }
-    });
+    } );
 
-    setTimeout(() => {
+    setTimeout( () => {
       this.status = "free";
       this.winningHandler.order = [];
       this.killWinThreads();
-     }, this.config.waitForNextSpin);
+      this.vc.run();
+    }, this.config.waitForNextSpin );
   }
 
   /**
@@ -138,46 +145,46 @@ export default class Mashines {
     return arr;
   }
 
-  findMax (arr ) {
+  findMax( arr ) {
     var counts = {}, max = 0, res;
-    for (var v in arr) {
-      counts[arr[v]] = (counts[arr[v]] || 0) + 1;
-      if (counts[arr[v]] > max) { 
+    for ( var v in arr ) {
+      counts[arr[v]] = ( counts[arr[v]] || 0 ) + 1;
+      if ( counts[arr[v]] > max ) {
         max = counts[arr[v]];
         res = arr[v];
       }
 
     }
     var results = [];
-    for (var k in counts) {
-      if (counts[k] == max) {
-        var localRes = {fieldId: k, repeat: counts[k] };
-        results.push(localRes);
+    for ( var k in counts ) {
+      if ( counts[k] == max ) {
+        var localRes = {fieldId: k, repeat: counts[k]};
+        results.push( localRes );
       }
     }
     return results;
   }
 
-  findMaxOfStrDuplicates(argArray) {
+  findMaxOfStrDuplicates( argArray ) {
     var name;
     var map = new Map();
     var max = 1;
     var maxRecurringString = "";
-    for(name of argArray) {
-      if(map.get(name) === undefined) {
-        map.set(name, 1);
+    for ( name of argArray ) {
+      if ( map.get( name ) === undefined ) {
+        map.set( name, 1 );
       } else {
-        var count = map.get(name);
-        count = count+1;
-        map.set(name, count);
-            if(max < count) {
-              max = count;
-              maxRecurringString = name;
-            }
+        var count = map.get( name );
+        count = count + 1;
+        map.set( name, count );
+        if ( max < count ) {
+          max = count;
+          maxRecurringString = name;
+        }
       }
     }
-    console.log("Maximum recurring string is ", maxRecurringString, ". Max number of times :" + max);
-    return { maxRecurringString, max }
+    console.log( "Maximum recurring string is ", maxRecurringString, ". Max number of times :" + max );
+    return {maxRecurringString, max}
   }
 
   addMashine = function ( world ) {
@@ -229,14 +236,14 @@ export default class Mashines {
       world.GL.gl.generateMipmap( world.GL.gl.TEXTURE_2D );
     };
 
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -10.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -10.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -10.4;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 11.4;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -10.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -11.4;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 9.4;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -11.4;
 
     // Addin anything at all
     App.scene.topHeader.shake = false;
@@ -254,20 +261,30 @@ export default class Mashines {
       }, 20 );
     }
 
-    world.Add( "square", 1, "footerHeader" );
-    App.scene.footerHeader.geometry.setScaleByX( 11 );
+    let streamTex1 = this.createNidzaTextureText( this.nidza ).then( ( what ) => {
+      console.log( "what", what );
+      App.scene.footerHeader.streamTextures = {
+        videoImage: what
+      };
+    } );
+
+    world.Add( "squareTex", 1, "footerHeader", texTopHeader );
+    App.scene.footerHeader.geometry.setScaleByX( 6 );
     App.scene.footerHeader.geometry.setScaleByY( 0.39 );
     App.scene.footerHeader.position.y = -2.56;
     App.scene.footerHeader.position.z = -6.5;
+    // Adapt active textures because it is inverted by nature.
+    App.scene.footerHeader.rotation.rotx = 180;
+
 
     // Style color buttom of footer
-    App.scene.footerHeader.geometry.colorData.color[0].set( 0.1, 0.1, 0.1 );
-    App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
-    App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
-    App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
+    //App.scene.footerHeader.geometry.colorData.color[0].set( 0.1, 0.1, 0.1 );
+    //App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
+    //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
+    //App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
 
     App.operation.squareTex_buffer_procedure( App.scene.topHeader );
-    App.operation.square_buffer_procedure( App.scene.footerHeader );
+    App.operation.squareTex_buffer_procedure( App.scene.footerHeader );
 
     console.info( "Mashine is constructed." );
   };
@@ -375,15 +392,14 @@ export default class Mashines {
   };
 
   fieldOnClick = function ( hitObject ) {
-    var oscAng = new matrixEngine.utility.OSCILLATOR( 1, 2, 0.02 );
-    hitObject.rotation.rotationSpeed.y = 100;
+    var oscAng = new matrixEngine.utility.OSCILLATOR( 1, 2, 0.038 );
+    hitObject.rotation.rotationSpeed.y = 200;
 
-    var timer = setInterval( () => {
-      hitObject.geometry.setScale( oscAng.UPDATE() )
-
-      //  clearInterval(timer)
-
-    }, 1 )
+    setTimeout(() => {
+      // hitObject.geometry.setScale( oscAng.UPDATE() )
+      hitObject.rotation.rotationSpeed.y = 0;
+      hitObject.rotation.roty = 0;
+    }, 2000);
 
   }
 
@@ -407,7 +423,7 @@ export default class Mashines {
 
   addSpinText = function () {
     var textuteImageSamplers = {
-      source: ["res/images/nidza.png"],
+      source: ["res/images/spinBtn1.png"],
       mix_operation: "multiply", // ENUM : multiply , divide ,
     };
 
@@ -417,12 +433,12 @@ export default class Mashines {
     App.scene.spinBtn.position.SetZ( -5 );
     App.scene.spinBtn.geometry.setScale( 0.3 );
     App.scene.spinBtn.glBlend.blendParamSrc =
-      matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene.spinBtn.glBlend.blendParamDest =
-      matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      matrixEngine.utility.ENUMERATORS.glBlend.param[3];
 
     // App.scene.spinBtn.geometry.setScaleByY(-0.76)
-    App.scene.spinBtn.glBlend.blendEnabled = true;
+    // App.scene.spinBtn.glBlend.blendEnabled = true;
     // App.scene.spinBtn.rotation.rotz = 90;
   };
 
@@ -495,7 +511,7 @@ export default class Mashines {
                 console.log( fieldname );
                 var isLast = false;
                 // wheel0field5 parse 5 + 1 = 0  or 
-                if (indexWheel == accessKeysArray.length - 1) {
+                if ( indexWheel == accessKeysArray.length - 1 ) {
                   isLast = true;
                 }
 
@@ -522,7 +538,7 @@ export default class Mashines {
   preSpinning = wheelID => {
     return new Promise( ( resolve, reject ) => {
 
-      this.mashineAudio[wheelID].play();
+      startSpin[wheelID].play();
 
       this.preThread = setInterval( () => {
         this.accessKeys.forEach( ( accessWheelNames, indexWheel ) => {
@@ -543,4 +559,5 @@ export default class Mashines {
   deActivateSpiningThread = () => {
     clearInterval( this.thread );
   };
+
 }

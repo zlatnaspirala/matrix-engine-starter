@@ -1,36 +1,36 @@
 
 import * as AudioSystem from "audio-commander";
 
-var myAudioResources = new AudioSystem.AudioMatrix();
+var myAudioSystem = new AudioSystem.AudioMatrix();
 
 const audioOption1 = {
   id: "shootSpin",
-  srcPath: "res/audios/wheel-start.mp3",
+  srcPath: "res/audios/laser6.mp3",
 }
 
 const audioOption2 = {
   id: "shootSpin2",
-  srcPath: "res/audios/wheel-start.mp3",
+  srcPath: "res/audios/laser7.mp3",
 }
 
 const audioOption3 = {
   id: "shootSpin3",
-  srcPath: "res/audios/wheel-start.mp3",
+  srcPath: "res/audios/laser6.mp3",
 }
 
 const audioOption4 = {
   id: "shootSpin4",
-  srcPath: "res/audios/wheel-start.mp3",
+  srcPath: "res/audios/laser7.mp3",
 }
 
 const audioOption5 = {
   id: "shootSpin5",
-  srcPath: "res/audios/wheel-start.mp3",
+  srcPath: "res/audios/laser6.mp3",
 }
 
 const audioOption6 = {
   id: "shootSpin6",
-  srcPath: "res/audios/wheel-start.mp3",
+  srcPath: "res/audios/laser7.mp3",
 }
 
 let options = [
@@ -42,9 +42,48 @@ let options = [
   audioOption6
 ]
 
-export let mashineAudio = myAudioResources.createAudioResource(options);
+export let startSpin = myAudioSystem.createAudioResource(options);
 
-window.mashineAudio = mashineAudio;
+const audioOptionStop1 = {
+  id: "stopSpin",
+  srcPath: "res/audios/laser8.mp3",
+}
+
+const audioOptionStop2 = {
+  id: "stopSpin2",
+  srcPath: "res/audios/laser8.mp3",
+}
+
+const audioOptionStop3 = {
+  id: "stopSpin3",
+  srcPath: "res/audios/laser8.mp3",
+}
+
+const audioOptionStop4 = {
+  id: "stopSpin4",
+  srcPath: "res/audios/laser8.mp3",
+}
+
+const audioOptionStop5 = {
+  id: "stopSpin5",
+  srcPath: "res/audios/laser8.mp3",
+}
+
+const audioOptionStop6 = {
+  id: "stopSpin6",
+  srcPath: "res/audios/laser8.mp3",
+}
+
+let options2 = [
+  audioOptionStop1,
+  audioOptionStop2,
+  audioOptionStop3,
+  audioOptionStop4,
+  audioOptionStop5,
+  audioOptionStop6
+]
+
+export let stopSpin = myAudioSystem.createAudioResource(options2);
 
 /*
 var myPromiseCheck = testMyAudio[0].play();
