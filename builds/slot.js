@@ -9012,11 +9012,12 @@ function webGLStart() {
     // Count after all wheels spinning moment
     spinningInterval: 1000,
     stopingInterval: 1000,
-    waitForNextSpin: 6000,
+    waitForNextSpin: 8000,
     verticalSize: 3,
     wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime, fieldPurple, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldBlue, fieldLime, fieldLime, fieldPurple]],
-    winnigLines: [[1, 1, 1, 1, 1, 1] // [0,0,0,0,0,0],
-    // [2,2,2,2,2,2]
+    winnigLines: [[1, 1, 1, 1, 1, 1], // m
+    [0, 0, 0, 0, 0, 0], // t
+    [2, 2, 2, 2, 2, 2] // b
     ]
   };
   mashine = new _mashine.default(world, App.slot.config);
@@ -9043,13 +9044,16 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":38,"./scripts/voice-commander":40,"matrix-engine":6}],37:[function(require,module,exports){
+},{"./scripts/mashine":38,"./scripts/voice-commander":41,"matrix-engine":6}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createNidzaTextureText = createNidzaTextureText;
+exports.createNidzaHudLinesInfo = createNidzaHudLinesInfo;
+
+var _standardFonts = require("./standard-fonts");
 
 function createNidzaTextureText(nidza) {
   return new Promise((resolve, reject) => {
@@ -9066,7 +9070,7 @@ function createNidzaTextureText(nidza) {
     let statusMessageBox = nidza.access.footerLabel.addTextComponent({
       id: "zlatna",
       text: "welcome here i am mashine , whats you name ?",
-      color: "yellow",
+      color: "lime",
       position: {
         x: 50,
         y: 10
@@ -9081,8 +9085,8 @@ function createNidzaTextureText(nidza) {
       },
       font: {
         fontSize: "130%",
-        fontStyle: "bold",
-        fontName: "helvetica"
+        fontStyle: "normal",
+        fontName: _standardFonts.stdFonts.CourierNew
       }
     }); // Create one simple oscillator
 
@@ -9107,7 +9111,61 @@ function createNidzaTextureText(nidza) {
   });
 }
 
-},{}],38:[function(require,module,exports){
+function createNidzaHudLinesInfo(nidza) {
+  return new Promise((resolve, reject) => {
+    console.log(this + "<<<<<<<<");
+    let myFirstNidzaObjectOptions = {
+      id: "footerLinesInfo",
+      size: {
+        width: 200,
+        height: 120
+      }
+    }; //  object.streamTextures.videoImage
+
+    let footerLinesInfo = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
+    let texCanvas = document.getElementById('footerLinesInfo');
+    let statusMessageBox = footerLinesInfo.addTextComponent({
+      id: "linesInfo",
+      text: "Active lines man",
+      color: "lime",
+      position: {
+        x: 50,
+        y: 10
+      },
+      dimension: {
+        width: 100,
+        height: 100
+      },
+      border: {
+        fillColor: "black",
+        strokeColor: "lime"
+      },
+      font: {
+        fontSize: "130%",
+        fontStyle: "normal",
+        fontName: "helvetica"
+      }
+    }); // Create one simple oscillator
+    // let rotationOption = new nidza.Osc( 0, 360, 2 );
+
+    /*
+    rotationOption.onRepeat = function ( osc ) {
+      console.info( "Values reached onrepeat targets osc: ", osc )
+      statusMessageBox.rotation.clearUpdate();
+      dispatchEvent( new CustomEvent( "deactivate-updater",
+        {detail: {id: osc.elementIdentity}} ) );
+    } */
+    // statusMessageBox.rotation.setRotation( rotationOption )
+    // statusMessageBox.rotation.osc.setDelay( 0 )
+
+    nidza.access.footerLinesInfo.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    window.footerLabel = nidza.access.footerLinesInfo;
+    resolve(texCanvas);
+    return texCanvas;
+  });
+}
+
+},{"./standard-fonts":40}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9160,6 +9218,7 @@ class Mashines {
     this.vc = {};
     this.nidza = new _nidza.Nidza();
     this.createNidzaTextureText = _activeTextures.createNidzaTextureText;
+    this.createNidzaHudLinesInfo = _activeTextures.createNidzaHudLinesInfo;
     this.addMashine(world);
     this.addWheel(world);
     this.addHeaderText();
@@ -9181,16 +9240,21 @@ class Mashines {
       this.winningHandler.order.push(newOrder);
 
       if (event.detail.isLast) {
-        let countLineWins = [];
-        let collectWinObjs = [];
-        this.winningHandler.order.forEach((wheelData, index) => {
-          // hard code
-          let accessName = wheelData[this.config.winnigLines[0][0]];
-          countLineWins.push(App.scene[accessName].specialId);
-          collectWinObjs.push(App.scene[accessName]);
+        // test
+        this.config.winnigLines.forEach((line, lineIndex) => {
+          let countLineWins = [];
+          let collectWinObjs = [];
+          setTimeout(() => {
+            this.winningHandler.order.forEach((wheelData, index) => {
+              // hard code for multilines feature
+              let accessName = wheelData[line[0]];
+              countLineWins.push(App.scene[accessName].specialId);
+              collectWinObjs.push(App.scene[accessName]);
+            });
+            var finalResult = this.findMax(countLineWins);
+            this.checkForWinCombination(finalResult, collectWinObjs);
+          }, 2000 * lineIndex);
         });
-        var finalResult = this.findMax(countLineWins);
-        this.checkForWinCombination(finalResult, collectWinObjs);
       }
     };
 
@@ -9202,6 +9266,7 @@ class Mashines {
     this.winningVisualEffect.threads.push(setInterval(() => {
       worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
       worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+      worldObj.rotation.roty = oscilltor_variable.UPDATE() * 10;
     }, 10));
     this.winningVisualEffect.ids.push(worldObj);
   }
@@ -9368,7 +9433,7 @@ class Mashines {
       }, 20);
     };
 
-    let streamTex1 = this.createNidzaTextureText(this.nidza).then(what => {
+    this.createNidzaTextureText(this.nidza).then(what => {
       console.log("what", what);
       App.scene.footerHeader.streamTextures = {
         videoImage: what
@@ -9380,7 +9445,20 @@ class Mashines {
     App.scene.footerHeader.position.y = -2.56;
     App.scene.footerHeader.position.z = -6.5; // Adapt active textures because it is inverted by nature.
 
-    App.scene.footerHeader.rotation.rotx = 180; // Style color buttom of footer
+    App.scene.footerHeader.rotation.rotx = 180;
+    world.Add("squareTex", 1, "footerLines", texTopHeader);
+    App.scene.footerLines.geometry.setScaleByX(1);
+    App.scene.footerLines.geometry.setScaleByY(0.4);
+    App.scene.footerLines.position.y = -2.56;
+    App.scene.footerLines.position.z = -6.4;
+    App.scene.footerLines.position.x = -3.3; // Adapt active textures because it is inverted by nature.
+
+    App.scene.footerLines.rotation.rotx = 180;
+    this.createNidzaHudLinesInfo(this.nidza).then(streamTex => {
+      App.scene.footerLines.streamTextures = {
+        videoImage: streamTex
+      };
+    }); // Style color buttom of footer
     //App.scene.footerHeader.geometry.colorData.color[0].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
@@ -9388,6 +9466,7 @@ class Mashines {
 
     App.operation.squareTex_buffer_procedure(App.scene.topHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
+    App.operation.squareTex_buffer_procedure(App.scene.footerLines);
     console.info("Mashine is constructed.");
   };
   addWheel = function (world) {
@@ -9396,7 +9475,7 @@ class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
     var textuteImageSamplers2 = {
-      source: ["res/images/field3.png"],
+      source: ["res/images/field2.png"],
       mix_operation: "multiply"
     };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -9431,8 +9510,8 @@ class Mashines {
         });
         lastY = App.scene[name].position.y;
         App.scene[name].geometry.setScaleByX(O / 10);
-        App.scene[name].geometry.setScaleByY(2.97 / VW); //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5] ;
+        App.scene[name].geometry.setScaleByY(2.97 / VW); //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
         // App.scene.spinBtn.geometry.setScaleByY(-0.76)
         //App.scene[name].glBlend.blendEnabled = true;
 
@@ -9726,6 +9805,27 @@ testMyAudio[0].onended = function() {
 exports.stopSpin = stopSpin;
 
 },{"audio-commander":1}],40:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.stdFonts = void 0;
+const stdFonts = {
+  Arial: "Arial",
+  Verdana: "Verdana",
+  Helvetica: "Helvetica",
+  Tahoma: "Tahoma",
+  TrebuchetMS: "Trebuchet MS",
+  TimesNewRoman: "Times New Roman",
+  Georgia: "Georgia",
+  Garamond: "Garamond",
+  CourierNew: "Courier New",
+  BrushScriptMT: "Brush Script MT"
+};
+exports.stdFonts = stdFonts;
+
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

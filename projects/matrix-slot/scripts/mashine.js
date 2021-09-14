@@ -2,7 +2,7 @@
 import * as matrixEngine from "matrix-engine";
 import {planeFont, planeUVFont} from "matrix-engine-plugins";
 import {startSpin, stopSpin} from "./matrix-audio";
-import {createNidzaTextureText} from "./active-textures";
+import {createNidzaTextureText, createNidzaHudLinesInfo} from "./active-textures";
 import {Nidza} from "nidza";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
@@ -37,6 +37,7 @@ export default class Mashines {
 
     this.nidza = new Nidza();
     this.createNidzaTextureText = createNidzaTextureText;
+    this.createNidzaHudLinesInfo = createNidzaHudLinesInfo;
 
     this.addMashine( world );
     this.addWheel( world );
@@ -57,16 +58,25 @@ export default class Mashines {
       }
       this.winningHandler.order.push( newOrder );
       if ( event.detail.isLast ) {
-        let countLineWins = [];
-        let collectWinObjs = [];
-        this.winningHandler.order.forEach( ( wheelData, index ) => {
-          // hard code
-          let accessName = wheelData[this.config.winnigLines[0][0]];
-          countLineWins.push( App.scene[accessName].specialId );
-          collectWinObjs.push( App.scene[accessName] );
-        } );
-        var finalResult = this.findMax( countLineWins );
-        this.checkForWinCombination( finalResult, collectWinObjs );
+
+        // test
+        this.config.winnigLines.forEach((line, lineIndex)=>{
+          let countLineWins = [];
+          let collectWinObjs = [];
+          setTimeout(() => {
+            this.winningHandler.order.forEach( ( wheelData, index ) => {
+              // hard code for multilines feature
+              let accessName = wheelData[line[0]];
+              countLineWins.push( App.scene[accessName].specialId );
+              collectWinObjs.push( App.scene[accessName] );
+            });
+
+            var finalResult = this.findMax( countLineWins );
+            this.checkForWinCombination( finalResult, collectWinObjs );
+          }, 2000 * lineIndex);
+
+        });
+
       }
     };
 
@@ -78,6 +88,7 @@ export default class Mashines {
     this.winningVisualEffect.threads.push( setInterval( () => {
       worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
       worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+      worldObj.rotation.roty = oscilltor_variable.UPDATE() * 10;
     }, 10 ) );
 
     this.winningVisualEffect.ids.push( worldObj )
@@ -261,7 +272,7 @@ export default class Mashines {
       }, 20 );
     }
 
-    let streamTex1 = this.createNidzaTextureText( this.nidza ).then( ( what ) => {
+    this.createNidzaTextureText( this.nidza ).then( ( what ) => {
       console.log( "what", what );
       App.scene.footerHeader.streamTextures = {
         videoImage: what
@@ -277,14 +288,29 @@ export default class Mashines {
     App.scene.footerHeader.rotation.rotx = 180;
 
 
+    world.Add( "squareTex", 1, "footerLines", texTopHeader );
+    App.scene.footerLines.geometry.setScaleByX( 1 );
+    App.scene.footerLines.geometry.setScaleByY( 0.4 );
+    App.scene.footerLines.position.y = -2.56;
+    App.scene.footerLines.position.z = -6.4;
+    App.scene.footerLines.position.x = -3.3;
+    // Adapt active textures because it is inverted by nature.
+    App.scene.footerLines.rotation.rotx = 180;
+
+    this.createNidzaHudLinesInfo( this.nidza ).then( ( streamTex ) => {
+      App.scene.footerLines.streamTextures = {
+        videoImage: streamTex
+      };
+    });
+
     // Style color buttom of footer
     //App.scene.footerHeader.geometry.colorData.color[0].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
-
     App.operation.squareTex_buffer_procedure( App.scene.topHeader );
     App.operation.squareTex_buffer_procedure( App.scene.footerHeader );
+    App.operation.squareTex_buffer_procedure( App.scene.footerLines );
 
     console.info( "Mashine is constructed." );
   };
@@ -299,7 +325,7 @@ export default class Mashines {
     var VW = App.slot.config.verticalSize;
 
     var textuteImageSamplers2 = {
-      source: ["res/images/field3.png"],
+      source: ["res/images/field2.png"],
       mix_operation: "multiply",
     };
 
@@ -337,8 +363,8 @@ export default class Mashines {
         App.scene[name].geometry.setScaleByX( O / 10 );
         App.scene[name].geometry.setScaleByY( 2.97 / VW );
 
-        //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5] ;
+        //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
 
         // App.scene.spinBtn.geometry.setScaleByY(-0.76)
         //App.scene[name].glBlend.blendEnabled = true;

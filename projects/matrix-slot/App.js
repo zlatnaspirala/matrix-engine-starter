@@ -48,17 +48,17 @@ function webGLStart() {
    * @description Slot mashine can be configured from
    * external (web server/ some other way)
    */
-  var fieldRed    = { id: 1, color: {r: 2,   g: 0 ,   b: 0.1}, winCoefficient: 100 };
-  var fieldBlue   = { id: 2, color: {r: 0.7, g: 1 ,   b: 22 }, winCoefficient: 25 };
-  var fieldGreen  = { id: 3, color: {r: 0.2,   g: 1 , b: 0.2  }, winCoefficient: 10 };
-  var fieldPurple = { id: 4, color: {r: 1,   g: 0.2 ,   b: 0  }, winCoefficient: 5 };
-  var fieldLime   = { id: 5, color: {r: 0.5,   g: 2 , b: 0.2  }, winCoefficient: 2 };
+  var fieldRed    = { id: 1, color: {r: 2,   g: 0 , b: 0.1}, winCoefficient: 100 };
+  var fieldBlue   = { id: 2, color: {r: 0.7, g: 1 , b: 22 }, winCoefficient: 25 };
+  var fieldGreen  = { id: 3, color: {r: 0.2, g: 1 , b: 0.2  }, winCoefficient: 10 };
+  var fieldPurple = { id: 4, color: {r: 1,   g: 0.2, b: 0  }, winCoefficient: 5 };
+  var fieldLime   = { id: 5, color: {r: 0.5, g: 2 , b: 0.2  }, winCoefficient: 2 };
 
   App.slot.config = {
     // Count after all wheels spinning moment
     spinningInterval : 1000,
     stopingInterval: 1000,
-    waitForNextSpin: 6000,
+    waitForNextSpin: 8000,
     verticalSize: 3,
     wheels: [
       [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
@@ -69,9 +69,9 @@ function webGLStart() {
       [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen,fieldBlue, fieldLime, fieldLime, fieldPurple]
     ],
     winnigLines: [
-      [1,1,1,1,1,1],
-      // [0,0,0,0,0,0],
-      // [2,2,2,2,2,2]
+      [1, 1, 1, 1, 1, 1], // m
+      [0, 0, 0, 0, 0, 0], // t
+      [2, 2, 2, 2, 2, 2]  // b
     ]
   };
 
