@@ -22,11 +22,11 @@ And navigate to app.html or examples.html
 
 #### Projects/Slot in underconstructing
 
- - Slot mashine config constroctor.
+ - Slot mashine config constructor.
  - Voice commander [Say `spin` to act on begin].
 
 
- - Video presentation 
+ - Video presentation
    https://www.youtube.com/watch?v=SG7jid1IDkA&ab_channel=javascriptfanatic
 
    ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-slot.gif)
@@ -37,6 +37,10 @@ And navigate to app.html or examples.html
 
  - https://maximumroulette.com/apps/matrix-engine/examples-build.html
  - https://maximumroulette.com/apps/matrix-engine/app-build.html
+
+### Demo from this repo [matrix-engine-starter]
+ - https://maximumroulette.com/apps/matrix-engine-starter/examples.html
+ - https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-slot/
 
 
 ### Engine source link:
