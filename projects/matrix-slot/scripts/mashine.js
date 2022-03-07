@@ -2,7 +2,7 @@
 import * as matrixEngine from "matrix-engine";
 import {planeFont, planeUVFont} from "matrix-engine-plugins";
 import {startSpin, stopSpin} from "./matrix-audio";
-import {createNidzaTextureText, createNidzaHudLinesInfo} from "./active-textures";
+import {createNidzaTextureText, createNidzaHudLinesInfo, createNidzaHudLinesInfo2} from "./active-textures";
 import {Nidza} from "nidza";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
@@ -38,6 +38,7 @@ export default class Mashines {
     this.nidza = new Nidza();
     this.createNidzaTextureText = createNidzaTextureText;
     this.createNidzaHudLinesInfo = createNidzaHudLinesInfo;
+    this.createNidzaHudLinesInfo2= createNidzaHudLinesInfo2;
 
     this.addMashine( world );
     this.addWheel( world );
@@ -298,6 +299,13 @@ export default class Mashines {
     App.scene.footerLines.rotation.rotx = 180;
 
     this.createNidzaHudLinesInfo( this.nidza ).then( ( streamTex ) => {
+      App.scene.footerLines.streamTextures = {
+        videoImage: streamTex
+      };
+    });
+
+    
+    this.createNidzaHudLinesInfo2( this.nidza ).then( ( streamTex ) => {
       App.scene.footerLines.streamTextures = {
         videoImage: streamTex
       };
