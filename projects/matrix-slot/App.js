@@ -14,10 +14,10 @@ import * as matrixEngine from "matrix-engine";
 import Mashines from "./scripts/mashine";
 import { VoiceCommanderInstance } from "./scripts/voice-commander";
 
-//
+// Voice commander
 VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
 // Activate listen operation
-VoiceCommanderInstance.run()
+VoiceCommanderInstance.run();
 
 var world, mashine;
 var App = matrixEngine.App;
@@ -72,6 +72,10 @@ function webGLStart() {
       [1, 1, 1, 1, 1, 1], // m
       [0, 0, 0, 0, 0, 0], // t
       [2, 2, 2, 2, 2, 2]  // b
+    ],
+    matrixMessage: [
+      'M', 'a', 't', 'r', 'i', 'x', '-', 'E', 'n', 'g','i', 'n', 'e',
+      ' S', 'l', 'o', 't', 'M' , 'a', 's', 'h', 'i', 'n', 'e'
     ]
   };
 

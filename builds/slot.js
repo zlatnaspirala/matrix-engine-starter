@@ -7244,7 +7244,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-},{"./src/lib/utility":35,"./src/nidza":36}],21:[function(require,module,exports){
+},{"./src/lib/utility":36,"./src/nidza":37}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7268,7 +7268,7 @@ class NidzaElement {
 
 exports.NidzaElement = NidzaElement;
 
-},{"./dimension":24,"./position":29}],22:[function(require,module,exports){
+},{"./dimension":25,"./position":30}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7440,6 +7440,68 @@ exports.BaseShader = BaseShader;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.NidzaCustom2dComponent = void 0;
+
+var _baseComponent = require("./base-component");
+
+var _operations = require("./operations");
+
+var _rotation = require("./rotation");
+
+class NidzaCustom2dComponent extends _baseComponent.NidzaElement {
+  constructor(arg) {
+    const eArg = {
+      position: arg.position,
+      id: arg.id,
+      canvasDom: arg.canvasDom // draw: arg.draw
+
+    };
+    super(eArg);
+    this.id = arg.id;
+    this.draw = arg.draw;
+    this.ctx = arg.ctx;
+    this.canvasDom = arg.canvasDom;
+    var newW = 20,
+        newH = 20;
+
+    if (arg.dimension) {
+      newW = arg.dimension.width || 20;
+      newH = arg.dimension.height || 20;
+    }
+
+    this.dimension.setReferent(this.canvasDom);
+    this.dimension.elementIdentity = this.id;
+    this.dimension.setDimension(newW, newH);
+    dispatchEvent(new CustomEvent("activate-updater", {
+      detail: {
+        id: arg.id,
+        oneDraw: false
+      }
+    }));
+  }
+
+  getKey(action) {
+    return action + this.canvasDom.id;
+  }
+
+  activeDraw = () => {
+    dispatchEvent(new CustomEvent(this.getKey("activate-updater"), {
+      detail: {
+        id: this.elementIdentity,
+        oneDraw: false
+      }
+    }));
+  };
+}
+
+exports.NidzaCustom2dComponent = NidzaCustom2dComponent;
+
+},{"./base-component":21,"./operations":29,"./rotation":31}],25:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.Dimension = void 0;
 
 var _baseReferent = require("./base-referent");
@@ -7565,7 +7627,7 @@ class Dimension {
 
 exports.Dimension = Dimension;
 
-},{"./base-referent":22}],25:[function(require,module,exports){
+},{"./base-referent":22}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7687,10 +7749,9 @@ class Nidza3dIdentity {
       } else {
         this.uRegister.splice(loc, 1);
 
-        if (this.uRegister.length == 0) {
+        if (this.uRegister.length == 0 && this.updater != null) {
           clearInterval(this.updater);
-          this.updater = null;
-          console.info("There is no registred active elements -> deactivate updater.");
+          this.updater = null; // console.info("There is no registred active elements -> deactivate updater.");
         }
       }
     }
@@ -7714,7 +7775,7 @@ class Nidza3dIdentity {
 
 exports.Nidza3dIdentity = Nidza3dIdentity;
 
-},{"./shader-component":32,"./shader-component-custom":31,"./utility":35}],26:[function(require,module,exports){
+},{"./shader-component":33,"./shader-component-custom":32,"./utility":36}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7727,6 +7788,8 @@ var _textComponent = require("./text-component");
 var _starComponent = require("./star-component");
 
 var _matrixComponent = require("./matrix-component");
+
+var _custom2dComponent = require("./custom2d-component");
 
 var _utility = require("./utility");
 
@@ -7822,6 +7885,15 @@ class NidzaIdentity {
     return starComponent;
   }
 
+  addCustom2dComponent(arg) {
+    arg.ctx = this.ctx;
+    arg.canvasDom = this.canvasDom;
+    let cComponent = new _custom2dComponent.NidzaCustom2dComponent(arg);
+    cComponent.draw();
+    this.elements.push(cComponent);
+    return cComponent;
+  }
+
   activateUpdater = e => {
     var data = e.detail;
 
@@ -7856,8 +7928,7 @@ class NidzaIdentity {
 
         if (this.uRegister.length == 0) {
           clearInterval(this.updater);
-          this.updater = null;
-          console.info("There is no registred active elements -> deactivate updater.");
+          this.updater = null; // console.info("There is no registred active elements -> deactivate updater.");
         }
       }
     }
@@ -7878,9 +7949,9 @@ class NidzaIdentity {
 
     this.elements.forEach(e => {
       e.position.update();
-      e.dimension.update();
-      e.rotation.update();
-      e.draw();
+      if (e.dimension) e.dimension.update();
+      if (e.rotation) e.rotation.update();
+      e.draw(this.ctx);
     });
   }
 
@@ -7901,7 +7972,7 @@ class NidzaIdentity {
 
 exports.NidzaIdentity = NidzaIdentity;
 
-},{"./matrix-component":27,"./star-component":33,"./text-component":34,"./utility":35}],27:[function(require,module,exports){
+},{"./custom2d-component":24,"./matrix-component":28,"./star-component":34,"./text-component":35,"./utility":36}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8172,7 +8243,7 @@ class NidzaMatrixComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaMatrixComponent = NidzaMatrixComponent;
 
-},{"./base-component":21,"./operations":28,"./rotation":30,"./utility":35}],28:[function(require,module,exports){
+},{"./base-component":21,"./operations":29,"./rotation":31,"./utility":36}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8467,7 +8538,7 @@ function drawStarRotation() {
   this.ctx.restore();
 }
 
-},{"./utility":35}],29:[function(require,module,exports){
+},{"./utility":36}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8600,7 +8671,7 @@ class Position {
 
 exports.Position = Position;
 
-},{"./base-referent":22}],30:[function(require,module,exports){
+},{"./base-referent":22}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8693,7 +8764,7 @@ class Rotator {
 
 exports.Rotator = Rotator;
 
-},{"./operations":28}],31:[function(require,module,exports){
+},{"./operations":29}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8708,6 +8779,8 @@ class ShaderComponentCustom extends _baseShaderComponent.BaseShader {
     super();
     this.gl = arg.gl;
     this.background = [0.0, 0.0, 0.0, 0.0];
+    this.position = [-0.0, 0.0, -2.0];
+    this.geometry = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
     console.log('ShaderComponentCustom init', arg);
   }
 
@@ -8744,7 +8817,7 @@ class ShaderComponentCustom extends _baseShaderComponent.BaseShader {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer); // Now create an array of positions for the square.
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.geometry), gl.STATIC_DRAW);
     const colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colors), gl.STATIC_DRAW);
@@ -8792,7 +8865,7 @@ class ShaderComponentCustom extends _baseShaderComponent.BaseShader {
 
     mat4.translate(modelViewMatrix, // destination matrix
     modelViewMatrix, // matrix to translate
-    [-0.0, 0.0, -5.0]); // amount to translate
+    this.position); // amount to translate
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
 
@@ -8825,8 +8898,9 @@ class ShaderComponentCustom extends _baseShaderComponent.BaseShader {
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
     {
       const offset = 0;
-      const vertexCount = 4;
-      this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
+      const vertexCount = 4; // this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
+
+      this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, this.geometry.length / 2);
     }
   }
 
@@ -8834,7 +8908,7 @@ class ShaderComponentCustom extends _baseShaderComponent.BaseShader {
 
 exports.ShaderComponentCustom = ShaderComponentCustom;
 
-},{"./base-shader-component":23}],32:[function(require,module,exports){
+},{"./base-shader-component":23}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9029,7 +9103,7 @@ class ShaderComponent extends _baseShaderComponent.BaseShader {
 
 exports.ShaderComponent = ShaderComponent;
 
-},{"./base-shader-component":23,"./operations":28}],33:[function(require,module,exports){
+},{"./base-shader-component":23,"./operations":29}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9096,7 +9170,7 @@ class NidzaStarComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaStarComponent = NidzaStarComponent;
 
-},{"./base-component":21,"./operations":28,"./rotation":30}],34:[function(require,module,exports){
+},{"./base-component":21,"./operations":29,"./rotation":31}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9233,7 +9307,7 @@ class NidzaTextComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaTextComponent = NidzaTextComponent;
 
-},{"./base-component":21,"./operations":28,"./rotation":30}],35:[function(require,module,exports){
+},{"./base-component":21,"./operations":29,"./rotation":31}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9363,7 +9437,7 @@ function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9463,7 +9537,7 @@ class Nidza {
 
 exports.Nidza = Nidza;
 
-},{"./lib/identity":26,"./lib/identity-3d":25,"./lib/operations":28}],37:[function(require,module,exports){
+},{"./lib/identity":27,"./lib/identity-3d":26,"./lib/operations":29}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9473,7 +9547,7 @@ exports.colorNamesGrammars = void 0;
 const colorNamesGrammars = ['aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
 exports.colorNamesGrammars = colorNamesGrammars;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9496,7 +9570,7 @@ var _voiceCommander = require("./voice-commander.js");
 
 var _colors = require("./grammar-set/colors.js");
 
-},{"./grammar-set/colors.js":37,"./voice-commander.js":39}],39:[function(require,module,exports){
+},{"./grammar-set/colors.js":38,"./voice-commander.js":40}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9597,7 +9671,7 @@ class VoiceCommander {
 
 exports.VoiceCommander = VoiceCommander;
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9627,7 +9701,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 // dev
 // import matrixEngine from "/node_modules/matrix-engine/index.js";
 // prod
-//
+// Voice commander
 _voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
 
 _voiceCommander.VoiceCommanderInstance.run();
@@ -9714,7 +9788,8 @@ function webGLStart() {
     winnigLines: [[1, 1, 1, 1, 1, 1], // m
     [0, 0, 0, 0, 0, 0], // t
     [2, 2, 2, 2, 2, 2] // b
-    ]
+    ],
+    matrixMessage: ['M', 'a', 't', 'r', 'i', 'x', '-', 'E', 'n', 'g', 'i', 'n', 'e', ' S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e']
   };
   mashine = new _mashine.default(world, App.slot.config);
   mashine.vc = _voiceCommander.VoiceCommanderInstance;
@@ -9740,24 +9815,40 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":42,"./scripts/voice-commander":45,"matrix-engine":6}],41:[function(require,module,exports){
+},{"./scripts/mashine":44,"./scripts/voice-commander":47,"matrix-engine":6}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createNidzaTextureText = createNidzaTextureText;
+exports.incActiveLines = incActiveLines;
 exports.createNidzaHudLinesInfo = createNidzaHudLinesInfo;
-exports.createNidzaHudLinesInfo2 = createNidzaHudLinesInfo2;
+exports.showActiveLinesByIndex = showActiveLinesByIndex;
+exports.createNidzaHudLine1 = createNidzaHudLine1;
+exports.createNidzaHudBalance = createNidzaHudBalance;
+exports.activeLinePriview = exports.footerBalance = exports.footerLinesInfo = void 0;
 
 var _standardFonts = require("./standard-fonts");
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var App = matrixEngine.App;
+/**
+ * @description 
+ * AI voice commander ceter top footer text
+ */
 
 function createNidzaTextureText(nidza) {
   return new Promise((resolve, reject) => {
     let myFirstNidzaObjectOptions = {
       id: "footerLabel",
       size: {
-        width: window.innerWidth,
+        width: window.innerWidth / 100 * 90,
         height: 135
       }
     }; //  object.streamTextures.videoImage
@@ -9766,7 +9857,7 @@ function createNidzaTextureText(nidza) {
     let texCanvas = document.getElementById('footerLabel');
     let statusMessageBox = nidza.access.footerLabel.addTextComponent({
       id: "zlatna",
-      text: "Welcome I'am Matrix-Engine Slot Mashine, What's your name ?",
+      text: "Welcome here. What's your name ?",
       color: "lime",
       position: {
         x: 50,
@@ -9777,8 +9868,8 @@ function createNidzaTextureText(nidza) {
         height: 20
       },
       border: {
-        fillColor: "black",
-        strokeColor: "lime"
+        fillColor: "rgba(110,10,10,0.5)",
+        strokeColor: "rgba(0,0,0,0)"
       },
       font: {
         fontSize: "130%",
@@ -9807,40 +9898,57 @@ function createNidzaTextureText(nidza) {
     return texCanvas;
   });
 }
+/**
+ * @description 
+ * Active lines
+ */
+// define
+
+
+let footerLinesInfo;
+exports.footerLinesInfo = footerLinesInfo;
+let footerBalance;
+exports.footerBalance = footerBalance;
+var activeLinePriview = 0;
+exports.activeLinePriview = activeLinePriview;
+
+function incActiveLines() {
+  if (App.slot.config.winnigLines.length - 1 <= activeLinePriview) {
+    exports.activeLinePriview = activeLinePriview = 0;
+    return activeLinePriview;
+  }
+
+  exports.activeLinePriview = activeLinePriview = activeLinePriview + 1;
+  return activeLinePriview;
+}
 
 function createNidzaHudLinesInfo(nidza) {
   return new Promise((resolve, reject) => {
-    // console.log(this + "<<<<<<<<");
     let myFirstNidzaObjectOptions = {
       id: "footerLinesInfo",
       size: {
-        width: 200,
-        height: 120
+        width: 450,
+        height: 60
       }
-    }; //  object.streamTextures.videoImage
-
-    let footerLinesInfo = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
+    };
+    exports.footerLinesInfo = footerLinesInfo = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
     let texCanvas = document.getElementById('footerLinesInfo');
-    let statusMessageBox = footerLinesInfo.addTextComponent({
+    let activeLines = footerLinesInfo.addTextComponent({
       id: "linesInfo",
-      text: "Active lines man",
+      text: "Active lines",
       color: "lime",
       position: {
-        x: 50,
-        y: 10
+        x: 25,
+        y: 15
       },
       dimension: {
-        width: 100,
-        height: 100
-      },
-      border: {
-        fillColor: "black",
-        strokeColor: "lime"
+        width: 220,
+        height: 120
       },
       font: {
-        fontSize: "130%",
+        fontSize: "22px",
         fontStyle: "normal",
-        fontName: "helvetica"
+        fontName: _standardFonts.stdFonts.CourierNew
       }
     }); // Create one simple oscillator
     // let rotationOption = new nidza.Osc( 0, 360, 2 );
@@ -9855,21 +9963,94 @@ function createNidzaHudLinesInfo(nidza) {
     // statusMessageBox.rotation.setRotation( rotationOption )
     // statusMessageBox.rotation.osc.setDelay( 0 )
 
-    nidza.access.footerLinesInfo.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
-    window.footerLinesInfo = nidza.access.footerLinesInfo;
-    resolve(texCanvas);
-    return texCanvas;
+    nidza.access.footerLinesInfo.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none"); // window.footerLinesInfo = nidza.access.footerLinesInfo;
+
+    resolve({
+      texCanvas: texCanvas,
+      activeLines: activeLines
+    }); // return texCanvas;
   });
 }
 
-function createNidzaHudLinesInfo2(nidza) {
+function showActiveLinesByIndex(i) {
+  footerLinesInfo.elements = [footerLinesInfo.elements[0]];
+  footerLinesInfo.elements[0].position.translateX(25);
+  App.slot.config.winnigLines.forEach((winShemaIndex, Sindex) => {
+    console.log("winShemaIndex ", winShemaIndex);
+    winShemaIndex.forEach((winShema, index) => {
+      if (Sindex != i) return;
+
+      for (var curIndex = 0; curIndex < 3; curIndex++) {
+        if (curIndex == winShema) {
+          console.log("WIN MARK");
+          let activaLine = footerLinesInfo.addTextComponent({
+            id: "linesInfo",
+            text: "✅",
+            color: "green",
+            position: {
+              x: 55 + 6 * index,
+              y: 10 + curIndex * 25
+            },
+            dimension: {
+              width: 30,
+              height: 30
+            },
+            font: {
+              fontSize: "18px",
+              fontStyle: "normal",
+              fontName: "arial"
+            }
+          });
+        } else {
+          console.log("LOSE MARK");
+          let activaLine = footerLinesInfo.addTextComponent({
+            id: "linesInfo",
+            text: "❌",
+            color: "red",
+            position: {
+              x: 55 + 6 * index,
+              y: 10 + curIndex * 25
+            },
+            dimension: {
+              width: 22,
+              height: 22
+            },
+            font: {
+              fontSize: "18px",
+              fontStyle: "normal",
+              fontName: "arial"
+            }
+          });
+        }
+      }
+      /*
+      var oscAng = new matrixEngine.utility.OSCILLATOR( 1, 100, 5 );
+      activaLine.position.translateX(oscAng.UPDATE())
+      activaLine.position.onTargetReached = () => {
+      activaLine.position.translateX(oscAng.UPDATE())
+      };
+      // console.log("aaa ->>>>>>>>>>>>>>>>>>", activaLine);
+      oscAng.on_maximum_value = function ( osc ) {
+      };
+      */
+
+    });
+  });
+}
+/**
+ * @description 
+ * Effect at startup lines effect
+ */
+
+
+function createNidzaHudLine1(nidza) {
   return new Promise((resolve, reject) => {
     console.log(this + "<<<<<<<<");
     let myShader = {
       id: "myShader",
       size: {
-        width: window.innerWidth,
-        height: window.innerHeight
+        width: window.innerHeight / 2,
+        height: window.innerHeight / 2
       },
       parentDom: document.getElementById("testHolder")
     };
@@ -9947,6 +10128,31 @@ function createNidzaHudLinesInfo2(nidza) {
       detail: {
         id: "vertex-color-comp"
       }
+    })); // Second element intro same gl program
+
+    /*
+    var shaderProgram2 = myShaderElement.initShaderProgram(
+      myShaderElement.gl,
+      myShaderElement.initDefaultVSShader(),
+      myShaderElement.initDefaultFSShader());
+      myShaderElement.programInfo = {
+      program: shaderProgram2,
+      attribLocations: {
+        vertexPosition: myShaderElement.gl.getAttribLocation(shaderProgram2, 'aVertexPosition'),
+        vertexColor: myShaderElement.gl.getAttribLocation(shaderProgram2, 'aVertexColor'),
+      },
+      uniformLocations: {
+        projectionMatrix: myShaderElement.gl.getUniformLocation(shaderProgram2, 'uProjectionMatrix'),
+        modelViewMatrix: myShaderElement.gl.getUniformLocation(shaderProgram2, 'uModelViewMatrix'),
+      },
+    }; */
+    // myShaderElement.buffers = myShaderElement.initDefaultBuffers(myShaderElement.gl);
+    // myShaderElement.draw(); Manually call once.
+
+    dispatchEvent(new CustomEvent(indentityMyShader.getKey("activate-updater"), {
+      detail: {
+        id: "vertex-color-comp"
+      }
     })); // Create one simple oscillator
     // let rotationOption = new nidza.Osc( 0, 360, 2 );
 
@@ -9967,8 +10173,160 @@ function createNidzaHudLinesInfo2(nidza) {
     return texCanvas;
   });
 }
+/**
+ * @description 
+ * Footer Balance
+ */
 
-},{"./standard-fonts":44}],42:[function(require,module,exports){
+
+function createNidzaHudBalance(nidza) {
+  return new Promise((resolve, reject) => {
+    let myFirstNidzaObjectOptions = {
+      id: "footerBalance",
+      size: {
+        width: 500,
+        height: 80
+      }
+    };
+    exports.footerBalance = footerBalance = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
+    let texCanvas = document.getElementById('footerBalance');
+    App.slot.config.matrixMessage.forEach((item, index) => {
+      let footerBalanceComp = footerBalance.addTextComponent({
+        id: "footerBalance" + index,
+        text: item,
+        color: "lime",
+        position: {
+          x: 15 + 2 * index,
+          y: 15
+        },
+        dimension: {
+          width: 120,
+          height: 120
+        },
+        font: {
+          fontSize: "15px",
+          fontStyle: "normal",
+          fontName: _standardFonts.stdFonts.CourierNew
+        }
+      });
+      var oscAng = new matrixEngine.utility.OSCILLATOR(1, 100, 5);
+      footerBalanceComp.position.translateX(oscAng.UPDATE());
+
+      footerBalanceComp.position.onTargetReached = () => {
+        footerBalanceComp.position.translateX(oscAng.UPDATE());
+      };
+    }); // statusMessageBox.rotation.setRotation( rotationOption )
+    // statusMessageBox.rotation.osc.setDelay( 0 )
+
+    nidza.access.footerBalance.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    window.footerBalance = nidza.access.footerBalance;
+    resolve(texCanvas);
+    return texCanvas;
+  });
+}
+
+},{"./standard-fonts":46,"matrix-engine":6}],43:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.loadLineEffects = loadLineEffects;
+exports.incraseNumOfDrawInstance = incraseNumOfDrawInstance;
+exports.flashIn = flashIn;
+exports.startUpAnimMoveToRight = startUpAnimMoveToRight;
+exports.startUpAnimMoveToUp = startUpAnimMoveToUp;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+let OSC = matrixEngine.utility.OSCILLATOR;
+var App = matrixEngine.App;
+
+async function loadLineEffects() {
+  var texTopHeader = {
+    source: ["res/images/h1.png"],
+    mix_operation: "multiply"
+  };
+
+  for (let j = 1; j < 3; j++) {
+    this.world.Add("squareTex", 1, "footerLine" + j, texTopHeader);
+    App.scene["footerLine" + j].geometry.setScaleByX(6);
+    App.scene["footerLine" + j].geometry.setScaleByY(0.025);
+    App.scene["footerLine" + j].position.SetY(2.5 + j * 0.055);
+    App.scene["footerLine" + j].position.SetZ(-6.4);
+    App.scene["footerLine" + j].position.SetX(0); // TEST 
+
+    App.scene["footerLine" + j].instancedDraws.numberOfInstance = 45;
+    App.scene["footerLine" + j].instancedDraws.array_of_local_offset = [0, 0.1, 0];
+
+    App.scene["footerLine" + j].instancedDraws.overrideDrawArraysInstance = function (object) {
+      for (var i = 0; i < object.instancedDraws.numberOfInstance; i++) {
+        mat4.translate(object.mvMatrix, object.mvMatrix, object.instancedDraws.array_of_local_offset);
+        world.setMatrixUniforms(object, world.pMatrix, object.mvMatrix);
+        world.GL.gl.drawElements(world.GL.gl.TRIANGLE_STRIP, object.glDrawElements.numberOfIndicesRender, world.GL.gl.UNSIGNED_SHORT, 0);
+      }
+    }; // TEST.push(App.scene["footerLine" + j]);
+
+
+    await delay(j, this);
+  }
+
+  function delay(j, root) {
+    return new Promise((resolve, reject) => {
+      root.createNidzaHudLine1(root.nidza).then(streamTex => {
+        App.scene["footerLine" + j].streamTextures = {
+          videoImage: streamTex
+        };
+        App.scene["footerLine" + j].rotation.rotx = 180;
+        App.operation.squareTex_buffer_procedure(App.scene["footerLine" + j]);
+        resolve();
+      }).catch(err => reject());
+    });
+  }
+}
+
+function incraseNumOfDrawInstance() {
+  setTimeout(() => {
+    App.scene.footerLine1.instancedDraws.numberOfInstance++;
+    App.scene.footerLine2.instancedDraws.numberOfInstance++;
+
+    if (App.scene.footerLine1.instancedDraws.numberOfInstance > 46) {
+      console.log("LEV IT'");
+    } else {
+      this.incraseNumOfDrawInstance();
+    }
+  }, 50); // App.scene.footerLine1.instancedDraws.numberOfInstance
+}
+
+function flashIn() {
+  for (var j = 1; j < 3; j++) {
+    App.scene["footerLine" + j].position.thrust = 0.1;
+    App.scene["footerLine" + j].position.translateByY(App.scene["footerLine" + j].position.y);
+    App.scene["footerLine" + j].position.translateByX(0);
+  }
+}
+
+function startUpAnimMoveToRight() {
+  App.scene["footerLine1"].position.thrust = 0.1;
+  App.scene["footerLine1"].position.translateByY(App.scene["footerLine1"].position.y);
+  App.scene["footerLine1"].position.translateByX(15);
+  App.scene["footerLine2"].position.thrust = 0.1;
+  App.scene["footerLine2"].position.translateByY(App.scene["footerLine2"].position.y);
+  App.scene["footerLine2"].position.translateByX(-15);
+}
+
+function startUpAnimMoveToUp() {
+  App.scene["footerLine1"].position.thrust = 0.1;
+  App.scene["footerLine1"].position.translateByY(10);
+  App.scene["footerLine2"].position.thrust = 0.1;
+  App.scene["footerLine2"].position.translateByY(-10);
+}
+
+},{"matrix-engine":6}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9984,6 +10342,8 @@ var _matrixAudio = require("./matrix-audio");
 
 var _activeTextures = require("./active-textures");
 
+var _effectLines = require("./effect-lines");
+
 var _nidza = require("nidza");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -9996,6 +10356,14 @@ var App = matrixEngine.App;
 class Mashines {
   constructor(world, config) {
     this.config = config;
+    this.world = world; // animation startup
+
+    this.flashIn = _effectLines.flashIn;
+    this.startUpAnimMoveToRight = _effectLines.startUpAnimMoveToRight;
+    this.startUpAnimMoveToUp = _effectLines.startUpAnimMoveToUp;
+    this.incraseNumOfDrawInstance = _effectLines.incraseNumOfDrawInstance;
+    this.createNidzaHudBalance = _activeTextures.createNidzaHudBalance; // Slot status general
+
     this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
     this.speed = 0.08;
@@ -10011,7 +10379,9 @@ class Mashines {
     };
     this.winningHandler = {
       order: []
-    }; // hold threads - clear it
+    };
+    this.loadLineEffects = _effectLines.loadLineEffects; //loadLineEffects.bind(this);
+    // hold threads - clear it
 
     this.winningVisualEffect = {
       threads: [],
@@ -10022,7 +10392,7 @@ class Mashines {
     this.nidza = new _nidza.Nidza();
     this.createNidzaTextureText = _activeTextures.createNidzaTextureText;
     this.createNidzaHudLinesInfo = _activeTextures.createNidzaHudLinesInfo;
-    this.createNidzaHudLinesInfo2 = _activeTextures.createNidzaHudLinesInfo2;
+    this.createNidzaHudLine1 = _activeTextures.createNidzaHudLine1;
     this.addMashine(world);
     this.addWheel(world);
     this.addHeaderText();
@@ -10104,7 +10474,7 @@ class Mashines {
     rez.forEach(comb => {
       if (comb.repeat == 3) {
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        console.info("3 in line small win with field :", comb.fieldId);
+        console.info("3 in line small win with field :", comb.fieldId); // this.flashIn();
       } else if (comb.repeat == 4) {
         console.info("4 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
@@ -10193,12 +10563,12 @@ class Mashines {
 
   addMashine = function (world) {
     var texTopHeader = {
-      source: ["res/images/metal-sheet.jpg"],
+      source: ["res/images/h1.png"],
       mix_operation: "multiply"
     };
     world.Add("squareTex", 1, "topHeader", texTopHeader);
-    App.scene.topHeader.geometry.setScaleByX(11);
-    App.scene.topHeader.geometry.setScaleByY(0.39);
+    App.scene.topHeader.geometry.setScaleByX(5);
+    App.scene.topHeader.geometry.setScaleByY(0.5);
     App.scene.topHeader.position.y = 2.56;
     App.scene.topHeader.position.z = -6.5;
 
@@ -10214,6 +10584,15 @@ class Mashines {
       world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
     };
 
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
+    /*
     App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -11.4;
@@ -10221,7 +10600,9 @@ class Mashines {
     App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -11.4;
     App.scene.topHeader.geometry.texCoordsPoints.left_top.y = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 9.4;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -11.4; // Addin anything at all
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -11.4;
+    */
+    // Addin anything at all
 
     App.scene.topHeader.shake = false;
     var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001);
@@ -10249,25 +10630,49 @@ class Mashines {
     App.scene.footerHeader.position.y = -2.56;
     App.scene.footerHeader.position.z = -6.5; // Adapt active textures because it is inverted by nature.
 
-    App.scene.footerHeader.rotation.rotx = 180;
-    world.Add("squareTex", 1, "footerLines", texTopHeader);
-    App.scene.footerLines.geometry.setScaleByX(1);
-    App.scene.footerLines.geometry.setScaleByY(0.4);
-    App.scene.footerLines.position.y = -2.56;
-    App.scene.footerLines.position.z = -6.4;
-    App.scene.footerLines.position.x = -3.3; // Adapt active textures because it is inverted by nature.
+    App.scene.footerHeader.rotation.rotx = 180; // Footer active lines
 
-    App.scene.footerLines.rotation.rotx = 180;
-    this.createNidzaHudLinesInfo(this.nidza).then(streamTex => {
+    world.Add("squareTex", 1, "footerLines", texTopHeader);
+    App.scene.footerLines.geometry.setScaleByX(0.99);
+    App.scene.footerLines.geometry.setScaleByY(0.19);
+    App.scene.footerLines.position.SetY(-2.5);
+    App.scene.footerLines.position.SetZ(-6.4);
+    App.scene.footerLines.position.SetX(-2.5); // Adapt active textures because it is inverted by nature.
+    // App.scene.footerLines.rotation.rotx = 180;
+
+    App.scene.footerLines.rotation.rotz = 0;
+    App.scene.footerLines.rotation.rotx = 0;
+    App.scene.footerLines.rotation.roty = 0;
+    this.createNidzaHudLinesInfo(this.nidza).then(r => {
+      // INVERT
+      // console.log("-test---------------", r)
+      var localCtx = r.texCanvas.getContext("2d");
+      localCtx.scale(1, -1);
+      localCtx.translate(0, -r.texCanvas.height);
+
+      _activeTextures.footerLinesInfo.elements[0].position.translateX(25.5);
+
       App.scene.footerLines.streamTextures = {
+        videoImage: r.texCanvas
+      };
+    }); // Footer balance
+
+    world.Add("squareTex", 1, "footerBalance", texTopHeader);
+    App.scene.footerBalance.geometry.setScaleByX(1);
+    App.scene.footerBalance.geometry.setScaleByY(0.45);
+    App.scene.footerBalance.position.SetY(-2.75);
+    App.scene.footerBalance.position.SetZ(-6.4);
+    App.scene.footerBalance.position.SetX(1); // Adapt active textures because it is inverted by nature.
+
+    App.scene.footerBalance.rotation.rotx = 180;
+    this.createNidzaHudBalance(this.nidza).then(streamTex => {
+      App.scene.footerBalance.streamTextures = {
         videoImage: streamTex
       };
     });
-    this.createNidzaHudLinesInfo2(this.nidza).then(streamTex => {
-      App.scene.footerLines.streamTextures = {
-        videoImage: streamTex
-      };
-    }); // Style color buttom of footer
+    console.log("nidza component setup dimensions...", this.nidza);
+    this.loadLineEffects(this.nidza);
+    (0, _activeTextures.showActiveLinesByIndex)(0); // Style color buttom of footer
     //App.scene.footerHeader.geometry.colorData.color[0].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
@@ -10276,7 +10681,17 @@ class Mashines {
     App.operation.squareTex_buffer_procedure(App.scene.topHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerLines);
+    App.operation.squareTex_buffer_procedure(App.scene.footerBalance); // App.operation.squareTex_buffer_procedure( App.scene.footerLine1 );
+    // this.incraseNumOfDrawInstance();
+
     console.info("Mashine is constructed.");
+    console.info("Mashine is constructed. after 2 secunds open gate start up animation.");
+    setTimeout(() => {
+      // App.slot.mashine.flashIn() startUpAnimMoveToUp
+      // App.slot.mashine.incraseNumOfDrawInstance
+      App.slot.mashine.startUpAnimMoveToRight(); // App.slot.mashine.startUpAnimMoveToUp()
+      // startUpAnimMoveToRight
+    }, 2500);
   };
   addWheel = function (world) {
     console.info("Number of wheels: ", App.slot.config.wheels.length);
@@ -10284,7 +10699,7 @@ class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
     var textuteImageSamplers2 = {
-      source: ["res/images/field2.png"],
+      source: ["res/images/field-7.png"],
       mix_operation: "multiply"
     };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -10354,6 +10769,7 @@ class Mashines {
 
         case "headerTitleL":
           count = 1;
+          objChar.rotation.rotationSpeed.y = 10;
           break;
 
         case "headerTitleO":
@@ -10365,12 +10781,14 @@ class Mashines {
           break;
       }
 
-      objChar.position.translateByXY(-1.8 + count * 0.4, 2.2);
-      objChar.glBlend.blendEnabled = true;
+      objChar.position.translateByXY(-1 + count * 0.4, 2.2); // objChar.glBlend.blendEnabled = true;
+
+      console.log("Explore objChar ", objChar);
       if (c == 3) this.addSpinText();
       c++;
     };
 
+    this.font.loadChar(matrixEngine.objLoader, "m", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "s", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "l", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "o", "headerTitle");
@@ -10394,6 +10812,8 @@ class Mashines {
         this.activateSpinning();
       } else if (r.indexOf("wheel") != -1) {
         this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
+      } else if (r == "footerLines") {
+        (0, _activeTextures.showActiveLinesByIndex)((0, _activeTextures.incActiveLines)()); // this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
       }
     });
     canvas.addEventListener("mousedown", ev => {
@@ -10402,15 +10822,16 @@ class Mashines {
   };
   addSpinText = function () {
     var textuteImageSamplers = {
-      source: ["res/images/spinBtn1.png"],
+      source: ["res/images/spin.png"],
       mix_operation: "multiply" // ENUM : multiply , divide ,
 
     };
     world.Add("squareTex", 1, "spinBtn", textuteImageSamplers);
-    App.scene.spinBtn.position.SetY(-1.87);
+    App.scene.spinBtn.position.SetY(-1.98);
     App.scene.spinBtn.position.SetX(2);
     App.scene.spinBtn.position.SetZ(-5);
-    App.scene.spinBtn.geometry.setScale(0.3);
+    App.scene.spinBtn.geometry.setScaleByX(0.3);
+    App.scene.spinBtn.geometry.setScaleByY(0.12);
     App.scene.spinBtn.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene.spinBtn.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3]; // App.scene.spinBtn.geometry.setScaleByY(-0.76)
     // App.scene.spinBtn.glBlend.blendEnabled = true;
@@ -10456,8 +10877,8 @@ class Mashines {
     }, App.slot.config.spinningInterval);
   };
   spinning = wheelID => {
-    this.thread.control['ctrl' + wheelID] = false;
-    this.thread['timer' + wheelID] = setInterval(() => {
+    this.thread.control["ctrl" + wheelID] = false;
+    this.thread["timer" + wheelID] = setInterval(() => {
       this.accessKeys.forEach((accessWheelNames, indexWheel, accessKeysArray) => {
         if (wheelID == indexWheel) {
           accessWheelNames.forEach((fieldname, indexField, accessWheelNames) => {
@@ -10471,19 +10892,19 @@ class Mashines {
             if (App.scene[fieldname].position.y < this.spinHandler.bottomLimitY) {
               App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel]; // moment
 
-              if (this.thread.control['ctrl' + wheelID] == true) {
-                clearInterval(this.thread['timer' + wheelID]);
+              if (this.thread.control["ctrl" + wheelID] == true) {
+                clearInterval(this.thread["timer" + wheelID]);
                 App.scene[fieldname].rotation.rotationSpeed.x = 0;
                 App.scene[fieldname].rotation.rotationSpeed.y = 0;
                 console.log(fieldname);
-                var isLast = false; // wheel0field5 parse 5 + 1 = 0  or 
+                var isLast = false; // wheel0field5 parse 5 + 1 = 0  or
 
                 if (indexWheel == accessKeysArray.length - 1) {
                   isLast = true;
                 } // get winning for wheel id and fieldname
 
 
-                let wheelStoped = new CustomEvent('wheel.stoped', {
+                let wheelStoped = new CustomEvent("wheel.stoped", {
                   detail: {
                     wheelID: wheelID,
                     fieldname: fieldname,
@@ -10526,7 +10947,7 @@ class Mashines {
 
 exports.default = Mashines;
 
-},{"./active-textures":41,"./matrix-audio":43,"matrix-engine":6,"matrix-engine-plugins":3,"nidza":20}],43:[function(require,module,exports){
+},{"./active-textures":42,"./effect-lines":43,"./matrix-audio":45,"matrix-engine":6,"matrix-engine-plugins":3,"nidza":20}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10613,7 +11034,7 @@ testMyAudio[0].onended = function() {
 
 exports.stopSpin = stopSpin;
 
-},{"audio-commander":1}],44:[function(require,module,exports){
+},{"audio-commander":1}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10634,7 +11055,7 @@ const stdFonts = {
 };
 exports.stdFonts = stdFonts;
 
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10680,4 +11101,4 @@ VoiceCommanderInstance.whatisyourname = r => {
   }, 1000);
 };
 
-},{"voice-commander":38}]},{},[40]);
+},{"voice-commander":39}]},{},[41]);

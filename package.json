@@ -49,7 +49,7 @@
     "audio-commander": "^1.0.3",
     "matrix-engine": "^1.4.11",
     "matrix-engine-plugins": "0.0.8",
-    "nidza": "^1.2.9",
+    "nidza": "^1.2.15",
     "voice-commander": "0.0.5"
   },
   "devDependencies": {
