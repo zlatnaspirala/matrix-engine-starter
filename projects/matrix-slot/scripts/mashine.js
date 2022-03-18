@@ -82,11 +82,14 @@ export default class Mashines {
       }
       this.winningHandler.order.push(newOrder);
       if (event.detail.isLast) {
-        // test
+        // It is last activate from here
         this.config.winnigLines.forEach((line, lineIndex) => {
           let countLineWins = [];
           let collectWinObjs = [];
           setTimeout(() => {
+
+            this.killWinThreads();
+
             this.winningHandler.order.forEach((wheelData, index) => {
               // hard code for multilines feature
               let accessName = wheelData[line[0]];
@@ -96,6 +99,9 @@ export default class Mashines {
 
             var finalResult = this.findMax(countLineWins);
             this.checkForWinCombination(finalResult, collectWinObjs);
+
+          
+
           }, 2000 * lineIndex);
         });
       }
@@ -105,7 +111,9 @@ export default class Mashines {
   }
 
   activateWinningVisualEffect(worldObj, comb) {
+
     let oscilltor_variable = new OSC(0, 2, 0.004);
+
     this.winningVisualEffect.threads.push(
       setInterval(() => {
         worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
@@ -115,6 +123,7 @@ export default class Mashines {
     );
 
     this.winningVisualEffect.ids.push(worldObj);
+
   }
 
   killWinThreads() {
@@ -127,6 +136,7 @@ export default class Mashines {
         if (fieldOriginal.id == obj.specialId) {
           obj.LightsData.ambientLight.r = fieldOriginal.color.r;
           obj.LightsData.ambientLight.b = fieldOriginal.color.b;
+          obj.rotation.roty = 0;
           return;
         }
       });
@@ -329,9 +339,9 @@ export default class Mashines {
     world.Add("squareTex", 1, "footerLines", texTopHeader);
     App.scene.footerLines.geometry.setScaleByX(0.99);
     App.scene.footerLines.geometry.setScaleByY(0.19);
-    App.scene.footerLines.position.SetY(-2.5);
+    App.scene.footerLines.position.SetY(-2.48);
     App.scene.footerLines.position.SetZ(-6.4);
-    App.scene.footerLines.position.SetX(-2.5);
+    App.scene.footerLines.position.SetX(-2.55);
     // Adapt active textures because it is inverted by nature.
     // App.scene.footerLines.rotation.rotx = 180;
     App.scene.footerLines.rotation.rotz = 0;
@@ -344,7 +354,7 @@ export default class Mashines {
       var localCtx = r.texCanvas.getContext("2d");
       localCtx.scale(1, -1);
       localCtx.translate(0, -r.texCanvas.height);
-      footerLinesInfo.elements[0].position.translateX(25.5);
+      footerLinesInfo.elements[0].position.translateX(25.3);
       App.scene.footerLines.streamTextures = {videoImage: r.texCanvas};
     });
 

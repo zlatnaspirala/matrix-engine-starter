@@ -58,7 +58,7 @@ function webGLStart() {
     // Count after all wheels spinning moment
     spinningInterval : 1000,
     stopingInterval: 1000,
-    waitForNextSpin: 8000,
+    waitForNextSpin: 10000,
     verticalSize: 3,
     wheels: [
       [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
@@ -71,11 +71,12 @@ function webGLStart() {
     winnigLines: [
       [1, 1, 1, 1, 1, 1], // m
       [0, 0, 0, 0, 0, 0], // t
-      [2, 2, 2, 2, 2, 2]  // b
+      [2, 2, 2, 2, 2, 2],  // b
+      [1, 0, 1, 0, 1, 0]  // cikcak up
     ],
     matrixMessage: [
-      'M', 'a', 't', 'r', 'i', 'x', '-', 'E', 'n', 'g','i', 'n', 'e',
-      ' S', 'l', 'o', 't', 'M' , 'a', 's', 'h', 'i', 'n', 'e'
+      'M', 'a', 't', 'r', 'i', 'x', ' ', 'E', 'n', 'g','i', 'n', 'e', ' ',
+      'S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e'
     ]
   };
 

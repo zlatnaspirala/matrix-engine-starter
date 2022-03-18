@@ -9782,14 +9782,15 @@ function webGLStart() {
     // Count after all wheels spinning moment
     spinningInterval: 1000,
     stopingInterval: 1000,
-    waitForNextSpin: 8000,
+    waitForNextSpin: 10000,
     verticalSize: 3,
     wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime, fieldPurple, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldBlue, fieldLime, fieldLime, fieldPurple]],
     winnigLines: [[1, 1, 1, 1, 1, 1], // m
     [0, 0, 0, 0, 0, 0], // t
-    [2, 2, 2, 2, 2, 2] // b
+    [2, 2, 2, 2, 2, 2], // b
+    [1, 0, 1, 0, 1, 0] // cikcak up
     ],
-    matrixMessage: ['M', 'a', 't', 'r', 'i', 'x', '-', 'E', 'n', 'g', 'i', 'n', 'e', ' S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e']
+    matrixMessage: ['M', 'a', 't', 'r', 'i', 'x', ' ', 'E', 'n', 'g', 'i', 'n', 'e', ' ', 'S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e']
   };
   mashine = new _mashine.default(world, App.slot.config);
   mashine.vc = _voiceCommander.VoiceCommanderInstance;
@@ -9927,8 +9928,8 @@ function createNidzaHudLinesInfo(nidza) {
     let myFirstNidzaObjectOptions = {
       id: "footerLinesInfo",
       size: {
-        width: 450,
-        height: 60
+        width: 350,
+        height: 55
       }
     };
     exports.footerLinesInfo = footerLinesInfo = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
@@ -9939,14 +9940,14 @@ function createNidzaHudLinesInfo(nidza) {
       color: "lime",
       position: {
         x: 25,
-        y: 15
+        y: 44
       },
       dimension: {
         width: 220,
-        height: 120
+        height: 20
       },
       font: {
-        fontSize: "22px",
+        fontSize: "18px",
         fontStyle: "normal",
         fontName: _standardFonts.stdFonts.CourierNew
       }
@@ -9988,15 +9989,15 @@ function showActiveLinesByIndex(i) {
             text: "✅",
             color: "green",
             position: {
-              x: 55 + 6 * index,
-              y: 10 + curIndex * 25
+              x: 55 + 5.5 * index,
+              y: 25 + curIndex * 25
             },
             dimension: {
-              width: 30,
-              height: 30
+              width: 14,
+              height: 14
             },
             font: {
-              fontSize: "18px",
+              fontSize: "14px",
               fontStyle: "normal",
               fontName: "arial"
             }
@@ -10008,15 +10009,15 @@ function showActiveLinesByIndex(i) {
             text: "❌",
             color: "red",
             position: {
-              x: 55 + 6 * index,
-              y: 10 + curIndex * 25
+              x: 55 + 5.5 * index,
+              y: 25 + curIndex * 25
             },
             dimension: {
-              width: 22,
-              height: 22
+              width: 14,
+              height: 14
             },
             font: {
-              fontSize: "18px",
+              fontSize: "14px",
               fontStyle: "normal",
               fontName: "arial"
             }
@@ -10414,11 +10415,12 @@ class Mashines {
       this.winningHandler.order.push(newOrder);
 
       if (event.detail.isLast) {
-        // test
+        // It is last activate from here
         this.config.winnigLines.forEach((line, lineIndex) => {
           let countLineWins = [];
           let collectWinObjs = [];
           setTimeout(() => {
+            this.killWinThreads();
             this.winningHandler.order.forEach((wheelData, index) => {
               // hard code for multilines feature
               let accessName = wheelData[line[0]];
@@ -10455,6 +10457,7 @@ class Mashines {
         if (fieldOriginal.id == obj.specialId) {
           obj.LightsData.ambientLight.r = fieldOriginal.color.r;
           obj.LightsData.ambientLight.b = fieldOriginal.color.b;
+          obj.rotation.roty = 0;
           return;
         }
       });
@@ -10635,9 +10638,9 @@ class Mashines {
     world.Add("squareTex", 1, "footerLines", texTopHeader);
     App.scene.footerLines.geometry.setScaleByX(0.99);
     App.scene.footerLines.geometry.setScaleByY(0.19);
-    App.scene.footerLines.position.SetY(-2.5);
+    App.scene.footerLines.position.SetY(-2.48);
     App.scene.footerLines.position.SetZ(-6.4);
-    App.scene.footerLines.position.SetX(-2.5); // Adapt active textures because it is inverted by nature.
+    App.scene.footerLines.position.SetX(-2.55); // Adapt active textures because it is inverted by nature.
     // App.scene.footerLines.rotation.rotx = 180;
 
     App.scene.footerLines.rotation.rotz = 0;
@@ -10650,7 +10653,7 @@ class Mashines {
       localCtx.scale(1, -1);
       localCtx.translate(0, -r.texCanvas.height);
 
-      _activeTextures.footerLinesInfo.elements[0].position.translateX(25.5);
+      _activeTextures.footerLinesInfo.elements[0].position.translateX(25.3);
 
       App.scene.footerLines.streamTextures = {
         videoImage: r.texCanvas

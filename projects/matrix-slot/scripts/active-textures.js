@@ -90,8 +90,8 @@ export function createNidzaHudLinesInfo( nidza ) {
     let myFirstNidzaObjectOptions = {
       id: "footerLinesInfo",
       size: {
-        width: 450,
-        height: 60
+        width: 350,
+        height: 55
       }
     };
     footerLinesInfo = nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
@@ -103,14 +103,14 @@ export function createNidzaHudLinesInfo( nidza ) {
         color: "lime",
         position: {
           x: 25,
-          y: 15
+          y: 44
         },
         dimension: {
           width: 220,
-          height: 120
+          height: 20
         },
         font: {
-          fontSize: "22px",
+          fontSize: "18px",
           fontStyle: "normal",
           fontName: stdFonts.CourierNew
         }
@@ -160,15 +160,15 @@ export function showActiveLinesByIndex(i) {
               text: "✅",
               color: "green",
               position: {
-                x: 55 + 6*index,
-                y: 10 + curIndex* 25
+                x: 55 + 5.5*index,
+                y: 25 + curIndex* 25
               },
               dimension: {
-                width: 30,
-                height: 30
+                width: 14,
+                height: 14
               },
               font: {
-                fontSize: "18px",
+                fontSize: "14px",
                 fontStyle: "normal",
                 fontName: "arial"
               }
@@ -183,15 +183,15 @@ export function showActiveLinesByIndex(i) {
               text: "❌",
               color: "red",
               position: {
-                x: 55  + 6*index,
-                y: 10 + curIndex* 25
+                x: 55  + 5.5*index,
+                y: 25 + curIndex* 25
               },
               dimension: {
-                width: 22,
-                height: 22
+                width: 14,
+                height: 14
               },
               font: {
-                fontSize: "18px",
+                fontSize: "14px",
                 fontStyle: "normal",
                 fontName: "arial"
               }
