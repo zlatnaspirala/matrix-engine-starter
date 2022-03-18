@@ -412,7 +412,10 @@ export default class Mashines {
     var VW = App.slot.config.verticalSize;
 
     var textuteImageSamplers2 = {
-      source: ["res/images/field-7.png"],
+      source: [
+        "res/images/field.png",
+        "res/images/nidza.png"
+      ],
       mix_operation: "multiply",
     };
 
@@ -485,7 +488,7 @@ export default class Mashines {
           break;
         case "headerTitleL":
           count = 1;
-          objChar.rotation.rotationSpeed.y = 10;
+          // objChar.rotation.rotationSpeed.x = 10;
           break;
         case "headerTitleO":
           count = 1.4;
@@ -500,7 +503,6 @@ export default class Mashines {
       if (c == 3) this.addSpinText();
       c++;
     };
-    this.font.loadChar(matrixEngine.objLoader, "m", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "s", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "l", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "o", "headerTitle");
@@ -508,7 +510,7 @@ export default class Mashines {
   };
 
   fieldOnClick = function (hitObject) {
-    var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.038);
+    var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.05);
     hitObject.rotation.rotationSpeed.y = 200;
 
     setTimeout(() => {
@@ -527,11 +529,7 @@ export default class Mashines {
       } else if (r.indexOf("wheel") != -1) {
         this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
       } else if (r == "footerLines") {
-
-        
         showActiveLinesByIndex(incActiveLines());
-        // this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
-
       }
     });
 

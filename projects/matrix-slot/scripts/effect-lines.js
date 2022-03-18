@@ -61,10 +61,16 @@ export function incraseNumOfDrawInstance() {
 
 export function flashIn() {
 
+  
+
   for(var j = 1;j < 3;j++) {
     App.scene["footerLine" + j].position.thrust = 0.1;
     App.scene["footerLine" + j].position.translateByY(App.scene["footerLine" + j].position.y);
     App.scene["footerLine" + j].position.translateByX(0);
+
+    App.scene["footerLine" + j].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    App.scene["footerLine" + j].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+
   }
 
 }

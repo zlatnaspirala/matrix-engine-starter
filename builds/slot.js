@@ -9784,13 +9784,13 @@ function webGLStart() {
     stopingInterval: 1000,
     waitForNextSpin: 10000,
     verticalSize: 3,
-    wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime, fieldPurple, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldBlue, fieldLime, fieldLime, fieldPurple]],
+    wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldPurple]],
     winnigLines: [[1, 1, 1, 1, 1, 1], // m
     [0, 0, 0, 0, 0, 0], // t
     [2, 2, 2, 2, 2, 2], // b
     [1, 0, 1, 0, 1, 0] // cikcak up
     ],
-    matrixMessage: ['M', 'a', 't', 'r', 'i', 'x', ' ', 'E', 'n', 'g', 'i', 'n', 'e', ' ', 'S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e']
+    matrixMessage: ['S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e']
   };
   mashine = new _mashine.default(world, App.slot.config);
   mashine.vc = _voiceCommander.VoiceCommanderInstance;
@@ -10308,6 +10308,8 @@ function flashIn() {
     App.scene["footerLine" + j].position.thrust = 0.1;
     App.scene["footerLine" + j].position.translateByY(App.scene["footerLine" + j].position.y);
     App.scene["footerLine" + j].position.translateByX(0);
+    App.scene["footerLine" + j].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    App.scene["footerLine" + j].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
   }
 }
 
@@ -10702,7 +10704,7 @@ class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
     var textuteImageSamplers2 = {
-      source: ["res/images/field-7.png"],
+      source: ["res/images/field.png", "res/images/nidza.png"],
       mix_operation: "multiply"
     };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -10771,8 +10773,8 @@ class Mashines {
           break;
 
         case "headerTitleL":
-          count = 1;
-          objChar.rotation.rotationSpeed.y = 10;
+          count = 1; // objChar.rotation.rotationSpeed.x = 10;
+
           break;
 
         case "headerTitleO":
@@ -10791,14 +10793,13 @@ class Mashines {
       c++;
     };
 
-    this.font.loadChar(matrixEngine.objLoader, "m", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "s", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "l", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "o", "headerTitle");
     this.font.loadChar(matrixEngine.objLoader, "t", "headerTitle");
   };
   fieldOnClick = function (hitObject) {
-    var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.038);
+    var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.05);
     hitObject.rotation.rotationSpeed.y = 200;
     setTimeout(() => {
       // hitObject.geometry.setScale( oscAng.UPDATE() )
@@ -10816,7 +10817,7 @@ class Mashines {
       } else if (r.indexOf("wheel") != -1) {
         this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
       } else if (r == "footerLines") {
-        (0, _activeTextures.showActiveLinesByIndex)((0, _activeTextures.incActiveLines)()); // this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
+        (0, _activeTextures.showActiveLinesByIndex)((0, _activeTextures.incActiveLines)());
       }
     });
     canvas.addEventListener("mousedown", ev => {

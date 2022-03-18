@@ -62,11 +62,11 @@ function webGLStart() {
     verticalSize: 3,
     wheels: [
       [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
-      [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime, fieldPurple, fieldPurple],
+      [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime, fieldPurple],
       [fieldGreen, fieldPurple,fieldLime,  fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple],
       [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue,  fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple],
       [fieldGreen, fieldPurple,fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple],
-      [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen,fieldBlue, fieldLime, fieldLime, fieldPurple]
+      [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldPurple]
     ],
     winnigLines: [
       [1, 1, 1, 1, 1, 1], // m
@@ -75,7 +75,6 @@ function webGLStart() {
       [1, 0, 1, 0, 1, 0]  // cikcak up
     ],
     matrixMessage: [
-      'M', 'a', 't', 'r', 'i', 'x', ' ', 'E', 'n', 'g','i', 'n', 'e', ' ',
       'S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e'
     ]
   };
