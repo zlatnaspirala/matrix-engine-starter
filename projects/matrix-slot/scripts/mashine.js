@@ -18,9 +18,12 @@ import {
   incraseNumOfDrawInstance,
 } from "./effect-lines";
 import {Nidza} from "nidza";
+import {beep} from "./audio-gen";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
-var App = matrixEngine.App;
+let App = matrixEngine.App;
+
+let isMobile = matrixEngine.utility.isMobile;
 
 export default class Mashines {
   constructor(world, config) {
@@ -72,47 +75,86 @@ export default class Mashines {
     this.constructWinningObject = event => {
       stopSpin[event.detail.wheelID].play();
 
-      //console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
+      console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
       //console.log( "constructWinningObject field name=> ", event.detail.fieldname );
-      //console.log( "constructWinningObject isLast=> ", event.detail.isLast );
+      console.log( "constructWinningObject isLast=> ", event.detail.isLast );
+
       let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
       var newOrder = App.slot.mashine.arrayRotate(localHolder);
       while (newOrder[newOrder.length - 1] != event.detail.fieldname) {
         newOrder = App.slot.mashine.arrayRotate(localHolder);
       }
       this.winningHandler.order.push(newOrder);
-      if (event.detail.isLast) {
+
+      // Only on last stop
+      if (event.detail.isLast == true) {
         // It is last activate from here
         this.config.winnigLines.forEach((line, lineIndex) => {
+
           let countLineWins = [];
           let collectWinObjs = [];
+
           setTimeout(() => {
-
             this.killWinThreads();
-
+            // console.log('->>> LINE', line);
+            // console.log('->>> TEST FUCK IT ', this.winningHandler.order);
             this.winningHandler.order.forEach((wheelData, index) => {
-              // hard code for multilines feature
-              let accessName = wheelData[line[0]];
+              // hard code for multilines feature TEST
+              //console.log('->>> wheelData', wheelData);
+              //console.log('->>> wheelData INDEX', index);
+              let accessName = wheelData[line[index]];
               countLineWins.push(App.scene[accessName].specialId);
               collectWinObjs.push(App.scene[accessName]);
             });
 
             var finalResult = this.findMax(countLineWins);
-            this.checkForWinCombination(finalResult, collectWinObjs);
+            this.checkForWinCombination(finalResult, collectWinObjs, lineIndex);
+              // soft hardcode
+              if (lineIndex == 16) {
+                // console.log("LAST +++++++++++++++++++++ ", lineIndex);
+                setTimeout(() => {
+                  this.status = "free";
+                  this.winningHandler.order = [];
+                  this.killWinThreads();
 
-          
-
-          }, 2000 * lineIndex);
+                  let mashineFree = new CustomEvent("mashine.free", {
+                    detail: {
+                      status: this.status,
+                    },
+                  });
+                  dispatchEvent(mashineFree);
+                  // this.vc.run();
+                }, this.config.waitForNextSpin);
+            }
+          }, 1000 * lineIndex);
         });
+
+
       }
     };
 
     window.addEventListener("wheel.stoped", this.constructWinningObject);
+
+    window.addEventListener("mashine.free", (e)=> {
+
+      console.info("MASHINE STATUS IS FREE");
+      App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
+
+    });
+    
+
+    if (isMobile()) {
+      if (window.innerWidth < window.innerHeight) {
+        console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
+        
+      }
+    }
+
   }
 
   activateWinningVisualEffect(worldObj, comb) {
 
-    let oscilltor_variable = new OSC(0, 2, 0.004);
+    let oscilltor_variable = new OSC(0, 2, 0.04);
 
     this.winningVisualEffect.threads.push(
       setInterval(() => {
@@ -151,31 +193,34 @@ export default class Mashines {
     }
   }
 
-  checkForWinCombination(rez, lineWinObjCollect) {
-    console.log("final ", rez);
+  checkForWinCombination(rez, lineWinObjCollect, lineIndex) {
+    // console.log("checkForWinCombination ->", rez, " lineWinObjCollect " , lineWinObjCollect);
+    console.log("checkForWinCombination lineIndex", lineIndex);
+
     rez.forEach(comb => {
+      console.log("repeat ->", comb.repeat);
       if (comb.repeat == 3) {
-        this.separateWinLineObjs(lineWinObjCollect, comb);
         console.info("3 in line small win with field :", comb.fieldId);
-        // this.flashIn();
+        this.separateWinLineObjs(lineWinObjCollect, comb);
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
       } else if (comb.repeat == 4) {
         console.info("4 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
       } else if (comb.repeat == 5) {
         console.info("5 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
       } else if (comb.repeat == 6) {
         console.info("6 in line x win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+      } else if (comb.repeat < 3) {
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = "No wins for line " + (lineIndex++).toString();
       }
     });
 
-    setTimeout(() => {
-      this.status = "free";
-      this.winningHandler.order = [];
-      this.killWinThreads();
-      this.vc.run();
-    }, this.config.waitForNextSpin);
+
   }
 
   /**
@@ -240,12 +285,30 @@ export default class Mashines {
       source: ["res/images/h1.png"],
       mix_operation: "multiply",
     };
+    var texOverlayout = {
+      source: ["res/icons/pleaserotate.png"],
+      mix_operation: "multiply",
+    };
+
+    if (isMobile()) {
+
+    world.Add("squareTex", 1, "overlayout", texOverlayout);
+    App.scene.overlayout.geometry.setScaleByX(1);
+    App.scene.overlayout.geometry.setScaleByY(2.2);
+    App.scene.overlayout.position.y = 0;
+    App.scene.overlayout.position.z = -5;
+    // Adapt active textures because it is inverted by nature.
+    App.scene.overlayout.rotation.rotx = 0; 
+
+    }
+
 
     world.Add("squareTex", 1, "topHeader", texTopHeader);
     App.scene.topHeader.geometry.setScaleByX(5);
     App.scene.topHeader.geometry.setScaleByY(0.5);
     App.scene.topHeader.position.y = 2.56;
     App.scene.topHeader.position.z = -6.5;
+
 
     App.scene.topHeader.custom.gl_texture = function (object, t) {
       world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
@@ -360,8 +423,8 @@ export default class Mashines {
 
     // Footer balance
     world.Add("squareTex", 1, "footerBalance", texTopHeader);
-    App.scene.footerBalance.geometry.setScaleByX(1);
-    App.scene.footerBalance.geometry.setScaleByY(0.45);
+    App.scene.footerBalance.geometry.setScaleByX(1.15);
+    App.scene.footerBalance.geometry.setScaleByY(0.23);
     App.scene.footerBalance.position.SetY(-2.75);
     App.scene.footerBalance.position.SetZ(-6.4);
     App.scene.footerBalance.position.SetX(1);
@@ -382,6 +445,9 @@ export default class Mashines {
     //App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
+
+    if (isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
+
     App.operation.squareTex_buffer_procedure(App.scene.topHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerLines);
@@ -397,7 +463,6 @@ export default class Mashines {
       // App.slot.mashine.incraseNumOfDrawInstance
       App.slot.mashine.startUpAnimMoveToRight();
       // App.slot.mashine.startUpAnimMoveToUp()
-
       // startUpAnimMoveToRight
     }, 2500);
   };
@@ -411,28 +476,25 @@ export default class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
 
-    var textuteImageSamplers2 = {
-      source: [
-        "res/images/field.png",
-        "res/images/nidza.png"
-      ],
-      mix_operation: "multiply",
-    };
-
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
       var localHandler = [],
         localHandlerPos = [],
         lastY = 0;
+
       wheel.forEach((field, indexField) => {
+
+        var textuteArg = {
+          source: field.textures,
+          mix_operation: "multiply",
+        };
+
         var name = "wheel" + indexWheel + "field" + indexField;
-        world.Add("squareTex", 1, name, textuteImageSamplers2);
+        world.Add("squareTex", 1, name, textuteArg);
         localHandler.push(name);
         // Referent done for default camera position.
         var O = (window.innerWidth / 1000) * WW;
         var O2 = (window.innerWidth / 1005) * WW;
 
-        // console.log("test .wheel____", wheel)
-        // console.log("test .field", field)
         App.scene[name].LightsData.ambientLight.set(
           field.color.r,
           field.color.g,
@@ -563,6 +625,7 @@ export default class Mashines {
   activateSpinning = () => {
     if (this.status != "free") {
       console.info("Already spinning...");
+      beep()
       return;
     }
     this.status = "spinning";
@@ -610,11 +673,11 @@ export default class Mashines {
                 App.scene[fieldname].position.y -= this.speed;
 
                 if (wheelID == 0) {
-                  // App.scene[fieldname].rotation.rotationSpeed.x = 100;
+                  //App.scene[fieldname].rotation.rotationSpeed.x = 100;
                 } else if (wheelID == 1) {
-                  // App.scene[fieldname].rotation.rotationSpeed.y = 100;
+                  //App.scene[fieldname].rotation.rotationSpeed.y = 100;
                 } else if (wheelID == 2) {
-                  // App.scene[fieldname].rotation.rotationSpeed.x = -100;
+                  //App.scene[fieldname].rotation.rotationSpeed.x = -100;
                 }
 
                 if (
@@ -630,12 +693,14 @@ export default class Mashines {
                     App.scene[fieldname].rotation.rotationSpeed.x = 0;
                     App.scene[fieldname].rotation.rotationSpeed.y = 0;
 
-                    console.log(fieldname);
+                    
                     var isLast = false;
                     // wheel0field5 parse 5 + 1 = 0  or
                     if (indexWheel == accessKeysArray.length - 1) {
                       isLast = true;
                     }
+
+                    console.log("FILED NAME : " + fieldname + " isLAst" + isLast);
 
                     // get winning for wheel id and fieldname
                     let wheelStoped = new CustomEvent("wheel.stoped", {
@@ -646,6 +711,8 @@ export default class Mashines {
                       },
                     });
                     dispatchEvent(wheelStoped);
+
+ 
                   }
                 }
               }

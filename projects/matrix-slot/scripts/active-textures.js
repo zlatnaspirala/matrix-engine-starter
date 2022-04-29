@@ -392,7 +392,7 @@ export function createNidzaHudLine1( nidza ) {
     let myFirstNidzaObjectOptions = {
       id: "footerBalance",
       size: {
-        width: 500,
+        width: 400,
         height: 80
       }
     };
@@ -415,7 +415,7 @@ export function createNidzaHudLine1( nidza ) {
           height: 120
         },
         font: {
-          fontSize: "15px",
+          fontSize: "25px",
           fontStyle: "normal",
           fontName: stdFonts.CourierNew
         }

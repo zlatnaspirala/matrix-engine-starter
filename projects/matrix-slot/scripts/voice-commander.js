@@ -26,11 +26,9 @@ VoiceCommanderInstance.setInteraction = function(newInterAct) {
 };
 
 VoiceCommanderInstance.whatisyourname = (r) => {
-
   // global for now
   App.slot.user = r;
   App.slot.mashine.nidza.access.footerLabel.elements[0].text = "You are welcome Mr/Mrs. " + r + ". Voice command: spin or play ";
-  console.log( App.slot.mashine.nidza + " <<<< ")
   console.warn("Tell me your nickname.")
   VoiceCommanderInstance.setInteraction(options.callback);
   setTimeout( () => {

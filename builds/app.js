@@ -1074,7 +1074,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_OR_CLICK();
     }, {
-      passive: true
+      passive: false
     });
     canvas.addEventListener('touchend', function (e) {
       e.preventDefault();
@@ -1084,7 +1084,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_UP_OR_MOUSE_UP();
     }, {
-      passive: true
+      passive: false
     });
     canvas.addEventListener('touchcancel', function (e) {
       e.preventDefault();
@@ -1094,7 +1094,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_UP_OR_MOUSE_UP();
     }, {
-      passive: true
+      passive: false
     });
     canvas.addEventListener('touchmove', function (e) {
       e.preventDefault();
@@ -1105,7 +1105,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE();
     }, {
-      passive: true
+      passive: false
     });
   } else {
     //Desktop device
@@ -6137,6 +6137,7 @@ function checkingProcedureCalc(object) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.isMobile = isMobile;
 exports.LOG = LOG;
 exports.OSCILLATOR = OSCILLATOR;
 exports.SWITCHER = SWITCHER;
@@ -6275,6 +6276,15 @@ window.DETECTBROWSER = function () {
   this.NAME = HREFTXT;
   this.NOMOBILE = NOMOBILE;
 };
+
+function isMobile() {
+  const toMatch = [/Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i];
+  return toMatch.some(toMatchItem => {
+    return navigator.userAgent.match(toMatchItem);
+  });
+}
+
+;
 
 const loadImage = function (url, onload) {
   var img = new Image();

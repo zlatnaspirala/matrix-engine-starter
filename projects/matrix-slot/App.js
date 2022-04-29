@@ -4,7 +4,7 @@
  * Template demostration of power.
  * @name Slot
  * @author Nikola Lukic
- * @license MIT
+ * @license MIT 
  */
 
 // dev
@@ -48,17 +48,46 @@ function webGLStart() {
    * @description Slot mashine can be configured from
    * external (web server/ some other way)
    */
-  var fieldRed    = { id: 1, color: {r: 2,   g: 0 , b: 0.1}, winCoefficient: 100 };
-  var fieldBlue   = { id: 2, color: {r: 0.7, g: 1 , b: 22 }, winCoefficient: 25 };
-  var fieldGreen  = { id: 3, color: {r: 0.2, g: 1 , b: 0.2  }, winCoefficient: 10 };
-  var fieldPurple = { id: 4, color: {r: 1,   g: 0.2, b: 0  }, winCoefficient: 5 };
-  var fieldLime   = { id: 5, color: {r: 0.5, g: 2 , b: 0.2  }, winCoefficient: 2 };
+  var fieldRed = {
+    id: 1,
+    color: {r: 1, g: 0.6, b: 0.6},
+    textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
+    winCoefficient: 100,
+  };
+
+  var fieldBlue = {
+    id: 2,
+    color: {r: 0.7, g: 1, b: 2},
+    textures: ["res/images/field.png", "res/images/metal-shets.jpg"],
+    winCoefficient: 25
+  };
+
+  var fieldGreen = {
+    id: 3,
+    color: {r: 1, g: 2, b: 1},
+    textures: ["res/images/metal-shets.jpg", "res/images/field3.png"],
+    winCoefficient: 10
+  };
+
+  var fieldPurple = {
+    id: 4,
+    color: {r: 1, g: 0.8, b: 1},
+    textures: ["res/images/field3.png", "res/images/html5.png"],
+    winCoefficient: 5
+  };
+
+  var fieldLime = {
+    id: 5,
+    color: {r: 0.2, g: 1, b: 0.2},
+    textures: ["res/images/html5.png", "res/images/field3.png"],
+    winCoefficient: 2
+  };
 
   App.slot.config = {
     // Count after all wheels spinning moment
     spinningInterval : 1000,
     stopingInterval: 1000,
-    waitForNextSpin: 10000,
+    waitForNextSpin: 2000,
     verticalSize: 3,
     wheels: [
       [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
@@ -69,10 +98,23 @@ function webGLStart() {
       [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldPurple]
     ],
     winnigLines: [
-      [1, 1, 1, 1, 1, 1], // m
-      [0, 0, 0, 0, 0, 0], // t
-      [2, 2, 2, 2, 2, 2],  // b
-      [1, 0, 1, 0, 1, 0]  // cikcak up
+      [1, 1, 1, 1, 1, 1], // m                     1
+      [0, 0, 0, 0, 0, 0], // t                     2
+      [2, 2, 2, 2, 2, 2], // b                     3
+      [1, 0, 1, 0, 1, 0], // cikcak up             4
+      [1, 2, 1, 2, 1, 2], // cikcak down           5
+      [0, 1, 0, 1, 0, 1], // cikcak up from 0      6
+      [2, 1, 2, 1, 2, 1], // cikcak down from 2    7
+      [0, 1, 2, 1, 0, 1], // cikcak big1           8
+      [2, 1, 0, 1, 2, 1], // cikcak big2           9
+      [1, 0, 1, 2, 1, 0], // big from 0 to up      10
+      [1, 2, 1, 0, 1, 2], // big from 0 to down    11
+      [1, 1, 1, 0, 0, 0], // 3 by 2                12
+      [0, 0, 0, 1, 1, 1], // 3 by 2                13
+      [1, 1, 1, 2, 2, 2], // 3 by 2                14
+      [2, 2, 2, 1, 1, 1], // 3 by 2                15
+      [2, 2, 2, 0, 0, 0], // 3 by 2                16
+      [0, 0, 0, 2, 2, 2], // 3 by 2                17
     ],
     matrixMessage: [
       'S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e'
@@ -83,22 +125,12 @@ function webGLStart() {
   mashine.vc = VoiceCommanderInstance;
   App.slot.mashine = mashine;
 
-  var textuteImageSamplers = {
-    source: [
-      "res/images/gradiend1.png"
-    ],
-    mix_operation: "multiply",
-  };
-
-  world.Add("cubeTex", 1, "MyCubeTex", textuteImageSamplers);
-
   window.App = App;
   window.world = world;
   window.matrixEngine = matrixEngine;
 }
 
 matrixEngine.Engine.load_shaders("shaders/shaders.html");
-// window.matrixEngine = matrixEngine;
 
 window.addEventListener("load", () => {
   setTimeout(() => {

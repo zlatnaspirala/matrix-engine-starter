@@ -1331,7 +1331,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_OR_CLICK();
     }, {
-      passive: true
+      passive: false
     });
     canvas.addEventListener('touchend', function (e) {
       e.preventDefault();
@@ -1341,7 +1341,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_UP_OR_MOUSE_UP();
     }, {
-      passive: true
+      passive: false
     });
     canvas.addEventListener('touchcancel', function (e) {
       e.preventDefault();
@@ -1351,7 +1351,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_UP_OR_MOUSE_UP();
     }, {
-      passive: true
+      passive: false
     });
     canvas.addEventListener('touchmove', function (e) {
       e.preventDefault();
@@ -1362,7 +1362,7 @@ function EVENTS(canvas) {
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE();
     }, {
-      passive: true
+      passive: false
     });
   } else {
     //Desktop device
@@ -6394,6 +6394,7 @@ function checkingProcedureCalc(object) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.isMobile = isMobile;
 exports.LOG = LOG;
 exports.OSCILLATOR = OSCILLATOR;
 exports.SWITCHER = SWITCHER;
@@ -6532,6 +6533,15 @@ window.DETECTBROWSER = function () {
   this.NAME = HREFTXT;
   this.NOMOBILE = NOMOBILE;
 };
+
+function isMobile() {
+  const toMatch = [/Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i];
+  return toMatch.some(toMatchItem => {
+    return navigator.userAgent.match(toMatchItem);
+  });
+}
+
+;
 
 const loadImage = function (url, onload) {
   var img = new Image();
@@ -9696,7 +9706,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * Template demostration of power.
  * @name Slot
  * @author Nikola Lukic
- * @license MIT
+ * @license MIT 
  */
 // dev
 // import matrixEngine from "/node_modules/matrix-engine/index.js";
@@ -9736,10 +9746,11 @@ function webGLStart() {
   var fieldRed = {
     id: 1,
     color: {
-      r: 2,
-      g: 0,
-      b: 0.1
+      r: 1,
+      g: 0.6,
+      b: 0.6
     },
+    textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
     winCoefficient: 100
   };
   var fieldBlue = {
@@ -9747,66 +9758,77 @@ function webGLStart() {
     color: {
       r: 0.7,
       g: 1,
-      b: 22
+      b: 2
     },
+    textures: ["res/images/field.png", "res/images/metal-shets.jpg"],
     winCoefficient: 25
   };
   var fieldGreen = {
     id: 3,
     color: {
-      r: 0.2,
-      g: 1,
-      b: 0.2
+      r: 1,
+      g: 2,
+      b: 1
     },
+    textures: ["res/images/metal-shets.jpg", "res/images/field3.png"],
     winCoefficient: 10
   };
   var fieldPurple = {
     id: 4,
     color: {
       r: 1,
-      g: 0.2,
-      b: 0
+      g: 0.8,
+      b: 1
     },
+    textures: ["res/images/field3.png", "res/images/html5.png"],
     winCoefficient: 5
   };
   var fieldLime = {
     id: 5,
     color: {
-      r: 0.5,
-      g: 2,
+      r: 0.2,
+      g: 1,
       b: 0.2
     },
+    textures: ["res/images/html5.png", "res/images/field3.png"],
     winCoefficient: 2
   };
   App.slot.config = {
     // Count after all wheels spinning moment
     spinningInterval: 1000,
     stopingInterval: 1000,
-    waitForNextSpin: 10000,
+    waitForNextSpin: 2000,
     verticalSize: 3,
     wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldPurple]],
-    winnigLines: [[1, 1, 1, 1, 1, 1], // m
-    [0, 0, 0, 0, 0, 0], // t
-    [2, 2, 2, 2, 2, 2], // b
-    [1, 0, 1, 0, 1, 0] // cikcak up
+    winnigLines: [[1, 1, 1, 1, 1, 1], // m                     1
+    [0, 0, 0, 0, 0, 0], // t                     2
+    [2, 2, 2, 2, 2, 2], // b                     3
+    [1, 0, 1, 0, 1, 0], // cikcak up             4
+    [1, 2, 1, 2, 1, 2], // cikcak down           5
+    [0, 1, 0, 1, 0, 1], // cikcak up from 0      6
+    [2, 1, 2, 1, 2, 1], // cikcak down from 2    7
+    [0, 1, 2, 1, 0, 1], // cikcak big1           8
+    [2, 1, 0, 1, 2, 1], // cikcak big2           9
+    [1, 0, 1, 2, 1, 0], // big from 0 to up      10
+    [1, 2, 1, 0, 1, 2], // big from 0 to down    11
+    [1, 1, 1, 0, 0, 0], // 3 by 2                12
+    [0, 0, 0, 1, 1, 1], // 3 by 2                13
+    [1, 1, 1, 2, 2, 2], // 3 by 2                14
+    [2, 2, 2, 1, 1, 1], // 3 by 2                15
+    [2, 2, 2, 0, 0, 0], // 3 by 2                16
+    [0, 0, 0, 2, 2, 2] // 3 by 2                17
     ],
     matrixMessage: ['S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e']
   };
   mashine = new _mashine.default(world, App.slot.config);
   mashine.vc = _voiceCommander.VoiceCommanderInstance;
   App.slot.mashine = mashine;
-  var textuteImageSamplers = {
-    source: ["res/images/gradiend1.png"],
-    mix_operation: "multiply"
-  };
-  world.Add("cubeTex", 1, "MyCubeTex", textuteImageSamplers);
   window.App = App;
   window.world = world;
   window.matrixEngine = matrixEngine;
 }
 
-matrixEngine.Engine.load_shaders("shaders/shaders.html"); // window.matrixEngine = matrixEngine;
-
+matrixEngine.Engine.load_shaders("shaders/shaders.html");
 window.addEventListener("load", () => {
   setTimeout(() => {
     matrixEngine.Engine.initApp(webGLStart);
@@ -9816,7 +9838,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/mashine":44,"./scripts/voice-commander":47,"matrix-engine":6}],42:[function(require,module,exports){
+},{"./scripts/mashine":45,"./scripts/voice-commander":48,"matrix-engine":6}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10185,7 +10207,7 @@ function createNidzaHudBalance(nidza) {
     let myFirstNidzaObjectOptions = {
       id: "footerBalance",
       size: {
-        width: 500,
+        width: 400,
         height: 80
       }
     };
@@ -10205,7 +10227,7 @@ function createNidzaHudBalance(nidza) {
           height: 120
         },
         font: {
-          fontSize: "15px",
+          fontSize: "25px",
           fontStyle: "normal",
           fontName: _standardFonts.stdFonts.CourierNew
         }
@@ -10226,7 +10248,49 @@ function createNidzaHudBalance(nidza) {
   });
 }
 
-},{"./standard-fonts":46,"matrix-engine":6}],43:[function(require,module,exports){
+},{"./standard-fonts":47,"matrix-engine":6}],43:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.beep = beep;
+let audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext)(); //All arguments are optional:
+// Duration of the tone in milliseconds. Default is 500.
+// Frequency of the tone in hertz. default is 440.
+// Volume of the tone. Default is 1, off is 0.
+// Type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
+// Callback to use on end of tone.
+
+function beep(duration, frequency, volume, type, callback) {
+  var oscillator = audioCtx.createOscillator();
+  var gainNode = audioCtx.createGain();
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  if (volume) {
+    gainNode.gain.value = volume;
+  }
+
+  if (frequency) {
+    oscillator.frequency.value = frequency;
+  }
+
+  if (type) {
+    oscillator.type = type;
+  }
+
+  if (callback) {
+    oscillator.onended = callback;
+  }
+
+  oscillator.start(audioCtx.currentTime);
+  oscillator.stop(audioCtx.currentTime + (duration || 500) / 1000);
+}
+
+;
+
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10258,10 +10322,10 @@ async function loadLineEffects() {
     App.scene["footerLine" + j].geometry.setScaleByX(6);
     App.scene["footerLine" + j].geometry.setScaleByY(0.025);
     App.scene["footerLine" + j].position.SetY(2.5 + j * 0.055);
-    App.scene["footerLine" + j].position.SetZ(-6.4);
+    App.scene["footerLine" + j].position.SetZ(-5.6);
     App.scene["footerLine" + j].position.SetX(0); // TEST 
 
-    App.scene["footerLine" + j].instancedDraws.numberOfInstance = 45;
+    App.scene["footerLine" + j].instancedDraws.numberOfInstance = 50;
     App.scene["footerLine" + j].instancedDraws.array_of_local_offset = [0, 0.1, 0];
 
     App.scene["footerLine" + j].instancedDraws.overrideDrawArraysInstance = function (object) {
@@ -10329,7 +10393,7 @@ function startUpAnimMoveToUp() {
   App.scene["footerLine2"].position.translateByY(-10);
 }
 
-},{"matrix-engine":6}],44:[function(require,module,exports){
+},{"matrix-engine":6}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10349,12 +10413,15 @@ var _effectLines = require("./effect-lines");
 
 var _nidza = require("nidza");
 
+var _audioGen = require("./audio-gen");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 let OSC = matrixEngine.utility.OSCILLATOR;
-var App = matrixEngine.App;
+let App = matrixEngine.App;
+let isMobile = matrixEngine.utility.isMobile;
 
 class Mashines {
   constructor(world, config) {
@@ -10402,11 +10469,11 @@ class Mashines {
     this.addRaycaster();
 
     this.constructWinningObject = event => {
-      _matrixAudio.stopSpin[event.detail.wheelID].play(); //console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
-      //console.log( "constructWinningObject field name=> ", event.detail.fieldname );
-      //console.log( "constructWinningObject isLast=> ", event.detail.isLast );
+      _matrixAudio.stopSpin[event.detail.wheelID].play();
 
+      console.log("constructWinningObject wheel id=>  ", event.detail.wheelID); //console.log( "constructWinningObject field name=> ", event.detail.fieldname );
 
+      console.log("constructWinningObject isLast=> ", event.detail.isLast);
       let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
       var newOrder = App.slot.mashine.arrayRotate(localHolder);
 
@@ -10414,33 +10481,62 @@ class Mashines {
         newOrder = App.slot.mashine.arrayRotate(localHolder);
       }
 
-      this.winningHandler.order.push(newOrder);
+      this.winningHandler.order.push(newOrder); // Only on last stop
 
-      if (event.detail.isLast) {
+      if (event.detail.isLast == true) {
         // It is last activate from here
         this.config.winnigLines.forEach((line, lineIndex) => {
           let countLineWins = [];
           let collectWinObjs = [];
           setTimeout(() => {
-            this.killWinThreads();
+            this.killWinThreads(); // console.log('->>> LINE', line);
+            // console.log('->>> TEST FUCK IT ', this.winningHandler.order);
+
             this.winningHandler.order.forEach((wheelData, index) => {
-              // hard code for multilines feature
-              let accessName = wheelData[line[0]];
+              // hard code for multilines feature TEST
+              //console.log('->>> wheelData', wheelData);
+              //console.log('->>> wheelData INDEX', index);
+              let accessName = wheelData[line[index]];
               countLineWins.push(App.scene[accessName].specialId);
               collectWinObjs.push(App.scene[accessName]);
             });
             var finalResult = this.findMax(countLineWins);
-            this.checkForWinCombination(finalResult, collectWinObjs);
-          }, 2000 * lineIndex);
+            this.checkForWinCombination(finalResult, collectWinObjs, lineIndex); // soft hardcode
+
+            if (lineIndex == 16) {
+              // console.log("LAST +++++++++++++++++++++ ", lineIndex);
+              setTimeout(() => {
+                this.status = "free";
+                this.winningHandler.order = [];
+                this.killWinThreads();
+                let mashineFree = new CustomEvent("mashine.free", {
+                  detail: {
+                    status: this.status
+                  }
+                });
+                dispatchEvent(mashineFree); // this.vc.run();
+              }, this.config.waitForNextSpin);
+            }
+          }, 1000 * lineIndex);
         });
       }
     };
 
     window.addEventListener("wheel.stoped", this.constructWinningObject);
+    window.addEventListener("mashine.free", e => {
+      console.info("MASHINE STATUS IS FREE");
+      App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
+    });
+
+    if (isMobile()) {
+      if (window.innerWidth < window.innerHeight) {
+        console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
+      }
+    }
   }
 
   activateWinningVisualEffect(worldObj, comb) {
-    let oscilltor_variable = new OSC(0, 2, 0.004);
+    let oscilltor_variable = new OSC(0, 2, 0.04);
     this.winningVisualEffect.threads.push(setInterval(() => {
       worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
       worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
@@ -10474,29 +10570,32 @@ class Mashines {
     }
   }
 
-  checkForWinCombination(rez, lineWinObjCollect) {
-    console.log("final ", rez);
+  checkForWinCombination(rez, lineWinObjCollect, lineIndex) {
+    // console.log("checkForWinCombination ->", rez, " lineWinObjCollect " , lineWinObjCollect);
+    console.log("checkForWinCombination lineIndex", lineIndex);
     rez.forEach(comb => {
+      console.log("repeat ->", comb.repeat);
+
       if (comb.repeat == 3) {
+        console.info("3 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        console.info("3 in line small win with field :", comb.fieldId); // this.flashIn();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
       } else if (comb.repeat == 4) {
         console.info("4 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
       } else if (comb.repeat == 5) {
         console.info("5 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
       } else if (comb.repeat == 6) {
         console.info("6 in line x win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+      } else if (comb.repeat < 3) {
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = "No wins for line " + (lineIndex++).toString();
       }
     });
-    setTimeout(() => {
-      this.status = "free";
-      this.winningHandler.order = [];
-      this.killWinThreads();
-      this.vc.run();
-    }, this.config.waitForNextSpin);
   }
   /**
    * @description
@@ -10571,6 +10670,21 @@ class Mashines {
       source: ["res/images/h1.png"],
       mix_operation: "multiply"
     };
+    var texOverlayout = {
+      source: ["res/icons/pleaserotate.png"],
+      mix_operation: "multiply"
+    };
+
+    if (isMobile()) {
+      world.Add("squareTex", 1, "overlayout", texOverlayout);
+      App.scene.overlayout.geometry.setScaleByX(1);
+      App.scene.overlayout.geometry.setScaleByY(2.2);
+      App.scene.overlayout.position.y = 0;
+      App.scene.overlayout.position.z = -5; // Adapt active textures because it is inverted by nature.
+
+      App.scene.overlayout.rotation.rotx = 0;
+    }
+
     world.Add("squareTex", 1, "topHeader", texTopHeader);
     App.scene.topHeader.geometry.setScaleByX(5);
     App.scene.topHeader.geometry.setScaleByY(0.5);
@@ -10663,8 +10777,8 @@ class Mashines {
     }); // Footer balance
 
     world.Add("squareTex", 1, "footerBalance", texTopHeader);
-    App.scene.footerBalance.geometry.setScaleByX(1);
-    App.scene.footerBalance.geometry.setScaleByY(0.45);
+    App.scene.footerBalance.geometry.setScaleByX(1.15);
+    App.scene.footerBalance.geometry.setScaleByY(0.23);
     App.scene.footerBalance.position.SetY(-2.75);
     App.scene.footerBalance.position.SetZ(-6.4);
     App.scene.footerBalance.position.SetX(1); // Adapt active textures because it is inverted by nature.
@@ -10683,6 +10797,7 @@ class Mashines {
     //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
 
+    if (isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
     App.operation.squareTex_buffer_procedure(App.scene.topHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerLines);
@@ -10703,23 +10818,21 @@ class Mashines {
     console.info("Number of vertical visible fields of wheels: ", App.slot.config.verticalSize);
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
-    var textuteImageSamplers2 = {
-      source: ["res/images/field.png", "res/images/nidza.png"],
-      mix_operation: "multiply"
-    };
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
       var localHandler = [],
           localHandlerPos = [],
           lastY = 0;
       wheel.forEach((field, indexField) => {
+        var textuteArg = {
+          source: field.textures,
+          mix_operation: "multiply"
+        };
         var name = "wheel" + indexWheel + "field" + indexField;
-        world.Add("squareTex", 1, name, textuteImageSamplers2);
+        world.Add("squareTex", 1, name, textuteArg);
         localHandler.push(name); // Referent done for default camera position.
 
         var O = window.innerWidth / 1000 * WW;
-        var O2 = window.innerWidth / 1005 * WW; // console.log("test .wheel____", wheel)
-        // console.log("test .field", field)
-
+        var O2 = window.innerWidth / 1005 * WW;
         App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
         App.scene[name].specialId = field.id;
 
@@ -10844,6 +10957,7 @@ class Mashines {
   activateSpinning = () => {
     if (this.status != "free") {
       console.info("Already spinning...");
+      (0, _audioGen.beep)();
       return;
     }
 
@@ -10888,9 +11002,9 @@ class Mashines {
           accessWheelNames.forEach((fieldname, indexField, accessWheelNames) => {
             App.scene[fieldname].position.y -= this.speed;
 
-            if (wheelID == 0) {// App.scene[fieldname].rotation.rotationSpeed.x = 100;
-            } else if (wheelID == 1) {// App.scene[fieldname].rotation.rotationSpeed.y = 100;
-            } else if (wheelID == 2) {// App.scene[fieldname].rotation.rotationSpeed.x = -100;
+            if (wheelID == 0) {//App.scene[fieldname].rotation.rotationSpeed.x = 100;
+            } else if (wheelID == 1) {//App.scene[fieldname].rotation.rotationSpeed.y = 100;
+            } else if (wheelID == 2) {//App.scene[fieldname].rotation.rotationSpeed.x = -100;
             }
 
             if (App.scene[fieldname].position.y < this.spinHandler.bottomLimitY) {
@@ -10900,13 +11014,13 @@ class Mashines {
                 clearInterval(this.thread["timer" + wheelID]);
                 App.scene[fieldname].rotation.rotationSpeed.x = 0;
                 App.scene[fieldname].rotation.rotationSpeed.y = 0;
-                console.log(fieldname);
                 var isLast = false; // wheel0field5 parse 5 + 1 = 0  or
 
                 if (indexWheel == accessKeysArray.length - 1) {
                   isLast = true;
-                } // get winning for wheel id and fieldname
+                }
 
+                console.log("FILED NAME : " + fieldname + " isLAst" + isLast); // get winning for wheel id and fieldname
 
                 let wheelStoped = new CustomEvent("wheel.stoped", {
                   detail: {
@@ -10951,7 +11065,7 @@ class Mashines {
 
 exports.default = Mashines;
 
-},{"./active-textures":42,"./effect-lines":43,"./matrix-audio":45,"matrix-engine":6,"matrix-engine-plugins":3,"nidza":20}],45:[function(require,module,exports){
+},{"./active-textures":42,"./audio-gen":43,"./effect-lines":44,"./matrix-audio":46,"matrix-engine":6,"matrix-engine-plugins":3,"nidza":20}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11038,7 +11152,7 @@ testMyAudio[0].onended = function() {
 
 exports.stopSpin = stopSpin;
 
-},{"audio-commander":1}],46:[function(require,module,exports){
+},{"audio-commander":1}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11059,7 +11173,7 @@ const stdFonts = {
 };
 exports.stdFonts = stdFonts;
 
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11097,7 +11211,6 @@ VoiceCommanderInstance.whatisyourname = r => {
   // global for now
   App.slot.user = r;
   App.slot.mashine.nidza.access.footerLabel.elements[0].text = "You are welcome Mr/Mrs. " + r + ". Voice command: spin or play ";
-  console.log(App.slot.mashine.nidza + " <<<< ");
   console.warn("Tell me your nickname.");
   VoiceCommanderInstance.setInteraction(options.callback);
   setTimeout(() => {

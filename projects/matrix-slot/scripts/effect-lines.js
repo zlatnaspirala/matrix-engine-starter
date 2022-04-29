@@ -12,10 +12,10 @@ export async function loadLineEffects() {
     App.scene["footerLine" + j].geometry.setScaleByX(6);
     App.scene["footerLine" + j].geometry.setScaleByY(0.025);
     App.scene["footerLine" + j].position.SetY(2.5 + j * 0.055);
-    App.scene["footerLine" + j].position.SetZ(-6.4);
+    App.scene["footerLine" + j].position.SetZ(-5.6);
     App.scene["footerLine" + j].position.SetX(0);
     // TEST 
-    App.scene["footerLine" + j].instancedDraws.numberOfInstance = 45;
+    App.scene["footerLine" + j].instancedDraws.numberOfInstance = 50;
     App.scene["footerLine" + j].instancedDraws.array_of_local_offset = [0,0.1,0];
     App.scene["footerLine" + j].instancedDraws.overrideDrawArraysInstance = function( object ) {
       
@@ -60,8 +60,6 @@ export function incraseNumOfDrawInstance() {
 }
 
 export function flashIn() {
-
-  
 
   for(var j = 1;j < 3;j++) {
     App.scene["footerLine" + j].position.thrust = 0.1;
