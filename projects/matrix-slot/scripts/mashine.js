@@ -154,17 +154,65 @@ export default class Mashines {
 
   activateWinningVisualEffect(worldObj, comb) {
 
-    let oscilltor_variable = new OSC(0, 2, 0.04);
+    let oscilltor_variable,
+        oscillator_color = new OSC(0, 2, 0.02);
+    if (comb.repeat == 3) oscilltor_variable = new OSC(0, 45, 1);
+    if (comb.repeat == 4) oscilltor_variable = new OSC(0, 270, 1);
+    if (comb.repeat == 5) oscilltor_variable = new OSC(0, 360, 2);
+    if (comb.repeat == 6) oscilltor_variable = new OSC(0, 180, 5);
 
-    this.winningVisualEffect.threads.push(
-      setInterval(() => {
-        worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
-        worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
-        worldObj.rotation.roty = oscilltor_variable.UPDATE() * 10;
-      }, 10)
-    );
+    if (comb.repeat == 5) {
+      this.winningVisualEffect.threads.push(
+        setInterval(() => {
+          worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+          worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
+          worldObj.rotation.roty = oscilltor_variable.UPDATE();
+          worldObj.rotation.rotx = oscilltor_variable.UPDATE();
+        }, 10)
+      );
 
-    this.winningVisualEffect.ids.push(worldObj);
+      this.winningVisualEffect.ids.push(worldObj);
+    } else if (comb.repeat == 4) {
+
+      this.winningVisualEffect.threads.push(
+        setInterval(() => {
+          worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+          worldObj.LightsData.ambientLight.g = oscillator_color.UPDATE();
+          worldObj.rotation.rotz = oscilltor_variable.UPDATE();
+          worldObj.rotation.rotx = oscilltor_variable.UPDATE();
+        }, 10)
+      );
+
+      this.winningVisualEffect.ids.push(worldObj);
+
+    } else if (comb.repeat == 3) {
+
+      this.winningVisualEffect.threads.push(
+        setInterval(() => {
+          worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+          worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
+          worldObj.rotation.roty = oscilltor_variable.UPDATE();
+        }, 10)
+      );
+
+      this.winningVisualEffect.ids.push(worldObj);
+
+    } else {
+        this.winningVisualEffect.threads.push(
+          setInterval(() => {
+            worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+            worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
+            worldObj.rotation.roty = oscilltor_variable.UPDATE() ;
+          }, 10)
+        );
+  
+        this.winningVisualEffect.ids.push(worldObj);
+      
+    }
+
+
+    
+
 
   }
 
@@ -178,7 +226,10 @@ export default class Mashines {
         if (fieldOriginal.id == obj.specialId) {
           obj.LightsData.ambientLight.r = fieldOriginal.color.r;
           obj.LightsData.ambientLight.b = fieldOriginal.color.b;
+          obj.LightsData.ambientLight.g = fieldOriginal.color.g;
           obj.rotation.roty = 0;
+          obj.rotation.rotz = 0;
+          obj.rotation.rotx = 0;
           return;
         }
       });
@@ -197,29 +248,31 @@ export default class Mashines {
     // console.log("checkForWinCombination ->", rez, " lineWinObjCollect " , lineWinObjCollect);
     console.log("checkForWinCombination lineIndex", lineIndex);
 
+
     rez.forEach(comb => {
       console.log("repeat ->", comb.repeat);
       if (comb.repeat == 3) {
         console.info("3 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
       } else if (comb.repeat == 4) {
         console.info("4 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
       } else if (comb.repeat == 5) {
         console.info("5 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
       } else if (comb.repeat == 6) {
         console.info("6 in line x win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
       } else if (comb.repeat < 3) {
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = "No wins for line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = "No wins for line " + (lineIndex).toString();
       }
     });
 
+    showActiveLinesByIndex(lineIndex);
 
   }
 

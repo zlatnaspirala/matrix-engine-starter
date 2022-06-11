@@ -9704,12 +9704,12 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 /**
  * @description Matrix Engine Project
  * Template demostration of power.
- * @name Slot
+ * @name MatrixSlot
  * @author Nikola Lukic
- * @license MIT 
+ * @license MIT
  */
 // dev
-// import matrixEngine from "/node_modules/matrix-engine/index.js";
+// import matrixEngine from "./../../node_modules/matrix-engine/index.js";
 // prod
 // Voice commander
 _voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
@@ -10208,7 +10208,7 @@ function createNidzaHudBalance(nidza) {
       id: "footerBalance",
       size: {
         width: 400,
-        height: 80
+        height: 180
       }
     };
     exports.footerBalance = footerBalance = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
@@ -10219,17 +10219,17 @@ function createNidzaHudBalance(nidza) {
         text: item,
         color: "lime",
         position: {
-          x: 15 + 2 * index,
+          x: 15 + 10 * index,
           y: 15
         },
         dimension: {
-          width: 120,
-          height: 120
+          width: 150,
+          height: 150
         },
         font: {
-          fontSize: "25px",
+          fontSize: "55px",
           fontStyle: "normal",
-          fontName: _standardFonts.stdFonts.CourierNew
+          fontName: _standardFonts.stdFonts.Helvetica
         }
       });
       var oscAng = new matrixEngine.utility.OSCILLATOR(1, 100, 5);
@@ -10536,13 +10536,44 @@ class Mashines {
   }
 
   activateWinningVisualEffect(worldObj, comb) {
-    let oscilltor_variable = new OSC(0, 2, 0.04);
-    this.winningVisualEffect.threads.push(setInterval(() => {
-      worldObj.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
-      worldObj.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
-      worldObj.rotation.roty = oscilltor_variable.UPDATE() * 10;
-    }, 10));
-    this.winningVisualEffect.ids.push(worldObj);
+    let oscilltor_variable,
+        oscillator_color = new OSC(0, 2, 0.02);
+    if (comb.repeat == 3) oscilltor_variable = new OSC(0, 45, 1);
+    if (comb.repeat == 4) oscilltor_variable = new OSC(0, 270, 1);
+    if (comb.repeat == 5) oscilltor_variable = new OSC(0, 360, 2);
+    if (comb.repeat == 6) oscilltor_variable = new OSC(0, 180, 5);
+
+    if (comb.repeat == 5) {
+      this.winningVisualEffect.threads.push(setInterval(() => {
+        worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+        worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
+        worldObj.rotation.roty = oscilltor_variable.UPDATE();
+        worldObj.rotation.rotx = oscilltor_variable.UPDATE();
+      }, 10));
+      this.winningVisualEffect.ids.push(worldObj);
+    } else if (comb.repeat == 4) {
+      this.winningVisualEffect.threads.push(setInterval(() => {
+        worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+        worldObj.LightsData.ambientLight.g = oscillator_color.UPDATE();
+        worldObj.rotation.rotz = oscilltor_variable.UPDATE();
+        worldObj.rotation.rotx = oscilltor_variable.UPDATE();
+      }, 10));
+      this.winningVisualEffect.ids.push(worldObj);
+    } else if (comb.repeat == 3) {
+      this.winningVisualEffect.threads.push(setInterval(() => {
+        worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+        worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
+        worldObj.rotation.roty = oscilltor_variable.UPDATE();
+      }, 10));
+      this.winningVisualEffect.ids.push(worldObj);
+    } else {
+      this.winningVisualEffect.threads.push(setInterval(() => {
+        worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+        worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
+        worldObj.rotation.roty = oscilltor_variable.UPDATE();
+      }, 10));
+      this.winningVisualEffect.ids.push(worldObj);
+    }
   }
 
   killWinThreads() {
@@ -10555,7 +10586,10 @@ class Mashines {
         if (fieldOriginal.id == obj.specialId) {
           obj.LightsData.ambientLight.r = fieldOriginal.color.r;
           obj.LightsData.ambientLight.b = fieldOriginal.color.b;
+          obj.LightsData.ambientLight.g = fieldOriginal.color.g;
           obj.rotation.roty = 0;
+          obj.rotation.rotz = 0;
+          obj.rotation.rotx = 0;
           return;
         }
       });
@@ -10579,23 +10613,24 @@ class Mashines {
       if (comb.repeat == 3) {
         console.info("3 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + lineIndex.toString();
       } else if (comb.repeat == 4) {
         console.info("4 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + lineIndex.toString();
       } else if (comb.repeat == 5) {
         console.info("5 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + lineIndex.toString();
       } else if (comb.repeat == 6) {
         console.info("6 in line x win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + lineIndex.toString();
       } else if (comb.repeat < 3) {
-        App.slot.mashine.nidza.access.footerLabel.elements[0].text = "No wins for line " + (lineIndex++).toString();
+        App.slot.mashine.nidza.access.footerLabel.elements[0].text = "No wins for line " + lineIndex.toString();
       }
     });
+    (0, _activeTextures.showActiveLinesByIndex)(lineIndex);
   }
   /**
    * @description

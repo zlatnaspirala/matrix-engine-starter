@@ -143,7 +143,7 @@ export function showActiveLinesByIndex(i) {
   footerLinesInfo.elements = [ footerLinesInfo.elements[0] ]
   footerLinesInfo.elements[0].position.translateX(25);
 
-  App.slot.config.winnigLines.forEach((winShemaIndex, Sindex) => {  
+  App.slot.config.winnigLines.forEach((winShemaIndex, Sindex) => {
     console.log("winShemaIndex ", winShemaIndex);
     winShemaIndex.forEach((winShema, index) => {
 
@@ -393,7 +393,7 @@ export function createNidzaHudLine1( nidza ) {
       id: "footerBalance",
       size: {
         width: 400,
-        height: 80
+        height: 180
       }
     };
     footerBalance = nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
@@ -407,17 +407,17 @@ export function createNidzaHudLine1( nidza ) {
         text: item,
         color: "lime",
         position: {
-          x: 15 + 2*index,
+          x: 15 + 10*index,
           y: 15
         },
         dimension: {
-          width: 120,
-          height: 120
+          width: 150,
+          height: 150
         },
         font: {
-          fontSize: "25px",
+          fontSize: "55px",
           fontStyle: "normal",
-          fontName: stdFonts.CourierNew
+          fontName: stdFonts.Helvetica
         }
       });
 

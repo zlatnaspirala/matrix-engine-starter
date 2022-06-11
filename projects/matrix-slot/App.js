@@ -2,15 +2,16 @@
 /**
  * @description Matrix Engine Project
  * Template demostration of power.
- * @name Slot
+ * @name MatrixSlot
  * @author Nikola Lukic
- * @license MIT 
+ * @license MIT
  */
 
 // dev
-// import matrixEngine from "/node_modules/matrix-engine/index.js";
+// import matrixEngine from "./../../node_modules/matrix-engine/index.js";
 // prod
 import * as matrixEngine from "matrix-engine";
+
 import Mashines from "./scripts/mashine";
 import { VoiceCommanderInstance } from "./scripts/voice-commander";
 
