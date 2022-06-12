@@ -25,7 +25,7 @@ var App = matrixEngine.App;
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
-    navigator.serviceWorker.register("./projects/matrix-slot/worker.js");
+    navigator.serviceWorker.register("/projects/matrix-slot/worker.js");
   });
 }
 
