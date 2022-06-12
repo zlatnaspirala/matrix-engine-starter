@@ -48,7 +48,7 @@ export function createNidzaTextureText( nidza ) {
     let rotationOption = new nidza.Osc( 0, 360, 2 );
 
     rotationOption.onRepeat = function ( osc ) {
-      console.info( "Values reached onrepeat targets osc: ", osc )
+      // console.info( "Values reached onrepeat targets osc: ", osc )
       statusMessageBox.rotation.clearUpdate();
       dispatchEvent( new CustomEvent( "deactivate-updater",
         {detail: {id: osc.elementIdentity}} ) );
@@ -144,7 +144,7 @@ export function showActiveLinesByIndex(i) {
   footerLinesInfo.elements[0].position.translateX(25);
 
   App.slot.config.winnigLines.forEach((winShemaIndex, Sindex) => {
-    console.log("winShemaIndex ", winShemaIndex);
+
     winShemaIndex.forEach((winShema, index) => {
 
       if (Sindex != i) return;
@@ -152,7 +152,7 @@ export function showActiveLinesByIndex(i) {
       for (var curIndex = 0;curIndex < 3;curIndex++) {
 
         if (curIndex == winShema) {
-          console.log("WIN MARK")
+          // console.log("WIN MARK")
 
           let activaLine = footerLinesInfo.addTextComponent(
             {
@@ -175,7 +175,7 @@ export function showActiveLinesByIndex(i) {
           });
 
         } else {
-          console.log("LOSE MARK")
+          // console.log("LOSE MARK")
 
           let activaLine = footerLinesInfo.addTextComponent(
             {
@@ -221,7 +221,7 @@ export function showActiveLinesByIndex(i) {
  */
 export function createNidzaHudLine1( nidza ) {
   return new Promise( ( resolve, reject ) => {
-    console.log(this + "<<<<<<<<");
+    // console.log(this + "<<<<<<<<");
     let myShader = {
       id: "myShader",
       size: {

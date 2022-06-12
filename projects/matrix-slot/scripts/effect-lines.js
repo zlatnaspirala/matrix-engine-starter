@@ -49,7 +49,7 @@ export function incraseNumOfDrawInstance() {
     App.scene.footerLine1.instancedDraws.numberOfInstance++;
     App.scene.footerLine2.instancedDraws.numberOfInstance++;
     if (App.scene.footerLine1.instancedDraws.numberOfInstance > 46) {
-      console.log("LEV IT'")
+      // console.log("")
     } else {
       this.incraseNumOfDrawInstance();
     }

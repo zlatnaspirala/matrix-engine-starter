@@ -9904,7 +9904,7 @@ function createNidzaTextureText(nidza) {
     let rotationOption = new nidza.Osc(0, 360, 2);
 
     rotationOption.onRepeat = function (osc) {
-      console.info("Values reached onrepeat targets osc: ", osc);
+      // console.info( "Values reached onrepeat targets osc: ", osc )
       statusMessageBox.rotation.clearUpdate();
       dispatchEvent(new CustomEvent("deactivate-updater", {
         detail: {
@@ -9999,13 +9999,12 @@ function showActiveLinesByIndex(i) {
   footerLinesInfo.elements = [footerLinesInfo.elements[0]];
   footerLinesInfo.elements[0].position.translateX(25);
   App.slot.config.winnigLines.forEach((winShemaIndex, Sindex) => {
-    console.log("winShemaIndex ", winShemaIndex);
     winShemaIndex.forEach((winShema, index) => {
       if (Sindex != i) return;
 
       for (var curIndex = 0; curIndex < 3; curIndex++) {
         if (curIndex == winShema) {
-          console.log("WIN MARK");
+          // console.log("WIN MARK")
           let activaLine = footerLinesInfo.addTextComponent({
             id: "linesInfo",
             text: "✅",
@@ -10025,7 +10024,7 @@ function showActiveLinesByIndex(i) {
             }
           });
         } else {
-          console.log("LOSE MARK");
+          // console.log("LOSE MARK")
           let activaLine = footerLinesInfo.addTextComponent({
             id: "linesInfo",
             text: "❌",
@@ -10068,7 +10067,7 @@ function showActiveLinesByIndex(i) {
 
 function createNidzaHudLine1(nidza) {
   return new Promise((resolve, reject) => {
-    console.log(this + "<<<<<<<<");
+    // console.log(this + "<<<<<<<<");
     let myShader = {
       id: "myShader",
       size: {
@@ -10359,8 +10358,7 @@ function incraseNumOfDrawInstance() {
     App.scene.footerLine1.instancedDraws.numberOfInstance++;
     App.scene.footerLine2.instancedDraws.numberOfInstance++;
 
-    if (App.scene.footerLine1.instancedDraws.numberOfInstance > 46) {
-      console.log("LEV IT'");
+    if (App.scene.footerLine1.instancedDraws.numberOfInstance > 46) {// console.log("")
     } else {
       this.incraseNumOfDrawInstance();
     }
@@ -10469,11 +10467,11 @@ class Mashines {
     this.addRaycaster();
 
     this.constructWinningObject = event => {
-      _matrixAudio.stopSpin[event.detail.wheelID].play();
+      _matrixAudio.stopSpin[event.detail.wheelID].play(); // console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
+      // console.log( "constructWinningObject field name=> ", event.detail.fieldname );
+      // console.log( "constructWinningObject isLast=> ", event.detail.isLast );
 
-      console.log("constructWinningObject wheel id=>  ", event.detail.wheelID); //console.log( "constructWinningObject field name=> ", event.detail.fieldname );
 
-      console.log("constructWinningObject isLast=> ", event.detail.isLast);
       let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
       var newOrder = App.slot.mashine.arrayRotate(localHolder);
 
@@ -10524,7 +10522,7 @@ class Mashines {
 
     window.addEventListener("wheel.stoped", this.constructWinningObject);
     window.addEventListener("mashine.free", e => {
-      console.info("MASHINE STATUS IS FREE");
+      // console.info("MASHINE STATUS IS FREE");
       App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
     });
 
@@ -10605,11 +10603,8 @@ class Mashines {
   }
 
   checkForWinCombination(rez, lineWinObjCollect, lineIndex) {
-    // console.log("checkForWinCombination ->", rez, " lineWinObjCollect " , lineWinObjCollect);
-    console.log("checkForWinCombination lineIndex", lineIndex);
     rez.forEach(comb => {
-      console.log("repeat ->", comb.repeat);
-
+      // console.log("repeat ->", comb.repeat);
       if (comb.repeat == 3) {
         console.info("3 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
@@ -10691,9 +10686,9 @@ class Mashines {
           maxRecurringString = name;
         }
       }
-    }
+    } // console.log("Maximum recurring string is ",  maxRecurringString, ". Max number of times :" + max);
 
-    console.log("Maximum recurring string is ", maxRecurringString, ". Max number of times :" + max);
+
     return {
       maxRecurringString,
       max
@@ -10773,7 +10768,6 @@ class Mashines {
     };
 
     this.createNidzaTextureText(this.nidza).then(what => {
-      console.log("what", what);
       App.scene.footerHeader.streamTextures = {
         videoImage: what
       };
@@ -10823,8 +10817,8 @@ class Mashines {
       App.scene.footerBalance.streamTextures = {
         videoImage: streamTex
       };
-    });
-    console.log("nidza component setup dimensions...", this.nidza);
+    }); // console.log("nidza component setup dimensions...", this.nidza);
+
     this.loadLineEffects(this.nidza);
     (0, _activeTextures.showActiveLinesByIndex)(0); // Style color buttom of footer
     //App.scene.footerHeader.geometry.colorData.color[0].set( 0.1, 0.1, 0.1 );
@@ -10840,7 +10834,6 @@ class Mashines {
     // this.incraseNumOfDrawInstance();
 
     console.info("Mashine is constructed.");
-    console.info("Mashine is constructed. after 2 secunds open gate start up animation.");
     setTimeout(() => {
       // App.slot.mashine.flashIn() startUpAnimMoveToUp
       // App.slot.mashine.incraseNumOfDrawInstance
@@ -10849,8 +10842,8 @@ class Mashines {
     }, 2500);
   };
   addWheel = function (world) {
-    console.info("Number of wheels: ", App.slot.config.wheels.length);
-    console.info("Number of vertical visible fields of wheels: ", App.slot.config.verticalSize);
+    // console.info("Number of wheels: ", App.slot.config.wheels.length);
+    // console.info("Number of vertical visible fields of wheels: ", App.slot.config.verticalSize);
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -10910,8 +10903,8 @@ class Mashines {
     var count = 0;
 
     this.font.charLoaded = objChar => {
-      console.log(objChar.name); // headerTitleS
-
+      // console.log(objChar.name);
+      // headerTitleS
       objChar.mesh.setScale(0.6);
       objChar.position.SetZ(-6.45);
 
@@ -10935,8 +10928,8 @@ class Mashines {
       }
 
       objChar.position.translateByXY(-1 + count * 0.4, 2.2); // objChar.glBlend.blendEnabled = true;
+      // console.log("Explore objChar ", objChar);
 
-      console.log("Explore objChar ", objChar);
       if (c == 3) this.addSpinText();
       c++;
     };
@@ -10957,7 +10950,7 @@ class Mashines {
   };
   addRaycaster = () => {
     window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
-      console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
+      // console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
       var r = matrixEngineRaycastEvent.detail.hitObject.name;
 
       if (r == "spinBtn") {
@@ -10991,7 +10984,6 @@ class Mashines {
   };
   activateSpinning = () => {
     if (this.status != "free") {
-      console.info("Already spinning...");
       (0, _audioGen.beep)();
       return;
     }
@@ -11018,7 +11010,7 @@ class Mashines {
     });
   };
   allWheelSpinningMoment = () => {
-    console.info("All wheels spinning");
+    // console.info("All wheels spinning");
     setTimeout(() => {
       var index = 0;
 
@@ -11053,9 +11045,8 @@ class Mashines {
 
                 if (indexWheel == accessKeysArray.length - 1) {
                   isLast = true;
-                }
+                } // get winning for wheel id and fieldname
 
-                console.log("FILED NAME : " + fieldname + " isLAst" + isLast); // get winning for wheel id and fieldname
 
                 let wheelStoped = new CustomEvent("wheel.stoped", {
                   detail: {
