@@ -16,20 +16,27 @@ npm i
 ```js
   npm run build.examples
   npm run build.app
+  npm run build.slot
 ```
 
-And navigate to app.html or examples.html
+And navigate to app.html, examples.html etc.
 
-#### Projects/Slot in underconstructing
+
+### Projects
+
+#### Web-Anatomy underconstructing
+
+
+#### Slot-Mashine underconstructing
 
  - Slot mashine config constructor.
- - Voice commander [Say `spin` to act on begin].
+ - Voice commander [Say `spin` or `play` for spining.].
 
 
  - Video presentation
    https://www.youtube.com/watch?v=SG7jid1IDkA&ab_channel=javascriptfanatic
 
-   ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-slot.gif)
+   ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/slot.png)
 
 
 
