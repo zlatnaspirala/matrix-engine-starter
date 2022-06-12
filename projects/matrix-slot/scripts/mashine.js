@@ -640,7 +640,7 @@ export default class Mashines {
 
   addSpinText = function () {
     var textuteImageSamplers = {
-      source: ["res/images/spin.png"],
+      source: ["res/images/spin.jpg"],
       mix_operation: "multiply", // ENUM : multiply , divide ,
     };
 
