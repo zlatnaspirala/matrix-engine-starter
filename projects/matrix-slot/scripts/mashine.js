@@ -123,7 +123,7 @@ export default class Mashines {
                     },
                   });
                   dispatchEvent(mashineFree);
-                  // this.vc.run();
+                  this.vc.run();
                 }, this.config.waitForNextSpin);
             }
           }, 1000 * lineIndex);

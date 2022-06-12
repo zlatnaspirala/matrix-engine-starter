@@ -118,7 +118,7 @@ function webGLStart() {
       [0, 0, 0, 2, 2, 2], // 3 by 2                17
     ],
     matrixMessage: [
-      'S', 'l', 'o', 't', 'M', 'a', 's', 'h', 'i', 'n', 'e'
+      'S', 'L', 'O', 'T',
     ]
   };
 
