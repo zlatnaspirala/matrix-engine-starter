@@ -26,7 +26,7 @@ catch(e) {}
 self.addEventListener("install", function (event) {
   self.skipWaiting();
   event.waitUntil(
-    caches.open("static-files-v1").then(function (cache) {
+    caches.open(cacheName).then(function (cache) {
       return cache.addAll([
         offlineUrl,
         "./css/style.css",
