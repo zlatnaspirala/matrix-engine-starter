@@ -8,38 +8,38 @@ export let loadSystemSkeletal = (App, world) => {
     // Store raw mesh data
     App.meshes = meshes;
 
- 
     // Init buffers
     for (let key in meshes) {
-      console.log("TEST App.meshes[key]", App.meshes[key])
+      // console.log("TEST App.meshes[key]", App.meshes[key])
       matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes[key]);
     }
 
     // Tex
     var textuteImageSamplers2 = {
-      source: ["res/images/metal.png"],
+      source: ["res/images/metal-half.jpg"],
       mix_operation: "multiply",
     };
 
-    App.camera.speedAmp
+    // App.camera.speedAmp
 
     for (let key in meshes) {
       var id = "skeletal_" + key;
 
       world.Add("obj", 1, id, textuteImageSamplers2, App.meshes[key]);
       // still must be called with method - SCALE for OBJ Mesh
-      App.scene[id].mesh.setScale(-0.01)
-      App.scene[id].glBlend.blendEnabled = true;
+      App.scene[id].mesh.setScale(-0.0075)
+
+      // App.scene[id].glBlend.blendEnabled = true;
 
       
-      App.scene[id].position.y =  2;
+      // App.scene[id].position.y =  2;
 
-      App.scene[id].rotation.rotx = 0;
-      App.scene[id].rotation.roty = 90;
+      App.scene[id].rotation.rotx = 90;
+      App.scene[id].rotation.roty = 0;
       App.scene[id].rotation.rotz = 90;
 
-      App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-      App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[7];
     }
 
     // App.scene.armor.position.y = 1;
@@ -48,6 +48,6 @@ export let loadSystemSkeletal = (App, world) => {
   }
 
   // Load mesh data
-  matrixEngine.objLoader.downloadMeshes(skeletalMap, onLoadObj);
+  matrixEngine.objLoader.downloadMeshes(skeletalMap, onLoadObj /*{ swap: [0, 1]}*/ );
 
 };

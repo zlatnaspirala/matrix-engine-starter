@@ -110,28 +110,28 @@ export default class WebAnatomy {
       mix_operation: "multiply",
     };
 
-    var texMenu = {
-      source: ["res/images/metal-half.jpg"],
-      mix_operation: "multiply",
-    };
+    // var texMenu = {
+    //   source: ["res/images/metal-half.jpg"],
+    //   mix_operation: "multiply",
+    // };
 
-    world.Add("squareTex", 1, "topHeader", texTopHeader);
-    App.scene.topHeader.geometry.setScaleByX(4);
-    App.scene.topHeader.geometry.setScaleByY(2.9);
-    App.scene.topHeader.position.SetY(5)
-    App.scene.topHeader.position.z = -6.5;
+    // world.Add("squareTex", 1, "topHeader", texTopHeader);
+    // App.scene.topHeader.geometry.setScaleByX(4);
+    // App.scene.topHeader.geometry.setScaleByY(2.9);
+    // App.scene.topHeader.position.SetY(5)
+    // App.scene.topHeader.position.z = -6.5;
 
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
 
-    // Addin anything at all
-    App.scene.topHeader.shake = false;
+    // // Addin anything at all
+    // App.scene.topHeader.shake = false;
 
     var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001);
 
@@ -148,9 +148,9 @@ export default class WebAnatomy {
  
     console.log("nidza component setup dimensions...", this.nidza);
 
-    if(isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
+    // if(isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
 
-    App.operation.squareTex_buffer_procedure(App.scene.topHeader);
+    // App.operation.squareTex_buffer_procedure(App.scene.topHeader);
 
     loadSystemSkeletal(App, world);
 
@@ -176,5 +176,24 @@ export default class WebAnatomy {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
   };
+
+  changeGlBlend = (src, dest) => {
+    
+    for (let key in App.scene) {
+      if (App.scene[key].name.indexOf("skeletal_") !== -1) {
+
+      // still must be called with method - SCALE for OBJ Mesh
+      // App.scene[id].mesh.setScale(-0.01)
+      App.scene[key].glBlend.blendEnabled = true;
+      // App.scene[id].position.y =  2;
+      // App.scene[id].rotation.rotx = 90;
+      // App.scene[id].rotation.roty = 0;
+      // App.scene[id].rotation.rotz = 90;
+      App.scene[key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[src];
+      App.scene[key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[dest];
+    }
+  }
+
+  }
 
 }

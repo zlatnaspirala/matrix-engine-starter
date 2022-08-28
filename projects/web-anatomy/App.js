@@ -26,7 +26,6 @@ var App = matrixEngine.App;
 App.webAnatomy = {};
 
 App.config = {
-  loadingMessage: ["W","e","b","_" ,"A", "n", "a","t","o","m","y"]
 };
 
 function webGLStart() {

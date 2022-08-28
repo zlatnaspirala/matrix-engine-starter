@@ -16243,19 +16243,19 @@ var _matrixWorld = require("./matrix-world");
  */
 class constructMesh {
   constructor(objectData, inputArg) {
+    this.inputArg = inputArg;
     this.objectData = objectData;
     this.create(objectData, inputArg);
 
     this.setScale = s => {
-      var inputArg = {
-        scale: s
-      };
+      this.inputArg.scale = s;
       initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, inputArg));
     };
   }
 
   create = (objectData, inputArg, callback) => {
     if (typeof callback === 'undefined') callback = function () {};
+    let initOrientation = [0, 1, 2];
     /*
       The OBJ file format does a sort of compression when saving a model in a
       program like Blender. There are at least 3 sections (4 including textures)
@@ -16328,7 +16328,12 @@ class constructMesh {
     unpacked.indices = [];
     unpacked.index = 0; // array of lines separated by the newline
 
-    var lines = objectData.split('\n');
+    var lines = objectData.split('\n'); // update swap orientation
+
+    if (inputArg.swap[0] !== null) {
+      initOrientation.swap(inputArg.swap[0], inputArg.swap[1]);
+    }
+
     var VERTEX_RE = /^v\s/;
     var NORMAL_RE = /^vn\s/;
     var TEXTURE_RE = /^vt\s/;
@@ -16408,9 +16413,9 @@ class constructMesh {
                   */
             // vertex position
 
-            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + 0] * inputArg.scale);
-            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + 1] * inputArg.scale);
-            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + 2] * inputArg.scale); // vertex textures
+            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale);
+            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[1]] * inputArg.scale);
+            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale); // vertex textures
 
             if (textures.length) {
               unpacked.textures.push(+textures[(vertex[1] - 1) * 2 + 0]);
@@ -16492,9 +16497,15 @@ var downloadMeshes = function (nameAndURLs, completionCallback, inputArg) {
   // if meshes is supplied, then it will be populated, otherwise
   // a new object is created. this will be passed into the completionCallback
 
-  if (inputArg === undefined) inputArg = {
-    scale: 1
-  };
+  if (typeof inputArg === 'undefined') {
+    var inputArg = {
+      scale: 1,
+      swap: [null]
+    };
+  }
+
+  if (typeof inputArg.scale === 'undefined') inputArg.scale = 1;
+  if (typeof inputArg.swap === 'undefined') inputArg.swap = [null];
   var meshes = {}; // loop over the mesh_name,url key,value pairs
 
   for (var mesh_name in nameAndURLs) {
@@ -21461,11 +21472,19 @@ var _events = require("./events");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+Array.prototype.swap = function (x, y) {
+  var b = this[x];
+  this[x] = this[y];
+  this[y] = b;
+  return this;
+};
 /**
  * @description
  * Global modifier for:
  * degToRed, DETECTBROWSER, loadImage
  */
+
+
 window.degToRad = function (degrees) {
   return degrees * Math.PI / 180;
 };
@@ -24833,9 +24852,7 @@ _voiceCommander.VoiceCommanderInstance.run();
 var world, mashine;
 var App = matrixEngine.App;
 App.webAnatomy = {};
-App.config = {
-  loadingMessage: ["W", "e", "b", "_", "A", "n", "a", "t", "o", "m", "y"]
-};
+App.config = {};
 
 function webGLStart() {
   world = matrixEngine.matrixWorld.defineworld(canvas);
@@ -25503,35 +25520,37 @@ let loadSystemSkeletal = (App, world) => {
     App.meshes = meshes; // Init buffers
 
     for (let key in meshes) {
-      console.log("TEST App.meshes[key]", App.meshes[key]);
+      // console.log("TEST App.meshes[key]", App.meshes[key])
       matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes[key]);
     } // Tex
 
 
     var textuteImageSamplers2 = {
-      source: ["res/images/metal.png"],
+      source: ["res/images/metal-half.jpg"],
       mix_operation: "multiply"
-    };
-    App.camera.speedAmp;
+    }; // App.camera.speedAmp
 
     for (let key in meshes) {
-      world.Add("obj", 1, "skeletal_" + key, textuteImageSamplers2, App.meshes[key]); // still must be called with method - SCALE for OBJ Mesh
+      var id = "skeletal_" + key;
+      world.Add("obj", 1, id, textuteImageSamplers2, App.meshes[key]); // still must be called with method - SCALE for OBJ Mesh
 
-      App.scene["skeletal_" + key].mesh.setScale(-0.01);
-      App.scene["skeletal_" + key].glBlend.blendEnabled = true;
-      App.scene["skeletal_" + key].position.y = 2;
-      App.scene["skeletal_" + key].rotation.rotx = 0;
-      App.scene["skeletal_" + key].rotation.roty = 90;
-      App.scene["skeletal_" + key].rotation.rotz = 90;
-      App.scene["skeletal_" + key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-      App.scene["skeletal_" + key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      App.scene[id].mesh.setScale(-0.0075); // App.scene[id].glBlend.blendEnabled = true;
+      // App.scene[id].position.y =  2;
+
+      App.scene[id].rotation.rotx = 90;
+      App.scene[id].rotation.roty = 0;
+      App.scene[id].rotation.rotz = 90;
+      App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[7];
     } // App.scene.armor.position.y = 1;
     // App.scene.armor.LightsData.ambientLight.set(2, 2, 2);
 
   } // Load mesh data
 
 
-  matrixEngine.objLoader.downloadMeshes(_map.default, onLoadObj);
+  matrixEngine.objLoader.downloadMeshes(_map.default, onLoadObj
+  /*{ swap: [0, 1]}*/
+  );
 };
 
 exports.loadSystemSkeletal = loadSystemSkeletal;
@@ -25709,26 +25728,26 @@ class WebAnatomy {
     var texTopHeader = {
       source: ["res/images/metal.jpg"],
       mix_operation: "multiply"
-    };
-    var texMenu = {
-      source: ["res/images/metal-half.jpg"],
-      mix_operation: "multiply"
-    };
-    world.Add("squareTex", 1, "topHeader", texTopHeader);
-    App.scene.topHeader.geometry.setScaleByX(4);
-    App.scene.topHeader.geometry.setScaleByY(2.9);
-    App.scene.topHeader.position.SetY(5);
-    App.scene.topHeader.position.z = -6.5;
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1; // Addin anything at all
+    }; // var texMenu = {
+    //   source: ["res/images/metal-half.jpg"],
+    //   mix_operation: "multiply",
+    // };
+    // world.Add("squareTex", 1, "topHeader", texTopHeader);
+    // App.scene.topHeader.geometry.setScaleByX(4);
+    // App.scene.topHeader.geometry.setScaleByY(2.9);
+    // App.scene.topHeader.position.SetY(5)
+    // App.scene.topHeader.position.z = -6.5;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
+    // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
+    // // Addin anything at all
+    // App.scene.topHeader.shake = false;
 
-    App.scene.topHeader.shake = false;
     var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001); // App.scene.topHeader.runShake = function() {
     //   if(this.shake == false) return;
     //   setTimeout(() => {
@@ -25740,9 +25759,9 @@ class WebAnatomy {
     //   }, 20);
     // };
 
-    console.log("nidza component setup dimensions...", this.nidza);
-    if (isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
-    App.operation.squareTex_buffer_procedure(App.scene.topHeader);
+    console.log("nidza component setup dimensions...", this.nidza); // if(isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
+    // App.operation.squareTex_buffer_procedure(App.scene.topHeader);
+
     (0, _skeletal.loadSystemSkeletal)(App, world); // this.incraseNumOfDrawInstance();
 
     console.info("Anatomy is constructed.");
@@ -25762,6 +25781,21 @@ class WebAnatomy {
     canvas.addEventListener("mousedown", ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
+  };
+  changeGlBlend = (src, dest) => {
+    for (let key in App.scene) {
+      if (App.scene[key].name.indexOf("skeletal_") !== -1) {
+        // still must be called with method - SCALE for OBJ Mesh
+        // App.scene[id].mesh.setScale(-0.01)
+        App.scene[key].glBlend.blendEnabled = true; // App.scene[id].position.y =  2;
+        // App.scene[id].rotation.rotx = 90;
+        // App.scene[id].rotation.roty = 0;
+        // App.scene[id].rotation.rotz = 90;
+
+        App.scene[key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[src];
+        App.scene[key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[dest];
+      }
+    }
   };
 }
 
