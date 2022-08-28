@@ -24,20 +24,22 @@ export let loadSystemSkeletal = (App, world) => {
     App.camera.speedAmp
 
     for (let key in meshes) {
-      world.Add("obj", 1, "skeletal_" + key, textuteImageSamplers2, App.meshes[key]);
+      var id = "skeletal_" + key;
+
+      world.Add("obj", 1, id, textuteImageSamplers2, App.meshes[key]);
       // still must be called with method - SCALE for OBJ Mesh
-      App.scene["skeletal_" + key].mesh.setScale(-0.01)
-      App.scene["skeletal_" + key].glBlend.blendEnabled = true;
+      App.scene[id].mesh.setScale(-0.01)
+      App.scene[id].glBlend.blendEnabled = true;
 
       
-      App.scene["skeletal_" + key].position.y =  2;
+      App.scene[id].position.y =  2;
 
-      App.scene["skeletal_" + key].rotation.rotx = 0;
-      App.scene["skeletal_" + key].rotation.roty = 90;
-      App.scene["skeletal_" + key].rotation.rotz = 90;
+      App.scene[id].rotation.rotx = 0;
+      App.scene[id].rotation.roty = 90;
+      App.scene[id].rotation.rotz = 90;
 
-      App.scene["skeletal_" + key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-      App.scene["skeletal_" + key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     }
 
     // App.scene.armor.position.y = 1;
