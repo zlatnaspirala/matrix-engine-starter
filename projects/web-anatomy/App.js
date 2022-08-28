@@ -8,9 +8,10 @@
  */
 
 // dev
-// import matrixEngine from "/node_modules/matrix-engine/index.js";
+import * as matrixEngine from "./../../node_modules/matrix-engine/index";
+
 // prod
-import * as matrixEngine from "matrix-engine";
+// import * as matrixEngine from "matrix-engine";
 import WebAnatomy from "./scripts/web-anatomy";
 import { VoiceCommanderInstance } from "./scripts/voice-commander";
 

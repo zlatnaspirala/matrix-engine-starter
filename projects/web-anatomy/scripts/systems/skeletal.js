@@ -1,35 +1,51 @@
 import * as matrixEngine from "matrix-engine";
+import skeletalMap from "./map";
 
 export let loadSystemSkeletal = (App, world) => {
 
-// LOAD MESH FROM OBJ FILES...
-  // if you dont use obj or complex mesh you no need for this func
   function onLoadObj(meshes) {
-    App.meshes = meshes;
-    matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes.armor);
-    matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes.mac);
 
+    // Store raw mesh data
+    App.meshes = meshes;
+
+ 
+    // Init buffers
+    for (let key in meshes) {
+      console.log("TEST App.meshes[key]", App.meshes[key])
+      matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes[key]);
+    }
+
+    // Tex
     var textuteImageSamplers2 = {
-      source: ["res/images/metal.jpg"],
+      source: ["res/images/metal.png"],
       mix_operation: "multiply",
     };
 
-    world.Add("obj", 1, "armor", textuteImageSamplers2, App.meshes.armor);
-    App.scene.armor.position.y = 1;
-    // App.scene.armor.rotation.rotationSpeed.y = 20;
-    App.scene.armor.LightsData.ambientLight.set(2, 2, 2);
+    App.camera.speedAmp
 
-    world.Add("obj", 1, "mac", textuteImageSamplers2, App.meshes.mac);
-    App.scene.mac.position.y = 1;
-    App.scene.mac.position.x = -2;
-    // App.scene.mac.rotation.rotationSpeed.y = 20;
-    App.scene.mac.LightsData.ambientLight.set(1, 1, 1);
+    for (let key in meshes) {
+      world.Add("obj", 1, "skeletal_" + key, textuteImageSamplers2, App.meshes[key]);
+      // still must be called with method - SCALE for OBJ Mesh
+      App.scene["skeletal_" + key].mesh.setScale(-0.01)
+      App.scene["skeletal_" + key].glBlend.blendEnabled = true;
+
+      
+      App.scene["skeletal_" + key].position.y =  2;
+
+      App.scene["skeletal_" + key].rotation.rotx = 0;
+      App.scene["skeletal_" + key].rotation.roty = 90;
+      App.scene["skeletal_" + key].rotation.rotz = 90;
+
+      App.scene["skeletal_" + key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      App.scene["skeletal_" + key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    }
+
+    // App.scene.armor.position.y = 1;
+    // App.scene.armor.LightsData.ambientLight.set(2, 2, 2);
 
   }
 
-  matrixEngine.objLoader.downloadMeshes(
-    {armor: "res/3d-objects/human/skeletal/atlas.obj", mac: "res/3d-objects/human/skeletal/right medial cuneiform bone.obj"},
-    onLoadObj
-  );
+  // Load mesh data
+  matrixEngine.objLoader.downloadMeshes(skeletalMap, onLoadObj);
 
 };

@@ -33,7 +33,7 @@
       mix_operation: "multiply",
     };
 
-    world.Add("obj", 1, "armor", textuteImageSamplers2, App.meshes.armor);
+    world.Add("obj", 0.001, "armor", textuteImageSamplers2, App.meshes.armor);
     App.scene.armor.position.y = 1;
     App.scene.armor.rotation.rotationSpeed.y = 20;
     App.scene.armor.LightsData.ambientLight.set(1, 1, 1);
