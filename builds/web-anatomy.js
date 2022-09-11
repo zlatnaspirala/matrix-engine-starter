@@ -14799,7 +14799,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":10,"./lib/events":11,"./lib/loader-obj":12,"./lib/matrix-buffers":13,"./lib/matrix-bvh":14,"./lib/matrix-geometry":16,"./lib/matrix-render":17,"./lib/matrix-textures":19,"./lib/matrix-world":20,"./lib/raycast":22,"./lib/utility":23,"./program/manifest":25}],10:[function(require,module,exports){
+},{"./lib/engine":10,"./lib/events":11,"./lib/loader-obj":12,"./lib/matrix-buffers":13,"./lib/matrix-bvh":14,"./lib/matrix-geometry":16,"./lib/matrix-render":17,"./lib/matrix-textures":21,"./lib/matrix-world":22,"./lib/raycast":24,"./lib/utility":25,"./program/manifest":27}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14824,7 +14824,7 @@ exports.ACCESS_CAMERA = ACCESS_CAMERA;
 exports.VIDEO_TEXTURE = VIDEO_TEXTURE;
 exports.Vjs3 = Vjs3;
 exports.anyCanvas = anyCanvas;
-exports.webcamError = exports.RegenerateShader = exports.looper = exports.EVENTS_INSTANCE = exports.updateFrames = exports.updateTime = exports.totalTime = exports.lastTime = exports.ht = exports.wd = void 0;
+exports.webcamError = exports.RegenerateCustomShader = exports.RegenerateVShaderSimpleDirectionLight = exports.RegenerateShaderSimpleDirectionLight = exports.RegenerateShader = exports.looper = exports.EVENTS_INSTANCE = exports.updateFrames = exports.updateTime = exports.totalTime = exports.lastTime = exports.ht = exports.wd = void 0;
 
 var _events = require("./events");
 
@@ -14837,6 +14837,8 @@ var _webglUtils = require("./webgl-utils");
 var _matrixRender = require("./matrix-render");
 
 var _matrixWorld = require("./matrix-world");
+
+var _matrixShaders = require("./matrix-shaders");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -15179,11 +15181,11 @@ function loadShaders(gl, id) {
       // console.log("            Shader Program compile success");
       return shader;
     } else {
-      // console.log("            Shader Program compile failed:" + gl.getShaderInfoLog(shader));
+      console.log("            Shader Program compile failed:" + gl.getShaderInfoLog(shader));
       return 0;
     }
   } else {
-    // console.log("            Shader Program creation failed");
+    console.log("            Shader Program creation failed");
     return 0;
   }
 }
@@ -15196,7 +15198,7 @@ function initShaders(gl, fragment, vertex) {
   var vertexShader = this.getShader(gl, vertex);
 
   if (0 == fragmentShader || 0 == vertexShader) {
-    // console.log("        Failed to Load shader");
+    console.log("        Failed to Load shader");
     return 0;
   } else {
     var shaderProgram = gl.createProgram(); // console.log("        Creating Shader fragment");
@@ -15293,6 +15295,27 @@ function initShaders(gl, fragment, vertex) {
 
       if (null !== gl.getUniformLocation(shaderProgram, 'uDirectionalColor')) {
         shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, 'uDirectionalColor');
+      } // Local SpotLight
+
+
+      if (null !== gl.getUniformLocation(shaderProgram, "u_shininess")) {
+        shaderProgram.shininessLocation = gl.getUniformLocation(shaderProgram, 'u_shininess');
+      }
+
+      if (null !== gl.getUniformLocation(shaderProgram, "u_lightDirection")) {
+        shaderProgram.lightDirectionLocation = gl.getUniformLocation(shaderProgram, 'u_lightDirection');
+      }
+
+      if (null !== gl.getUniformLocation(shaderProgram, "u_innerLimit")) {
+        shaderProgram.innerLimitLocation = gl.getUniformLocation(shaderProgram, 'u_innerLimit');
+      }
+
+      if (null !== gl.getUniformLocation(shaderProgram, "u_outerLimit")) {
+        shaderProgram.outerLimitLocation = gl.getUniformLocation(shaderProgram, 'u_outerLimit');
+      }
+
+      if (null !== gl.getUniformLocation(shaderProgram, "u_lightWorldPosition")) {
+        shaderProgram.lightWorldPositionLocation = gl.getUniformLocation(shaderProgram, 'u_lightWorldPosition');
       }
 
       shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, 'uPMatrix');
@@ -15303,7 +15326,7 @@ function initShaders(gl, fragment, vertex) {
       shaderProgram.vertexShader = vertexShader;
       return shaderProgram;
     } else {
-      // console.warn("          Returning Shader fragment failed");
+      console.warn("          Returning Shader fragment failed");
       return 0;
     }
   }
@@ -15331,7 +15354,7 @@ _manifest.default.operation.SET_MATRIX_UNIFORMS = function (object, pMatrix) {
 }; // REGENERATORs SHADER
 
 
-var RegenerateShader = function (id_elem, numOfSamplerInUse, mixOperand) {
+var RegenerateShader = function (id_elem, numOfSamplerInUse, mixOperand, spotLight) {
   var e = document.getElementById(id_elem);
 
   if (mixOperand == 'multiply') {
@@ -15340,10 +15363,30 @@ var RegenerateShader = function (id_elem, numOfSamplerInUse, mixOperand) {
     mixOperand = 1;
   }
 
-  e.innerHTML = generateShaderSrc(numOfSamplerInUse, mixOperand);
-};
+  if (typeof spotLight !== 'undefined') {
+    e.innerHTML = (0, _matrixShaders.generateShaderSrc)(numOfSamplerInUse, mixOperand, spotLight);
+  } else {
+    e.innerHTML = (0, _matrixShaders.generateShaderSrc)(numOfSamplerInUse, mixOperand);
+  }
+}; // Not active
+
 
 exports.RegenerateShader = RegenerateShader;
+
+var RegenerateShaderSimpleDirectionLight = function (id_elem) {
+  var e = document.getElementById(id_elem);
+  e.innerHTML = (0, _matrixShaders.generateShaderSimpleDirection)();
+}; // Not active
+
+
+exports.RegenerateShaderSimpleDirectionLight = RegenerateShaderSimpleDirectionLight;
+
+var RegenerateVShaderSimpleDirectionLight = function (id_elem) {
+  var e = document.getElementById(id_elem);
+  e.innerHTML = (0, _matrixShaders.generateVShaderSimpleDirectionLight)();
+};
+
+exports.RegenerateVShaderSimpleDirectionLight = RegenerateVShaderSimpleDirectionLight;
 
 var RegenerateCustomShader = function (id_elem, numOfSamplerInUse, mixOperand, code_) {
   var e = document.getElementById(id_elem);
@@ -15354,232 +15397,10 @@ var RegenerateCustomShader = function (id_elem, numOfSamplerInUse, mixOperand, c
     mixOperand = 1;
   }
 
-  e.innerHTML = generateCustomShaderSrc(numOfSamplerInUse, mixOperand, code_);
+  e.innerHTML = (0, _matrixShaders.generateCustomShaderSrc)(numOfSamplerInUse, mixOperand, code_);
 };
 
-function generateShaderSrc(numTextures, mixOperand) {
-  return `
-
-    // shader for ${numTextures} textures
-    precision mediump float;
-    precision highp float;
-
-
-    varying vec2 vTextureCoord;
-    varying vec3 vLightWeighting;
-
-    uniform float textureSamplerAmount[${numTextures}];
-    int MixOperandString = ${mixOperand};
-
-    uniform sampler2D uSampler;
-    uniform sampler2D uSampler1;
-    uniform sampler2D uSampler2;
-    uniform sampler2D uSampler3;
-    uniform sampler2D uSampler4;
-    uniform sampler2D uSampler5;
-    uniform sampler2D uSampler6;
-    uniform sampler2D uSampler7;
-
-    void main(void) {
-
-        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor3 = texture2D(uSampler3, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor4 = texture2D(uSampler4, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor5 = texture2D(uSampler5, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor6 = texture2D(uSampler6, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor7 = texture2D(uSampler7, vec2(vTextureCoord.s, vTextureCoord.t));
-
-        //MixOperandString  make it with eval todo task
-
-        if (  ${numTextures} == 1)
-            {
-
-                  gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
-
-              //  gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) ,0 ,smoothstep(textureColor.r, textureColor.b,textureColor.g ) );
-
-            }
-        else if (${numTextures} == 2)
-            {
-                if ( ${mixOperand} == 0){
-                 // gl_FragColor = textureColor * textureColor1;
-
-                  gl_FragColor      = vec4( (textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
-                }
-                else if (${mixOperand} == 1){
-
-                //gl_FragColor = textureColor / textureColor1;
-                  gl_FragColor      = vec4( (textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
-                }
-
-            }
-        else if (${numTextures} == 3)
-            {
-                if (MixOperandString == 0){
-                    gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
-                }
-                else if (MixOperandString == 1){
-                    gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
-                }
-
-            }
-        else if (${numTextures} == 4)
-        {
-            if (MixOperandString == 0){
-                gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
-            }
-            else if (MixOperandString == 1){
-                gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
-            }
-
-        }
-
-    }
-
-   // uniform sampler2D uSampler[${numTextures}];
-   // uniform float uMixAmount[${numTextures}];
-
-    /*
-    void main() {
-        vec4 color = vec4(0);
-
-        for (int i = 0; i < ${numTextures}; ++i) {
-            vec4 texColor = texture2D(uSampler[i], vTextureCoord);
-            color = mix(color, texColor, uMixAmount[i]);
-        }
-
-        gl_FragColor = color;
-    }
-    */
-
-    `;
-} // make custom shader
-
-
-function generateCustomShaderSrc(numTextures, mixOperand, code_) {
-  return `
-
-    // shader for ${numTextures} textures
-    precision mediump float;
-    precision highp float;
-
-    varying vec2 vTextureCoord;
-    varying vec3 vLightWeighting;
-
-    uniform float textureSamplerAmount[${numTextures}];
-    float TimeFor;
-
-    int MixOperandString = ${mixOperand};
-    int CODE = ${code_};
-
-    uniform sampler2D uSampler;
-    uniform sampler2D uSampler1;
-    uniform sampler2D uSampler2;
-    uniform sampler2D uSampler3;
-    uniform sampler2D uSampler4;
-    uniform sampler2D uSampler5;
-    uniform sampler2D uSampler6;
-    uniform sampler2D uSampler7;
-
-    void main(void) {
-
-        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor3 = texture2D(uSampler3, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor4 = texture2D(uSampler4, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor5 = texture2D(uSampler5, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor6 = texture2D(uSampler6, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor7 = texture2D(uSampler7, vec2(vTextureCoord.s, vTextureCoord.t));
-
-        // MixOperandString  make it with eval todo task
-
-        if (  ${numTextures} == 1)
-        {
-
-            if  ( CODE == 0 ) {
-
-                gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
-
-            }
-            else if (CODE == 1){
-
-                gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) , 0 , 1 );
-
-            }
-            else if (CODE == 2){
-
-                gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b , textureColor.g ) , 1 , 0 , 1 );
-
-            }
-            else if (CODE == 3){
-
-                gl_FragColor = vec4( smoothstep( textureColor.g , textureColor.b , 0.5 ) , 1 , 0 , 1 );
-
-            }
-            else if (CODE == 4){
-
-                // textureColor
-                vec2 position =  vTextureCoord;
-                float color = 0.3;
-                gl_FragColor = vec4( vec3( color , color * 0.5, sin( color + TimeFor / 3.0 ) * 0.75 ), 1.0 );
-
-            }
-
-        }
-        else if (${numTextures} == 2)
-        {
-            if ( ${mixOperand} == 0){
-                gl_FragColor      = vec4( (textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
-            }
-            else if (${mixOperand} == 1){
-                gl_FragColor      = vec4( (textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
-            }
-
-        }
-        else if (${numTextures} == 3)
-        {
-            if (MixOperandString == 0){
-                gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
-            }
-            else if (MixOperandString == 1){
-                gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
-            }
-
-        }
-        else if (${numTextures} == 4)
-        {
-            if (MixOperandString == 0){
-                gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
-            }
-            else if (MixOperandString == 1){
-                gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
-            }
-
-        }
-
-    }
-
-    // uniform sampler2D uSampler[${numTextures}];
-    // uniform float uMixAmount[${numTextures}];
-
-    /*
-     void main() {
-     vec4 color = vec4(0);
-
-     for (int i = 0; i < ${numTextures}; ++i) {
-     vec4 texColor = texture2D(uSampler[i], vTextureCoord);
-     color = mix(color, texColor, uMixAmount[i]);
-     }
-
-     gl_FragColor = color;
-     }
-     */
-
-    `;
-}
+exports.RegenerateCustomShader = RegenerateCustomShader;
 
 var webcamError = function (e) {
   alert('Webcam error!' + e);
@@ -15739,7 +15560,7 @@ function anyCanvas(path_, nameOfCanvas) {
   ROOT.iframe.data = path_;
 }
 
-},{"../program/manifest":25,"./events":11,"./matrix-render":17,"./matrix-world":20,"./utility":23,"./webgl-utils":24}],11:[function(require,module,exports){
+},{"../program/manifest":27,"./events":11,"./matrix-render":17,"./matrix-shaders":18,"./matrix-world":22,"./utility":25,"./webgl-utils":26}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16220,7 +16041,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":25,"./matrix-world":20,"./utility":23}],12:[function(require,module,exports){
+},{"../program/manifest":27,"./matrix-world":22,"./utility":25}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -16645,7 +16466,7 @@ var deleteMeshBuffers = function (gl, mesh) {
 
 exports.deleteMeshBuffers = deleteMeshBuffers;
 
-},{"./matrix-world":20}],13:[function(require,module,exports){
+},{"./matrix-world":22}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16997,7 +16818,7 @@ _manifest.default.operation.sphere_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":25,"./matrix-world":20}],14:[function(require,module,exports){
+},{"../program/manifest":27,"./matrix-world":22}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17211,7 +17032,7 @@ class MEBvhAnimation {
 
 exports.default = MEBvhAnimation;
 
-},{"./matrix-world":20,"./utility":23,"bvh-loader":3}],15:[function(require,module,exports){
+},{"./matrix-world":22,"./utility":25,"bvh-loader":3}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17224,6 +17045,8 @@ var _manifest = _interopRequireDefault(require("../program/manifest"));
 var _matrixWorld = require("./matrix-world");
 
 var _events = require("./events");
+
+var _utility = require("./utility");
 
 var raycaster = _interopRequireWildcard(require("./raycast"));
 
@@ -17297,8 +17120,8 @@ _manifest.default.operation.draws.cube = function (object) {
 
 
     if (object.shaderProgram.ambientColorUniform) {
-      if (document.getElementById('ambLightR')) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat(document.getElementById('ambLightR').getAttribute('value')), parseFloat(document.getElementById('ambLightG').getAttribute('value')), parseFloat(document.getElementById('ambLightB').getAttribute('value'))); // console.log("LIGHTS UNIFORM AMB  B = ", parseFloat(document.getElementById('ambLightB').value) )
+      if ((0, _utility.E)('ambLightR')) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLightR').getAttribute('value')), parseFloat((0, _utility.E)('ambLightG').getAttribute('value')), parseFloat((0, _utility.E)('ambLightB').getAttribute('value'))); // console.log("LIGHTS UNIFORM AMB  B = ", parseFloat(E('ambLightB').value) )
 
       } else {
         // object.LightsData.ambientLight
@@ -17309,9 +17132,10 @@ _manifest.default.operation.draws.cube = function (object) {
 
 
     if (object.shaderProgram.directionalColorUniform) {
-      if (document.getElementById('dirLightR')) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(document.getElementById('dirLightR').getAttribute('value')), parseFloat(document.getElementById('dirLightG').getAttribute('value')), parseFloat(document.getElementById('dirLightB').getAttribute('value')));
+      if ((0, _utility.E)('dirLightR')) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat((0, _utility.E)('dirLightR').getAttribute('value')), parseFloat((0, _utility.E)('dirLightG').getAttribute('value')), parseFloat((0, _utility.E)('dirLightB').getAttribute('value')));
       } else {
+        //console.log('TEST')
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
@@ -17321,9 +17145,9 @@ _manifest.default.operation.draws.cube = function (object) {
     var lightingDirection = null;
 
     if (object.shaderProgram.lightingDirectionUniform) {
-      if (document.getElementById('dirX') && document.getElementById('dirY') && document.getElementById('dirZ')) {
-        // console.log("LIGHTS UNIFORM AMB  B = ",  document.getElementById('dirZ').value )
-        lightingDirection = [parseFloat(document.getElementById('dirX').getAttribute('value')), parseFloat(document.getElementById('dirY').getAttribute('value')), parseFloat(document.getElementById('dirZ').getAttribute('value'))];
+      if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
+        // console.log("LIGHTS UNIFORM AMB  B = ",  E('dirZ').value )
+        lightingDirection = [degToRad(parseFloat((0, _utility.E)('dirX').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirY').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirZ').getAttribute('value')))];
       } else {
         lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
       }
@@ -17392,11 +17216,48 @@ _manifest.default.operation.draws.cube = function (object) {
     }
 
     localLooper = localLooper + 1;
+  } else {
+    _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
   }
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
 
-  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
+  _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); // shadows
+
+
+  if (object.shadows) {
+    // console.log(" SHADOWS -> " , object.shadows)
+    // set the light position
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition); // set the camera/view position
+    // gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, camera);
+    // world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, [matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.yPos, matrixEngine.Events.camera.zPos]);
+
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.shadows.lightPosition); // set the shininess
+
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess); // set the spotlight uniforms
+
+
+    {
+      var target = [0, 0, 0]; // object.position.worldLocation;
+
+      var up = [0, 1, 0];
+      var lmat = m4.lookAt(object.shadows.lightPosition, target, up); // var lmat = m4.lookAt(object.position.worldLocation, target, up);
+
+      lmat = m4.multiply(m4.xRotation(object.shadows.lightRotationX), lmat);
+      lmat = m4.multiply(m4.yRotation(object.shadows.lightRotationY), lmat); // get the zAxis from the matrix
+      // negate it because lookAt looks down the -Z axis
+
+      object.shadows.lightDirection = [-lmat[8], -lmat[9], -lmat[10]]; // object.shadows.lightDirection = [-0, -0, -1];
+    }
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightDirectionLocation, object.shadows.lightDirection);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.innerLimitLocation, Math.cos(object.shadows.innerLimit));
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit));
+  }
 
   if (object.vertexNormalBuffer && object.shaderProgram.nMatrixUniform) {
     var normalMatrix = mat3.create();
@@ -17418,7 +17279,9 @@ _manifest.default.operation.draws.cube = function (object) {
   } else {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
-    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // TEST
+    // world.GL.gl.enable(world.GL.gl.CULL_FACE);
+
   }
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
@@ -17668,8 +17531,8 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
 
     if (object.shaderProgram.ambientColorUniform) {
-      if (document.getElementById('ambLight') && document.getElementById('ambLight').color) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat(document.getElementById('ambLight').color.rgb[0]), parseFloat(document.getElementById('ambLight').color.rgb[1]), parseFloat(document.getElementById('ambLight').color.rgb[2]));
+      if ((0, _utility.E)('ambLight') && (0, _utility.E)('ambLight').color) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLight').color.rgb[0]), parseFloat((0, _utility.E)('ambLight').color.rgb[1]), parseFloat((0, _utility.E)('ambLight').color.rgb[2]));
       } else {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.R(), object.LightsData.ambientLight.G(), object.LightsData.ambientLight.B());
       }
@@ -17678,8 +17541,8 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
 
     if (object.shaderProgram.directionalColorUniform) {
-      if (document.getElementById('dirLight') && document.getElementById('dirLight').color) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(document.getElementById('dirLight').color.rgb[0]), parseFloat(document.getElementById('dirLight').color.rgb[1]), parseFloat(document.getElementById('dirLight').color.rgb[2]));
+      if ((0, _utility.E)('dirLight') && (0, _utility.E)('dirLight').color) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat((0, _utility.E)('dirLight').color.rgb[0]), parseFloat((0, _utility.E)('dirLight').color.rgb[1]), parseFloat((0, _utility.E)('dirLight').color.rgb[2]));
       } else {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
@@ -17690,8 +17553,8 @@ _manifest.default.operation.draws.drawObj = function (object) {
     var lightingDirection = null;
 
     if (object.shaderProgram.lightingDirectionUniform) {
-      if (document.getElementById('dirX') && document.getElementById('dirY') && document.getElementById('dirZ')) {
-        lightingDirection = [parseFloat(document.getElementById('dirX').value), parseFloat(document.getElementById('dirY').value), parseFloat(document.getElementById('dirZ').value)];
+      if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
+        lightingDirection = [parseFloat((0, _utility.E)('dirX').value), parseFloat((0, _utility.E)('dirY').value), parseFloat((0, _utility.E)('dirZ').value)];
       } else {
         lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
       }
@@ -17855,8 +17718,8 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
 
     if (object.shaderProgram.ambientColorUniform) {
-      if (document.getElementById('ambLight') && document.getElementById('ambLight').color) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat(document.getElementById('ambLight').color.rgb[0]), parseFloat(document.getElementById('ambLight').color.rgb[1]), parseFloat(document.getElementById('ambLight').color.rgb[2]));
+      if ((0, _utility.E)('ambLight') && (0, _utility.E)('ambLight').color) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLight').color.rgb[0]), parseFloat((0, _utility.E)('ambLight').color.rgb[1]), parseFloat((0, _utility.E)('ambLight').color.rgb[2]));
       } else {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
@@ -17865,8 +17728,8 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
 
     if (object.shaderProgram.directionalColorUniform) {
-      if (document.getElementById('dirLight') && document.getElementById('dirLight').color) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(document.getElementById('dirLight').color.rgb[0]), parseFloat(document.getElementById('dirLight').color.rgb[1]), parseFloat(document.getElementById('dirLight').color.rgb[2]));
+      if ((0, _utility.E)('dirLight') && (0, _utility.E)('dirLight').color) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat((0, _utility.E)('dirLight').color.rgb[0]), parseFloat((0, _utility.E)('dirLight').color.rgb[1]), parseFloat((0, _utility.E)('dirLight').color.rgb[2]));
       } else {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
@@ -17877,8 +17740,8 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     var lightingDirection = null;
 
     if (object.shaderProgram.lightingDirectionUniform) {
-      if (document.getElementById('dirX') && document.getElementById('dirY') && document.getElementById('dirZ')) {
-        lightingDirection = [parseFloat(document.getElementById('dirX').value), parseFloat(document.getElementById('dirY').value), parseFloat(document.getElementById('dirZ').value)];
+      if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
+        lightingDirection = [parseFloat((0, _utility.E)('dirX').value), parseFloat((0, _utility.E)('dirY').value), parseFloat((0, _utility.E)('dirZ').value)];
       } else {
         lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
       }
@@ -17980,6 +17843,40 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
+  } // shadows
+
+
+  if (object.shadows) {
+    // console.log(" SHADOWS -> " , object.shadows)
+    // Set the color to use
+    // world.GL.gl.uniform4fv(object.shaderProgram.colorLocation, [0.2, 1, 0.2, 1]); // green
+    // set the light position
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition); // set the camera/view position
+    //gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, camera);
+    // set the shininess
+
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess);
+
+    var target = [0, 35, 0]; //object.position.worldLocation
+
+    var up = [0, 1, 0]; // set the spotlight uniforms
+
+    {
+      var lmat = [0, 0, -1];
+      lmat = mat4.lookAt(lmat, target, up, [0, 0, -1]);
+      lmat = mat4.multiply(mat4.fromXRotation(object.shadows.lightRotationX), lmat);
+      lmat = mat4.multiply(mat4.fromXRotation(object.shadows.lightRotationY), lmat); // get the zAxis from the matrix
+      // negate it because lookAt looks down the -Z axis
+
+      object.shadows.lightDirection = [-lmat[8], -lmat[9], -lmat[10]]; // object.shadows.lightDirection = [-0, -0, -1];
+    }
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightDirectionLocation, object.shadows.lightDirection);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.innerLimitLocation, Math.cos(object.shadows.innerLimit));
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit));
   }
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
@@ -18049,8 +17946,8 @@ _manifest.default.operation.draws.sphere = function (object) {
 
 
     if (object.shaderProgram.ambientColorUniform) {
-      if (document.getElementById('ambLight') && document.getElementById('ambLight').color) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat(document.getElementById('ambLight').color.rgb[0]), parseFloat(document.getElementById('ambLight').color.rgb[1]), parseFloat(document.getElementById('ambLight').color.rgb[2]));
+      if ((0, _utility.E)('ambLight') && (0, _utility.E)('ambLight').color) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLight').color.rgb[0]), parseFloat((0, _utility.E)('ambLight').color.rgb[1]), parseFloat((0, _utility.E)('ambLight').color.rgb[2]));
       } else {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
@@ -18059,8 +17956,8 @@ _manifest.default.operation.draws.sphere = function (object) {
 
 
     if (object.shaderProgram.directionalColorUniform) {
-      if (document.getElementById('dirLight') && document.getElementById('dirLight').color) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(document.getElementById('dirLight').color.rgb[0]), parseFloat(document.getElementById('dirLight').color.rgb[1]), parseFloat(document.getElementById('dirLight').color.rgb[2]));
+      if ((0, _utility.E)('dirLight') && (0, _utility.E)('dirLight').color) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat((0, _utility.E)('dirLight').color.rgb[0]), parseFloat((0, _utility.E)('dirLight').color.rgb[1]), parseFloat((0, _utility.E)('dirLight').color.rgb[2]));
       } else {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
@@ -18071,8 +17968,8 @@ _manifest.default.operation.draws.sphere = function (object) {
     var lightingDirection = null;
 
     if (object.shaderProgram.lightingDirectionUniform) {
-      if (document.getElementById('dirX') && document.getElementById('dirY') && document.getElementById('dirZ')) {
-        lightingDirection = [parseFloat(document.getElementById('dirX').value), parseFloat(document.getElementById('dirY').value), parseFloat(document.getElementById('dirZ').value)];
+      if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
+        lightingDirection = [parseFloat((0, _utility.E)('dirX').value), parseFloat((0, _utility.E)('dirY').value), parseFloat((0, _utility.E)('dirZ').value)];
       } else {
         lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
       }
@@ -18178,7 +18075,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":25,"./events":11,"./matrix-world":20,"./raycast":22}],16:[function(require,module,exports){
+},{"../program/manifest":27,"./events":11,"./matrix-world":22,"./raycast":24,"./utility":25}],16:[function(require,module,exports){
 /* eslint-disable no-redeclare */
 
 /* eslint-disable no-unused-vars */
@@ -19276,13 +19173,27 @@ class GeoOfColor {
         [0.0, 0.0, 1.0, 1.0] // Left
         ];
       } else if (type_ == "cubelight" || type_ == "cube light") {
-        return new Float32Array([// Front face
-        0.0, 0.0, 1.0, 1, 0.0, 0.0, 1.0, 1, 0.0, 0.0, 1.0, 1, 0.0, 0.0, 1.0, 1, // Back face
-        0.0, 0.0, -1.0, 1, 0.0, 0.0, -1.0, 1, 0.0, 0.0, -1.0, 1, 0.0, 0.0, -1.0, 1, // Top face
-        0.0, 1.0, 0.0, 1, 0.0, 1.0, 0.0, 1, 0.0, 1.0, 0.0, 1, 0.0, 1.0, 0.0, 1, // Bottom face
-        0.0, -1.0, 0.0, 1, 0.0, -1.0, 0.0, 1, 0.0, -1.0, 0.0, 1, 0.0, -1.0, 0.0, 1, // Right face
-        1.0, 0.0, 0.0, 1, 1.0, 0.0, 0.0, 1, 1.0, 0.0, 0.0, 1, 1.0, 0.0, 0.0, 1, // Left face
-        -1.0, 0.0, 0.0, 1, -1.0, 0.0, 0.0, 1, -1.0, 0.0, 0.0, 1, -1.0, 0.0, 0.0, 1]);
+        return new Float32Array([// F
+        0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // B
+        0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, // T
+        0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, // Bo
+        0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, // R
+        1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // L
+        -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0]); // org
+        // return new Float32Array( [
+        //   // Front face
+        //   0.0, 0.0, 1.0, 1, 0.0, 0.0, 1.0, 1, 0.0, 0.0, 1.0, 1, 0.0, 0.0, 1.0, 1,
+        //   // Back face
+        //   0.0, 0.0, -1.0, 1, 0.0, 0.0, -1.0, 1, 0.0, 0.0, -1.0, 1, 0.0, 0.0, -1.0, 1,
+        //   // Top face
+        //   0.0, 1.0, 0.0, 1, 0.0, 1.0, 0.0, 1, 0.0, 1.0, 0.0, 1, 0.0, 1.0, 0.0, 1,
+        //   // Bottom face
+        //   0.0, -1.0, 0.0, 1, 0.0, -1.0, 0.0, 1, 0.0, -1.0, 0.0, 1, 0.0, -1.0, 0.0, 1,
+        //   // Right face
+        //   1.0, 0.0, 0.0, 1, 1.0, 0.0, 0.0, 1, 1.0, 0.0, 0.0, 1, 1.0, 0.0, 0.0, 1,
+        //   // Left face
+        //   -1.0, 0.0, 0.0, 1, -1.0, 0.0, 0.0, 1, -1.0, 0.0, 0.0, 1, -1.0, 0.0, 0.0, 1
+        // ]);
       }
     } else {
       return [1.0, 0.0, 0.0, 1.0, // Top right
@@ -19891,7 +19802,7 @@ exports.customVertex_1 = customVertex_1;
 
 function ring(innerRadius, outerRadius, slices) {}
 
-},{"../program/manifest":25,"./utility":23}],17:[function(require,module,exports){
+},{"../program/manifest":27,"./utility":25}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20046,7 +19957,462 @@ var callReDraw_ = function () {
 
 exports.callReDraw_ = callReDraw_;
 
-},{"../program/manifest":25,"./engine":10,"./matrix-world":20,"./raycast":22,"./utility":23}],18:[function(require,module,exports){
+},{"../program/manifest":27,"./engine":10,"./matrix-world":22,"./raycast":24,"./utility":25}],18:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.generateShaderSrc = generateShaderSrc;
+exports.generateShaderSimpleDirection = generateShaderSimpleDirection;
+exports.generateVShaderSimpleDirectionLight = generateVShaderSimpleDirectionLight;
+exports.generateCustomShaderSrc = generateCustomShaderSrc;
+
+function generateShaderSrc(numTextures, mixOperand, spotLight) {
+  return `
+    // shader for ${numTextures} textures
+    precision mediump float;
+    precision highp float;
+    varying vec2 vTextureCoord;
+    varying vec3 vLightWeighting;
+
+    uniform float textureSamplerAmount[${numTextures}];
+    int MixOperandString = ${mixOperand};
+
+    uniform sampler2D uSampler;
+    uniform sampler2D uSampler1;
+    uniform sampler2D uSampler2;
+    uniform sampler2D uSampler3;
+    uniform sampler2D uSampler4;
+    uniform sampler2D uSampler5;
+    uniform sampler2D uSampler6;
+    uniform sampler2D uSampler7;
+
+    ` + (typeof spotLight !== 'undefined' ? generateSpotLightDefinitions() : ``) + `
+    void main(void) {
+
+        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor3 = texture2D(uSampler3, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor4 = texture2D(uSampler4, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor5 = texture2D(uSampler5, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor6 = texture2D(uSampler6, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor7 = texture2D(uSampler7, vec2(vTextureCoord.s, vTextureCoord.t));
+
+        if (${numTextures} == 1) {
+          gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+          //  gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) ,0 ,smoothstep(textureColor.r, textureColor.b,textureColor.g ) );
+        } else if (${numTextures} == 2) {
+          if ( ${mixOperand} == 0) {
+            gl_FragColor      = vec4( (textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
+          } else if (${mixOperand} == 1) {
+            gl_FragColor      = vec4( (textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
+          }
+        } else if (${numTextures} == 3) {
+          if (${mixOperand} == 0) {
+            gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
+          }
+          else if (${mixOperand} == 1) {
+            gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
+          }
+        } else if (${numTextures} == 4) {
+            if (${mixOperand} == 0) {
+              gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
+            }
+            else if (${mixOperand} == 1) {
+              gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
+            }
+        }
+
+        ` + (typeof spotLight !== 'undefined' ? generateSpotLightMain() : ``) + `
+    }
+    // uniform sampler2D uSampler[${numTextures}];
+    // uniform float uMixAmount[${numTextures}];
+    /*
+    void main() {
+        vec4 color = vec4(0);
+        for (int i = 0; i < ${numTextures}; ++i) {
+            vec4 texColor = texture2D(uSampler[i], vTextureCoord);
+            color = mix(color, texColor, uMixAmount[i]);
+        }
+        gl_FragColor = color;
+    }
+    */
+    `;
+}
+
+function generateShaderSimpleDirection() {
+  return `
+  precision mediump float;
+  precision highp float;
+
+  varying vec4 vColor;
+  varying vec3 vLightWeighting;
+
+  void main(void) {
+
+    // gl_FragColor      = vec4(vColor.rgb * vLightWeighting, vColor.a);
+    gl_FragColor      = vec4(vColor.rgb * vLightWeighting, vColor.a);
+    // gl_FragColor = vColor; // u_color;
+  }
+  `;
+}
+
+function generateVShaderSimpleDirectionLight() {
+  return `
+  attribute vec3 aVertexPosition;
+  attribute vec4 aVertexColor;
+  attribute vec3 aVertexNormal;
+  
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  uniform mat3 uNMatrix;
+
+  uniform vec3 uLightingDirection;
+  uniform vec3 uDirectionalColor;
+  uniform bool uUseLighting;
+  varying vec3 vLightWeighting;
+
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+    vec3 transformedNormal          = uNMatrix * aVertexNormal;
+    float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+    vLightWeighting                 = uDirectionalColor * directionalLightWeighting;
+
+    vColor      = aVertexColor;
+
+    // vColor      = aVertexColor;
+
+  }
+  `;
+}
+
+function generateSpotLightDefinitions() {
+  return `// Passed in from the vertex shader.
+  varying vec3 v_normal;
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+
+  uniform vec4 u_color;
+  uniform float u_shininess;
+  uniform vec3 u_lightDirection;
+  uniform float u_innerLimit;          // in dot space
+  uniform float u_outerLimit;          // in dot space
+  //
+  `;
+}
+
+function generateSpotLightMain() {
+  return `
+  //
+  // because v_normal is a varying it's interpolated
+  // so it will not be a unit vector. Normalizing it
+  // will make it a unit vector again
+  vec3 normal = normalize(v_normal);
+
+  vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+  vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+  vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+
+  float dotFromDirection = dot(surfaceToLightDirection,
+                               -u_lightDirection);
+  float limitRange = u_innerLimit - u_outerLimit;
+  float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+  float light = inLight * dot(normal, surfaceToLightDirection);
+  float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+
+  // Lets multiply just the color portion (not the alpha)
+  // by the light
+  gl_FragColor.rgb *= light;
+  // Just add in the specular
+  gl_FragColor.rgb += specular;
+  //
+  `;
+} // make custom shader
+
+
+function generateCustomShaderSrc(numTextures, mixOperand, code_) {
+  return `
+
+    // shader for ${numTextures} textures
+    precision mediump float;
+    precision highp float;
+
+    varying vec2 vTextureCoord;
+    varying vec3 vLightWeighting;
+
+    uniform float textureSamplerAmount[${numTextures}];
+    float TimeFor;
+
+    int MixOperandString = ${mixOperand};
+    int CODE = ${code_};
+
+    uniform sampler2D uSampler;
+    uniform sampler2D uSampler1;
+    uniform sampler2D uSampler2;
+    uniform sampler2D uSampler3;
+    uniform sampler2D uSampler4;
+    uniform sampler2D uSampler5;
+    uniform sampler2D uSampler6;
+    uniform sampler2D uSampler7;
+
+    void main(void) {
+
+        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor3 = texture2D(uSampler3, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor4 = texture2D(uSampler4, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor5 = texture2D(uSampler5, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor6 = texture2D(uSampler6, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor7 = texture2D(uSampler7, vec2(vTextureCoord.s, vTextureCoord.t));
+
+        // MixOperandString  make it with eval todo task
+
+        if (  ${numTextures} == 1)
+        {
+
+            if  ( CODE == 0 ) {
+
+                gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+
+            }
+            else if (CODE == 1){
+
+                gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) , 0 , 1 );
+
+            }
+            else if (CODE == 2){
+
+                gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b , textureColor.g ) , 1 , 0 , 1 );
+
+            }
+            else if (CODE == 3){
+
+                gl_FragColor = vec4( smoothstep( textureColor.g , textureColor.b , 0.5 ) , 1 , 0 , 1 );
+
+            }
+            else if (CODE == 4){
+
+                // textureColor
+                vec2 position =  vTextureCoord;
+                float color = 0.3;
+                gl_FragColor = vec4( vec3( color , color * 0.5, sin( color + TimeFor / 3.0 ) * 0.75 ), 1.0 );
+
+            }
+
+        }
+        else if (${numTextures} == 2)
+        {
+            if ( ${mixOperand} == 0){
+                gl_FragColor      = vec4( (textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
+            }
+            else if (${mixOperand} == 1){
+                gl_FragColor      = vec4( (textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
+            }
+
+        }
+        else if (${numTextures} == 3)
+        {
+            if (MixOperandString == 0){
+                gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
+            }
+            else if (MixOperandString == 1){
+                gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
+            }
+
+        }
+        else if (${numTextures} == 4)
+        {
+            if (MixOperandString == 0){
+                gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
+            }
+            else if (MixOperandString == 1){
+                gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
+            }
+
+        }
+
+    }
+
+    // uniform sampler2D uSampler[${numTextures}];
+    // uniform float uMixAmount[${numTextures}];
+
+    /*
+     void main() {
+     vec4 color = vec4(0);
+
+     for (int i = 0; i < ${numTextures}; ++i) {
+     vec4 texColor = texture2D(uSampler[i], vTextureCoord);
+     color = mix(color, texColor, uMixAmount[i]);
+     }
+
+     gl_FragColor = color;
+     }
+     */
+
+    `;
+}
+
+},{}],19:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MatrixShadowSpot = void 0;
+
+var _utility = require("./utility");
+
+var _manifest = _interopRequireDefault(require("../program/manifest"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @description MatrixShadowSpot
+ * Holder for locallight data
+ * with basic animation values features.
+ */
+class MatrixShadowSpot {
+  constructor() {
+    this.lightPosition = [0, 0, 2];
+    this.shininess = 150;
+    this.lightRotationX = 0;
+    this.lightRotationY = 0; // this is computed in updateScene
+
+    this.lightDirection = [0, 0, -1];
+    this.innerLimit = degToRad(0);
+    this.outerLimit = degToRad(20);
+    this.idUpdater = null;
+    this.r = null;
+    this.ir = null;
+    this.p = null;
+    this.posX = null;
+    this.posY = null;
+    this.posZ = null;
+    this.o = null;
+    this.flyArroundByIndexs = [1, 2];
+    this.centerX = 0;
+    this.centerY = 0;
+
+    this.activeUpdate = () => {
+      this.idUpdater = _manifest.default.updateBeforeDraw.length;
+
+      _manifest.default.updateBeforeDraw.push(this);
+    };
+
+    this.deactivateUpdate = () => {
+      _manifest.default.updateBeforeDraw.splice(this.idUpdater, 1);
+
+      this.UPDATE = function () {};
+    };
+
+    this.UPDATE = function () {};
+
+    this.animateRadius = function (option) {
+      if (typeof option === 'undefined') var option = {
+        from: 0,
+        to: 120,
+        step: 1
+      };
+      this.r = new _utility.OSCILLATOR(option.from, option.to, option.step);
+      this.UPDATE = this.lightRadius;
+    };
+
+    this.animateInnerRadius = function (option) {
+      if (typeof option === 'undefined') var option = {
+        from: 0,
+        to: 120,
+        step: 1
+      };
+      this.ir = new _utility.OSCILLATOR(option.from, option.to, option.step);
+      this.UPDATE = this.lightInnerRadius;
+    };
+
+    this.animatePositionX = function (option) {
+      if (typeof option === 'undefined') var option = {
+        from: -2,
+        to: 2,
+        step: 0.1
+      };
+      this.posX = new _utility.OSCILLATOR(option.from, option.to, option.step);
+      this.UPDATE = this.positionXLight;
+    };
+
+    this.animatePositionY = function (option) {
+      if (typeof option === 'undefined') var option = {
+        from: -2,
+        to: 2,
+        step: 0.1
+      };
+      this.posY = new matrixEngine.utility.OSCILLATOR(option.from, option.to, option.step);
+      this.UPDATE = this.positionYLight;
+    };
+
+    this.animatePositionZ = function (option) {
+      if (typeof option === 'undefined') var option = {
+        from: -2,
+        to: 2,
+        step: 0.1
+      };
+      this.posZ = new matrixEngine.utility.OSCILLATOR(option.from, option.to, option.step);
+      this.UPDATE = this.positionZLight;
+    };
+
+    this.flyArround = function (option) {
+      if (typeof option === 'undefined') {
+        var option = {
+          from: 0.1,
+          to: 0.2,
+          step: 0.01,
+          centerX: 0,
+          centerY: 0,
+          flyArroundByIndexs: [1, 2]
+        };
+      }
+
+      this.flyArroundByIndexs = option.flyArroundByIndexs;
+      if (option.centerX) this.centerX = option.centerX;
+      if (option.centerY) this.centerY = option.centerY;
+      this.o = new _utility.OSCILLATOR(option.from, option.to, option.step);
+      this.UPDATE = this.makeFlyArround;
+    };
+  }
+
+  makeFlyArround() {
+    // console.log("TETS")
+    this.lightPosition = (0, _utility.ORBIT_FROM_ARRAY)(this.centerX, this.centerY, this.o.UPDATE(), this.lightPosition, this.flyArroundByIndexs);
+  }
+
+  lightRadius() {
+    this.outerLimit = degToRad(this.r.UPDATE());
+  }
+
+  lightInnerRadius() {
+    this.innerLimit = degToRad(this.ir.UPDATE());
+  }
+
+  positionXLight() {
+    this.lightPosition[0] = this.posX.UPDATE();
+  }
+
+  positionYLight() {
+    this.lightPosition[1] = this.posY.UPDATE();
+  }
+
+  positionZLight() {
+    this.lightPosition[2] = this.posZ.UPDATE();
+  }
+
+}
+
+exports.MatrixShadowSpot = MatrixShadowSpot;
+
+},{"../program/manifest":27,"./utility":25}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20137,7 +20503,7 @@ class MatrixButton extends HTMLButtonElement {
 
 exports.MatrixButton = MatrixButton;
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
@@ -20152,7 +20518,10 @@ var _matrixWorld = require("./matrix-world");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// initTextures
+/**
+ * @description
+ * initTextures Load image file procedure.
+ */
 _manifest.default.tools.loadTextureImage = function (gl, src) {
   var texture = gl.createTexture();
   texture.image = new Image();
@@ -20165,6 +20534,11 @@ _manifest.default.tools.loadTextureImage = function (gl, src) {
   texture.image.src = src;
   return texture;
 };
+/**
+ * @description
+ * Basic image textures
+ */
+
 
 _manifest.default.tools.BasicTextures = function (texture, gl) {
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -20203,34 +20577,81 @@ _manifest.default.tools.loadVideoTexture = function (name, image) {
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
   gl.generateMipmap(gl.TEXTURE_2D);
 };
-/*
-  App.tools.loadTextureBasic = function (imagePath , name ) {
-  var name_ = name;
-  loadImage(imagePath, function(image) {
-  // -- Init 2D Texture
 
-  App.textures[name_] =gl.createTexture();
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, App.textures[name_]);
-  //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-  // -- Allocate storage for the texture
-  gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGB8, 512, 512);
-  gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGB, gl.UNSIGNED_BYTE, image);
-  gl.generateMipmap(gl.TEXTURE_2D);
-  });
+_manifest.default.tools.createPixelsTex = function (options) {
+  if (typeof options === 'undefined') {
+    var options = {
+      squareShema: [2, 2],
+      pixels: {}
+    };
+    const pixels = new Uint8Array(options.squareShema[0] * options.squareShema[1] * 4);
+    options.pixels = pixels;
+    options.pixels.fill(100);
+    var i = 0;
+    options.pixels[0 + i] = 0;
+    options.pixels[1 + i] = 64;
+    options.pixels[2 + i] = 255;
+    options.pixels[3 + i] = 0.2;
+    options.pixels[4 + i] = 128;
+    options.pixels[5 + i] = 255;
+    options.pixels[6 + i] = 0;
+    options.pixels[7 + i] = 0.2;
+    options.pixels[8 + i] = 0;
+    options.pixels[9 + i] = 255;
+    options.pixels[10 + i] = 64;
+    options.pixels[11 + i] = 1;
+    options.pixels[12 + i] = 64;
+    options.pixels[13 + i] = 64;
+    options.pixels[14 + i] = 128;
+    options.pixels[15 + i] = 1;
   }
-*/
 
+  if (options?.style?.type == 'chessboard') {
+    var I = 0,
+        localCounter = 0;
+
+    for (var funny = 0; funny < options.squareShema[0] * options.squareShema[1] * 4; funny += 4) {
+      localCounter++;
+
+      if (I == options?.style.color1) {
+        I = options?.style.color2;
+      } else {
+        I = options?.style.color1;
+      } // if (parseInt(funny) % 32 == 0) { work also
+
+
+      if (parseInt(localCounter - 1) % options.squareShema[0] == 0) {
+        if (I == options?.style.color1) {
+          I = options?.style.color2;
+        } else {
+          I = options?.style.color1;
+        }
+      }
+
+      options.pixels[funny] = I;
+      options.pixels[funny + 1] = I;
+      options.pixels[funny + 2] = I;
+      options.pixels[funny + 3] = 1;
+    }
+  }
+
+  const texture = _matrixWorld.world.GL.gl.createTexture();
+
+  _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, texture);
+
+  _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+  _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+  _matrixWorld.world.GL.gl.texImage2D(_matrixWorld.world.GL.gl.TEXTURE_2D, 0, _matrixWorld.world.GL.gl.RGBA, options.squareShema[0], options.squareShema[1], 0, _matrixWorld.world.GL.gl.RGBA, _matrixWorld.world.GL.gl.UNSIGNED_BYTE, options.pixels);
+
+  return texture;
+};
 
 var _default = _manifest.default.textools;
 exports.default = _default;
 
-},{"../program/manifest":25,"./matrix-world":20}],20:[function(require,module,exports){
+},{"../program/manifest":27,"./matrix-world":22}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20255,6 +20676,8 @@ var _utility = require("./utility");
 var _matrixGeometry = require("./matrix-geometry");
 
 var _physics = _interopRequireDefault(require("./physics"));
+
+var _matrixShadows = require("./matrix-shadows");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20564,6 +20987,12 @@ function defineworld(canvas) {
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
         lightingDirection: new _matrixGeometry.COLOR(1, 1, 0)
       };
+      squareObject.useShadows = false;
+
+      squareObject.activateShadows = function () {
+        squareObject.useShadows = true;
+        squareObject.shadows = new _matrixShadows.MatrixShadowSpot();
+      };
 
       if (typeof texturesPaths !== 'undefined') {
         if (typeof texturesPaths == 'string') {
@@ -20629,8 +21058,7 @@ function defineworld(canvas) {
       cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       cubeObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       cubeObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
-      cubeObject.color = true; // cubeObject.color = new GeoOfColor("square");
-
+      cubeObject.color = true;
       cubeObject.mvMatrix = mat4.create();
       cubeObject.geometry = new _matrixGeometry.CubeVertex(cubeObject);
       cubeObject.instancedDraws = {
@@ -20638,7 +21066,17 @@ function defineworld(canvas) {
         array_of_local_offset: [12, 0, 0],
         overrideDrawArraysInstance: function (object_) {}
       };
-      cubeObject.glBlend = new _utility._glBlend(); // Physics
+      cubeObject.glBlend = new _utility._glBlend(); // ? NEXT
+      // cubeObject.useDirectionLight = false;
+      // cubeObject.activateDirLight = () => {
+      //   RegenerateShaderSimpleDirectionLight(
+      //     filler + '-shader-fs');
+      //   RegenerateVShaderSimpleDirectionLight(
+      //     filler + '-shader-vs');
+      //   cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
+      //   cubeObject.useDirectionLight = true;
+      // };
+      // Physics
 
       cubeObject.physics = {
         enabled: false
@@ -20908,7 +21346,7 @@ function defineworld(canvas) {
       if (typeof nameUniq != 'undefined') {
         cubeObject.name = nameUniq;
       } else {
-        cubeObject.name = 'cube_instance_' + Math.floor(Math.random() * 100000 + 1);
+        cubeObject.name = 'cube_instance_' + Math.floor(Math.random() * 1000 + 1);
       }
 
       cubeObject.streamTextures = null;
@@ -20921,12 +21359,34 @@ function defineworld(canvas) {
       cubeObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
-        lightingDirection: new _matrixGeometry.COLOR(1, 1, 0)
+        lightingDirection: new _matrixGeometry.COLOR((0, _utility.radToDeg)(0.3), (0, _utility.radToDeg)(-0.3), (0, _utility.radToDeg)(-1))
       }; // Physics
 
       cubeObject.physics = {
         enabled: false
+      }; // Update others start
+
+      cubeObject.useShadows = false;
+
+      cubeObject.activateShadows = () => {
+        cubeObject.useShadows = true;
+        cubeObject.shadows = new _matrixShadows.MatrixShadowSpot();
+        (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, true);
+        cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       };
+
+      cubeObject.deactivateTex = () => {
+        cubeObject.vertexTexCoordBufferRefVar = cubeObject.vertexTexCoordBuffer;
+        cubeObject.vertexTexCoordBuffer = false;
+      };
+
+      cubeObject.createPixelsTex = _manifest.default.tools.createPixelsTex;
+
+      cubeObject.activateTex = () => {
+        cubeObject.vertexTexCoordBuffer = cubeObject.vertexTexCoordBufferRefVar;
+      }; // Update others end
+
+
       cubeObject.textures = [];
       cubeObject.custom = new Object();
       cubeObject.custom.gl_texture = null;
@@ -20985,7 +21445,8 @@ function defineworld(canvas) {
         cubeObject.glDrawElements = new _utility._DrawElements(cubeObject.vertexIndexBuffer.numItems);
         this.contentList[this.contentList.length] = cubeObject;
         _manifest.default.scene[cubeObject.name] = cubeObject;
-      } else {// console.log("   Cube shader failure");
+      } else {
+        console.log("Cube shader failure");
       }
     } // no physics for now
 
@@ -21089,7 +21550,7 @@ function defineworld(canvas) {
   return world;
 }
 
-},{"../program/manifest":25,"./engine":10,"./matrix-draws":15,"./matrix-geometry":16,"./matrix-render":17,"./matrix-tags":18,"./physics":21,"./utility":23}],21:[function(require,module,exports){
+},{"../program/manifest":27,"./engine":10,"./matrix-draws":15,"./matrix-geometry":16,"./matrix-render":17,"./matrix-shadows":19,"./matrix-tags":20,"./physics":23,"./utility":25}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21104,7 +21565,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 // DEV
-// import * as cannon from '../node_modules/cannon/build/cannon';
+// import * as cannon from '../';
 // PRODC
 // import * as cannon from 'cannon';
 
@@ -21174,7 +21635,7 @@ class MatrixPhysics {
 
 exports.default = MatrixPhysics;
 
-},{"cannon":5}],22:[function(require,module,exports){
+},{"cannon":5}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21445,7 +21906,7 @@ function checkingProcedureCalc(object) {
   }
 }
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -21459,7 +21920,9 @@ exports.isMobile = isMobile;
 exports.LOG = LOG;
 exports.OSCILLATOR = OSCILLATOR;
 exports.SWITCHER = SWITCHER;
-exports.RandomFloat = RandomFloat;
+exports.ORBIT = ORBIT;
+exports.ORBIT_FROM_ARRAY = ORBIT_FROM_ARRAY;
+exports.randomFloatFromTo = randomFloatFromTo;
 exports.randomIntFromTo = randomIntFromTo;
 exports._glBlend = _glBlend;
 exports._DrawElements = _DrawElements;
@@ -21755,6 +22218,30 @@ function SWITCHER() {
   };
 }
 
+function ORBIT(cx, cy, angle, p) {
+  var s = Math.sin(angle);
+  var c = Math.cos(angle);
+  p.x -= cx;
+  p.y -= cy;
+  var xnew = p.x * c - p.y * s;
+  var ynew = p.x * s + p.y * c;
+  p.x = xnew + cx;
+  p.y = ynew + cy;
+  return p;
+}
+
+function ORBIT_FROM_ARRAY(cx, cy, angle, p, byIndexs) {
+  var s = Math.sin(angle);
+  var c = Math.cos(angle);
+  p[byIndexs[0]] -= cx;
+  p[byIndexs[1]] -= cy;
+  var xnew = p[byIndexs[0]] * c - p[byIndexs[1]] * s;
+  var ynew = p[byIndexs[0]] * s + p[byIndexs[1]] * c;
+  p[byIndexs[0]] = xnew + cx;
+  p[byIndexs[1]] = ynew + cy;
+  return p;
+}
+
 var E = function (id) {
   return document.getElementById(id);
 };
@@ -21767,9 +22254,8 @@ var byId = function (id) {
 
 exports.byId = byId;
 
-function RandomFloat(min, max) {
-  highlightedNumber = Math.random() * (max - min) + min;
-  return highlightedNumber;
+function randomFloatFromTo(min, max) {
+  return Math.random() * (max - min) + min;
 } // RANDOM INT FROM-TO
 
 
@@ -22102,7 +22588,7 @@ const BiquadFilterType = {
 };
 exports.BiquadFilterType = BiquadFilterType;
 
-},{"../program/manifest":25,"./events":11}],24:[function(require,module,exports){
+},{"../program/manifest":27,"./events":11}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22291,7 +22777,7 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22363,7 +22849,7 @@ var App = {
 var _default = App;
 exports.default = _default;
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22387,7 +22873,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-},{"./src/lib/utility":42,"./src/nidza":43}],27:[function(require,module,exports){
+},{"./src/lib/utility":44,"./src/nidza":45}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22411,7 +22897,7 @@ class NidzaElement {
 
 exports.NidzaElement = NidzaElement;
 
-},{"./dimension":31,"./position":36}],28:[function(require,module,exports){
+},{"./dimension":33,"./position":38}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22435,7 +22921,7 @@ function setReferent(canvasDom) {
   };
 }
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22577,7 +23063,7 @@ class BaseShader {
 
 exports.BaseShader = BaseShader;
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22639,7 +23125,7 @@ class NidzaCustom2dComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaCustom2dComponent = NidzaCustom2dComponent;
 
-},{"./base-component":27,"./operations":35,"./rotation":37}],31:[function(require,module,exports){
+},{"./base-component":29,"./operations":37,"./rotation":39}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22770,7 +23256,7 @@ class Dimension {
 
 exports.Dimension = Dimension;
 
-},{"./base-referent":28}],32:[function(require,module,exports){
+},{"./base-referent":30}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22918,7 +23404,7 @@ class Nidza3dIdentity {
 
 exports.Nidza3dIdentity = Nidza3dIdentity;
 
-},{"./shader-component":39,"./shader-component-custom":38,"./utility":42}],33:[function(require,module,exports){
+},{"./shader-component":41,"./shader-component-custom":40,"./utility":44}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23115,7 +23601,7 @@ class NidzaIdentity {
 
 exports.NidzaIdentity = NidzaIdentity;
 
-},{"./custom2d-component":30,"./matrix-component":34,"./star-component":40,"./text-component":41,"./utility":42}],34:[function(require,module,exports){
+},{"./custom2d-component":32,"./matrix-component":36,"./star-component":42,"./text-component":43,"./utility":44}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23386,7 +23872,7 @@ class NidzaMatrixComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaMatrixComponent = NidzaMatrixComponent;
 
-},{"./base-component":27,"./operations":35,"./rotation":37,"./utility":42}],35:[function(require,module,exports){
+},{"./base-component":29,"./operations":37,"./rotation":39,"./utility":44}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23681,7 +24167,7 @@ function drawStarRotation() {
   this.ctx.restore();
 }
 
-},{"./utility":42}],36:[function(require,module,exports){
+},{"./utility":44}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23814,7 +24300,7 @@ class Position {
 
 exports.Position = Position;
 
-},{"./base-referent":28}],37:[function(require,module,exports){
+},{"./base-referent":30}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23907,7 +24393,7 @@ class Rotator {
 
 exports.Rotator = Rotator;
 
-},{"./operations":35}],38:[function(require,module,exports){
+},{"./operations":37}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24051,7 +24537,7 @@ class ShaderComponentCustom extends _baseShaderComponent.BaseShader {
 
 exports.ShaderComponentCustom = ShaderComponentCustom;
 
-},{"./base-shader-component":29}],39:[function(require,module,exports){
+},{"./base-shader-component":31}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24246,7 +24732,7 @@ class ShaderComponent extends _baseShaderComponent.BaseShader {
 
 exports.ShaderComponent = ShaderComponent;
 
-},{"./base-shader-component":29,"./operations":35}],40:[function(require,module,exports){
+},{"./base-shader-component":31,"./operations":37}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24313,7 +24799,7 @@ class NidzaStarComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaStarComponent = NidzaStarComponent;
 
-},{"./base-component":27,"./operations":35,"./rotation":37}],41:[function(require,module,exports){
+},{"./base-component":29,"./operations":37,"./rotation":39}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24450,7 +24936,7 @@ class NidzaTextComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaTextComponent = NidzaTextComponent;
 
-},{"./base-component":27,"./operations":35,"./rotation":37}],42:[function(require,module,exports){
+},{"./base-component":29,"./operations":37,"./rotation":39}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24580,7 +25066,7 @@ function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24680,7 +25166,7 @@ class Nidza {
 
 exports.Nidza = Nidza;
 
-},{"./lib/identity":33,"./lib/identity-3d":32,"./lib/operations":35}],44:[function(require,module,exports){
+},{"./lib/identity":35,"./lib/identity-3d":34,"./lib/operations":37}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24690,7 +25176,7 @@ exports.colorNamesGrammars = void 0;
 const colorNamesGrammars = ['aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
 exports.colorNamesGrammars = colorNamesGrammars;
 
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24713,7 +25199,7 @@ var _voiceCommander = require("./voice-commander.js");
 
 var _colors = require("./grammar-set/colors.js");
 
-},{"./grammar-set/colors.js":44,"./voice-commander.js":46}],46:[function(require,module,exports){
+},{"./grammar-set/colors.js":46,"./voice-commander.js":48}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24814,7 +25300,7 @@ class VoiceCommander {
 
 exports.VoiceCommander = VoiceCommander;
 
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24876,7 +25362,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./../../node_modules/matrix-engine/index":9,"./scripts/voice-commander":54,"./scripts/web-anatomy":55}],48:[function(require,module,exports){
+},{"./../../node_modules/matrix-engine/index":9,"./scripts/voice-commander":56,"./scripts/web-anatomy":57}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25073,7 +25559,7 @@ function createNidzaHudBalance(nidza) {
   });
 }
 
-},{"./standard-fonts":51,"matrix-engine":9}],49:[function(require,module,exports){
+},{"./standard-fonts":53,"matrix-engine":9}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25115,7 +25601,7 @@ function beep(duration, frequency, volume, type, callback) {
 
 ;
 
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25182,7 +25668,7 @@ testMyAudio[0].onended = function() {
 
 exports.stopSpin = stopSpin;
 
-},{"audio-commander":1}],51:[function(require,module,exports){
+},{"audio-commander":1}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25203,7 +25689,7 @@ const stdFonts = {
 };
 exports.stdFonts = stdFonts;
 
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25496,7 +25982,7 @@ var skeletalMap = {
 var _default = skeletalMap;
 exports.default = _default;
 
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25554,7 +26040,7 @@ let loadSystemSkeletal = (App, world) => {
 
 exports.loadSystemSkeletal = loadSystemSkeletal;
 
-},{"./map":52,"matrix-engine":9}],54:[function(require,module,exports){
+},{"./map":54,"matrix-engine":9}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25600,7 +26086,7 @@ VoiceCommanderInstance.whatisyourname = r => {// global for now
   */
 };
 
-},{"voice-commander":45}],55:[function(require,module,exports){
+},{"voice-commander":47}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25813,4 +26299,4 @@ class WebAnatomy {
 
 exports.default = WebAnatomy;
 
-},{"./active-textures":48,"./audio-gen":49,"./matrix-audio":50,"./systems/skeletal":53,"matrix-engine":9,"matrix-engine-plugins":6,"nidza":26}]},{},[47]);
+},{"./active-textures":50,"./audio-gen":51,"./matrix-audio":52,"./systems/skeletal":55,"matrix-engine":9,"matrix-engine-plugins":6,"nidza":28}]},{},[49]);

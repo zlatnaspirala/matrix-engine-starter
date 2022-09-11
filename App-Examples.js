@@ -1,5 +1,7 @@
 
 import * as matrixEngine from './node_modules/matrix-engine/index';
+// import * as matrixEngine from 'matrix-engine';
+
 
 import {runThis as cube_tex_arrays} from "./apps/cube_tex_arrays";
 import {runThis as adding_color_cube} from "./apps/adding_color_cube";
@@ -29,8 +31,14 @@ import {runThis as texture_dinamic_manipulation} from "./apps/texture_dinamic_ma
 import {runThis as video_texture} from "./apps/video_texture";
 import {runThis as adding_color_square } from "./apps/adding_color_square";
 import {runThis as adding_color_square_raycast } from "./apps/adding_color_square_raycast";
+import {runThis as spot_light_basic } from "./apps/spot_light_basic";
+import {runThis as physics_sphere } from "./apps/physics_sphere";
+import {runThis as physics_cube } from "./apps/physics_cube";
 
 var Examples = {
+  physics_sphere: physics_sphere,
+  physics_cube: physics_cube,
+  spot_light_basic: spot_light_basic,
   cube_tex_arrays: cube_tex_arrays,
   adding_color_cube: adding_color_cube,
   adding_color_piramyde: adding_color_piramyde,
@@ -82,7 +90,7 @@ regularBtn.style.display = "none";
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
 
-    navigator.serviceWorker.register("worker.js");
+    // navigator.serviceWorker.register("worker.js");
     setTimeout(() => { matrixEngine.Engine.initApp(webGLStart) }, 250);
 
   });
@@ -91,6 +99,7 @@ if ("serviceWorker" in navigator) {
 }
 
 function webGLStart() {
+  console.log("CANNON TEST", CANNON)
   world = matrixEngine.matrixWorld.defineworld(canvas);
 
   if (world) {
