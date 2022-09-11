@@ -25526,7 +25526,7 @@ let loadSystemSkeletal = (App, world) => {
 
 
     var textuteImageSamplers2 = {
-      source: ["res/images/metal-half.jpg"],
+      source: ["res/images/metal.png"],
       mix_operation: "multiply"
     }; // App.camera.speedAmp
 
@@ -25539,9 +25539,8 @@ let loadSystemSkeletal = (App, world) => {
 
       App.scene[id].rotation.rotx = 90;
       App.scene[id].rotation.roty = 0;
-      App.scene[id].rotation.rotz = 90;
-      App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[7];
+      App.scene[id].rotation.rotz = 0; // App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      // App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[7];
     } // App.scene.armor.position.y = 1;
     // App.scene.armor.LightsData.ambientLight.set(2, 2, 2);
 
@@ -25725,6 +25724,11 @@ class WebAnatomy {
   }
 
   addAnatomySystems = function (world) {
+    // Make it natural
+    App.camera.speedAmp = 0.001;
+    App.camera.sceneControllerDragAmp = 0.2;
+    let OSCILLATOR = matrixEngine.utility.OSCILLATOR;
+    var oscilltor_variable = new OSCILLATOR(0.1, 3, 0.004);
     var texTopHeader = {
       source: ["res/images/metal.jpg"],
       mix_operation: "multiply"
@@ -25782,20 +25786,28 @@ class WebAnatomy {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
   };
-  changeGlBlend = (src, dest) => {
+  changeGlBlend = (src, dest, rot) => {
     for (let key in App.scene) {
       if (App.scene[key].name.indexOf("skeletal_") !== -1) {
         // still must be called with method - SCALE for OBJ Mesh
         // App.scene[id].mesh.setScale(-0.01)
-        App.scene[key].glBlend.blendEnabled = true; // App.scene[id].position.y =  2;
-        // App.scene[id].rotation.rotx = 90;
-        // App.scene[id].rotation.roty = 0;
-        // App.scene[id].rotation.rotz = 90;
-
-        App.scene[key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[src];
-        App.scene[key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[dest];
+        // App.scene[key].glBlend.blendEnabled = true;
+        // App.scene[id].position.y =  2;
+        App.scene[key].rotation.rotx = rot.x;
+        App.scene[key].rotation.roty = rot.y;
+        App.scene[key].rotation.rotz = rot.z; //App.scene[key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[src];
+        //App.scene[key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[dest];
       }
     }
+
+    setInterval(function () {
+      for (let key in App.scene) {
+        if (App.scene[key].name.indexOf("skeletal_") !== -1) {
+          App.scene.MyCubeTex.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
+          App.scene.MyCubeTex.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+        }
+      }
+    }, 100);
   };
 }
 
