@@ -27,7 +27,7 @@
      for(var i = 0;i < items.length;i++) {
        if(i == 0) {
          SUM_OF_IMAGES++;
-         FILE_STRING = " " + FILE_STRING + "var skeletalMap = {";
+         FILE_STRING = " " + FILE_STRING + "var bvhAnimations = {";
        }
        var r1 =  items[i].replace(/ /g,"_");
        var r =  r1.replace(/.obj/g,"");
