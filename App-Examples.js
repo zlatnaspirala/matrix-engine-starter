@@ -1,7 +1,4 @@
-
-import * as matrixEngine from './node_modules/matrix-engine/index';
-// import * as matrixEngine from 'matrix-engine';
-
+import * as matrixEngine from 'matrix-engine';
 
 import {runThis as cube_tex_arrays} from "./apps/cube_tex_arrays";
 import {runThis as adding_color_cube} from "./apps/adding_color_cube";
@@ -89,19 +86,15 @@ regularBtn.style.display = "none";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
-
     // navigator.serviceWorker.register("worker.js");
     setTimeout(() => { matrixEngine.Engine.initApp(webGLStart) }, 250);
-
   });
 } else {
   console.warn("Matrix Engine: No support for web workers in this browser.");
 }
 
 function webGLStart() {
-  console.log("CANNON TEST", CANNON)
   world = matrixEngine.matrixWorld.defineworld(canvas);
-
   if (world) {
     world.callReDraw();
     if (typeof QueryString.u != "undefined") {
@@ -110,11 +103,8 @@ function webGLStart() {
       Examples["adding_color_cube"](matrixEngine);
     }
   } else {
-    console.error(
-      " Canvas has not been initialized, contact your programmer... "
-    );
+    console.error("Canvas has not been initialized, contact your programmer...");
   }
-
   // Make it global for console easy access.
   window.App = App;
 }
