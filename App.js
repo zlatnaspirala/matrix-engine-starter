@@ -37,7 +37,6 @@ import * as DEV_WEB_ANATOMY from './projects/web-anatomy/App';
 //   window.App = App;
 // }
 
-// matrixEngine.Engine.load_shaders("shaders/shaders.html");
 // window.matrixEngine = matrixEngine;
 
 // window.addEventListener("load", () => {

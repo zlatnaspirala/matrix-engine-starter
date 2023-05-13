@@ -37,8 +37,6 @@ function webGLStart() {
   window.matrixEngine = matrixEngine;
 }
 
-matrixEngine.Engine.load_shaders("shaders/shaders.html");
-
 window.addEventListener("load", () => {
 
   if ("serviceWorker" in navigator) {
