@@ -39633,12 +39633,11 @@ function webGLStart() {
   window.matrixEngine = matrixEngine;
 }
 
-matrixEngine.Engine.load_shaders("shaders/shaders.html");
 window.addEventListener("load", () => {
   setTimeout(() => {
     matrixEngine.Engine.initApp(webGLStart);
   }, 200);
-}, false); // Not in use
+}, false); // Not in use at the moment
 
 var _default = App;
 exports.default = _default;
@@ -40574,6 +40573,7 @@ class Mashines {
     };
 
     this.createNidzaTextureText(this.nidza).then(what => {
+      console.log('TEST');
       App.scene.footerHeader.streamTextures = {
         videoImage: what
       };

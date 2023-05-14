@@ -205,15 +205,8 @@ export default class Mashines {
             worldObj.rotation.roty = oscilltor_variable.UPDATE() ;
           }, 10)
         );
-  
-        this.winningVisualEffect.ids.push(worldObj);
-      
+        this.winningVisualEffect.ids.push(worldObj); 
     }
-
-
-    
-
-
   }
 
   killWinThreads() {
@@ -344,9 +337,7 @@ export default class Mashines {
     App.scene.overlayout.position.z = -5;
     // Adapt active textures because it is inverted by nature.
     App.scene.overlayout.rotation.rotx = 0; 
-
     }
-
 
     world.Add("squareTex", 1, "topHeader", texTopHeader);
     App.scene.topHeader.geometry.setScaleByX(5);
@@ -429,6 +420,7 @@ export default class Mashines {
     };
 
     this.createNidzaTextureText(this.nidza).then(what => {
+      console.log('TEST')
       App.scene.footerHeader.streamTextures = {
         videoImage: what,
       };

@@ -7,6 +7,9 @@
     "lib": "lib"
   },
   "scripts": {
+    "app": "watchify App-Examples.js -p [esmify --noImplicitAny] -o builds/examples.me.js",
+    "examples": "watchify App.js -p [esmify --noImplicitAny] -o builds/app.js",
+    "slot": "watchify projects/matrix-slot/App.js -p [esmify --noImplicitAny] -o builds/slot.js",
     "build.examples": "browserify App-Examples.js -p esmify > builds/examples.me.js",
     "build.app": "browserify App.js -p esmify > builds/app.js",
     "build.slot": "browserify projects/matrix-slot/App.js -p esmify > builds/slot.js",

@@ -131,13 +131,11 @@ function webGLStart() {
   window.matrixEngine = matrixEngine;
 }
 
-matrixEngine.Engine.load_shaders("shaders/shaders.html");
-
 window.addEventListener("load", () => {
   setTimeout(() => {
     matrixEngine.Engine.initApp(webGLStart);
   }, 200);
 }, false);
 
-// Not in use
+// Not in use at the moment
 export default App;
