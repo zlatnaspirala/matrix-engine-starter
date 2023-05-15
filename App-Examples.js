@@ -31,8 +31,12 @@ import {runThis as adding_color_square_raycast } from "./apps/adding_color_squar
 import {runThis as spot_light_basic } from "./apps/spot_light_basic";
 import {runThis as physics_sphere } from "./apps/physics_sphere";
 import {runThis as physics_cube } from "./apps/physics_cube";
+import {runThis as active_editor } from "./apps/active_editor";
+import {runThis as basic_fbo } from "./apps/basic_fbo";
 
 var Examples = {
+  active_editor: active_editor,
+  basic_fbo: basic_fbo,
   physics_sphere: physics_sphere,
   physics_cube: physics_cube,
   spot_light_basic: spot_light_basic,
@@ -76,7 +80,8 @@ const scriptManager = matrixEngine.utility.scriptManager;
 var world;
 var App = matrixEngine.App;
 
-matrixEngine.Engine.load_shaders("shaders/shaders.html")
+// deplaced
+// matrixEngine.Engine.load_shaders("shaders/shaders.html")
 
 const addBtn = document.querySelector(".button1");
 const regularBtn = document.querySelector(".button2");

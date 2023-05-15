@@ -21,8 +21,8 @@ import {Nidza} from "nidza";
 import {beep} from "./audio-gen";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
+let VT = matrixEngine.Engine.VT;
 let App = matrixEngine.App;
-
 let isMobile = matrixEngine.utility.isMobile;
 
 export default class Mashines {
