@@ -420,7 +420,7 @@ export default class Mashines {
     };
 
     this.createNidzaTextureText(this.nidza).then(what => {
-      console.log('TEST')
+      console.log('TEST ??????????????????????', what)
       App.scene.footerHeader.streamTextures = {
         videoImage: what,
       };

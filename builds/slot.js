@@ -20707,8 +20707,11 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
     if (object.streamTextures != null) {
       // video/webcam tex
-      // App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
-      _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.video);
+      if (object.streamTextures.videoImage) {
+        _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
+      } else {
+        _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.video);
+      }
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
     } else if (object.FBO) {
@@ -40573,7 +40576,7 @@ class Mashines {
     };
 
     this.createNidzaTextureText(this.nidza).then(what => {
-      console.log('TEST');
+      console.log('TEST ??????????????????????', what);
       App.scene.footerHeader.streamTextures = {
         videoImage: what
       };

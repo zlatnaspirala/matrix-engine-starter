@@ -16,7 +16,7 @@
     "build.web.anatomy": "browserify projects/web-anatomy/App.js -p esmify > builds/web-anatomy.js",
     "build.all": "npm run build.examples | npm run build.app | npm run build.slot | npm run build.web.anatomy",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "info": "echo \"Matrix engine writen in ECMA6. \n  Enjoy!  \n  Nikola Lukic @zlatnaspirala  \""
+    "info": "echo \"Matrix engine writen in ECMA6. \n  From begin it was opengles1.1 in future i will find easy procedure for switch 3d context [webgl/webgl2] [shader opengles 3/2/1.1] Enjoy!  \n  Nikola Lukic @zlatnaspirala  \""
   },
   "repository": {
     "type": "git",
@@ -54,7 +54,7 @@
   "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
   "dependencies": {
     "audio-commander": "^1.0.3",
-    "matrix-engine": "^1.9.6",
+    "matrix-engine": "^1.9.7",
     "matrix-engine-plugins": "0.0.8",
     "nidza": "^1.2.15",
     "voice-commander": "0.0.5"
