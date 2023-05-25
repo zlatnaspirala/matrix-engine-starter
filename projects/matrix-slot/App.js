@@ -1,4 +1,3 @@
-
 /**
  * @description Matrix Engine Project
  * Template demostration of power.
@@ -6,12 +5,7 @@
  * @author Nikola Lukic
  * @license MIT
  */
-
-// dev
-// import matrixEngine from "./../../node_modules/matrix-engine/index.js";
-// prod
 import * as matrixEngine from "matrix-engine";
-
 import Mashines from "./scripts/mashine";
 import { VoiceCommanderInstance } from "./scripts/voice-commander";
 
@@ -25,7 +19,7 @@ var App = matrixEngine.App;
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
-    navigator.serviceWorker.register("worker.js");
+    // navigator.serviceWorker.register("worker.js");
   });
 }
 
@@ -53,35 +47,60 @@ function webGLStart() {
     id: 1,
     color: {r: 1, g: 0.6, b: 0.6},
     textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
+    videoTex: false,
     winCoefficient: 100,
+    geo: 'squareTex',
+    scale: 0.9
   };
 
   var fieldBlue = {
     id: 2,
     color: {r: 0.7, g: 1, b: 2},
     textures: ["res/images/field.png", "res/images/metal-shets.jpg"],
-    winCoefficient: 25
+    videoTex: false,
+    winCoefficient: 25,
+    geo: 'sphereLightTex',
+    scale: 0.9
   };
 
   var fieldGreen = {
     id: 3,
     color: {r: 1, g: 2, b: 1},
     textures: ["res/images/metal-shets.jpg", "res/images/field3.png"],
-    winCoefficient: 10
+    videoTex: false,
+    winCoefficient: 10,
+    geo: 'cubeLightTex',
+    scale: 0.8
   };
 
   var fieldPurple = {
     id: 4,
     color: {r: 1, g: 0.8, b: 1},
     textures: ["res/images/field3.png", "res/images/html5.png"],
-    winCoefficient: 5
+    videoTex: false,
+    winCoefficient: 5,
+    geo: 'squareTex',
+    scale: 0.9
   };
 
   var fieldLime = {
     id: 5,
     color: {r: 0.2, g: 1, b: 0.2},
     textures: ["res/images/html5.png", "res/images/field3.png"],
-    winCoefficient: 2
+    videoTex: false,
+    winCoefficient: 2,
+    geo: 'squareTex',
+    scale: 0.9
+  };
+
+  var fieldEXTRA = {
+    id: 5,
+    color: {r: 0.2, g: 1, b: 0.2},
+    textures: ["res/images/html5.png", "res/images/field3.png"],
+    videoTex: "res/video-texture/lava1.mkv",
+    winCoefficient: 2,
+    geo: 'cubeLightTex',
+    scale: 0.9
   };
 
   App.slot.config = {
@@ -91,12 +110,12 @@ function webGLStart() {
     waitForNextSpin: 2000,
     verticalSize: 3,
     wheels: [
-      [fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime],
-      [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime, fieldPurple],
+      [fieldEXTRA, fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime],
+      [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime],
       [fieldGreen, fieldPurple,fieldLime,  fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple],
-      [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue,  fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple],
-      [fieldGreen, fieldPurple,fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple],
-      [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldPurple]
+      [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue,  fieldGreen, fieldLime, fieldLime, fieldBlue],
+      [fieldGreen, fieldPurple,fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime],
+      [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]
     ],
     winnigLines: [
       [1, 1, 1, 1, 1, 1], // m                     1
@@ -118,7 +137,7 @@ function webGLStart() {
       [0, 0, 0, 2, 2, 2], // 3 by 2                17
     ],
     matrixMessage: [
-      'S', 'L', 'O', 'T',
+      'MATRIX ', ' ENGINE ', ' SLOT ', ' MASHINE ',
     ]
   };
 

@@ -320,7 +320,7 @@ export default class Mashines {
 
   addMashine = function (world) {
     var texTopHeader = {
-      source: ["res/images/h1.png"],
+      source: ["res/images/freespin.png"],
       mix_operation: "multiply",
     };
     var texOverlayout = {
@@ -393,6 +393,14 @@ export default class Mashines {
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
 
     /*
+
+		  setInterval(function () {
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.right_top.x += 0.001;
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.left_bottom.x += 0.001;
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.left_top.x += 0.001;
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.right_bottom.x += 0.001;
+  }, 20);
+
     App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -11.4;
@@ -506,6 +514,8 @@ export default class Mashines {
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
 
+    let VT = matrixEngine.Engine.VT;
+
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
       var localHandler = [],
         localHandlerPos = [],
@@ -530,6 +540,14 @@ export default class Mashines {
           field.color.g,
           field.color.b
         );
+
+        if (field.videoTex !== false) {
+          //
+          console.log('TEST ETST ')
+          App.scene[name].streamTextures = new VT(
+            field.videoTex, 'cool'
+          );
+        }
 
         App.scene[name].specialId = field.id;
         var _x = -O * 0.5 + indexWheel * O2 * 0.2;

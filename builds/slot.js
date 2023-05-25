@@ -39515,9 +39515,6 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * @author Nikola Lukic
  * @license MIT
  */
-// dev
-// import matrixEngine from "./../../node_modules/matrix-engine/index.js";
-// prod
 // Voice commander
 _voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
 
@@ -39527,8 +39524,7 @@ var world, mashine;
 var App = matrixEngine.App;
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("worker.js");
+  window.addEventListener("load", function () {// navigator.serviceWorker.register("worker.js");
   });
 }
 
@@ -39559,7 +39555,10 @@ function webGLStart() {
       b: 0.6
     },
     textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
-    winCoefficient: 100
+    videoTex: false,
+    winCoefficient: 100,
+    geo: 'squareTex',
+    scale: 0.9
   };
   var fieldBlue = {
     id: 2,
@@ -39569,7 +39568,10 @@ function webGLStart() {
       b: 2
     },
     textures: ["res/images/field.png", "res/images/metal-shets.jpg"],
-    winCoefficient: 25
+    videoTex: false,
+    winCoefficient: 25,
+    geo: 'sphereLightTex',
+    scale: 0.9
   };
   var fieldGreen = {
     id: 3,
@@ -39579,7 +39581,10 @@ function webGLStart() {
       b: 1
     },
     textures: ["res/images/metal-shets.jpg", "res/images/field3.png"],
-    winCoefficient: 10
+    videoTex: false,
+    winCoefficient: 10,
+    geo: 'cubeLightTex',
+    scale: 0.8
   };
   var fieldPurple = {
     id: 4,
@@ -39589,7 +39594,10 @@ function webGLStart() {
       b: 1
     },
     textures: ["res/images/field3.png", "res/images/html5.png"],
-    winCoefficient: 5
+    videoTex: false,
+    winCoefficient: 5,
+    geo: 'squareTex',
+    scale: 0.9
   };
   var fieldLime = {
     id: 5,
@@ -39599,7 +39607,23 @@ function webGLStart() {
       b: 0.2
     },
     textures: ["res/images/html5.png", "res/images/field3.png"],
-    winCoefficient: 2
+    videoTex: false,
+    winCoefficient: 2,
+    geo: 'squareTex',
+    scale: 0.9
+  };
+  var fieldEXTRA = {
+    id: 5,
+    color: {
+      r: 0.2,
+      g: 1,
+      b: 0.2
+    },
+    textures: ["res/images/html5.png", "res/images/field3.png"],
+    videoTex: "res/video-texture/lava1.mkv",
+    winCoefficient: 2,
+    geo: 'cubeLightTex',
+    scale: 0.9
   };
   App.slot.config = {
     // Count after all wheels spinning moment
@@ -39607,7 +39631,7 @@ function webGLStart() {
     stopingInterval: 1000,
     waitForNextSpin: 2000,
     verticalSize: 3,
-    wheels: [[fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime, fieldBlue, fieldPurple], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldPurple]],
+    wheels: [[fieldEXTRA, fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]],
     winnigLines: [[1, 1, 1, 1, 1, 1], // m                     1
     [0, 0, 0, 0, 0, 0], // t                     2
     [2, 2, 2, 2, 2, 2], // b                     3
@@ -39626,7 +39650,7 @@ function webGLStart() {
     [2, 2, 2, 0, 0, 0], // 3 by 2                16
     [0, 0, 0, 2, 2, 2] // 3 by 2                17
     ],
-    matrixMessage: ['S', 'L', 'O', 'T']
+    matrixMessage: ['MATRIX ', ' ENGINE ', ' SLOT ', ' MASHINE ']
   };
   mashine = new _mashine.default(world, App.slot.config);
   mashine.vc = _voiceCommander.VoiceCommanderInstance;
@@ -40225,6 +40249,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 let OSC = matrixEngine.utility.OSCILLATOR;
+let VT = matrixEngine.Engine.VT;
 let App = matrixEngine.App;
 let isMobile = matrixEngine.utility.isMobile;
 
@@ -40505,7 +40530,7 @@ class Mashines {
 
   addMashine = function (world) {
     var texTopHeader = {
-      source: ["res/images/h1.png"],
+      source: ["res/images/freespin.png"],
       mix_operation: "multiply"
     };
     var texOverlayout = {
@@ -40550,7 +40575,13 @@ class Mashines {
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
     /*
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
+      setInterval(function () {
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.right_top.x += 0.001;
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.left_bottom.x += 0.001;
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.left_top.x += 0.001;
+    App.scene.MySquareTexure1.geometry.texCoordsPoints.right_bottom.x += 0.001;
+    }, 20);
+      App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -11.4;
     App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -11.4;
@@ -40655,6 +40686,7 @@ class Mashines {
     // console.info("Number of vertical visible fields of wheels: ", App.slot.config.verticalSize);
     var WW = App.slot.config.wheels.length;
     var VW = App.slot.config.verticalSize;
+    let VT = matrixEngine.Engine.VT;
     App.slot.config.wheels.forEach((wheel, indexWheel) => {
       var localHandler = [],
           localHandlerPos = [],
@@ -40671,6 +40703,13 @@ class Mashines {
         var O = window.innerWidth / 1000 * WW;
         var O2 = window.innerWidth / 1005 * WW;
         App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
+
+        if (field.videoTex !== false) {
+          //
+          console.log('TEST ETST ');
+          App.scene[name].streamTextures = new VT(field.videoTex, 'cool');
+        }
+
         App.scene[name].specialId = field.id;
 
         var _x = -O * 0.5 + indexWheel * O2 * 0.2;

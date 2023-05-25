@@ -39505,7 +39505,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var matrixEngine = _interopRequireWildcard(require("./../../node_modules/matrix-engine/index"));
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _webAnatomy = _interopRequireDefault(require("./scripts/web-anatomy"));
 
@@ -39518,15 +39518,12 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 /**
- * @description Matrix Engine Project
- * Template demostration of power.
- * @name MatrixSlot
+ * @description Matrix Engine Project Starter
+ * Template demostration of matrix-engine power.
+ * @name MatrixAnatomyBody
  * @author Nikola Lukic
  * @license GPL-V3
  */
-// dev
-// prod
-// import * as matrixEngine from "matrix-engine";
 // Voice commander
 _voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
 
@@ -39558,7 +39555,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./../../node_modules/matrix-engine/index":14,"./scripts/voice-commander":69,"./scripts/web-anatomy":70}],63:[function(require,module,exports){
+},{"./scripts/voice-commander":69,"./scripts/web-anatomy":70,"matrix-engine":14}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40198,14 +40195,9 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 let loadSystemSkeletal = (App, world) => {
   function onLoadObj(meshes) {
-    // Store raw mesh data
-    // App.meshes = meshes;
-    // Init buffers
     for (let key in meshes) {
-      // console.log("TEST App.meshes[key]", App.meshes[key])
       matrixEngine.objLoader.initMeshBuffers(world.GL.gl, meshes[key]);
-    } // Tex
-
+    }
 
     var textuteImageSamplers2 = {
       source: ["res/images/metal.png"],
@@ -40215,11 +40207,12 @@ let loadSystemSkeletal = (App, world) => {
     for (let key in meshes) {
       var id = "skeletal_" + key;
       world.Add("obj", 1, id, textuteImageSamplers2, meshes[key]); // still must be called with method - SCALE for OBJ Mesh
-      // App.scene[id].mesh.setScale(-0.0075)
-      // App.scene[id].glBlend.blendEnabled = true;
-      // App.scene[id].position.y =  2;
-      // App.scene[id].rotation.rotx = 90;
-      // App.scene[id].rotation.roty = 0;
+
+      App.scene[id].mesh.setScale(-0.0025); // App.scene[id].glBlend.blendEnabled = true;
+
+      App.scene[id].position.z = -9;
+      App.scene[id].position.y = -2;
+      App.scene[id].rotation.rotx = 90; // App.scene[id].rotation.roty = 0;
       // App.scene[id].rotation.rotz = 0;
       // App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
       // App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[7];
