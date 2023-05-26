@@ -25,7 +25,8 @@ And navigate to app.html, examples.html etc.
 ### Projects
 
 #### Web-Anatomy underconstructing
-
+   ![matrix-anatomy](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-anatomy.png)
+   Implemented skeletal system ~ 20mb data
 
 #### Slot-Mashine underconstructing
 
