@@ -48,6 +48,7 @@ And navigate to app.html, examples.html etc.
 ### Demo from this repo [matrix-engine-starter]
  - https://maximumroulette.com/apps/matrix-engine-starter/examples.html
  - https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-slot/
+ - https://maximumroulette.com/apps/matrix-engine-starter/app-build.html [anatomy]
 
 
 ### Engine source link:
