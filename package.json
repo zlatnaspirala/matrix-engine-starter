@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zlatnaspirala/webgl2-glmatrix2-engine.git"
+    "url": "git+https://github.com/zlatnaspirala/matrix-engine.git"
   },
   "keywords": [
     "matrix-engine-examples",
@@ -49,12 +49,12 @@
   "author": "Nikola Lukic Zlatnaspirala",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine/issues"
+    "url": "https://github.com/zlatnaspirala/matrix-engine/issues"
   },
-  "homepage": "https://github.com/zlatnaspirala/webgl2-glmatrix2-engine#readme",
+  "homepage": "https://github.com/zlatnaspirala/matrix-engine#readme",
   "dependencies": {
     "audio-commander": "^1.0.3",
-    "matrix-engine": "^1.9.7",
+    "matrix-engine": "^1.9.12",
     "matrix-engine-plugins": "0.0.8",
     "nidza": "^1.2.15",
     "voice-commander": "0.0.5"

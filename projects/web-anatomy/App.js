@@ -7,13 +7,15 @@
  */
 
 import * as matrixEngine from "matrix-engine";
-import WebAnatomy from "./scripts/web-anatomy";
-import { VoiceCommanderInstance } from "./scripts/voice-commander";
 
-// Voice commander
-VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
-// Activate listen operation
-VoiceCommanderInstance.run();
+import WebAnatomy from "./scripts/web-anatomy";
+
+// import { VoiceCommanderInstance } from "./scripts/voice-commander";
+
+// // Voice commander
+// VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
+// // Activate listen operation
+// VoiceCommanderInstance.run();
 
 var world, mashine;
 var App = matrixEngine.App;
@@ -24,7 +26,8 @@ App.config = {
 };
 
 function webGLStart() {
-  world = matrixEngine.matrixWorld.defineworld(canvas);
+  // from 1.9.12 => simply render draw funct without FBO
+  world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
   world.callReDraw();
   App.webAnatomy = new WebAnatomy(world, App.config);
   window.App = App;
@@ -33,11 +36,9 @@ function webGLStart() {
 }
 
 window.addEventListener("load", () => {
-
   if ("serviceWorker" in navigator) {
     // navigator.serviceWorker.register("worker.js");
   }
-
   setTimeout(() => {
     matrixEngine.Engine.initApp(webGLStart);
   }, 200);

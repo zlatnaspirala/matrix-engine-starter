@@ -7,7 +7,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-},{"./projects/web-anatomy/App":62}],2:[function(require,module,exports){
+},{"./projects/web-anatomy/App":59}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24277,6 +24277,138 @@ var callReDraw_ = function () {
 
 exports.callReDraw_ = callReDraw_;
 
+_manifest.default.operation.simplyRender = function (time) {
+  (0, _engine.modifyLooper)(0);
+  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+
+  _matrixWorld.world.renderPerspective();
+
+  for (var t = 0; t < _manifest.default.updateBeforeDraw.length; t++) {
+    _manifest.default.updateBeforeDraw[t].UPDATE();
+  } // Physics
+
+
+  if (_matrixWorld.world.physics !== null) {
+    var dt = (time - lt) / 1000;
+
+    _matrixWorld.world.physics.world.step(1.0 / 60.0, dt, 3);
+
+    lt = time;
+
+    while (physicsLooper <= _matrixWorld.world.contentList.length - 1) {
+      if (_matrixWorld.world.contentList[physicsLooper].physics.enabled) {
+        var local = _matrixWorld.world.contentList[physicsLooper];
+        local.position.SetX(local.physics.currentBody.position.x);
+        local.position.SetZ(local.physics.currentBody.position.y);
+        local.position.SetY(local.physics.currentBody.position.z);
+        _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+        _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+        _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]); // matrixEngine.matrixWorld.world.physics.toDeg
+      }
+
+      physicsLooper++;
+    }
+  } // reset to zero
+
+
+  physicsLooper = 0; // Back to drawing on the main color buffer!
+  // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, null);
+
+  _matrixWorld.world.GL.gl.viewport(0, 0, _matrixWorld.world.GL.gl.canvas.width, _matrixWorld.world.GL.gl.canvas.height); // world.GL.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
+  // Draw again all
+
+
+  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
+
+  _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
+
+  _matrixWorld.world.GL.gl.depthMask(true);
+
+  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
+    if (_matrixWorld.world.contentList[_engine.looper].visible === true) {
+      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      }
+    }
+
+    (0, _engine.modifyLooper)(_engine.looper + 1);
+  }
+
+  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
+
+  _matrixWorld.world.GL.gl.depthMask(false);
+
+  (0, _engine.modifyLooper)(0);
+
+  _matrixWorld.world.GL.gl.depthMask(true);
+
+  if (_manifest.default.raycast) {
+    if (secondPass <= 2) {
+      raycaster.touchCoordinate.enabled = false;
+      secondPass = 0;
+    }
+  }
+
+  secondPass++;
+  physicsLooper = 0;
+  (0, _engine.updateFPS)(1);
+
+  if (_matrixWorld.world.animLine) {
+    // animatinLine
+    _matrixWorld.world.globalAnimCounter++;
+
+    if (_matrixWorld.world.globalAnimCounter >= _matrixWorld.world.globalAnimSequenceSize) {
+      _matrixWorld.world.globalAnimCounter = 0;
+      _matrixWorld.world.globalAnimCurSequence++;
+      document.getElementById('globalAnimCurSequence').innerText = _matrixWorld.world.globalAnimCurSequence;
+    }
+
+    document.getElementById('globalAnimCounter').innerText = _matrixWorld.world.globalAnimCounter;
+    document.getElementById('timeline').value = _matrixWorld.world.globalAnimCounter;
+  }
+};
+
 },{"../program/manifest":39,"./engine":15,"./matrix-world":28,"./raycast":31,"./utility":37}],24:[function(require,module,exports){
 "use strict";
 
@@ -25657,7 +25789,7 @@ var objListToDispose = new Array();
 // var reDrawID = 0;
 
 exports.objListToDispose = objListToDispose;
-var reDraw = 0;
+var reDraw;
 /**
  * @description
  * Define custom tags for new upgrade for light systems.
@@ -25789,7 +25921,7 @@ function defineworld(canvas) {
   /* Repeated draw functionality            */
   // eslint-disable-next-line no-global-assign
 
-  exports.reDraw = reDraw = _manifest.default.operation.reDrawGlobal;
+  exports.reDraw = reDraw = _manifest.default.operation.simplyRender;
   /**
    * @MatrixAnimationLine
    * @globalAnimCounter Counter  READONLY
@@ -39369,147 +39501,11 @@ process.umask = function() { return 0; };
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.colorNamesGrammars = void 0;
-const colorNamesGrammars = ['aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
-exports.colorNamesGrammars = colorNamesGrammars;
-
-},{}],60:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "VoiceCommander", {
-  enumerable: true,
-  get: function () {
-    return _voiceCommander.VoiceCommander;
-  }
-});
-Object.defineProperty(exports, "colorNamesGrammars", {
-  enumerable: true,
-  get: function () {
-    return _colors.colorNamesGrammars;
-  }
-});
-
-var _voiceCommander = require("./voice-commander.js");
-
-var _colors = require("./grammar-set/colors.js");
-
-},{"./grammar-set/colors.js":59,"./voice-commander.js":61}],61:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.VoiceCommander = void 0;
-
-/**
- * Vanilla JavaScript ECMA6 variant of VoiceCommander
- * class model.
- */
-var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-var SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList; // var SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent
-
-class VoiceCommander {
-  constructor(options) {
-    this.grammarData = [];
-    this.queryType = '';
-
-    if (typeof options !== 'undefined' && typeof options.grammarData !== 'undefined') {
-      this.grammarData = options.grammarData;
-    }
-
-    if (typeof options !== 'undefined' && typeof options.callback !== 'undefined') {
-      this.callback = options.callback;
-    }
-
-    this.grammar = '#JSGF V1.0; grammar grammarData; public <color> = ' + this.grammarData.join(' | ') + ' ;';
-    this.recognition = new SpeechRecognition();
-    this.speechRecognitionList = new SpeechGrammarList();
-    this.speechRecognitionList.addFromString(this.grammar, 1);
-    this.recognition.grammars = this.speechRecognitionList;
-    this.recognition.continuous = false;
-    /**
-     * @description Must be 'en-US'
-     * because firefox native support limitation.
-     */
-
-    this.recognition.lang = 'en-US';
-    this.recognition.interimResults = false;
-    this.recognition.maxAlternatives = 1;
-    this.queryType = '';
-    this.grammarData.forEach(v => {
-      this.queryType += v + ' \n ';
-    }); // console.log(this.queryType)
-
-    this.hints = 'VoiceCommander => ' + this.queryType + '.';
-
-    this.recognition.onresult = event => {
-      // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
-      // The SpeechRecognitionResultList object contains SpeechRecognitionResult objects.
-      // It has a getter so it can be accessed like an array
-      // The first [0] returns the SpeechRecognitionResult at the last position.
-      // Each SpeechRecognitionResult object contains SpeechRecognitionAlternative objects that contain individual results.
-      // These also have getters so they can be accessed like arrays.
-      // The second [0] returns the SpeechRecognitionAlternative at position 0.
-      // We then return the transcript property of the SpeechRecognitionAlternative object
-      const r = event.results[0][0].transcript;
-      this.diagnostic = 'VoiceCommander => Result => ' + r + '.';
-
-      if (typeof this.callback !== 'undefined') {
-        this.callback(r);
-      } // bg.style.backgroundColor = color;
-
-
-      console.log('Confidence => ' + event.results[0][0].confidence);
-      console.log('Diagnostic => ' + this.diagnostic);
-    };
-
-    this.recognition.onspeechend = event => {
-      this.recognition.stop();
-      console.log('VoiceCommander => Stoped ', event);
-    };
-
-    this.recognition.onnomatch = event => {
-      this.diagnostic = "I didn't recognise that color. event => " + event;
-      console.warn('Voice commander event => nomatch => ' + this.diagnostic);
-    };
-
-    this.recognition.onerror = event => {
-      this.diagnostic = 'Error occurred in recognition: ' + event;
-      console.log(' onerror ', event);
-    };
-  }
-
-  run() {
-    // Better than flag
-    try {
-      this.recognition.start();
-    } catch (err) {
-      console.log(err);
-    } finally {
-      console.log('VoiceCommander => Ready to receive voice command.');
-    }
-  }
-
-}
-
-exports.VoiceCommander = VoiceCommander;
-
-},{}],62:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _webAnatomy = _interopRequireDefault(require("./scripts/web-anatomy"));
-
-var _voiceCommander = require("./scripts/voice-commander");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -39524,18 +39520,19 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * @author Nikola Lukic
  * @license GPL-V3
  */
-// Voice commander
-_voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
-
-_voiceCommander.VoiceCommanderInstance.run();
-
+// import { VoiceCommanderInstance } from "./scripts/voice-commander";
+// // Voice commander
+// VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
+// // Activate listen operation
+// VoiceCommanderInstance.run();
 var world, mashine;
 var App = matrixEngine.App;
 App.webAnatomy = {};
 App.config = {};
 
 function webGLStart() {
-  world = matrixEngine.matrixWorld.defineworld(canvas);
+  // from 1.9.12 => simply render draw funct without FBO
+  world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
   world.callReDraw();
   App.webAnatomy = new _webAnatomy.default(world, App.config);
   window.App = App;
@@ -39555,7 +39552,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/voice-commander":69,"./scripts/web-anatomy":70,"matrix-engine":14}],63:[function(require,module,exports){
+},{"./scripts/web-anatomy":66,"matrix-engine":14}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39752,7 +39749,7 @@ function createNidzaHudBalance(nidza) {
   });
 }
 
-},{"./standard-fonts":66,"matrix-engine":14}],64:[function(require,module,exports){
+},{"./standard-fonts":63,"matrix-engine":14}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39794,7 +39791,7 @@ function beep(duration, frequency, volume, type, callback) {
 
 ;
 
-},{}],65:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39861,7 +39858,7 @@ testMyAudio[0].onended = function() {
 
 exports.stopSpin = stopSpin;
 
-},{"audio-commander":2}],66:[function(require,module,exports){
+},{"audio-commander":2}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39882,7 +39879,7 @@ const stdFonts = {
 };
 exports.stdFonts = stdFonts;
 
-},{}],67:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40175,7 +40172,7 @@ var skeletalMap = {
 var _default = skeletalMap;
 exports.default = _default;
 
-},{}],68:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40229,53 +40226,7 @@ let loadSystemSkeletal = (App, world) => {
 
 exports.loadSystemSkeletal = loadSystemSkeletal;
 
-},{"./map":67,"matrix-engine":14}],69:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.VoiceCommanderInstance = void 0;
-
-var _voiceCommander = require("voice-commander");
-
-const grammars = ["skeletal"];
-const options = {
-  grammarData: grammars,
-  callback: r => {
-    if (r == 'spin' || r == 'play') {
-      App.slot.mashine.activateSpinning();
-    }
-
-    console.log(r);
-  }
-};
-const VoiceCommanderInstance = new _voiceCommander.VoiceCommander(options);
-exports.VoiceCommanderInstance = VoiceCommanderInstance;
-window.VoiceCommanderInstance = VoiceCommanderInstance;
-console.log(VoiceCommanderInstance);
-/**
- * @description Voice command procedures.
- * Will be bind direct on object.
- */
-
-VoiceCommanderInstance.setInteraction = function (newInterAct) {
-  VoiceCommanderInstance.callback = newInterAct;
-};
-
-VoiceCommanderInstance.whatisyourname = r => {// global for now
-
-  /* App.slot.user = r;
-  App.slot.mashine.nidza.access.footerLabel.elements[0].text = "You are welcome Mr/Mrs. " + r + ". Voice command: spin or play ";
-  console.warn("Tell me your nickname.")
-  VoiceCommanderInstance.setInteraction(options.callback);
-  setTimeout( () => {
-    VoiceCommanderInstance.run();
-  }, 1000)
-  */
-};
-
-},{"voice-commander":60}],70:[function(require,module,exports){
+},{"./map":64,"matrix-engine":14}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40488,4 +40439,4 @@ class WebAnatomy {
 
 exports.default = WebAnatomy;
 
-},{"./active-textures":63,"./audio-gen":64,"./matrix-audio":65,"./systems/skeletal":68,"matrix-engine":14,"matrix-engine-plugins":10,"nidza":40}]},{},[1]);
+},{"./active-textures":60,"./audio-gen":61,"./matrix-audio":62,"./systems/skeletal":65,"matrix-engine":14,"matrix-engine-plugins":10,"nidza":40}]},{},[1]);
