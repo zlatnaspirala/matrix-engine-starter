@@ -6,7 +6,7 @@
  * @license MIT
  */
 import * as matrixEngine from "matrix-engine";
-import Mashines from "./scripts/mashine";
+import { MatrixRoulette } from "./scripts/roulette";
 import { VoiceCommanderInstance } from "./scripts/voice-commander";
 
 // Voice commander
@@ -16,6 +16,8 @@ VoiceCommanderInstance.run();
 
 var world, mashine;
 var App = matrixEngine.App;
+
+window.matrixEngine = matrixEngine;
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
@@ -30,8 +32,7 @@ function webGLStart() {
   let roulette = new MatrixRoulette()
 
   window.App = App;
-  window.world = world;
-  window.matrixEngine = matrixEngine;
+  // window.world = world;
 }
 
 window.addEventListener("load", () => {
