@@ -54,7 +54,7 @@
   "homepage": "https://github.com/zlatnaspirala/matrix-engine#readme",
   "dependencies": {
     "audio-commander": "^1.0.3",
-    "matrix-engine": "^1.9.13",
+    "matrix-engine": "^1.9.17",
     "matrix-engine-plugins": "0.0.8",
     "nidza": "^1.2.15",
     "voice-commander": "0.0.5"
