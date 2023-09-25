@@ -3,7 +3,7 @@
  * Template demostration of power.
  * @name MatrixSlot
  * @author Nikola Lukic
- * @license MIT
+ * @license GPL-v3
  */
 import * as matrixEngine from "matrix-engine";
 import { MatrixRoulette } from "./scripts/roulette";
@@ -12,11 +12,9 @@ import { VoiceCommanderInstance } from "./scripts/voice-commander";
 // Voice commander
 VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
 // Activate listen operation
-VoiceCommanderInstance.run();
-
+// VoiceCommanderInstance.run();
 var world, mashine;
 var App = matrixEngine.App;
-
 window.matrixEngine = matrixEngine;
 
 if ("serviceWorker" in navigator) {
@@ -26,13 +24,12 @@ if ("serviceWorker" in navigator) {
 }
 
 function webGLStart() {
-  world = matrixEngine.matrixWorld.defineworld(canvas);
+  world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
   world.callReDraw();
-
   let roulette = new MatrixRoulette()
-
+  // DEV ONLY
   window.App = App;
-  // window.world = world;
+  window.roulette = roulette;
 }
 
 window.addEventListener("load", () => {
@@ -41,5 +38,4 @@ window.addEventListener("load", () => {
   }, 200);
 }, false);
 
-// Not in use at the moment
 export default App;

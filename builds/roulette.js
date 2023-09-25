@@ -17636,7 +17636,7 @@ function DOM_VT(video, name, options) {
   var ROOT = this;
   ROOT.video = video;
 
-  ROOT.video.READY = function (e) {
+  let READY = function (e) {
     ROOT.videoImage = document.createElement('canvas');
     ROOT.videoImage.id = 'vtex-' + name;
     ROOT.videoImage.setAttribute('width', '512px');
@@ -17669,7 +17669,7 @@ function DOM_VT(video, name, options) {
     console.info("Video 2dcanvas texture created!!!.", ROOT.video);
   };
 
-  ROOT.video.READY();
+  READY();
   ROOT.video.addEventListener('loadeddata', ROOT.video.READY, false);
   ROOT.video.load();
 
@@ -18994,7 +18994,9 @@ _manifest.default.operation.squareTex_buffer_procedure = function (object) {
 };
 
 _manifest.default.operation.sphere_buffer_procedure = function (object) {
+  console.log('TEST sphere_buffer_procedure');
   /* Vertex */
+
   object.vertexPositionBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -20785,8 +20787,11 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
-      _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.video);
+      if (object.streamTextures.video) {
+        _manifest.default.tools.loadVideoTexture('glVideoTextureTorus', object.streamTextures.video);
+      } else {
+        _manifest.default.tools.loadVideoTexture('glVideoTextureTorus', object.streamTextures.videoImage);
+      }
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
     } else {
@@ -20867,7 +20872,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.COLOR = COLOR;
 exports.COLOR_ALPHA = COLOR_ALPHA;
-exports.ring = ring;
 exports.GeoOfColor = exports.customVertex_1 = exports.customVertex = exports.sphereVertex = exports.PiramideVertex = exports.CubeVertex = exports.SquareVertex = exports.TriangleVertex = exports.Position = exports.RotationVector = exports.Point = exports.Scale = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
@@ -22471,6 +22475,7 @@ exports.sphereVertex = sphereVertex;
 
 class customVertex {
   createGeoData(root) {
+    console.log("CUSTOM CREATE DATA");
     this.size = root.size;
     this.basePoint = 1.0 * this.size;
     this.basePointNeg = -1.0 * this.size;
@@ -22548,6 +22553,53 @@ class customVertex {
         this.indexData.push(second);
         this.indexData.push(second + 1);
         this.indexData.push(first + 1);
+      }
+    } else if (this.root.custom_type == "torus") {
+      for (let slice = 0; slice <= this.root.slices; ++slice) {
+        const v = slice / this.root.slices;
+        const slice_angle = v * 2 * Math.PI;
+        const cos_slices = Math.cos(slice_angle);
+        const sin_slices = Math.sin(slice_angle);
+        const slice_rad = this.root.outerRad + this.root.inner_rad * cos_slices;
+
+        for (let loop = 0; loop <= this.root.loops; ++loop) {
+          //   x=(R+r·cos(v))cos(w)
+          //   y=(R+r·cos(v))sin(w)
+          //             z=r.sin(v)
+          const u = loop / this.root.loops;
+          const loop_angle = u * 2 * Math.PI;
+          const cos_loops = Math.cos(loop_angle);
+          const sin_loops = Math.sin(loop_angle);
+          const x = slice_rad * cos_loops;
+          const y = slice_rad * sin_loops;
+          const z = this.root.inner_rad * sin_slices;
+          this.vertexPositionData.push(x, y, z);
+          this.normalData.push(cos_loops * sin_slices, sin_loops * sin_slices, cos_slices);
+          this.textureCoordData.push(u);
+          this.textureCoordData.push(v);
+        }
+      } // 0  1  2  3  4  5
+      // 6  7  8  9  10 11
+      // 12 13 14 15 16 17
+
+
+      this.indexData = [];
+      const vertsPerSlice = this.root.loops + 1;
+
+      for (let i = 0; i < this.root.slices; ++i) {
+        let v1 = i * vertsPerSlice;
+        let v2 = v1 + vertsPerSlice;
+
+        for (let j = 0; j < this.root.loops; ++j) {
+          this.indexData.push(v1);
+          this.indexData.push(v1 + 1);
+          this.indexData.push(v2);
+          this.indexData.push(v2);
+          this.indexData.push(v1 + 1);
+          this.indexData.push(v2 + 1);
+          v1 += 1;
+          v2 += 1;
+        }
       }
     }
   }
@@ -22817,11 +22869,10 @@ class GeoOfColor {
     }
   }
 
-}
+} // export function ring(innerRadius, outerRadius, slices) {}
+
 
 exports.GeoOfColor = GeoOfColor;
-
-function ring(innerRadius, outerRadius, slices) {}
 
 },{"../program/manifest":34,"./engine":9,"./utility":32}],16:[function(require,module,exports){
 "use strict";
@@ -25639,7 +25690,8 @@ function defineworld(canvas, renderType) {
    * @MatrixAnimationLine
    * @globalAnimCounter Counter  READONLY
    * @globalAnimSequenceSize = 5000
-   * After globalAnimCounter reach globalAnimSequenceSize value will reset to the zero.
+   * After globalAnimCounter reach globalAnimSequenceSize value will
+   * reset to the zero.
    */
 
 
@@ -25670,7 +25722,7 @@ function defineworld(canvas, renderType) {
   };
   /**
    * @description
-   *  TEST GLOBAL LIGHT PARAMS
+   * TEST GLOBAL LIGHT PARAMS
    * this.uLightPosition = new Float32Array([0.0,0.0,0.0]);
    */
 
@@ -25690,6 +25742,7 @@ function defineworld(canvas, renderType) {
       object.rotation       =  Rotator
       object.color          =  Will contain colors based on the sides clockwise. One vertice -> [R,G,B,alpha]
       object.texture        =  If texture is present then this will be used.           (To be built and used)
+      object.mesh           =  For objs and custom geometry - geometry buffers container
       object.vertexPositionBuffer =  allocated during buffering
       object.vertexColorBuffer    =  allocated during buffering
       object.vertexTexCoordBuffer =  allocated during buffering
@@ -25756,8 +25809,9 @@ function defineworld(canvas, renderType) {
         triangleObject.glDrawElements = new _utility._DrawElements(triangleObject.vertexColorBuffer.numItems);
         this.contentList[this.contentList.length] = triangleObject;
         _manifest.default.scene[triangleObject.name] = triangleObject; // console.log("Buffer the " + filler + ":Store at:" + this.contentList.length);
-      } else {// console.log("Triangle shader failure...");
-        }
+      } else {
+        console.warn("Triangle shader failure...");
+      }
     }
 
     if ('square' == filler) {
@@ -25816,13 +25870,13 @@ function defineworld(canvas, renderType) {
 
       if (squareObject.shaderProgram) {
         // console.log("   Buffer the " + filler + ":Store at:" + this.contentList.length);
-        this.bufferSquare(squareObject); // LOOK BETTER
-
+        this.bufferSquare(squareObject);
         squareObject.glDrawElements = new _utility._DrawElements(squareObject.vertexColorBuffer.numItems);
         squareObject.glDrawElements.mode = 'TRIANGLE_STRIP';
         this.contentList[this.contentList.length] = squareObject;
         _manifest.default.scene[squareObject.name] = squareObject;
-      } else {// console.log("Square shader failure...");
+      } else {
+        console.warn("Square shader failure...");
       }
     }
 
@@ -26040,7 +26094,8 @@ function defineworld(canvas, renderType) {
         cubeObject.glDrawElements = new _utility._DrawElements(cubeObject.vertexIndexBuffer.numItems);
         this.contentList[this.contentList.length] = cubeObject;
         _manifest.default.scene[cubeObject.name] = cubeObject;
-      } else {// console.warn("   Cube shader failure");
+      } else {
+        console.warn("Cube shader failure");
       }
     }
 
@@ -26151,8 +26206,7 @@ function defineworld(canvas, renderType) {
         this.shaderProgram = world.initShaders(world.GL.gl, this.type + '-shader-fs', this.type + '-shader-vs');
       };
 
-      sphereObject.mvMatrix = mat4.create(); //sphereObject.LightMap   = new GeoOfColor("cube light");
-
+      sphereObject.mvMatrix = mat4.create();
       sphereObject.LightMap = undefined;
 
       if (typeof mesh_ !== 'undefined') {
@@ -26181,7 +26235,8 @@ function defineworld(canvas, renderType) {
         sphereObject.glDrawElements = new _utility._DrawElements(sphereObject.vertexIndexBuffer.numItems);
         this.contentList[this.contentList.length] = sphereObject;
         _manifest.default.scene[sphereObject.name] = sphereObject;
-      } else {// console.warn("   Cube shader failure");
+      } else {
+        console.warn("Cube shader failure");
       }
     }
 
@@ -26245,7 +26300,8 @@ function defineworld(canvas, renderType) {
 
         this.contentList[this.contentList.length] = pyramidObject;
         _manifest.default.scene[pyramidObject.name] = pyramidObject;
-      } else {// console.warn("   Pyramid shader failure");
+      } else {
+        console.warn("Pyramid shader failure");
       }
     } // no physics for now
 
@@ -26393,8 +26449,7 @@ function defineworld(canvas, renderType) {
         this.shaderProgram = world.initShaders(world.GL.gl, this.type + '-shader-fs', this.type + '-shader-vs');
       };
 
-      objObject.mvMatrix = mat4.create(); // eslint-disable-next-line valid-typeof
-      // update
+      objObject.mvMatrix = mat4.create(); // update
 
       objObject.meshList = {};
 
@@ -26427,7 +26482,7 @@ function defineworld(canvas, renderType) {
         this.contentList[this.contentList.length] = objObject;
         _manifest.default.scene[objObject.name] = objObject;
       } else {
-        console.log('obj file shader failure');
+        console.warn('obj file shader failure');
       }
     }
 
@@ -26556,7 +26611,7 @@ function defineworld(canvas, renderType) {
 
           cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
         } else {
-          console.warn("Exec add obj : cubeObject texturePaths : path is unknow !");
+          console.warn("Exec add obj : cubeObject wrong texturePaths!");
         }
       } else {
         // no textures , use default single textures
@@ -26595,7 +26650,7 @@ function defineworld(canvas, renderType) {
         this.contentList[this.contentList.length] = cubeObject;
         _manifest.default.scene[cubeObject.name] = cubeObject;
       } else {
-        console.log('Cube shader failure');
+        console.warn('Cube shader failure');
       }
     }
 
@@ -26697,7 +26752,7 @@ function defineworld(canvas, renderType) {
           cubeObject.textures = [];
           cubeObject.texture = true; // cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler+"-shader-fs", filler+"-shader-vs");
 
-          (0, _engine.RegenerateCubeMapShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation); // eslint-disable-next-line no-redeclare
+          (0, _engine.RegenerateCubeMapShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation);
 
           for (var t = 0; t < texturesPaths.source.length; ++t) {// cubeObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t], texturesPaths.params));
           }
@@ -26870,6 +26925,15 @@ function defineworld(canvas, renderType) {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
         lightingDirection: new _matrixGeometry.COLOR(1, 1, 0)
+      }; // Physics
+
+      customObject.physics = {
+        enabled: false
+      };
+      customObject.instancedDraws = {
+        numberOfInstance: 10,
+        array_of_local_offset: [12, 0, 0],
+        overrideDrawArraysInstance: function (object_) {}
       };
       customObject.textures = [];
 
@@ -26883,7 +26947,7 @@ function defineworld(canvas, renderType) {
           customObject.textures = [];
           customObject.texture = true; // cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler+"-shader-fs", filler+"-shader-vs");
 
-          (0, _engine.RegenerateShader)('sphereLightTex' + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation); // eslint-disable-next-line no-redeclare
+          (0, _engine.RegenerateShader)('sphereLightTex' + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles30'); // eslint-disable-next-line no-redeclare
 
           for (var t = 0; t < texturesPaths.source.length; ++t) {
             customObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t]));
@@ -26912,19 +26976,31 @@ function defineworld(canvas, renderType) {
         this.shaderProgram = world.initShaders(world.GL.gl, 'sphereLightTex' + '-shader-fs', 'sphereLightTex' + '-shader-vs');
       };
 
-      customObject.mvMatrix = mat4.create(); //sphereObject.LightMap   = new GeoOfColor("cube light");
-
+      customObject.mvMatrix = mat4.create();
       customObject.LightMap = undefined;
 
       if (typeof mesh_ !== 'undefined') {
         customObject.latitudeBands = mesh_.latitudeBands;
         customObject.longitudeBands = mesh_.longitudeBands;
         customObject.radius = mesh_.radius;
-        customObject.custom_type = mesh_.custom_type;
+        customObject.custom_type = mesh_.custom_type; // torus
+
+        if (mesh_.custom_type == 'torus') {
+          customObject.slices = mesh_.slices;
+          customObject.loops = mesh_.loops;
+          customObject.inner_rad = mesh_.inner_rad;
+          customObject.outerRad = mesh_.outerRad;
+        }
       } else {
         customObject.latitudeBands = 30;
         customObject.longitudeBands = 30;
         customObject.radius = 2;
+        customObject.custom_type = 'torus'; // torus is default
+
+        customObject.slices = 8;
+        customObject.loops = 20;
+        customObject.inner_rad = 0.5;
+        customObject.outerRad = 2;
       }
 
       customObject.geometry = new _matrixGeometry.customVertex(customObject); //draws params
@@ -26932,21 +27008,19 @@ function defineworld(canvas, renderType) {
       customObject.glBlend = new _utility._glBlend();
 
       if (customObject.shaderProgram) {
-        // console.log("   Buffer the " + filler + ":Store at:" + this.contentList.length);
+        console.log("Buffer the " + filler + ":Store at:" + this.contentList.length);
         this.bufferSphere(customObject);
         customObject.glDrawElements = new _utility._DrawElements(customObject.vertexIndexBuffer.numItems);
         this.contentList[this.contentList.length] = customObject;
+        console.log("Buffer the ");
         _manifest.default.scene[customObject.name] = customObject;
-      } else {// console.log("   customObject shader failure");
+      } else {
+        console.log("   customObject shader failure");
       }
     }
   };
 
   world.callReDraw = _matrixRender.callReDraw_;
-  /**
-   * Destructor
-   */
-
   world.destroy = _manifest.default.operation.destroyWorld;
   return world;
 }
@@ -37069,12 +37143,11 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * Template demostration of power.
  * @name MatrixSlot
  * @author Nikola Lukic
- * @license MIT
+ * @license GPL-v3
  */
 // Voice commander
 _voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
-
-_voiceCommander.VoiceCommanderInstance.run();
+// VoiceCommanderInstance.run();
 
 var world, mashine;
 var App = matrixEngine.App;
@@ -37086,18 +37159,19 @@ if ("serviceWorker" in navigator) {
 }
 
 function webGLStart() {
-  world = matrixEngine.matrixWorld.defineworld(canvas);
+  world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
   world.callReDraw();
-  let roulette = new _roulette.MatrixRoulette();
-  window.App = App; // window.world = world;
+  let roulette = new _roulette.MatrixRoulette(); // DEV ONLY
+
+  window.App = App;
+  window.roulette = roulette;
 }
 
 window.addEventListener("load", () => {
   setTimeout(() => {
     matrixEngine.Engine.initApp(webGLStart);
   }, 200);
-}, false); // Not in use at the moment
-
+}, false);
 var _default = App;
 exports.default = _default;
 
@@ -37116,25 +37190,68 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 class MatrixRoulette {
+  physics = null;
+  world = null;
+
   constructor() {
-    var App = matrixEngine.App;
-    var textuteImageSamplers = {
+    var App = matrixEngine.App; // dev only 
+
+    window.App = App;
+    this.world = matrixEngine.matrixWorld.world;
+    App.camera.SceneController = true;
+    this.texTable = {
       source: ["res/images/bg.jpg"],
       mix_operation: "multiply"
     };
-    matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, "table", textuteImageSamplers);
-    App.scene.table.activateShadows();
-    App.scene.table.position.SetY(0);
-    App.scene.table.position.SetZ(-17);
-    App.scene.table.position.SetX(0);
-    App.scene.table.shadows.activeUpdate();
-    App.scene.table.shadows.animatePositionY();
-    App.scene.table.shadows.outerLimit = 1;
-    App.scene.table.shadows.animateRadius({
-      from: 0,
-      to: 120,
-      step: 0.1
+    this.texTableNumbers = {
+      source: ["res/images/tabla.png"],
+      mix_operation: "multiply"
+    };
+    this.preparePhysics();
+    this.attachMatrixRay();
+    console.log('tets 1');
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, "table", this.texTableNumbers); // App.scene.table.activateShadows('spot');
+
+    App.scene.table.position.SetY(-1.8);
+    App.scene.table.position.SetZ(-6);
+    App.scene.table.position.SetX(0); // App.scene.table.geometry.setScale(-1)
+
+    App.scene.table.geometry.setScaleByX(5);
+    App.scene.table.geometry.setScaleByY(0.9); // App.scene.table.geometry.setScaleByZ(10)
+    // App.scene.table.rotation.roty = 90
+    // App.scene.table.shadows.activeUpdate();
+    // App.scene.table.shadows.flyArround({
+    //   from: 0.01, to: 0.02, step: 0.001,
+    //   centerX: 0, centerY: 0,
+    //   flyArroundByIndexs: [0, 2] // Means that X,Z coords are orbiting
+    // })
+
+    console.log('tets'); // App.scene.table.shadows.animatePositionX();
+
+    matrixEngine.Events.camera.pitch = -35;
+    matrixEngine.Events.camera.zPos = 6;
+    matrixEngine.Events.camera.yPos = 0; // App.scene.table.shadows.animateRadius({from: 0, to: 220, step: 2})
+
+    setTimeout(() => {// App.scene.table.shadows.outerLimit = 2;
+      // App.scene.table.shadows.innerLimit = 1;
+      // App.scene.table.shadows.lightPosition[2] = 10;
+      // App.scene.table.shadows.lightPosition[1] = -21;
+    }, 5000);
+  }
+
+  attachMatrixRay() {
+    window.addEventListener('ray.hit.event', ev => {
+      console.log("You shoot the object! Nice!", ev);
+
+      if (ev.detail.hitObject.physics.enabled == true) {// ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
+      }
     });
+  }
+
+  preparePhysics() {
+    let gravityVector = [0, 0, -9.82];
+    this.physics = this.world.loadPhysics(gravityVector);
+    this.physics.addGround(matrixEngine.App, this.world, this.texTable);
   }
 
 }
@@ -37155,9 +37272,7 @@ const grammars = ["spin", "play"];
 const options = {
   grammarData: grammars,
   callback: r => {
-    if (r == 'spin' || r == 'play') {
-      App.slot.mashine.activateSpinning();
-    }
+    if (r == 'spin' || r == 'play') {}
 
     console.log(r);
   }
@@ -37176,9 +37291,6 @@ VoiceCommanderInstance.setInteraction = function (newInterAct) {
 };
 
 VoiceCommanderInstance.whatisyourname = r => {
-  // global for now
-  App.slot.user = r;
-  App.slot.mashine.nidza.access.footerLabel.elements[0].text = "You are welcome Mr/Mrs. " + r + ". Voice command: spin or play ";
   console.warn("Tell me your nickname.");
   VoiceCommanderInstance.setInteraction(options.callback);
   setTimeout(() => {
