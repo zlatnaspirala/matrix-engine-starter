@@ -36992,147 +36992,11 @@ process.umask = function() { return 0; };
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.colorNamesGrammars = void 0;
-const colorNamesGrammars = ['aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
-exports.colorNamesGrammars = colorNamesGrammars;
-
-},{}],37:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "VoiceCommander", {
-  enumerable: true,
-  get: function () {
-    return _voiceCommander.VoiceCommander;
-  }
-});
-Object.defineProperty(exports, "colorNamesGrammars", {
-  enumerable: true,
-  get: function () {
-    return _colors.colorNamesGrammars;
-  }
-});
-
-var _voiceCommander = require("./voice-commander.js");
-
-var _colors = require("./grammar-set/colors.js");
-
-},{"./grammar-set/colors.js":36,"./voice-commander.js":38}],38:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.VoiceCommander = void 0;
-
-/**
- * Vanilla JavaScript ECMA6 variant of VoiceCommander
- * class model.
- */
-var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-var SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList; // var SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent
-
-class VoiceCommander {
-  constructor(options) {
-    this.grammarData = [];
-    this.queryType = '';
-
-    if (typeof options !== 'undefined' && typeof options.grammarData !== 'undefined') {
-      this.grammarData = options.grammarData;
-    }
-
-    if (typeof options !== 'undefined' && typeof options.callback !== 'undefined') {
-      this.callback = options.callback;
-    }
-
-    this.grammar = '#JSGF V1.0; grammar grammarData; public <color> = ' + this.grammarData.join(' | ') + ' ;';
-    this.recognition = new SpeechRecognition();
-    this.speechRecognitionList = new SpeechGrammarList();
-    this.speechRecognitionList.addFromString(this.grammar, 1);
-    this.recognition.grammars = this.speechRecognitionList;
-    this.recognition.continuous = false;
-    /**
-     * @description Must be 'en-US'
-     * because firefox native support limitation.
-     */
-
-    this.recognition.lang = 'en-US';
-    this.recognition.interimResults = false;
-    this.recognition.maxAlternatives = 1;
-    this.queryType = '';
-    this.grammarData.forEach(v => {
-      this.queryType += v + ' \n ';
-    }); // console.log(this.queryType)
-
-    this.hints = 'VoiceCommander => ' + this.queryType + '.';
-
-    this.recognition.onresult = event => {
-      // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
-      // The SpeechRecognitionResultList object contains SpeechRecognitionResult objects.
-      // It has a getter so it can be accessed like an array
-      // The first [0] returns the SpeechRecognitionResult at the last position.
-      // Each SpeechRecognitionResult object contains SpeechRecognitionAlternative objects that contain individual results.
-      // These also have getters so they can be accessed like arrays.
-      // The second [0] returns the SpeechRecognitionAlternative at position 0.
-      // We then return the transcript property of the SpeechRecognitionAlternative object
-      const r = event.results[0][0].transcript;
-      this.diagnostic = 'VoiceCommander => Result => ' + r + '.';
-
-      if (typeof this.callback !== 'undefined') {
-        this.callback(r);
-      } // bg.style.backgroundColor = color;
-
-
-      console.log('Confidence => ' + event.results[0][0].confidence);
-      console.log('Diagnostic => ' + this.diagnostic);
-    };
-
-    this.recognition.onspeechend = event => {
-      this.recognition.stop();
-      console.log('VoiceCommander => Stoped ', event);
-    };
-
-    this.recognition.onnomatch = event => {
-      this.diagnostic = "I didn't recognise that color. event => " + event;
-      console.warn('Voice commander event => nomatch => ' + this.diagnostic);
-    };
-
-    this.recognition.onerror = event => {
-      this.diagnostic = 'Error occurred in recognition: ' + event;
-      console.log(' onerror ', event);
-    };
-  }
-
-  run() {
-    // Better than flag
-    try {
-      this.recognition.start();
-    } catch (err) {
-      console.log(err);
-    } finally {
-      console.log('VoiceCommander => Ready to receive voice command.');
-    }
-  }
-
-}
-
-exports.VoiceCommander = VoiceCommander;
-
-},{}],39:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _roulette = require("./scripts/roulette");
-
-var _voiceCommander = require("./scripts/voice-commander");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -37145,11 +37009,12 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * @author Nikola Lukic
  * @license GPL-v3
  */
+// import { VoiceCommanderInstance } from "./scripts/voice-commander";
 // Voice commander
-_voiceCommander.VoiceCommanderInstance.callback = _voiceCommander.VoiceCommanderInstance.whatisyourname; // Activate listen operation
+// VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
+// Activate listen operation
 // VoiceCommanderInstance.run();
-
-var world, mashine;
+var world;
 var App = matrixEngine.App;
 window.matrixEngine = matrixEngine;
 
@@ -37159,7 +37024,7 @@ if ("serviceWorker" in navigator) {
 }
 
 function webGLStart() {
-  world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
+  world = matrixEngine.matrixWorld.defineworld(canvas);
   world.callReDraw();
   let roulette = new _roulette.MatrixRoulette(); // DEV ONLY
 
@@ -37175,7 +37040,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/roulette":40,"./scripts/voice-commander":41,"matrix-engine":8}],40:[function(require,module,exports){
+},{"./scripts/roulette":37,"matrix-engine":8}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37194,13 +37059,13 @@ class MatrixRoulette {
   world = null;
 
   constructor() {
-    var App = matrixEngine.App; // dev only 
+    var App = matrixEngine.App; // dev only
 
     window.App = App;
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     this.texTable = {
-      source: ["res/images/bg.jpg"],
+      source: ["res/images/bg-pow2.png"],
       mix_operation: "multiply"
     };
     this.texTableNumbers = {
@@ -37209,7 +37074,6 @@ class MatrixRoulette {
     };
     this.preparePhysics();
     this.attachMatrixRay();
-    console.log('tets 1');
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "table", this.texTableNumbers); // App.scene.table.activateShadows('spot');
 
     App.scene.table.position.SetY(-1.8);
@@ -37217,26 +37081,12 @@ class MatrixRoulette {
     App.scene.table.position.SetX(0); // App.scene.table.geometry.setScale(-1)
 
     App.scene.table.geometry.setScaleByX(5);
-    App.scene.table.geometry.setScaleByY(0.9); // App.scene.table.geometry.setScaleByZ(10)
-    // App.scene.table.rotation.roty = 90
-    // App.scene.table.shadows.activeUpdate();
-    // App.scene.table.shadows.flyArround({
-    //   from: 0.01, to: 0.02, step: 0.001,
-    //   centerX: 0, centerY: 0,
-    //   flyArroundByIndexs: [0, 2] // Means that X,Z coords are orbiting
-    // })
-
-    console.log('tets'); // App.scene.table.shadows.animatePositionX();
+    App.scene.table.geometry.setScaleByY(0.9); // App.scene.table.shadows.activeUpdate();
+    // App.scene.table.shadows.animatePositionX();
 
     matrixEngine.Events.camera.pitch = -35;
     matrixEngine.Events.camera.zPos = 6;
-    matrixEngine.Events.camera.yPos = 0; // App.scene.table.shadows.animateRadius({from: 0, to: 220, step: 2})
-
-    setTimeout(() => {// App.scene.table.shadows.outerLimit = 2;
-      // App.scene.table.shadows.innerLimit = 1;
-      // App.scene.table.shadows.lightPosition[2] = 10;
-      // App.scene.table.shadows.lightPosition[1] = -21;
-    }, 5000);
+    matrixEngine.Events.camera.yPos = 5;
   }
 
   attachMatrixRay() {
@@ -37249,6 +37099,7 @@ class MatrixRoulette {
   }
 
   preparePhysics() {
+    console.log('TEWTS CONTRUCTOR');
     let gravityVector = [0, 0, -9.82];
     this.physics = this.world.loadPhysics(gravityVector);
     this.physics.addGround(matrixEngine.App, this.world, this.texTable);
@@ -37258,44 +37109,4 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"matrix-engine":8}],41:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.VoiceCommanderInstance = void 0;
-
-var _voiceCommander = require("voice-commander");
-
-const grammars = ["spin", "play"];
-const options = {
-  grammarData: grammars,
-  callback: r => {
-    if (r == 'spin' || r == 'play') {}
-
-    console.log(r);
-  }
-};
-const VoiceCommanderInstance = new _voiceCommander.VoiceCommander(options);
-exports.VoiceCommanderInstance = VoiceCommanderInstance;
-window.VoiceCommanderInstance = VoiceCommanderInstance;
-console.log(VoiceCommanderInstance);
-/**
- * @description Voice command procedures.
- * Will be bind direct on object.
- */
-
-VoiceCommanderInstance.setInteraction = function (newInterAct) {
-  VoiceCommanderInstance.callback = newInterAct;
-};
-
-VoiceCommanderInstance.whatisyourname = r => {
-  console.warn("Tell me your nickname.");
-  VoiceCommanderInstance.setInteraction(options.callback);
-  setTimeout(() => {
-    VoiceCommanderInstance.run();
-  }, 1000);
-};
-
-},{"voice-commander":37}]},{},[39]);
+},{"matrix-engine":8}]},{},[36]);
