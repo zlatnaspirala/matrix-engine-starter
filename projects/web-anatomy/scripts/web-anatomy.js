@@ -31,12 +31,6 @@ export default class WebAnatomy {
     this.addAnatomySystems(world);
     this.addRaycaster();
 
-
-    window.addEventListener("mashine.free", (e) => {
-      console.info("MASHINE STATUS IS FREE");
-      // App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
-    });
-
     if(isMobile()) {
       if(window.innerWidth < window.innerHeight) {
         console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");

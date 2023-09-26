@@ -14,15 +14,15 @@ export let loadSystemSkeletal = (App, world) => {
     };
 
     for (let key in meshes) {
-      var id = "skeletal_" + key;
+      var id = "s_" + key;
       world.Add("obj", 1, id, textuteImageSamplers2, meshes[key]);
       // still must be called with method - SCALE for OBJ Mesh
-       App.scene[id].mesh.setScale(-0.0025)
+      //  App.scene[id].mesh.setScale(-0.9)
       // App.scene[id].glBlend.blendEnabled = true;
-      App.scene[id].position.z =  -9;
+      App.scene[id].position.z =  1200;
       App.scene[id].position.y =  -2;
       App.scene[id].rotation.rotx = 90;
-      // App.scene[id].rotation.roty = 0;
+      App.scene[id].rotation.roty = 90;
       // App.scene[id].rotation.rotz = 0;
       // App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
       // App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[7];
