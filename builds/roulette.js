@@ -37050,13 +37050,18 @@ exports.MatrixRoulette = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
+var _tableEvents = require("./table-events.js");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 class MatrixRoulette {
+  // me staff
   physics = null;
-  world = null;
+  world = null; // gameplay staff
+
+  tableBet = null;
 
   constructor() {
     var App = matrixEngine.App; // dev only
@@ -37064,34 +37069,22 @@ class MatrixRoulette {
     window.App = App;
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
-    this.texTable = {
-      source: ["res/images/bg-pow2.png"],
-      mix_operation: "multiply"
-    };
-    this.texTableNumbers = {
-      source: ["res/images/tabla.png"],
-      mix_operation: "multiply"
-    };
+    this.tableBet = new _tableEvents.TableEvents();
     this.preparePhysics();
     this.attachMatrixRay();
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, "table", this.texTableNumbers); // App.scene.table.activateShadows('spot');
-
-    App.scene.table.position.SetY(-1.8);
-    App.scene.table.position.SetZ(-6);
-    App.scene.table.position.SetX(0); // App.scene.table.geometry.setScale(-1)
-
-    App.scene.table.geometry.setScaleByX(5);
-    App.scene.table.geometry.setScaleByY(0.9); // App.scene.table.shadows.activeUpdate();
-    // App.scene.table.shadows.animatePositionX();
-
     matrixEngine.Events.camera.pitch = -35;
     matrixEngine.Events.camera.zPos = 6;
     matrixEngine.Events.camera.yPos = 5;
   }
 
   attachMatrixRay() {
+    // look like inverse - inside matrix-engine must be done
+    // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
+    canvas.addEventListener('mousedown', ev => {
+      matrixEngine.raycaster.checkingProcedure(ev);
+    });
     window.addEventListener('ray.hit.event', ev => {
-      console.log("You shoot the object! Nice!", ev);
+      console.log("You shoot the object :", ev.detail.hitObject.name);
 
       if (ev.detail.hitObject.physics.enabled == true) {// ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
       }
@@ -37099,14 +37092,106 @@ class MatrixRoulette {
   }
 
   preparePhysics() {
-    console.log('TEWTS CONTRUCTOR');
     let gravityVector = [0, 0, -9.82];
     this.physics = this.world.loadPhysics(gravityVector);
-    this.physics.addGround(matrixEngine.App, this.world, this.texTable);
+    this.physics.addGround(matrixEngine.App, this.world, {
+      source: ["res/images/bg-pow2.png"],
+      mix_operation: "multiply"
+    });
   }
 
 }
 
 exports.MatrixRoulette = MatrixRoulette;
+
+},{"./table-events.js":38,"matrix-engine":8}],38:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TableEvents = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+class TableEvents {
+  constructor() {
+    var App = matrixEngine.App;
+    this.texTableNumbers = {
+      source: ["res/images/tabla.png"],
+      mix_operation: "multiply"
+    };
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, "table", this.texTableNumbers); // App.scene.table.activateShadows('spot');
+
+    App.scene.table.position.SetY(-1.9);
+    App.scene.table.position.SetZ(-6);
+    App.scene.table.position.SetX(0);
+    App.scene.table.rotation.rotx = -90; // App.scene.table.geometry.setScale(-1)
+
+    App.scene.table.geometry.setScaleByX(5);
+    App.scene.table.geometry.setScaleByY(1.8);
+    this.constructSingleNums();
+    this.constructSplitNums();
+  }
+
+  constructSingleNums() {
+    this.markTex = {
+      source: ["res/images/senka1.png"],
+      mix_operation: "multiply"
+    };
+    var numID = 1;
+
+    for (var x = 0; x < 12; x++) {
+      for (var y = 3; y > 0; y--) {
+        var name = 'single' + numID;
+        matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
+        App.scene[name].position.SetY(-1.88);
+        App.scene[name].position.SetZ(-8.05 + y * 0.7);
+        App.scene[name].position.SetX(-4.08 + x * 0.7);
+        App.scene[name].rotation.rotx = -90;
+        App.scene[name].geometry.setScaleByX(-0.23);
+        App.scene[name].geometry.setScaleByY(-0.23);
+        App.scene[name].glBlend.blendEnabled = true;
+        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        numID++;
+      }
+    }
+  }
+
+  constructSplitNums() {
+    this.markTex = {
+      source: ["res/images/senka1.png"],
+      mix_operation: "multiply"
+    };
+    var numID = 1;
+    var numID2 = 2; // split split on 2 by column and 3 ...
+
+    for (var x = 0; x < 12; x++) {
+      for (var y = 1; y < 3; y++) {
+        var name = 'split' + numID + numID2;
+        matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
+        App.scene[name].position.SetY(-1.88);
+        App.scene[name].position.SetZ(-7.75 + y * 0.705);
+        App.scene[name].position.SetX(-4.08 + x * 0.7);
+        App.scene[name].rotation.rotx = -90;
+        App.scene[name].geometry.setScaleByX(-0.1);
+        App.scene[name].geometry.setScaleByY(-0.1); // App.scene[name].glBlend.blendEnabled = true;
+        // App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        // App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+        numID++;
+        numID2++;
+      }
+    }
+  }
+
+}
+
+exports.TableEvents = TableEvents;
 
 },{"matrix-engine":8}]},{},[36]);
