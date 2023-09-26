@@ -14,6 +14,15 @@ npm install -g browserify
 npm i
 ```
 
+### Watch build with:
+
+```js
+  npm run examples
+  npm run app
+  npm run slot
+  npm run roulette
+```
+
 ### Build your Application script bundle with:
 
 ```js
