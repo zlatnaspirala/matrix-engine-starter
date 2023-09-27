@@ -25786,8 +25786,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(triangleObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      triangleObject.raycast = {
+        enabled: true
+      }; // Physics
 
       triangleObject.physics = {
         enabled: false
@@ -25850,8 +25853,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      squareObject.raycast = {
+        enabled: true
+      }; // Physics
 
       squareObject.physics = {
         enabled: false
@@ -25920,8 +25926,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      squareObject.raycast = {
+        enabled: true
+      }; // Physics
 
       squareObject.physics = {
         enabled: false
@@ -26075,8 +26084,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      cubeObject.raycast = {
+        enabled: true
+      }; // Physics
 
       cubeObject.physics = {
         enabled: false
@@ -26135,8 +26147,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(sphereObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      sphereObject.raycast = {
+        enabled: true
+      }; // Physics
 
       sphereObject.physics = {
         enabled: false
@@ -26274,8 +26289,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(pyramidObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      pyramidObject.raycast = {
+        enabled: true
+      }; // Physics
 
       pyramidObject.physics = {
         enabled: false
@@ -26349,8 +26367,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      objObject.raycast = {
+        enabled: true
+      }; // Physics
 
       objObject.physics = {
         enabled: false
@@ -26529,8 +26550,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      cubeObject.raycast = {
+        enabled: true
+      }; // Physics
 
       cubeObject.physics = {
         enabled: false
@@ -26692,8 +26716,11 @@ function defineworld(canvas, renderType) {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      cubeObject.raycast = {
+        enabled: true
+      }; // Physics
 
       cubeObject.physics = {
         enabled: false
@@ -27875,6 +27902,7 @@ function checkingProcedureCalc(object) {
     object.raycastFace.push(triangle);
 
     if (rayIntersectsTriangle(myRayOrigin, ray, triangle, intersectionPoint, object.position)) {
+      if (object.raycast.enabled == false) return;
       rayHitEvent = new CustomEvent('ray.hit.event', {
         detail: {
           touchCoordinate: {
@@ -37087,7 +37115,7 @@ class MatrixRoulette {
     window.addEventListener('ray.hit.event', ev => {
       console.log("You shoot the object :", ev.detail.hitObject.name);
       dispatchEvent(new CustomEvent("test-chips", {
-        detail: ev.detail.hitObject.name
+        detail: ev.detail.hitObject
       }));
 
       if (ev.detail.hitObject.physics.enabled == true) {// ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
@@ -37119,9 +37147,13 @@ exports.TableChips = void 0;
 class TableChips {
   constructor() {
     addEventListener("test-chips", e => {
-      console.log('TEST ', e.detail);
+      console.log('TEST NAME ', e.detail.name);
+      console.log('TEST QVOTA ', e.detail.tableEvents.q);
+      console.log('TEST BET', e.detail.tableEvents.chips);
     });
   }
+
+  addChip() {}
 
 }
 
@@ -37170,6 +37202,7 @@ class TableEvents {
     this.constructColumn();
     this.constructDBStreets();
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
+    App.scene.atable.raycast.enabled = false;
     App.scene.atable.position.SetY(-1.9);
     App.scene.atable.position.SetZ(-6);
     App.scene.atable.position.SetX(0);
@@ -37510,7 +37543,7 @@ class TableEvents {
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-3);
     App.scene[name].rotation.rotx = -90;
-    App.scene[name].geometry.setScaleByX(1.35);
+    App.scene[name].geometry.setScaleByX(-1.35);
     App.scene[name].geometry.setScaleByY(-0.25);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
@@ -37525,7 +37558,7 @@ class TableEvents {
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-0.24);
     App.scene[name].rotation.rotx = -90;
-    App.scene[name].geometry.setScaleByX(1.35);
+    App.scene[name].geometry.setScaleByX(-1.35);
     App.scene[name].geometry.setScaleByY(-0.25);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
@@ -37540,7 +37573,7 @@ class TableEvents {
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(2.55);
     App.scene[name].rotation.rotx = -90;
-    App.scene[name].geometry.setScaleByX(1.35);
+    App.scene[name].geometry.setScaleByX(-1.35);
     App.scene[name].geometry.setScaleByY(-0.25);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];

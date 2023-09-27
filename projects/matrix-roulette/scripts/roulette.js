@@ -39,7 +39,7 @@ export class MatrixRoulette {
       console.log("You shoot the object :", ev.detail.hitObject.name)
 
       dispatchEvent(new CustomEvent("test-chips",
-        {detail: ev.detail.hitObject.name}));
+        {detail: ev.detail.hitObject}));
 
       if(ev.detail.hitObject.physics.enabled == true) {
         // ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)

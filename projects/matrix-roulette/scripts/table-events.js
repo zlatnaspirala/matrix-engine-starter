@@ -33,13 +33,13 @@ export class TableEvents {
     this.constructDBStreets()
 
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
+    App.scene.atable.raycast.enabled = false
     App.scene.atable.position.SetY(-1.9);
     App.scene.atable.position.SetZ(-6);
     App.scene.atable.position.SetX(0);
     App.scene.atable.rotation.rotx = -90;
     App.scene.atable.geometry.setScaleByX(5)
     App.scene.atable.geometry.setScaleByY(1.8)
-
 
     this.chips = new TableChips()
   }
@@ -379,7 +379,7 @@ export class TableEvents {
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-3);
     App.scene[name].rotation.rotx = -90;
-    App.scene[name].geometry.setScaleByX(1.35)
+    App.scene[name].geometry.setScaleByX(-1.35)
     App.scene[name].geometry.setScaleByY(-0.25)
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
@@ -394,7 +394,7 @@ export class TableEvents {
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-0.24);
     App.scene[name].rotation.rotx = -90;
-    App.scene[name].geometry.setScaleByX(1.35)
+    App.scene[name].geometry.setScaleByX(-1.35)
     App.scene[name].geometry.setScaleByY(-0.25)
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
@@ -409,7 +409,7 @@ export class TableEvents {
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(2.55);
     App.scene[name].rotation.rotx = -90;
-    App.scene[name].geometry.setScaleByX(1.35)
+    App.scene[name].geometry.setScaleByX(-1.35)
     App.scene[name].geometry.setScaleByY(-0.25)
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
