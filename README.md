@@ -29,6 +29,7 @@ npm i
   npm run build.examples
   npm run build.app
   npm run build.slot
+  npm run build.roulette
 ```
 
 And navigate to app.html, examples.html etc.

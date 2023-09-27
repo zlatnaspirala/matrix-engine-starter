@@ -129,31 +129,9 @@ export default class WebAnatomy {
     // App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
     // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
     // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
-
-    // // Addin anything at all
-    // App.scene.topHeader.shake = false;
-
-    var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001);
-
-    // App.scene.topHeader.runShake = function() {
-    //   if(this.shake == false) return;
-    //   setTimeout(() => {
-    //     this.geometry.texCoordsPoints.right_top.x += osc_var.UPDATE();
-    //     this.geometry.texCoordsPoints.left_bottom.x += osc_var.UPDATE();
-    //     this.geometry.texCoordsPoints.left_top.x += osc_var.UPDATE();
-    //     this.geometry.texCoordsPoints.right_bottom.x += osc_var.UPDATE();
-    //     this.runShake();
-    //   }, 20);
-    // };
  
     console.log("nidza component setup dimensions...", this.nidza);
-
-    // if(isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
-
-    // App.operation.squareTex_buffer_procedure(App.scene.topHeader);
-
     loadSystemSkeletal(App, world);
-
     // this.incraseNumOfDrawInstance();
     console.info("Anatomy is constructed.");
     console.info(

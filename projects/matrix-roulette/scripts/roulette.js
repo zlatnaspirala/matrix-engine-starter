@@ -14,6 +14,7 @@ export class MatrixRoulette {
     window.App = App
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
+    App.camera.sceneControllerEdgeCameraYawRate = 0.01;
 
     this.tableBet = new TableEvents()
 
