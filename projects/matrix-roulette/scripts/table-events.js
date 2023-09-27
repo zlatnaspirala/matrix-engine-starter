@@ -1,6 +1,9 @@
 import * as matrixEngine from "matrix-engine"
-
+import {TableChips} from './table-chips.js';
 export class TableEvents {
+
+  chips = {};
+
   constructor() {
     var App = matrixEngine.App
 
@@ -14,19 +17,8 @@ export class TableEvents {
       mix_operation: "multiply",
     };
 
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, "table", this.texTableNumbers);
-    // App.scene.table.activateShadows('spot');
-    App.scene.table.position.SetY(-1.9);
-    App.scene.table.position.SetZ(-6);
-    App.scene.table.position.SetX(0);
-
-    App.scene.table.rotation.rotx = -90;
-
-    // App.scene.table.geometry.setScale(-1)
-    App.scene.table.geometry.setScaleByX(5)
-    App.scene.table.geometry.setScaleByY(1.8)
-
     // common position
+    this.globalY = -1.88;
     this.colorTop = -4.5;
 
     this.constructSingleNums()
@@ -40,13 +32,27 @@ export class TableEvents {
     this.constructColumn()
     this.constructDBStreets()
 
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
+    App.scene.atable.position.SetY(-1.9);
+    App.scene.atable.position.SetZ(-6);
+    App.scene.atable.position.SetX(0);
+    App.scene.atable.rotation.rotx = -90;
+    App.scene.atable.geometry.setScaleByX(5)
+    App.scene.atable.geometry.setScaleByY(1.8)
+
+
+    this.chips = new TableChips()
   }
 
   constructSingleNums() {
 
     var zero = 'single0';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, zero, this.markTex);
-    App.scene[zero].position.SetY(-1.88);
+    App.scene[zero].tableEvents = {
+      chips: 0,
+      q: 36
+    };
+    App.scene[zero].position.SetY(this.globalY);
     App.scene[zero].position.SetZ(-6.8);
     App.scene[zero].position.SetX(-4.8);
     App.scene[zero].rotation.rotx = -90;
@@ -61,7 +67,11 @@ export class TableEvents {
       for(var y = 3;y > 0;y--) {
         var name = 'single' + numID;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 36
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-8.05 + y * 0.71);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -83,7 +93,11 @@ export class TableEvents {
       for(var y = 2;y > 0;y--) {
         var name = 'split' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 18
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-7.75 + y * 0.705);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -109,7 +123,11 @@ export class TableEvents {
       for(var y = 3;y > 0;y--) {
         var name = 'split' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 18
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-8.07 + y * 0.705);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -126,7 +144,11 @@ export class TableEvents {
     // zero connected
     var name = 'trio_0_1_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 12
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.84);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -135,9 +157,14 @@ export class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
     name = 'trio_0_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 12
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.5);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -149,7 +176,11 @@ export class TableEvents {
 
     name = 'topline_0_1_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 9
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.04);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -161,7 +192,11 @@ export class TableEvents {
 
     name = 'split_0_1';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 18
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.4);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -173,7 +208,11 @@ export class TableEvents {
     name = 'split_0_2';
     // 2_5_8_11_14_17_20_23_26_29_32_35
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 18
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.15);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -184,8 +223,12 @@ export class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'split_0_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 18
+    };
     // 3_6_9_12_15_18_21_24_27_30_33_36
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.9);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -205,7 +248,11 @@ export class TableEvents {
       for(var y = 1;y < 3;y++) {
         var name = 'corner' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 9
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-5.6 - y * 0.705);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -225,7 +272,11 @@ export class TableEvents {
   constructColor() {
     var name = 'colorRed';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(-0.95);
     App.scene[name].rotation.rotx = -90;
@@ -236,7 +287,11 @@ export class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'colorBlack';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(0.5);
     App.scene[name].rotation.rotx = -90;
@@ -250,7 +305,11 @@ export class TableEvents {
   constructLowHigh() {
     var name = 'low';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(-3.75);
     App.scene[name].rotation.rotx = -90;
@@ -261,7 +320,11 @@ export class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'high';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(3.3);
     App.scene[name].rotation.rotx = -90;
@@ -275,7 +338,11 @@ export class TableEvents {
   constructOddEven() {
     var name = 'even';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(-2.35);
     App.scene[name].rotation.rotx = -90;
@@ -286,7 +353,11 @@ export class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'odd';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(1.9);
     App.scene[name].rotation.rotx = -90;
@@ -300,7 +371,11 @@ export class TableEvents {
   constructSt12() {
     var name = 'st12_1';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-3);
     App.scene[name].rotation.rotx = -90;
@@ -311,7 +386,11 @@ export class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'st12_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-0.24);
     App.scene[name].rotation.rotx = -90;
@@ -322,7 +401,11 @@ export class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'st12_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(2.55);
     App.scene[name].rotation.rotx = -90;
@@ -341,7 +424,11 @@ export class TableEvents {
     for(var x = 0;x < 12;x++) {
       var name = 'street' + numID + '_' + numID2 + '_' + numID3;
       matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-      App.scene[name].position.SetY(-1.88);
+      App.scene[name].tableEvents = {
+        chips: 0,
+        q: 12
+      };
+      App.scene[name].position.SetY(this.globalY);
       App.scene[name].position.SetZ(-5.56);
       App.scene[name].position.SetX(-4.08 + x * 0.7);
       App.scene[name].rotation.rotx = -90;
@@ -360,7 +447,11 @@ export class TableEvents {
     var name = 'column_1';
     // 1_4_7_10_13_16_19_22_25_28_31_34
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.4);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
@@ -372,7 +463,11 @@ export class TableEvents {
     name = 'column_2';
     // 2_5_8_11_14_17_20_23_26_29_32_35
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.15);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
@@ -383,8 +478,12 @@ export class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'column_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
     // 3_6_9_12_15_18_21_24_27_30_33_36
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.9);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
@@ -406,7 +505,11 @@ export class TableEvents {
     for(var x = 0;x < 11;x++) {
       var name = 'dbstreet' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4 + '_' + numID5 + '_' + numID6;
       matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-      App.scene[name].position.SetY(-1.88);
+      App.scene[name].tableEvents = {
+        chips: 0,
+        q: 6
+      };
+      App.scene[name].position.SetY(this.globalY);
       App.scene[name].position.SetZ(-5.56);
       App.scene[name].position.SetX(-3.73 + x * 0.7);
       App.scene[name].rotation.rotx = -90;

@@ -29,7 +29,7 @@ export class MatrixRoulette {
   attachMatrixRay() {
 
     // look like inverse - inside matrix-engine must be done
-    // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
+    matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
 
     canvas.addEventListener('mousedown', (ev) => {
       matrixEngine.raycaster.checkingProcedure(ev);
@@ -37,6 +37,10 @@ export class MatrixRoulette {
 
     window.addEventListener('ray.hit.event', (ev) => {
       console.log("You shoot the object :", ev.detail.hitObject.name)
+
+      dispatchEvent(new CustomEvent("test-chips",
+        {detail: ev.detail.hitObject.name}));
+
       if(ev.detail.hitObject.physics.enabled == true) {
         // ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
       }

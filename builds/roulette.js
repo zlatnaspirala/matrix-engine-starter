@@ -37080,12 +37080,15 @@ class MatrixRoulette {
 
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
-    // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
+    matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true;
     canvas.addEventListener('mousedown', ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
     window.addEventListener('ray.hit.event', ev => {
       console.log("You shoot the object :", ev.detail.hitObject.name);
+      dispatchEvent(new CustomEvent("test-chips", {
+        detail: ev.detail.hitObject.name
+      }));
 
       if (ev.detail.hitObject.physics.enabled == true) {// ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
       }
@@ -37105,7 +37108,26 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"./table-events.js":38,"matrix-engine":8}],38:[function(require,module,exports){
+},{"./table-events.js":39,"matrix-engine":8}],38:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TableChips = void 0;
+
+class TableChips {
+  constructor() {
+    addEventListener("test-chips", e => {
+      console.log('TEST ', e.detail);
+    });
+  }
+
+}
+
+exports.TableChips = TableChips;
+
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37115,11 +37137,15 @@ exports.TableEvents = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
+var _tableChips = require("./table-chips.js");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 class TableEvents {
+  chips = {};
+
   constructor() {
     var App = matrixEngine.App;
     this.texTableNumbers = {
@@ -37129,17 +37155,9 @@ class TableEvents {
     this.markTex = {
       source: ["res/images/senka1.png"],
       mix_operation: "multiply"
-    };
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, "table", this.texTableNumbers); // App.scene.table.activateShadows('spot');
+    }; // common position
 
-    App.scene.table.position.SetY(-1.9);
-    App.scene.table.position.SetZ(-6);
-    App.scene.table.position.SetX(0);
-    App.scene.table.rotation.rotx = -90; // App.scene.table.geometry.setScale(-1)
-
-    App.scene.table.geometry.setScaleByX(5);
-    App.scene.table.geometry.setScaleByY(1.8); // common position
-
+    this.globalY = -1.88;
     this.colorTop = -4.5;
     this.constructSingleNums();
     this.constructSplitNums();
@@ -37151,12 +37169,24 @@ class TableEvents {
     this.constructStreets();
     this.constructColumn();
     this.constructDBStreets();
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
+    App.scene.atable.position.SetY(-1.9);
+    App.scene.atable.position.SetZ(-6);
+    App.scene.atable.position.SetX(0);
+    App.scene.atable.rotation.rotx = -90;
+    App.scene.atable.geometry.setScaleByX(5);
+    App.scene.atable.geometry.setScaleByY(1.8);
+    this.chips = new _tableChips.TableChips();
   }
 
   constructSingleNums() {
     var zero = 'single0';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, zero, this.markTex);
-    App.scene[zero].position.SetY(-1.88);
+    App.scene[zero].tableEvents = {
+      chips: 0,
+      q: 36
+    };
+    App.scene[zero].position.SetY(this.globalY);
     App.scene[zero].position.SetZ(-6.8);
     App.scene[zero].position.SetX(-4.8);
     App.scene[zero].rotation.rotx = -90;
@@ -37171,7 +37201,11 @@ class TableEvents {
       for (var y = 3; y > 0; y--) {
         var name = 'single' + numID;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 36
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-8.05 + y * 0.71);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -37193,7 +37227,11 @@ class TableEvents {
       for (var y = 2; y > 0; y--) {
         var name = 'split' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 18
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-7.75 + y * 0.705);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -37218,7 +37256,11 @@ class TableEvents {
       for (var y = 3; y > 0; y--) {
         var name = 'split' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 18
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-8.07 + y * 0.705);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -37235,7 +37277,11 @@ class TableEvents {
 
     var name = 'trio_0_1_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 12
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.84);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -37246,7 +37292,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'trio_0_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 12
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.5);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -37257,7 +37307,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'topline_0_1_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 9
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.04);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -37268,7 +37322,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'split_0_1';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 18
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.4);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -37280,7 +37338,11 @@ class TableEvents {
     name = 'split_0_2'; // 2_5_8_11_14_17_20_23_26_29_32_35
 
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 18
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.15);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -37290,9 +37352,13 @@ class TableEvents {
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'split_0_3';
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex); // 3_6_9_12_15_18_21_24_27_30_33_36
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 18
+    }; // 3_6_9_12_15_18_21_24_27_30_33_36
 
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.9);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
@@ -37313,7 +37379,11 @@ class TableEvents {
       for (var y = 1; y < 3; y++) {
         var name = 'corner' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-        App.scene[name].position.SetY(-1.88);
+        App.scene[name].tableEvents = {
+          chips: 0,
+          q: 9
+        };
+        App.scene[name].position.SetY(this.globalY);
         App.scene[name].position.SetZ(-5.6 - y * 0.705);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
@@ -37333,7 +37403,11 @@ class TableEvents {
   constructColor() {
     var name = 'colorRed';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(-0.95);
     App.scene[name].rotation.rotx = -90;
@@ -37344,7 +37418,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'colorBlack';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(0.5);
     App.scene[name].rotation.rotx = -90;
@@ -37358,7 +37436,11 @@ class TableEvents {
   constructLowHigh() {
     var name = 'low';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(-3.75);
     App.scene[name].rotation.rotx = -90;
@@ -37369,7 +37451,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'high';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(3.3);
     App.scene[name].rotation.rotx = -90;
@@ -37383,7 +37469,11 @@ class TableEvents {
   constructOddEven() {
     var name = 'even';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(-2.35);
     App.scene[name].rotation.rotx = -90;
@@ -37394,7 +37484,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'odd';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop);
     App.scene[name].position.SetX(1.9);
     App.scene[name].rotation.rotx = -90;
@@ -37408,7 +37502,11 @@ class TableEvents {
   constructSt12() {
     var name = 'st12_1';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-3);
     App.scene[name].rotation.rotx = -90;
@@ -37419,7 +37517,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'st12_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(-0.24);
     App.scene[name].rotation.rotx = -90;
@@ -37430,7 +37532,11 @@ class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'st12_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 0.6);
     App.scene[name].position.SetX(2.55);
     App.scene[name].rotation.rotx = -90;
@@ -37449,7 +37555,11 @@ class TableEvents {
     for (var x = 0; x < 12; x++) {
       var name = 'street' + numID + '_' + numID2 + '_' + numID3;
       matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-      App.scene[name].position.SetY(-1.88);
+      App.scene[name].tableEvents = {
+        chips: 0,
+        q: 12
+      };
+      App.scene[name].position.SetY(this.globalY);
       App.scene[name].position.SetZ(-5.56);
       App.scene[name].position.SetX(-4.08 + x * 0.7);
       App.scene[name].rotation.rotx = -90;
@@ -37468,7 +37578,11 @@ class TableEvents {
     var name = 'column_1'; // 1_4_7_10_13_16_19_22_25_28_31_34
 
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 1.4);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
@@ -37480,7 +37594,11 @@ class TableEvents {
     name = 'column_2'; // 2_5_8_11_14_17_20_23_26_29_32_35
 
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    };
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.15);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
@@ -37490,9 +37608,13 @@ class TableEvents {
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     name = 'column_3';
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex); // 3_6_9_12_15_18_21_24_27_30_33_36
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 3
+    }; // 3_6_9_12_15_18_21_24_27_30_33_36
 
-    App.scene[name].position.SetY(-1.88);
+    App.scene[name].position.SetY(this.globalY);
     App.scene[name].position.SetZ(this.colorTop - 2.9);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
@@ -37514,7 +37636,11 @@ class TableEvents {
     for (var x = 0; x < 11; x++) {
       var name = 'dbstreet' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4 + '_' + numID5 + '_' + numID6;
       matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-      App.scene[name].position.SetY(-1.88);
+      App.scene[name].tableEvents = {
+        chips: 0,
+        q: 6
+      };
+      App.scene[name].position.SetY(this.globalY);
       App.scene[name].position.SetZ(-5.56);
       App.scene[name].position.SetX(-3.73 + x * 0.7);
       App.scene[name].rotation.rotx = -90;
@@ -37536,4 +37662,4 @@ class TableEvents {
 
 exports.TableEvents = TableEvents;
 
-},{"matrix-engine":8}]},{},[36]);
+},{"./table-chips.js":38,"matrix-engine":8}]},{},[36]);
