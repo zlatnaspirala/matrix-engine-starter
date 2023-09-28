@@ -37090,6 +37090,7 @@ class MatrixRoulette {
   world = null; // gameplay staff
 
   tableBet = null;
+  preventDBTrigger = null;
 
   constructor() {
     var App = matrixEngine.App; // dev only
@@ -37098,8 +37099,9 @@ class MatrixRoulette {
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
-    this.tableBet = new _tableEvents.TableEvents();
+    App.camera.speedAmp = 0.01;
     this.preparePhysics();
+    this.tableBet = new _tableEvents.TableEvents(this.physics);
     this.attachMatrixRay();
     matrixEngine.Events.camera.pitch = -35;
     matrixEngine.Events.camera.zPos = 6;
@@ -37108,13 +37110,37 @@ class MatrixRoulette {
 
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
-    matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true;
+    // test
+    // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
     window.addEventListener('ray.hit.event', ev => {
-      console.log("You shoot the object :", ev.detail.hitObject.name);
-      dispatchEvent(new CustomEvent("test-chips", {
+      // all physics chips have name prefix chips_
+      // must be fixed from matrix engine source !!!
+      if (ev.detail.hitObject.name.indexOf('chips_') != -1) {
+        return;
+      }
+
+      if (this.preventDBTrigger == null) {
+        this.preventDBTrigger = Date.now();
+      } else {
+        var delta = Date.now() - this.preventDBTrigger;
+        console.log("DELTA: ", delta);
+
+        if (delta < 100) {
+          this.preventDBTrigger = null;
+          return;
+        }
+
+        this.preventDBTrigger = null;
+      }
+
+      if (ev.detail.hitObject.raycast.enabled != true) {
+        return;
+      }
+
+      dispatchEvent(new CustomEvent("chip-bet", {
         detail: ev.detail.hitObject
       }));
 
@@ -37144,22 +37170,117 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TableChips = void 0;
 
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+var CANNON = _interopRequireWildcard(require("cannon"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
 class TableChips {
-  constructor() {
-    addEventListener("test-chips", e => {
-      console.log('TEST NAME ', e.detail.name);
-      console.log('TEST QVOTA ', e.detail.tableEvents.q);
-      console.log('TEST BET', e.detail.tableEvents.chips);
+  constructor(pWorld, registerBetPlaces) {
+    this.physics = pWorld;
+    this.register = [];
+    this.registerBetPlaces = registerBetPlaces;
+    this.tex = {
+      source: ["res/images/chip1.png"],
+      mix_operation: "multiply"
+    };
+    this.tex = {
+      source: ["res/images/clear.png"],
+      mix_operation: "multiply"
+    };
+    addEventListener("chip-bet", e => {
+      if (e.detail.name.indexOf('clearBets') != -1) {
+        this.clearAll();
+      } else {
+        console.log('Add chip =>', e.detail.name);
+        this.addChip(e.detail);
+      }
+    });
+    this.addHUDBtns();
+  }
+
+  addHUDBtns() {
+    var n = 'clearBets';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
+    App.scene[n].position.SetY(-1.9);
+    App.scene[n].position.SetZ(-1.8);
+    App.scene[n].position.SetX(2.8);
+    App.scene[n].rotation.rotx = -90;
+    App.scene[n].geometry.setScaleByX(0.83);
+    App.scene[n].geometry.setScaleByY(0.5);
+    App.scene[n].glBlend.blendEnabled = true;
+    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+  }
+
+  addChip(o) {
+    // o is matrix engine scene obj
+    var size = 0.15; // is not to mush interest but need be uniq
+
+    var name = "chips_" + o.name;
+    this.addObjChip(name).then(d => {
+      console.log('WHAT IS D => ', d);
+      var b2 = new CANNON.Body({
+        mass: 1,
+        linearDamping: 0.001,
+        // need position data from trigered field
+        position: new CANNON.Vec3(o.position.x, o.position.z, o.position.y + 0.5 + o.tableEvents.chips * 0.16),
+        //                                     x      z     y
+        shape: new CANNON.Box(new CANNON.Vec3(size, size, 0.042))
+      });
+      this.physics.world.addBody(b2);
+      d.physics.currentBody = b2;
+      d.physics.enabled = true; // memo bet
+
+      o.tableEvents.chips++;
+      this.register.push({
+        chipObj: d,
+        betPlace: o
+      });
     });
   }
 
-  addChip() {}
+  addObjChip(name) {
+    return new Promise((resolve, reject) => {
+      function onLoadObj(meshes) {
+        try {
+          matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[name]);
+          var tex = {
+            source: ["res/images/chip1.png"],
+            mix_operation: "multiply"
+          };
+          matrixEngine.matrixWorld.world.Add("obj", 0.00001, name, tex, meshes[name]);
+          App.scene[name].raycast.enabled = false;
+          App.scene[name].position.y = 1;
+          App.scene[name].mesh.setScale(0.009);
+          resolve(App.scene[name]);
+        } catch (err) {
+          reject('Loading obj chip error: ' + err);
+        }
+      }
+
+      var _name = {};
+      _name[name] = "res/3d-objects/chip1.obj";
+      matrixEngine.objLoader.downloadMeshes(_name, onLoadObj);
+    });
+  }
+
+  clearAll() {
+    this.register.forEach((i, index, array) => {
+      array[index].chipObj.selfDestroy(1);
+      array[index].betPlace.tableEvents.chips = 0;
+      delete array[index];
+    });
+  }
 
 }
 
 exports.TableChips = TableChips;
 
-},{}],39:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":8}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37176,9 +37297,12 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 class TableEvents {
+  // this class used for bet place objects
+  // they memory bets
   chips = {};
+  registerBetPlaces = [];
 
-  constructor() {
+  constructor(pWorld) {
     var App = matrixEngine.App;
     this.texTableNumbers = {
       source: ["res/images/tabla.png"],
@@ -37200,16 +37324,18 @@ class TableEvents {
     this.constructSt12();
     this.constructStreets();
     this.constructColumn();
-    this.constructDBStreets();
+    this.constructDBStreets(); // Ground [physics]
+
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
     App.scene.atable.raycast.enabled = false;
-    App.scene.atable.position.SetY(-1.9);
+    App.scene.atable.position.SetY(-1.95);
     App.scene.atable.position.SetZ(-6);
     App.scene.atable.position.SetX(0);
     App.scene.atable.rotation.rotx = -90;
     App.scene.atable.geometry.setScaleByX(5);
-    App.scene.atable.geometry.setScaleByY(1.8);
-    this.chips = new _tableChips.TableChips();
+    App.scene.atable.geometry.setScaleByY(1.8); // new class
+
+    this.chips = new _tableChips.TableChips(pWorld, this.registerBetPlaces);
   }
 
   constructSingleNums() {
@@ -37223,11 +37349,12 @@ class TableEvents {
     App.scene[zero].position.SetZ(-6.8);
     App.scene[zero].position.SetX(-4.8);
     App.scene[zero].rotation.rotx = -90;
-    App.scene[zero].geometry.setScaleByX(-0.23);
+    App.scene[zero].geometry.setScaleByX(0.23);
     App.scene[zero].geometry.setScaleByY(1.1);
     App.scene[zero].glBlend.blendEnabled = true;
     App.scene[zero].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene[zero].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    this.registerBetPlaces.push(App.scene[zero]);
     var numID = 1;
 
     for (var x = 0; x < 12; x++) {
@@ -37239,7 +37366,7 @@ class TableEvents {
           q: 36
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-8.05 + y * 0.71);
+        App.scene[name].position.SetZ(-8.05 + y * 0.68);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.23);
@@ -37247,6 +37374,7 @@ class TableEvents {
         App.scene[name].glBlend.blendEnabled = true;
         App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        this.registerBetPlaces.push(App.scene[name]);
         numID++;
       }
     }
@@ -37273,6 +37401,7 @@ class TableEvents {
         App.scene[name].glBlend.blendEnabled = true;
         App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
         App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+        this.registerBetPlaces.push(App.scene[name]);
         numID++;
         numID2++;
       }
@@ -37302,6 +37431,7 @@ class TableEvents {
         App.scene[name].glBlend.blendEnabled = true;
         App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
         App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+        this.registerBetPlaces.push(App.scene[name]);
         numID++;
         numID2++;
       }
@@ -37323,6 +37453,7 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    this.registerBetPlaces.push(App.scene[name]);
     name = 'trio_0_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -37338,6 +37469,7 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    this.registerBetPlaces.push(App.scene[name]);
     name = 'topline_0_1_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -37353,6 +37485,7 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    this.registerBetPlaces.push(App.scene[name]);
     name = 'split_0_1';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -37368,6 +37501,7 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    this.registerBetPlaces.push(App.scene[name]);
     name = 'split_0_2'; // 2_5_8_11_14_17_20_23_26_29_32_35
 
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
@@ -37384,6 +37518,7 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    this.registerBetPlaces.push(App.scene[name]);
     name = 'split_0_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -37400,6 +37535,7 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    this.registerBetPlaces.push(App.scene[name]);
   }
 
   constructCorner() {
@@ -37425,6 +37561,7 @@ class TableEvents {
         App.scene[name].glBlend.blendEnabled = true;
         App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
         App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+        this.registerBetPlaces.push(App.scene[name]);
         numID = numID + y;
         numID2 = numID2 + y;
         numID3 = numID3 + y;
@@ -37449,6 +37586,7 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    this.registerBetPlaces.push(App.scene[name]);
     name = 'colorBlack';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -37461,6 +37599,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
     App.scene[name].geometry.setScaleByY(-0.3);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37479,6 +37618,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
     App.scene[name].geometry.setScaleByY(-0.3);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37494,6 +37634,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
     App.scene[name].geometry.setScaleByY(-0.3);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37512,6 +37653,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
     App.scene[name].geometry.setScaleByY(-0.3);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37527,6 +37669,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
     App.scene[name].geometry.setScaleByY(-0.3);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37545,6 +37688,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35);
     App.scene[name].geometry.setScaleByY(-0.25);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37560,6 +37704,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35);
     App.scene[name].geometry.setScaleByY(-0.25);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37575,6 +37720,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35);
     App.scene[name].geometry.setScaleByY(-0.25);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37598,6 +37744,7 @@ class TableEvents {
       App.scene[name].rotation.rotx = -90;
       App.scene[name].geometry.setScaleByX(-0.1);
       App.scene[name].geometry.setScaleByY(-0.1);
+      this.registerBetPlaces.push(App.scene[name]);
       App.scene[name].glBlend.blendEnabled = true;
       App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
       App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37621,6 +37768,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45);
     App.scene[name].geometry.setScaleByY(-0.28);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37637,6 +37785,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45);
     App.scene[name].geometry.setScaleByY(-0.28);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37653,6 +37802,7 @@ class TableEvents {
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45);
     App.scene[name].geometry.setScaleByY(-0.28);
+    this.registerBetPlaces.push(App.scene[name]);
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
@@ -37682,6 +37832,7 @@ class TableEvents {
       App.scene[name].glBlend.blendEnabled = true;
       App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
       App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      this.registerBetPlaces.push(App.scene[name]);
       numID = numID + 3;
       numID2 = numID2 + 3;
       numID3 = numID3 + 3;

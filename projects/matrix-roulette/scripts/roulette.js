@@ -8,6 +8,8 @@ export class MatrixRoulette {
   // gameplay staff
   tableBet = null;
 
+  preventDBTrigger = null;
+
   constructor() {
     var App = matrixEngine.App
     // dev only
@@ -15,10 +17,12 @@ export class MatrixRoulette {
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
-
-    this.tableBet = new TableEvents()
-
+    App.camera.speedAmp = 0.01;
+    
     this.preparePhysics()
+
+    this.tableBet = new TableEvents(this.physics)
+    
     this.attachMatrixRay()
 
     matrixEngine.Events.camera.pitch = -35
@@ -29,16 +33,38 @@ export class MatrixRoulette {
   attachMatrixRay() {
 
     // look like inverse - inside matrix-engine must be done
-    matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
+    // test
+    // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
 
     canvas.addEventListener('mousedown', (ev) => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
 
-    window.addEventListener('ray.hit.event', (ev) => {
-      console.log("You shoot the object :", ev.detail.hitObject.name)
+    
 
-      dispatchEvent(new CustomEvent("test-chips",
+    window.addEventListener('ray.hit.event', (ev) => {
+      // all physics chips have name prefix chips_
+      // must be fixed from matrix engine source !!!
+      if (ev.detail.hitObject.name.indexOf('chips_') != -1 ) {
+        return;
+      }
+      if (this.preventDBTrigger == null) {
+        this.preventDBTrigger = Date.now()
+      } else {
+        var delta = Date.now() - this.preventDBTrigger;
+        console.log("DELTA: ", delta)
+        if (delta < 100) {
+          this.preventDBTrigger = null;
+          return;
+        }
+        this.preventDBTrigger = null;
+      }
+
+      if (ev.detail.hitObject.raycast.enabled != true) {
+        return;
+      }
+
+      dispatchEvent(new CustomEvent("chip-bet",
         {detail: ev.detail.hitObject}));
 
       if(ev.detail.hitObject.physics.enabled == true) {
