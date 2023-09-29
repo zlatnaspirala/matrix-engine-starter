@@ -20970,7 +20970,22 @@ class RotationVector {
       x: 0,
       y: 0,
       z: 0
+    }; // test
+
+    this.adapt_quaternion = () => {
+      this.getRotDirX = () => {
+        return this.RotationVector;
+      };
+
+      this.getRotDirY = () => {
+        return this.RotationVector;
+      };
+
+      this.getRotDirZ = () => {
+        return this.RotationVector;
+      };
     };
+
     return this;
   }
 
@@ -23740,9 +23755,21 @@ _manifest.default.operation.reDrawGlobal = function (time) {
         local.position.SetX(local.physics.currentBody.position.x);
         local.position.SetZ(local.physics.currentBody.position.y);
         local.position.SetY(local.physics.currentBody.position.z);
-        _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-        _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-        _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]); // matrixEngine.matrixWorld.world.physics.toDeg
+
+        if (local.name === 'bigWheel') {
+          // console.log('TORUS TEST RENDER PHYS')
+          _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+          _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]) + 90;
+          _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+          _matrixWorld.world.contentList[physicsLooper].rotation.y = local.physics.currentBody.quaternion.toAxisAngle()[0].y;
+          _matrixWorld.world.contentList[physicsLooper].rotation.x = local.physics.currentBody.quaternion.toAxisAngle()[0].x;
+          _matrixWorld.world.contentList[physicsLooper].rotation.z = local.physics.currentBody.quaternion.toAxisAngle()[0].z;
+        } else {
+          _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+          _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+          _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+        } //custom_type :"torus"
+
       }
 
       physicsLooper++;
@@ -37078,7 +37105,11 @@ exports.MatrixRoulette = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
-var _tableEvents = require("./table-events.js");
+var _tableEvents = _interopRequireDefault(require("./table-events.js"));
+
+var _wheel = _interopRequireDefault(require("./wheel.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -37090,6 +37121,7 @@ class MatrixRoulette {
   world = null; // gameplay staff
 
   tableBet = null;
+  wheelSystem = null;
   preventDBTrigger = null;
 
   constructor() {
@@ -37101,7 +37133,8 @@ class MatrixRoulette {
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
     App.camera.speedAmp = 0.01;
     this.preparePhysics();
-    this.tableBet = new _tableEvents.TableEvents(this.physics);
+    this.tableBet = new _tableEvents.default(this.physics);
+    this.wheelSystem = new _wheel.default(this.physics);
     this.attachMatrixRay();
     matrixEngine.Events.camera.pitch = -35;
     matrixEngine.Events.camera.zPos = 6;
@@ -37162,13 +37195,13 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"./table-events.js":39,"matrix-engine":8}],38:[function(require,module,exports){
+},{"./table-events.js":39,"./wheel.js":40,"matrix-engine":8}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TableChips = void 0;
+exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
@@ -37225,7 +37258,7 @@ class TableChips {
       console.log('WHAT IS D => ', d);
       var b2 = new CANNON.Body({
         mass: 1,
-        linearDamping: 0.001,
+        linearDamping: 0.01,
         // need position data from trigered field
         position: new CANNON.Vec3(o.position.x, o.position.z, o.position.y + 0.5 + o.tableEvents.chips * 0.16),
         //                                     x      z     y
@@ -37278,7 +37311,7 @@ class TableChips {
 
 }
 
-exports.TableChips = TableChips;
+exports.default = TableChips;
 
 },{"cannon":5,"matrix-engine":8}],39:[function(require,module,exports){
 "use strict";
@@ -37286,19 +37319,24 @@ exports.TableChips = TableChips;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TableEvents = void 0;
+exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
-var _tableChips = require("./table-chips.js");
+var _tableChips = _interopRequireDefault(require("./table-chips.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+/**
+ * @description
+ * This class used for bet place objects
+ * To memory chips data.
+ */
 class TableEvents {
-  // this class used for bet place objects
-  // they memory bets
   chips = {};
   registerBetPlaces = [];
 
@@ -37335,7 +37373,7 @@ class TableEvents {
     App.scene.atable.geometry.setScaleByX(5);
     App.scene.atable.geometry.setScaleByY(1.8); // new class
 
-    this.chips = new _tableChips.TableChips(pWorld, this.registerBetPlaces);
+    this.chips = new _tableChips.default(pWorld, this.registerBetPlaces);
   }
 
   constructSingleNums() {
@@ -37844,6 +37882,121 @@ class TableEvents {
 
 }
 
-exports.TableEvents = TableEvents;
+exports.default = TableEvents;
 
-},{"./table-chips.js":38,"matrix-engine":8}]},{},[36]);
+},{"./table-chips.js":38,"matrix-engine":8}],40:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+var CANNON = _interopRequireWildcard(require("cannon"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+class Wheel {
+  constructor(pWorld) {
+    // dev
+    window.CANNON = CANNON;
+    console.log('wheel constructor');
+    this.pWorld = pWorld;
+    this.addStaticWheel();
+    this.addBall(111);
+  }
+
+  addBall(j) {
+    if (typeof j === 'undefined') j = 1; // for(var j = 0;j < x;j++) {
+    //   setTimeout(() => {
+
+    var tex = {
+      source: ["res/images/ball.png"],
+      mix_operation: "multiply"
+    };
+    matrixEngine.matrixWorld.world.Add("sphereLightTex", 0.1, "BALL" + j, tex);
+    var b2 = new CANNON.Body({
+      mass: 1,
+      linearDamping: 0.005,
+      angularDamping: 0.5,
+      angularVelocity: new CANNON.Vec3(0.01, 0.01, 0),
+      position: new CANNON.Vec3(-1.5, -16, 3),
+      shape: new CANNON.Sphere(0.1)
+    });
+    this.pWorld.world.addBody(b2);
+    App.scene['BALL' + j].physics.currentBody = b2;
+    App.scene['BALL' + j].physics.enabled = true; //   }, 1000)
+    // }
+  }
+
+  addStaticWheel() {
+    // matrxiengien obj
+    var tex = {
+      source: ["res/images/wheel-roll/skin/skin.jpg"],
+      mix_operation: "multiply"
+    };
+    matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheel", tex, {
+      custom_type: 'torus',
+      slices: 32,
+      loops: 32,
+      inner_rad: 1,
+      outerRad: 2
+    }); // App.scene.bigWheel.rotation.adapt_quaternion()
+    // cannon
+
+    var wheelsPoly = 32;
+    var wheelInput1 = 2;
+    var wheelInput2 = 1;
+    var bigWheel = new CANNON.Body({
+      mass: 10,
+      //collisionFilterGroup: GROUP1,
+      //collisionFilterMask: GROUP2,
+      type: CANNON.Body.DYNAMIC,
+      shape: CANNON.Trimesh.createTorus(wheelInput1, wheelInput2, wheelsPoly, wheelsPoly),
+      position: new CANNON.Vec3(0, -16.5, 2)
+    }); // var testRot = new CANNON.Quaternion(0,0,0,0);
+    // bigWheel.quaternion.setFromEuler(0, -Math.PI / 2, 0)
+    // bigWheel.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI / 4);
+    // dev
+
+    window.bigWheel = bigWheel;
+    this.pWorld.world.addBody(bigWheel);
+    App.scene.bigWheel.physics.currentBody = bigWheel;
+    App.scene.bigWheel.physics.enabled = true;
+  }
+
+  addOBJS() {
+    var name = 'wheel';
+    return new Promise((resolve, reject) => {
+      function onLoadObj(meshes) {
+        try {
+          matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[name]);
+          var tex = {
+            source: ["res/images/chip1.png"],
+            mix_operation: "multiply"
+          };
+          matrixEngine.matrixWorld.world.Add("obj", 0.00001, name, tex, meshes[name]);
+          App.scene[name].raycast.enabled = false;
+          App.scene[name].position.y = 1;
+          App.scene[name].mesh.setScale(0.009);
+          resolve(App.scene[name]);
+        } catch (err) {
+          reject('Loading obj chip error: ' + err);
+        }
+      }
+
+      var _name = {};
+      _name[name] = "res/3d-objects/chip1.obj";
+      matrixEngine.objLoader.downloadMeshes(_name, onLoadObj);
+    });
+  }
+
+}
+
+exports.default = Wheel;
+
+},{"cannon":5,"matrix-engine":8}]},{},[36]);

@@ -1,7 +1,7 @@
 import * as matrixEngine from "matrix-engine"
 import * as CANNON from 'cannon';
 
-export class TableChips {
+export default class TableChips {
 
   constructor(pWorld, registerBetPlaces) {
     this.physics = pWorld;
@@ -53,7 +53,7 @@ export class TableChips {
       console.log('WHAT IS D => ', d)
       var b2 = new CANNON.Body({
         mass: 1,
-        linearDamping: 0.001,
+        linearDamping: 0.01,
         // need position data from trigered field
         position: new CANNON.Vec3(o.position.x, o.position.z, o.position.y + 0.5 + (o.tableEvents.chips * 0.16)),
         //                                     x      z     y

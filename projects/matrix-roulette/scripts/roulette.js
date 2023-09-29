@@ -1,5 +1,6 @@
 import * as matrixEngine from "matrix-engine"
-import {TableEvents} from "./table-events.js"
+import TableEvents from "./table-events.js"
+import Wheel from "./wheel.js";
 
 export class MatrixRoulette {
   // me staff
@@ -7,6 +8,7 @@ export class MatrixRoulette {
   world = null;
   // gameplay staff
   tableBet = null;
+  wheelSystem = null;
 
   preventDBTrigger = null;
 
@@ -22,7 +24,7 @@ export class MatrixRoulette {
     this.preparePhysics()
 
     this.tableBet = new TableEvents(this.physics)
-    
+    this.wheelSystem = new Wheel(this.physics)
     this.attachMatrixRay()
 
     matrixEngine.Events.camera.pitch = -35

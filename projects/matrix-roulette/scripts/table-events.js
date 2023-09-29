@@ -1,9 +1,12 @@
 import * as matrixEngine from "matrix-engine"
-import {TableChips} from './table-chips.js';
-export class TableEvents {
+import TableChips from './table-chips.js';
 
-  // this class used for bet place objects
-  // they memory bets
+/**
+ * @description
+ * This class used for bet place objects
+ * To memory chips data.
+ */
+export default class TableEvents {
   chips = {};
   registerBetPlaces = [];
 
