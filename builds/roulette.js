@@ -23755,21 +23755,16 @@ _manifest.default.operation.reDrawGlobal = function (time) {
         local.position.SetX(local.physics.currentBody.position.x);
         local.position.SetZ(local.physics.currentBody.position.y);
         local.position.SetY(local.physics.currentBody.position.z);
+        _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+        _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
 
-        if (local.name === 'bigWheel') {
-          // console.log('TORUS TEST RENDER PHYS')
-          _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-          _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]) + 90;
-          _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-          _matrixWorld.world.contentList[physicsLooper].rotation.y = local.physics.currentBody.quaternion.toAxisAngle()[0].y;
-          _matrixWorld.world.contentList[physicsLooper].rotation.x = local.physics.currentBody.quaternion.toAxisAngle()[0].x;
-          _matrixWorld.world.contentList[physicsLooper].rotation.z = local.physics.currentBody.quaternion.toAxisAngle()[0].z;
+        if (_matrixWorld.world.contentList[physicsLooper].custom_type && _matrixWorld.world.contentList[physicsLooper].custom_type == 'torus') {
+          _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]) + 90; // world.contentList[physicsLooper].rotation.y = (local.physics.currentBody.quaternion.toAxisAngle()[0].y);
+          // world.contentList[physicsLooper].rotation.x = (local.physics.currentBody.quaternion.toAxisAngle()[0].x);
+          // world.contentList[physicsLooper].rotation.z = (local.physics.currentBody.quaternion.toAxisAngle()[0].z);
         } else {
           _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-          _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-          _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-        } //custom_type :"torus"
-
+        }
       }
 
       physicsLooper++;
