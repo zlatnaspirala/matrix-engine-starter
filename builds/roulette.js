@@ -37187,9 +37187,9 @@ class MatrixRoulette {
       mix_operation: "multiply"
     });
     this.physics.broadphase = new CANNON.NaiveBroadphase();
-    this.physics.solver.iterations = 5;
-    this.physics.defaultContactMaterial.contactEquationStiffness = 1e6;
-    this.physics.defaultContactMaterial.contactEquationRelaxation = 10;
+    console.log('this.physics', this.physics);
+    this.physics.world.solver.iterations = 15; // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
+    // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
   }
 
 }
@@ -37901,7 +37901,11 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+var TTT = true;
+
 class Wheel {
+  b2 = null; // ball body
+
   constructor(pWorld) {
     // dev
     // window.CANNON = CANNON;
@@ -37911,6 +37915,12 @@ class Wheel {
     this.addBall('test');
   }
 
+  momentOftouch = e => {
+    console.log("Collided with body:", e.body);
+    App.scene.balltest.physics.currentBody.force.set(30, -850, 1);
+    this.b2.removeEventListener("collide", this.momentOftouch);
+  };
+
   addBall(j) {
     if (typeof j === 'undefined') j = 1;
     var tex = {
@@ -37918,21 +37928,17 @@ class Wheel {
       mix_operation: "multiply"
     };
     matrixEngine.matrixWorld.world.Add("sphereLightTex", 0.2, "ball" + j, tex);
-    var b2 = new CANNON.Body({
-      mass: 1,
-      linearDamping: 0.005,
+    this.b2 = new CANNON.Body({
+      mass: 0.5,
+      linearDamping: 0.1,
       angularDamping: 0.5,
-      angularVelocity: new CANNON.Vec3(0.01, 0.01, 0),
-      position: new CANNON.Vec3(-3.5, -14, 7),
+      angularVelocity: new CANNON.Vec3(0, 0, 0),
+      position: new CANNON.Vec3(-3.8, -14, 1.7),
       shape: new CANNON.Sphere(0.2)
     });
-    b2.addEventListener("collide", function (e) {
-      console.log("The ball just collided with the wheel!");
-      console.log("Collided with body:", e.body);
-      console.log("Contact between bodies:", e.contact);
-    });
-    this.pWorld.world.addBody(b2);
-    App.scene['ball' + j].physics.currentBody = b2;
+    this.b2.addEventListener("collide", this.momentOftouch);
+    this.pWorld.world.addBody(this.b2);
+    App.scene['ball' + j].physics.currentBody = this.b2;
     App.scene['ball' + j].physics.enabled = true;
   }
 
@@ -37940,14 +37946,12 @@ class Wheel {
     // matrix-engine obj
     var tex = {
       source: ["res/images/wheel-roll/skin/skin1.jpg"],
-      // res/images/wheel-roll/metal-separators/reflection-wheel.jpg
-      // source: [" res/images/wheel-roll/center/wood.jpg"],
       mix_operation: "multiply"
     }; // wheel config
 
     var outerRad = 6;
     var inner_rad = 3;
-    var wheelsPoly = 64; // [matrix-engine 1.9.20] custom_type: 'torus',
+    var wheelsPoly = 128; // [matrix-engine 1.9.20] custom_type: 'torus',
 
     matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheel", tex, {
       custom_type: 'torus',

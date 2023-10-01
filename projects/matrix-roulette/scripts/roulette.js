@@ -85,10 +85,10 @@ export class MatrixRoulette {
     });
 
     this.physics.broadphase = new CANNON.NaiveBroadphase();
-    this.physics.solver.iterations = 5;
-    this.physics.defaultContactMaterial.contactEquationStiffness = 1e6;
-    this.physics.defaultContactMaterial.contactEquationRelaxation = 10;
-    
+    console.log('this.physics', this.physics)
+    this.physics.world.solver.iterations = 15;
+    // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
+    // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
   }
 
 }
