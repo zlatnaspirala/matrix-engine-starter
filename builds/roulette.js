@@ -37104,6 +37104,8 @@ var _tableEvents = _interopRequireDefault(require("./table-events.js"));
 
 var _wheel = _interopRequireDefault(require("./wheel.js"));
 
+var CANNON = _interopRequireWildcard(require("cannon"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -37133,7 +37135,7 @@ class MatrixRoulette {
     this.attachMatrixRay();
     matrixEngine.Events.camera.pitch = -35;
     matrixEngine.Events.camera.zPos = 6;
-    matrixEngine.Events.camera.yPos = 5;
+    matrixEngine.Events.camera.yPos = 9.2;
   }
 
   attachMatrixRay() {
@@ -37184,13 +37186,17 @@ class MatrixRoulette {
       source: ["res/images/bg-pow2.png"],
       mix_operation: "multiply"
     });
+    this.physics.broadphase = new CANNON.NaiveBroadphase();
+    this.physics.solver.iterations = 5;
+    this.physics.defaultContactMaterial.contactEquationStiffness = 1e6;
+    this.physics.defaultContactMaterial.contactEquationRelaxation = 10;
   }
 
 }
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"./table-events.js":39,"./wheel.js":40,"matrix-engine":8}],38:[function(require,module,exports){
+},{"./table-events.js":39,"./wheel.js":40,"cannon":5,"matrix-engine":8}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37902,7 +37908,7 @@ class Wheel {
     console.log('wheel constructor');
     this.pWorld = pWorld;
     this.addStaticWheel();
-    this.addBall(1);
+    this.addBall('test');
   }
 
   addBall(j) {
@@ -37911,18 +37917,23 @@ class Wheel {
       source: ["res/images/ball.png"],
       mix_operation: "multiply"
     };
-    matrixEngine.matrixWorld.world.Add("sphereLightTex", 0.2, "BALL" + j, tex);
+    matrixEngine.matrixWorld.world.Add("sphereLightTex", 0.2, "ball" + j, tex);
     var b2 = new CANNON.Body({
       mass: 1,
       linearDamping: 0.005,
       angularDamping: 0.5,
       angularVelocity: new CANNON.Vec3(0.01, 0.01, 0),
-      position: new CANNON.Vec3(-1.5, -16, 3),
+      position: new CANNON.Vec3(-3.5, -14, 7),
       shape: new CANNON.Sphere(0.2)
     });
+    b2.addEventListener("collide", function (e) {
+      console.log("The ball just collided with the wheel!");
+      console.log("Collided with body:", e.body);
+      console.log("Contact between bodies:", e.contact);
+    });
     this.pWorld.world.addBody(b2);
-    App.scene['BALL' + j].physics.currentBody = b2;
-    App.scene['BALL' + j].physics.enabled = true;
+    App.scene['ball' + j].physics.currentBody = b2;
+    App.scene['ball' + j].physics.enabled = true;
   }
 
   addStaticWheel() {
@@ -37936,20 +37947,22 @@ class Wheel {
 
     var outerRad = 6;
     var inner_rad = 3;
-    var wheelsPoly = 32;
+    var wheelsPoly = 64; // [matrix-engine 1.9.20] custom_type: 'torus',
+
     matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheel", tex, {
       custom_type: 'torus',
       slices: wheelsPoly,
       loops: wheelsPoly,
       inner_rad: inner_rad,
       outerRad: outerRad
-    }); // cannon
+    });
+    App.scene.bigWheel.glDrawElements.mode = 'LINES'; // cannon
 
     var bigWheel = new CANNON.Body({
       mass: 10,
-      type: CANNON.Body.DYNAMIC,
+      type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, -16.5, 2)
+      position: new CANNON.Vec3(0, -16.5, -3)
     }); // dev
 
     window.bigWheel = bigWheel;

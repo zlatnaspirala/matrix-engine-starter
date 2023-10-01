@@ -1,6 +1,7 @@
 import * as matrixEngine from "matrix-engine"
 import TableEvents from "./table-events.js"
 import Wheel from "./wheel.js";
+import * as CANNON from 'cannon';
 
 export class MatrixRoulette {
   // me staff
@@ -29,7 +30,7 @@ export class MatrixRoulette {
 
     matrixEngine.Events.camera.pitch = -35
     matrixEngine.Events.camera.zPos = 6
-    matrixEngine.Events.camera.yPos = 5
+    matrixEngine.Events.camera.yPos = 9.2
   }
 
   attachMatrixRay() {
@@ -82,6 +83,12 @@ export class MatrixRoulette {
       source: ["res/images/bg-pow2.png"],
       mix_operation: "multiply",
     });
+
+    this.physics.broadphase = new CANNON.NaiveBroadphase();
+    this.physics.solver.iterations = 5;
+    this.physics.defaultContactMaterial.contactEquationStiffness = 1e6;
+    this.physics.defaultContactMaterial.contactEquationRelaxation = 10;
+    
   }
 
 }
