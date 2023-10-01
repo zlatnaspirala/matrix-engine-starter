@@ -48,14 +48,18 @@ export class MatrixRoulette {
     window.addEventListener('ray.hit.event', (ev) => {
       // all physics chips have name prefix chips_
       // must be fixed from matrix engine source !!!
-      if (ev.detail.hitObject.name.indexOf('chips_') != -1 ) {
+      if (ev.detail.hitObject.name.indexOf('chips_') != -1 ||
+          ev.detail.hitObject.name.indexOf('roll') != -1
+          ) {
+        console.log("PREEDVNT NO CHIPS TRAY: ", ev.detail.hitObject.name)
         return;
       }
+
       if (this.preventDBTrigger == null) {
         this.preventDBTrigger = Date.now()
       } else {
         var delta = Date.now() - this.preventDBTrigger;
-        console.log("DELTA: ", delta)
+ 
         if (delta < 100) {
           this.preventDBTrigger = null;
           return;
