@@ -38043,8 +38043,9 @@ class Wheel {
     });
     this.pWorld.world.addBody(bigWheel);
     App.scene.bigWheel.physics.currentBody = bigWheel;
-    App.scene.bigWheel.physics.enabled = true;
-    App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22); // top static big wheel
+    App.scene.bigWheel.physics.enabled = true; // App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22)
+
+    App.scene.bigWheel.LightsData.lightingDirection.set(1, -0.2, 0); // top static big wheel
     // wheel config
 
     var outerRad = 12.8;
