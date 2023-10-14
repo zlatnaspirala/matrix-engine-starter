@@ -220,7 +220,9 @@ export default class Wheel {
           App.scene[name].position.y = 1;
           App.scene[name].position.z = -21;
           App.scene[name].mesh.setScale(44)
+          
           App.scene.centerRollDecoration.LightsData.ambientLight.set(0.5,0.5,0)
+          App.scene.centerRollDecoration.LightsData.lightingDirection.set(1,-0.2,0)
 
           resolve(App.scene[name])
         } catch(err) {
