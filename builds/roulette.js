@@ -37147,6 +37147,7 @@ class MatrixRoulette {
     this.tableBet = new _tableEvents.default(this.physics);
     this.wheelSystem = new _wheelSingleTest.default(this.physics);
     this.attachMatrixRay();
+    this.attachGamePlayEvents();
     matrixEngine.Events.camera.pitch = -35;
     matrixEngine.Events.camera.zPos = -6;
     matrixEngine.Events.camera.yPos = 19.2;
@@ -37204,6 +37205,12 @@ class MatrixRoulette {
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
 
     App.scene.FLOOR_STATIC.geometry.setScale(3);
+  }
+
+  attachGamePlayEvents() {
+    window.addEventListener('matrix.roulette.win.number', ev => {
+      alert(ev.detail);
+    });
   }
 
 }
@@ -37954,14 +37961,20 @@ class Wheel {
   }
 
   momentOftouch = e => {
-    console.log("Collided with body:", e.body);
-    App.scene.ball.physics.currentBody.force.set(30, -850, 1);
+    if (typeof e.body.matrixRouletteId === 'undefined') {
+      return;
+    }
+
+    console.log("Collided with number:", e.body.matrixRouletteId);
+    dispatchEvent(new CustomEvent('matrix.roulette.win.number', {
+      detail: e.body.matrixRouletteId
+    }));
     this.ballBody.removeEventListener("collide", this.momentOftouch);
   };
-
-  resetBall() {// this.pWorld.world.addBody(this.ballBody);
-  }
-
+  fireBall = () => {
+    this.ballBody.addEventListener("collide", this.momentOftouch);
+    roulette.wheelSystem.addBall(0.3, [4., -11.4, 3], [-11000, 320, 11]);
+  };
   addBall = (j, posArg, force) => {
     if (this.ballBody !== null) {
       console.log('Ball already created.');
@@ -38028,13 +38041,35 @@ class Wheel {
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
       position: new CANNON.Vec3(0, -21, 0.05)
-    }); // dev
-
-    window.bigWheel = bigWheel;
+    });
     this.pWorld.world.addBody(bigWheel);
     App.scene.bigWheel.physics.currentBody = bigWheel;
     App.scene.bigWheel.physics.enabled = true;
-    App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22);
+    App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22); // top static big wheel
+    // wheel config
+
+    var outerRad = 12.8;
+    var inner_rad = 1.125;
+    var wheelsPoly = 64;
+    matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheelTop", tex, {
+      custom_type: 'torus',
+      slices: wheelsPoly,
+      loops: wheelsPoly,
+      inner_rad: inner_rad,
+      outerRad: outerRad
+    }); // App.scene.bigWheel.glDrawElements.mode = 'LINES'
+    // cannon
+
+    var bigWheelTop = new CANNON.Body({
+      mass: 0,
+      type: CANNON.Body.STATIC,
+      shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
+      position: new CANNON.Vec3(0, -21, 3.05)
+    });
+    this.pWorld.world.addBody(bigWheelTop);
+    App.scene.bigWheelTop.physics.currentBody = bigWheelTop;
+    App.scene.bigWheelTop.physics.enabled = true;
+    App.scene.bigWheelTop.position.y = 6;
   }
 
   addCenterRoll() {
@@ -38083,7 +38118,8 @@ class Wheel {
           App.scene[name].raycast.enabled = false;
           App.scene[name].position.y = 1;
           App.scene[name].position.z = -21;
-          App.scene[name].mesh.setScale(45);
+          App.scene[name].mesh.setScale(44);
+          App.scene.centerRollDecoration.LightsData.ambientLight.set(0.5, 0.5, 0);
           resolve(App.scene[name]);
         } catch (err) {
           reject('Loading obj chip error: ' + err);
@@ -38151,7 +38187,9 @@ class Wheel {
       });
       this.pWorld.world.addBody(b2);
       App.scene['roll' + i].physics.currentBody = b2;
-      App.scene['roll' + i].physics.enabled = true; // small field holders
+      App.scene['roll' + i].physics.enabled = true;
+      App.scene['roll' + i].physics.currentBody.matrixRouletteId = i;
+      console.info('centerWheel', App.scene['roll' + i].physics.currentBody.id); // small field holders
 
       var tex = {
         source: ["res/images/field.png"],

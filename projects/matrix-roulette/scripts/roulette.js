@@ -28,6 +28,8 @@ export class MatrixRoulette {
     this.wheelSystem = new Wheel(this.physics)
     this.attachMatrixRay()
 
+    this.attachGamePlayEvents()
+
     matrixEngine.Events.camera.pitch = -35
     matrixEngine.Events.camera.zPos = -6
     matrixEngine.Events.camera.yPos = 19.2
@@ -86,6 +88,12 @@ export class MatrixRoulette {
     // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
     App.scene.FLOOR_STATIC.geometry.setScale(3)
+  }
+
+  attachGamePlayEvents() {
+    window.addEventListener('matrix.roulette.win.number', (ev) => {
+      alert(ev.detail)
+    })
   }
 
 }
