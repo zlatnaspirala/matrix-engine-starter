@@ -53,7 +53,16 @@ export default class Wheel {
     // this.pWorld.world.addBody(this.ballBody);
   }
 
-  addBall(j, posArg, force) {
+  addBall = (j, posArg, force) =>{
+
+    if (this.ballBody !== null) {
+      console.log('Ball already created.')
+      this.ballBody.position.set(posArg[0], posArg[1], posArg[2])
+      this.ballBody.angularVelocity.setZero()
+      this.ballBody.force.set(force[0], force[1], force[2])
+      return;
+    }
+
     if(typeof j === 'undefined') j = 1
     if(typeof posArg === 'undefined') posArg = [0, -16, 1.7]
 
@@ -83,7 +92,7 @@ export default class Wheel {
     App.scene['ball'].physics.currentBody = this.ballBody;
     App.scene['ball'].physics.enabled = true;
 
-    App.scene.ball.physics.currentBody.force.set(force[0], force[1], force[2])
+    this.ballBody.force.set(force[0], force[1], force[2])
 
   }
 

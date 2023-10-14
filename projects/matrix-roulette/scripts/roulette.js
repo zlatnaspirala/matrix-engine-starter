@@ -34,23 +34,17 @@ export class MatrixRoulette {
   }
 
   attachMatrixRay() {
-
     // look like inverse - inside matrix-engine must be done
-    // test
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
-
     canvas.addEventListener('mousedown', (ev) => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
-
-    
 
     window.addEventListener('ray.hit.event', (ev) => {
       // all physics chips have name prefix chips_
       // must be fixed from matrix engine source !!!
       if (ev.detail.hitObject.name.indexOf('chips_') != -1 ||
-          ev.detail.hitObject.name.indexOf('roll') != -1
-          ) {
+          ev.detail.hitObject.name.indexOf('roll') != -1) {
         console.log("PREEDVNT NO CHIPS TRAY: ", ev.detail.hitObject.name)
         return;
       }
@@ -59,7 +53,6 @@ export class MatrixRoulette {
         this.preventDBTrigger = Date.now()
       } else {
         var delta = Date.now() - this.preventDBTrigger;
- 
         if (delta < 100) {
           this.preventDBTrigger = null;
           return;
@@ -73,10 +66,9 @@ export class MatrixRoulette {
 
       dispatchEvent(new CustomEvent("chip-bet",
         {detail: ev.detail.hitObject}));
-
-      if(ev.detail.hitObject.physics.enabled == true) {
-        // ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
-      }
+      // if(ev.detail.hitObject.physics.enabled == true) {
+      //   // ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
+      // }
     });
   }
 
@@ -93,6 +85,7 @@ export class MatrixRoulette {
     this.physics.world.solver.iterations = 5;
     // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
+    App.scene.FLOOR_STATIC.geometry.setScale(3)
   }
 
 }

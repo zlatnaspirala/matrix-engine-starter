@@ -37151,7 +37151,6 @@ class MatrixRoulette {
 
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
-    // test
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
@@ -37183,10 +37182,9 @@ class MatrixRoulette {
 
       dispatchEvent(new CustomEvent("chip-bet", {
         detail: ev.detail.hitObject
-      }));
-
-      if (ev.detail.hitObject.physics.enabled == true) {// ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
-      }
+      })); // if(ev.detail.hitObject.physics.enabled == true) {
+      //   // ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
+      // }
     });
   }
 
@@ -37201,6 +37199,8 @@ class MatrixRoulette {
     console.log('this.physics', this.physics);
     this.physics.world.solver.iterations = 5; // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
+
+    App.scene.FLOOR_STATIC.geometry.setScale(3);
   }
 
 }
@@ -37957,7 +37957,15 @@ class Wheel {
   resetBall() {// this.pWorld.world.addBody(this.ballBody);
   }
 
-  addBall(j, posArg, force) {
+  addBall = (j, posArg, force) => {
+    if (this.ballBody !== null) {
+      console.log('Ball already created.');
+      this.ballBody.position.set(posArg[0], posArg[1], posArg[2]);
+      this.ballBody.angularVelocity.setZero();
+      this.ballBody.force.set(force[0], force[1], force[2]);
+      return;
+    }
+
     if (typeof j === 'undefined') j = 1;
     if (typeof posArg === 'undefined') posArg = [0, -16, 1.7];
     var tex = {
@@ -37983,8 +37991,8 @@ class Wheel {
     this.pWorld.world.addBody(this.ballBody);
     App.scene['ball'].physics.currentBody = this.ballBody;
     App.scene['ball'].physics.enabled = true;
-    App.scene.ball.physics.currentBody.force.set(force[0], force[1], force[2]);
-  }
+    this.ballBody.force.set(force[0], force[1], force[2]);
+  };
 
   addStaticWheel() {
     // matrix-engine obj
