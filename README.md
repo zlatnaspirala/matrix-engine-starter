@@ -36,6 +36,12 @@ And navigate to app.html, examples.html etc.
 
 ### Projects
 
+#### 3d roulette 
+- Video presentation
+  https://www.youtube.com/watch?v=2N_vgMu5QoI&ab_channel=javascriptfanatic
+
+  ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette.png)
+
 #### Web-Anatomy underconstructing
 
 ![matrix-anatomy](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-anatomy.png)
