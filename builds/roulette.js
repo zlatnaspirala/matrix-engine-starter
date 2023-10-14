@@ -37127,7 +37127,6 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 class MatrixRoulette {
-  // me staff
   physics = null;
   world = null; // gameplay staff
 
@@ -38090,7 +38089,9 @@ class Wheel {
       outerRad: outerRad
     });
     App.scene.centerWheel.glDrawElements.mode = 'LINES';
-    App.scene.centerWheel.LightsData.ambientLight.set(1, 3, 3); // cannon
+    App.scene.centerWheel.LightsData.ambientLight.set(1, 3, 3); // no need at all in prodc
+
+    App.scene.centerWheel.visible = false; // cannon
 
     var centerWheel = new CANNON.Body({
       mass: 0,

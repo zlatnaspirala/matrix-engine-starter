@@ -4,7 +4,6 @@ import Wheel from "./wheel-single-test.js";
 import * as CANNON from 'cannon';
 
 export class MatrixRoulette {
-  // me staff
   physics = null;
   world = null;
   // gameplay staff
@@ -21,13 +20,11 @@ export class MatrixRoulette {
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
     App.camera.speedAmp = 0.01;
-    
-    this.preparePhysics()
 
+    this.preparePhysics()
     this.tableBet = new TableEvents(this.physics)
     this.wheelSystem = new Wheel(this.physics)
     this.attachMatrixRay()
-
     this.attachGamePlayEvents()
 
     matrixEngine.Events.camera.pitch = -35
@@ -45,24 +42,24 @@ export class MatrixRoulette {
     window.addEventListener('ray.hit.event', (ev) => {
       // all physics chips have name prefix chips_
       // must be fixed from matrix engine source !!!
-      if (ev.detail.hitObject.name.indexOf('chips_') != -1 ||
-          ev.detail.hitObject.name.indexOf('roll') != -1) {
+      if(ev.detail.hitObject.name.indexOf('chips_') != -1 ||
+        ev.detail.hitObject.name.indexOf('roll') != -1) {
         console.log("PREEDVNT NO CHIPS TRAY: ", ev.detail.hitObject.name)
         return;
       }
 
-      if (this.preventDBTrigger == null) {
+      if(this.preventDBTrigger == null) {
         this.preventDBTrigger = Date.now()
       } else {
         var delta = Date.now() - this.preventDBTrigger;
-        if (delta < 100) {
+        if(delta < 100) {
           this.preventDBTrigger = null;
           return;
         }
         this.preventDBTrigger = null;
       }
 
-      if (ev.detail.hitObject.raycast.enabled != true) {
+      if(ev.detail.hitObject.raycast.enabled != true) {
         return;
       }
 

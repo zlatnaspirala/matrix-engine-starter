@@ -188,6 +188,9 @@ export default class Wheel {
     App.scene.centerWheel.glDrawElements.mode = 'LINES'
     App.scene.centerWheel.LightsData.ambientLight.set(1, 3, 3)
 
+    // no need at all in prodc
+    App.scene.centerWheel.visible = false
+
     // cannon
     var centerWheel = new CANNON.Body({
       mass: 0,
