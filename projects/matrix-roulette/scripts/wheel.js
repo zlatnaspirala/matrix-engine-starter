@@ -1,27 +1,38 @@
 import * as matrixEngine from "matrix-engine"
 import * as CANNON from 'cannon';
 
+/**
+ * @description
+ * Multi shapes must be implemented on matrix-engine project level.
+ */
+window.CANNON = CANNON
 export default class Wheel {
 
-  b2 = null;
-
-  speedRollInit = 0.2;
+  speedRollInit = 0.01;
   rollTimer = null;
+  // Collision filter groups - must be powers of 2!
+  GROUP1 = 1;
+  GROUP2 = 2;
+  GROUP3 = 4;
+  GROUP4 = 8;
 
   constructor(pWorld) {
-    console.log('wheel constructor')
+    // console.log('wheel constructor')
+    this.C = 0;
     this.pWorld = pWorld;
-
     this.texRollWheel = {
       source: ["res/images/ball.png"],
       mix_operation: "multiply",
     };
 
     this.addStaticWheel()
-    this.test()
-    // this.test2()
+    this.createWheelRoll()
     this.addBall('test')
+    // this.animateRoll()
+    addEventListener('spin', this.spin)
+  }
 
+  spin() {
     this.animateRoll()
   }
 
@@ -45,22 +56,31 @@ export default class Wheel {
     this.b2.removeEventListener("collide", this.momentOftouch);
   }
 
-  addBall(j) {
+  addBall(j, posArg) {
     if(typeof j === 'undefined') j = 1
+    if(typeof posArg === 'undefined') posArg = [0, -16, 1.7]
+
     var tex = {
       source: ["res/images/ball.png"],
       mix_operation: "multiply",
     };
-    matrixEngine.matrixWorld.world.Add("sphereLightTex", 0.2, "ball" + j, tex);
-    this.b2 = new CANNON.Body({
-      mass: 0.5,
-      linearDamping: 0.1,
-      angularDamping: 0.5,
-      angularVelocity: new CANNON.Vec3(0, 0, 0),
-      position: new CANNON.Vec3(-3.8, -14, 1.7),
-      shape: new CANNON.Sphere(0.12)
-    });
 
+    matrixEngine.matrixWorld.world.Add("sphereLightTex", j, "ball" + j, tex);
+
+    this.b2 = new CANNON.Body({
+      mass: 10,
+      linearDamping: 0.05,
+      angularDamping: 0.05,
+      angularVelocity: new CANNON.Vec3(0, 0, 0),
+      // position: new CANNON.Vec3(-3.8, -14, 1.7),
+      // position: new CANNON.Vec3(-0, -16, 1.7),
+      position: new CANNON.Vec3(posArg[0], posArg[1], posArg[2]),
+      shape: new CANNON.Sphere(j),
+
+      collisionFilterGroup: this.GROUP1,
+      collisionFilterMask: this.GROUP2 | this.GROUP3 | this.GROUP4
+
+    });
 
     this.b2.addEventListener("collide", this.momentOftouch);
 
@@ -78,7 +98,7 @@ export default class Wheel {
 
     // wheel config
     var outerRad = 6;
-    var inner_rad = 3;
+    var inner_rad = 3.3;
     var wheelsPoly = 128;
 
     // [matrix-engine 1.9.20] custom_type: 'torus',
@@ -109,204 +129,190 @@ export default class Wheel {
 
   animateRoll() {
 
-    this.C =0;
+    var STEP = 0;
     this.rollTimer = setInterval(() => {
+      for(var i = 0;i < 18;i++) {
+        App.scene['roll' + i].rotation.roty =
+          matrixEngine.utility.radToDeg(App.scene['roll' + i].physics.currentBody.quaternion.toAxisAngle()[1]);
+        var locRot;
+        if(STEP > 360) {
+          STEP = 0
+        }
+        var N = (i * 20 + STEP) * Math.PI / 360;
+        locRot = new CANNON.Quaternion(0, 0, 0, 0);
+        locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), N);
 
-      for(var i = 0;i < 37;i++) {
-        var p = {x: 0.2, y: 0.1, z: 0};
-        p = this.orbit(0, 3, i / 5.9 + this.C, p);
-        App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 19.5, -2)
+        App.scene['roll' + i].physics.currentBody.quaternion.copy(locRot)
+
+        // numbers
+        App.scene['roll__' + i].rotation.roty =
+          matrixEngine.utility.radToDeg(App.scene['roll__' + i].physics.currentBody.quaternion.toAxisAngle()[1]);
+        var locRot;
+        if(STEP > 360) {
+          STEP = 0
+        }
+        var N = (i * 20 + 10 + STEP) * Math.PI / 360;
+        locRot = new CANNON.Quaternion(0, 0, 0, 0);
+        locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), N);
+        App.scene['roll__' + i].physics.currentBody.quaternion.copy(locRot)
       }
+
+      STEP = STEP + 1;
+
       this.C = this.C + this.speedRollInit
-      if (this.speedRollInit < 0.02) {
+      if(this.speedRollInit < 0.02) {
         // clearInterval(this.rollTimer)
       } else {
         this.speedRollInit = this.speedRollInit - 0.0005
       }
-
-    }, 30)
-
+    }, 12)
   }
 
-  test() {
-    for(var i = 0;i < 37;i++) {
-      var tex = {
-        source: ["res/images/wheel-roll/" + i + ".png"],
-        mix_operation: "multiply",
-      };
-      matrixEngine.matrixWorld.world.Add("cubeLightTex", 0.2, "roll" + i, tex);
-      var p = {x: 0.2, y: 0.1, z: 0};
-      p = this.orbit(0, 3, i / 5.9, p);
+  createWheelRoll() {
+
+    var tex = {
+      source: ["res/images/wheel-roll/metal/1-low.png"],
+      mix_operation: "multiply",
+    };
+
+    var tex2 = {
+      source: ["res/images/bar.png"],
+      mix_operation: "multiply",
+    };
+
+    // var testb = new CANNON.Body({
+    //   type: CANNON.Body.STATIC,
+    //   mass: 0,
+    //   linearDamping: 0.1,
+    //   angularDamping: 0.5,
+    //   position: new CANNON.Vec3(0, -16, -1)
+    // });
+
+    // var texField = {
+    //   source: ["res/images/wheel-roll/" + 0 + ".png"],
+    //   mix_operation: "multiply",
+    // };
+    // matrixEngine.matrixWorld.world.Add("cubeLightTex", 0.2, "rolltest", texField);
+
+    // // var locRot1;
+    // //   var local = 0 * Math.PI / 360;
+    // //   locRot1 = new CANNON.Quaternion(0, 0, 0, 0);
+    // //   locRot1.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), local);
+    //   var shape = new CANNON.Box(new CANNON.Vec3(0.2, 3, 0.2))
+    //   // testb.addShape(shape, new CANNON.Vec3(0, 0 - 16.5, -2), locRot1)
+    //   testb.addShape(shape)
+    //   App.scene['rolltest'].raycast.enabled = false;
+    //   // App.scene['rolltest' ].geometry.setScaleByX(-0.1)
+    //   // App.scene['rolltest'].geometry.setScaleByY(-0.3)
+    //   App.scene['rolltest'].geometry.setScaleByZ(2.6)
+    //   App.scene['rolltest'].physics.currentBody = testb;
+    //   App.scene['rolltest'].physics.enabled = true;
+    //   this.pWorld.world.addBody(testb);
+    /////////////////////////
+
+    var GLOBAL_Z = -16.5
+
+    var J = 0;
+    for(var i = 0;i < 18;i++) {
+
+      var locRot;
+      var local = (i * 20) * Math.PI / 360;
+      locRot = new CANNON.Quaternion(0, 0, 0, 1);
+      locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), local);
+
+      var GLOBAL_Y = -1.6
+      // if(i == 9) GLOBAL_Y = -0.5
+      if (i == 17) GLOBAL_Y = -0.8
+
       var b2 = new CANNON.Body({
-        type: CANNON.Body.STATIC,
-        mass: 0.5,
-        linearDamping: 0.1,
-        angularDamping: 0.5,
-        angularVelocity: new CANNON.Vec3(0, 0, 0),
-        position: new CANNON.Vec3(p.x, p.y - 19.5, -2),
-        shape: new CANNON.Box(new CANNON.Vec3(0.5, 1, 0.15))
+        // type: CANNON.Body.STATIC,
+        mass: 0,
+        // linearDamping: 0.1,
+        // angularDamping: 0.5,
+        quaternion: locRot,
+        position: new CANNON.Vec3(0, GLOBAL_Z, GLOBAL_Y),
+        // collisionFilterGroup:  ( i == 17 ? this.GROUP4 : this.GROUP2),
+        collisionFilterGroup: this.GROUP2,
+        collisionFilterMask: this.GROUP1
       });
 
-      // var locRot;
-      // if(i == 0) {
-      //   locRot = new CANNON.Quaternion(0, 0, 0, 0);
-      //   locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -90 * Math.PI / 360);
-      // } else {
-      //   var local = -i / 5.95 - 90 * Math.PI / 360;
-      //   locRot = new CANNON.Quaternion(0, 0, 0, 0);
-      //   locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), local);
-      // }
-      // b2.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), locRot);
-      this.pWorld.world.addBody(b2);
-      App.scene['roll' + i].physics.currentBody = b2;
-      App.scene['roll' + i].physics.enabled = true;
-      App.scene['roll' + i].geometry.setScaleByX(-0.4)
-      App.scene['roll' + i].geometry.setScaleByY(-0.1)
-      App.scene['roll' + i].geometry.setScaleByZ(-0.4)
-    }
-  }
+      b2.fixedRotation = true;
 
-  test2() {
-    for(var i = 0;i < 37;i++) {
-      var tex = {
+      if(i == 9) GLOBAL_Y = -1.65
+      if(i == 10) GLOBAL_Y = -1.6
+
+      var b3 = new CANNON.Body({
+        type: CANNON.Body.STATIC,
+        mass: 0,
+        // linearDamping: 0.1,
+        // angularDamping: 0.5,
+        position: new CANNON.Vec3(0, GLOBAL_Z, -1.7),
+        collisionFilterGroup: this.GROUP3,
+        collisionFilterMask: this.GROUP1
+      });
+
+      var texField = {
         source: ["res/images/wheel-roll/" + i + ".png"],
         mix_operation: "multiply",
       };
-      matrixEngine.matrixWorld.world.Add("cubeLightTex", 0.2, "roll__" + i, tex);
-      var p = {x: 0.2, y: 0.1, z: 0};
-      p = this.orbit(0, 3, i / 5.9, p);
-      this.b2 = new CANNON.Body({
-        type: CANNON.Body.STATIC,
-        mass: 0.5,
-        linearDamping: 0.1,
-        angularDamping: 0.5,
-        angularVelocity: new CANNON.Vec3(0, 0, 0),
-        position: new CANNON.Vec3(p.x, p.y - 19, -2),
-        shape: new CANNON.Box(new CANNON.Vec3(0.5, 1, 0.15))
-      });
-      this.pWorld.world.addBody(this.b2);
-      App.scene['roll__' + i].physics.currentBody = this.b2;
+
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", 0.2, "roll" + i, texField);
+      if(i == 0) {
+        matrixEngine.matrixWorld.world.Add("cubeLightTex", 0.1, "roll__" + i, tex2);
+      } else {
+        matrixEngine.matrixWorld.world.Add("cubeLightTex", 0.1, "roll__" + i, tex);
+      }
+      var shape = new CANNON.Box(new CANNON.Vec3(0.1, 3, 0.1))
+      b2.addShape(shape)
+      App.scene['roll__' + i].raycast.enabled = false;
+      // App.scene['roll__' + i].geometry.setScaleByX(-0.1)
+      // App.scene['roll__' + i].geometry.setScaleByY(-0.3)
+      App.scene['roll__' + i].geometry.setScaleByX(3.1)
+      App.scene['roll__' + i].physics.currentBody = b2;
       App.scene['roll__' + i].physics.enabled = true;
-    }
-  }
+      this.pWorld.world.addBody(b2);
 
-  // test 
-  initWheelRoll() {
+      // NUMBERS FIELDS
+      var locRotF;
+      var localF = (i * 20 + 10) * Math.PI / 360;
+      locRotF = new CANNON.Quaternion(0, 0, 0, 0);
+      locRotF.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), localF);
+      var shape = new CANNON.Box(new CANNON.Vec3(0.2, 3, 0.1))
+      b3.addShape(shape, undefined, locRotF)
+      App.scene['roll' + i].raycast.enabled = false;
+      // App.scene['roll' + i].geometry.setScaleByX(-0.1)
+      App.scene['roll' + i].geometry.setScaleByY(-0.3)
+      App.scene['roll' + i].geometry.setScaleByZ(2.6)
+      App.scene['roll' + i].geometry.setTexCoordScaleXFactor(-1);
+      App.scene['roll' + i].geometry.setTexCoordScaleYFactor(-5);
 
-    var TOTAL_Y = 5.3;
-    var s1 = 1;
-    var s2 = .35;
-    var s3 = .15;
-    var mass = 1;
-    for(var i = 0;i < 37;i++) {
-
-      var help = {x: 1, y: -6, z: 1};
-      help = this.orbit(3, 3, i / 5, help);
-      var x = help.x;
-      var y = 10;
-      var z = help.y;
-      var locRot = null;
-
-      // console.log('TEST x ', help )
-
-      var body = new CANNON.Body({
-        mass: mass,
-        position: new CANNON.Vec3(x, 5, -z),
-        type: CANNON.Body.STATIC,
-        shape: new CANNON.Box(new CANNON.Vec3(0.5 * s1, 0.5 * s2, 0.5 * s3))
-      });
-
-      if(i == 0) {
-        locRot = new CANNON.Quaternion(0, 0, 0, 0);
-        locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -90 * Math.PI / 360);
-      } else {
-        var local = -i / 5.95 - 90 * Math.PI / 360;
-        locRot = new CANNON.Quaternion(0, 0, 0, 0);
-        locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), local);
+      App.scene['roll' + i].custom.gl_texture = function(object, t) {
+        var world = matrixEngine.matrixWorld.world;
+        world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
+        world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MAG_FILTER, world.GL.gl.LINEAR);
+        world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MIN_FILTER, world.GL.gl.LINEAR);
+        world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, world.GL.gl.REPEAT);
+        world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, world.GL.gl.REPEAT);
+        world.GL.gl.texImage2D(world.GL.gl.TEXTURE_2D, 0, world.GL.gl.RGB5_A1,
+          world.GL.gl.RGB5_A1, world.GL.gl.UNSIGNED_BYTE, object.textures[t].image)
       }
 
-      body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), locRot);
-      // var shape = new CANNON.Box(new CANNON.Vec3(0.5 * s1, 0.5 * s2, 0.5 * s3));
-      // body.addShape(shape);
-      matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, "rollwheelpart1_" + i, this.texRollWheel);
-      // body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), 5.23 * Math.PI / 32);
-      console.log('TEST body ', body.position)
-      this.pWorld.world.addBody(body);
-      App.scene['rollwheelpart1_' + i].geometry.setScale(0.5 * s1, 0.5 * s2, 0.5 * s3)
-      App.scene['rollwheelpart1_' + i].raycast.enabled = false;
-      App.scene['rollwheelpart1_' + i].physics.currentBody = body;
-      App.scene['rollwheelpart1_' + i].physics.enabled = true;
+      App.scene['roll' + i].physics.currentBody = b3;
+      App.scene['roll' + i].physics.enabled = true;
+
+      setTimeout(function() {
+        for(var i = 0;i < 18;i++) {
+          App.scene['roll' + i].geometry.setTexCoordScaleXFactor(-1);
+          App.scene['roll' + i].geometry.setTexCoordScaleYFactor(-5);
+        }
+      }, 500)
+
+      this.pWorld.world.addBody(b3);
+
+      // App.scene.ROLL_ROOT_NUM.subObjs.push(App.scene['roll' + i])
     }
 
-
-
-
-    // initWheelRing();
+    // for(var i = 0;i < 18;i++) {   }
 
   }
-
-  initWheelRollS() {
-
-    var s1 = 1;
-    var s2 = .15;
-    var s3 = .72;
-
-    var mass = 5;
-    var body = new CANNON.Body({
-      mass: mass,
-      position: new CANNON.Vec3(0, TOTAL_Y - 0.3, 0),
-      type: CANNON.Body.STATIC,
-    });
-
-    body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 32);
-
-    for(var i = 0;i < 37;i++) {
-      var shape = new CANNON.Box(new CANNON.Vec3(0.5 * s1, 0.5 * s2, 0.5 * s3));
-      var help = {x: 3, y: 3, z: 0};
-      help = this.orbit(0, 0, i / 5.89, help);
-      var x = help.x;
-      var y = 10;
-      var z = help.y;
-      var startUpAngle = -90;
-      var locRot = null;
-
-      if(i == 0) {
-        locRot = new CANNON.Quaternion(0, 0, 0, 0);
-        locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), (startUpAngle) * Math.PI / 360);
-      } else {
-        var local = -i / 5.85 + startUpAngle * Math.PI / 360;
-        locRot = new CANNON.Quaternion(0, 0, 0, 0);
-        locRot.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), local);
-      }
-      shape.wheelnum = i + 1;
-      body.addShape(shape, new CANNON.Vec3(x, 6, z), locRot);
-    }
-
-    this.pWorld.world.addBody(body);
-
-    App.scene['rollwheelpart2_'].physics.currentBody = body;
-
-    var materials = [];
-    var matShema = [
-      0, 32, 15, 19, 4, 21, 2,
-      25, 17, 34, 6, 27, 13, 36,
-      11, 30, 8, 23, 10, 5, 24,
-      16, 33, 1, 20, 14, 31, 9, 22,
-      18, 29, 7, 28, 12, 35, 3, 26];
-
-    App.matShema = matShema;
-
-    matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, "rollwheelpart2_", this.texRollWheel);
-
-    for(var j = 0;j < 37;j++) {
-      materials.push({
-        source: ["res/images/wheel-roll/numbers-128/" + matShema[j] + ".png"],
-        mix_operation: "multiply"
-      });
-    }
-
-    // demo.addVisual(body, materials);
-
-  }
-
 }
