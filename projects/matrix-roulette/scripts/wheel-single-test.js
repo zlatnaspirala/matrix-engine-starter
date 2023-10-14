@@ -49,16 +49,17 @@ export default class Wheel {
     this.ballBody.removeEventListener("collide", this.momentOftouch);
   }
 
-  resetBall () {
+  resetBall() {
     // this.pWorld.world.addBody(this.ballBody);
   }
 
-  addBall = (j, posArg, force) =>{
+  addBall = (j, posArg, force) => {
 
-    if (this.ballBody !== null) {
+    if(this.ballBody !== null) {
       console.log('Ball already created.')
       this.ballBody.position.set(posArg[0], posArg[1], posArg[2])
       this.ballBody.angularVelocity.setZero()
+      this.ballBody.quaternion.set(0, 0, 0, 0)
       this.ballBody.force.set(force[0], force[1], force[2])
       return;
     }
@@ -99,7 +100,10 @@ export default class Wheel {
   addStaticWheel() {
     // matrix-engine obj
     var tex = {
-      source: ["res/images/wheel-roll/skin/skin1.jpg"],
+      // reflection-wheel
+      // source: ["res/images/wheel-roll/metal-separators/reflection-wheel.jpg"],
+      // source: ["res/images/wheel-roll/metal/2.jpg"],
+      source: ["res/images/wheel-roll/center/wood.jpg"],
       mix_operation: "multiply",
     };
 
@@ -132,6 +136,9 @@ export default class Wheel {
     this.pWorld.world.addBody(bigWheel);
     App.scene.bigWheel.physics.currentBody = bigWheel;
     App.scene.bigWheel.physics.enabled = true;
+
+    App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22)
+
   }
 
   addCenterRoll() {
@@ -155,6 +162,7 @@ export default class Wheel {
     })
 
     App.scene.centerWheel.glDrawElements.mode = 'LINES'
+    App.scene.centerWheel.LightsData.ambientLight.set(1, 3, 3)
 
     // cannon
     var centerWheel = new CANNON.Body({
@@ -169,6 +177,33 @@ export default class Wheel {
     this.pWorld.world.addBody(centerWheel);
     App.scene.centerWheel.physics.currentBody = centerWheel;
     App.scene.centerWheel.physics.enabled = true;
+
+    // 3d object is decoration no direct connection with cannonjs
+    var loadCenterObj = new Promise((resolve, reject) => {
+      var name = 'centerRollDecoration';
+      function onLoadObj(meshes) {
+        try {
+          matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[name]);
+          var tex = {
+            source: ["res/3d-objects/center.png"],
+            mix_operation: "multiply",
+          };
+          matrixEngine.matrixWorld.world.Add("obj", 100, name, tex, meshes[name]);
+          App.scene[name].raycast.enabled = false;
+          App.scene[name].position.y = 1;
+          App.scene[name].position.z = -21;
+          App.scene[name].mesh.setScale(45)
+
+          resolve(App.scene[name])
+        } catch(err) {
+          reject('Loading obj chip error: ' + err)
+        }
+      }
+      var _name = {};
+      _name[name] = "res/3d-objects/center.obj"
+      matrixEngine.objLoader.downloadMeshes(_name, onLoadObj);
+    })
+
   }
 
   animateRoll() {
@@ -180,9 +215,11 @@ export default class Wheel {
         var p = {x: 0.1, y: 0.1, z: 0};
         p = this.orbit(0, 9, i / 5.9 + this.C, p);
         var p3 = {x: 0.1, y: 0.1, z: 0};
-        p3 = this.orbit(0, 9, i / 5.9 + this.C , p3);
+        p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
         App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1.)
         App.scene['centerWheel' + i].physics.currentBody.position.set(p3.x, p3.y - 30, -0.2)
+
+        if(App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 1000
       }
       this.C = this.C + this.speedRollInit
       if(this.speedRollInit < 0.008) {
@@ -225,12 +262,12 @@ export default class Wheel {
         source: ["res/images/field.png"],
         mix_operation: "multiply",
       };
-  
+
       // wheel config
       var outerRad = 0.65;
       var inner_rad = 0.13;
       var wheelsPoly = 8;
-  
+
       // [matrix-engine 1.9.20] custom_type: 'torus',
       matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "centerWheel" + i, tex, {
         custom_type: 'torus',
@@ -239,9 +276,9 @@ export default class Wheel {
         inner_rad: inner_rad,
         outerRad: outerRad
       })
-  
+
       // App.scene['centerWheel'+i].glDrawElements.mode = 'LINES'
-  
+
       // cannon
       var centerWheel = new CANNON.Body({
         mass: 0,
@@ -251,10 +288,10 @@ export default class Wheel {
       });
       // dev
       window.centerWheel = centerWheel;
-  
+
       this.pWorld.world.addBody(centerWheel);
-      App.scene['centerWheel'+i].physics.currentBody = centerWheel;
-      App.scene['centerWheel'+i].physics.enabled = true;
+      App.scene['centerWheel' + i].physics.currentBody = centerWheel;
+      App.scene['centerWheel' + i].physics.enabled = true;
       //////////////
 
     }

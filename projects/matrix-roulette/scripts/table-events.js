@@ -23,7 +23,10 @@ export default class TableEvents {
       mix_operation: "multiply",
     };
 
-    // common position
+    // common position - move table bets by z axis.
+    this.GENERAL_Z = 10;
+
+    // internal commons - read only
     this.globalY = -1.88;
     this.colorTop = -4.5;
 
@@ -42,7 +45,7 @@ export default class TableEvents {
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
     App.scene.atable.raycast.enabled = false
     App.scene.atable.position.SetY(-1.95);
-    App.scene.atable.position.SetZ(-6);
+    App.scene.atable.position.SetZ(-6 + this.GENERAL_Z);
     App.scene.atable.position.SetX(0);
     App.scene.atable.rotation.rotx = -90;
     App.scene.atable.geometry.setScaleByX(5)
@@ -53,7 +56,6 @@ export default class TableEvents {
   }
 
   constructSingleNums() {
-
     var zero = 'single0';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, zero, this.markTex);
     App.scene[zero].tableEvents = {
@@ -61,7 +63,7 @@ export default class TableEvents {
       q: 36,
     };
     App.scene[zero].position.SetY(this.globalY);
-    App.scene[zero].position.SetZ(-6.8);
+    App.scene[zero].position.SetZ(-6.8 + this.GENERAL_Z);
     App.scene[zero].position.SetX(-4.8);
     App.scene[zero].rotation.rotx = -90;
     App.scene[zero].geometry.setScaleByX(0.23)
@@ -82,7 +84,7 @@ export default class TableEvents {
           q: 36
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-8.05 + y * 0.68);
+        App.scene[name].position.SetZ(-8.05 + y * 0.68 + this.GENERAL_Z);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.23)
@@ -109,7 +111,7 @@ export default class TableEvents {
           q: 18
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-7.75 + y * 0.705);
+        App.scene[name].position.SetZ(-7.75 + y * 0.705 + this.GENERAL_Z);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.1)
@@ -140,7 +142,7 @@ export default class TableEvents {
           q: 18
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-8.07 + y * 0.705);
+        App.scene[name].position.SetZ(-8.07 + y * 0.705 + this.GENERAL_Z);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.1)
@@ -162,7 +164,7 @@ export default class TableEvents {
       q: 12
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.84);
+    App.scene[name].position.SetZ(this.colorTop - 1.84 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1)
@@ -179,7 +181,7 @@ export default class TableEvents {
       q: 12
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.5);
+    App.scene[name].position.SetZ(this.colorTop - 2.5 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1)
@@ -196,7 +198,7 @@ export default class TableEvents {
       q: 9
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.04);
+    App.scene[name].position.SetZ(this.colorTop - 1.04 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1)
@@ -213,7 +215,7 @@ export default class TableEvents {
       q: 18
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.4);
+    App.scene[name].position.SetZ(this.colorTop - 1.4 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1)
@@ -231,7 +233,7 @@ export default class TableEvents {
       q: 18
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.15);
+    App.scene[name].position.SetZ(this.colorTop - 2.15 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1)
@@ -249,7 +251,7 @@ export default class TableEvents {
     };
     // 3_6_9_12_15_18_21_24_27_30_33_36
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.9);
+    App.scene[name].position.SetZ(this.colorTop - 2.9 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1)
@@ -274,7 +276,7 @@ export default class TableEvents {
           q: 9
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-5.6 - y * 0.705);
+        App.scene[name].position.SetZ(-5.6 - y * 0.705 + this.GENERAL_Z);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.1)
@@ -299,7 +301,7 @@ export default class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(-0.95);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7)
@@ -315,7 +317,7 @@ export default class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(0.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7)
@@ -334,7 +336,7 @@ export default class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(-3.75);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7)
@@ -350,7 +352,7 @@ export default class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(3.3);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7)
@@ -369,7 +371,7 @@ export default class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(-2.35);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7)
@@ -385,7 +387,7 @@ export default class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(1.9);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7)
@@ -404,7 +406,7 @@ export default class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 0.6);
+    App.scene[name].position.SetZ(this.colorTop - 0.6 + this.GENERAL_Z);
     App.scene[name].position.SetX(-3);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35)
@@ -420,7 +422,7 @@ export default class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 0.6);
+    App.scene[name].position.SetZ(this.colorTop - 0.6 + this.GENERAL_Z);
     App.scene[name].position.SetX(-0.24);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35)
@@ -436,7 +438,7 @@ export default class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 0.6);
+    App.scene[name].position.SetZ(this.colorTop - 0.6 + this.GENERAL_Z);
     App.scene[name].position.SetX(2.55);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35)
@@ -460,7 +462,7 @@ export default class TableEvents {
         q: 12
       };
       App.scene[name].position.SetY(this.globalY);
-      App.scene[name].position.SetZ(-5.56);
+      App.scene[name].position.SetZ(-5.56 + this.GENERAL_Z);
       App.scene[name].position.SetX(-4.08 + x * 0.7);
       App.scene[name].rotation.rotx = -90;
       App.scene[name].geometry.setScaleByX(-0.1)
@@ -484,7 +486,7 @@ export default class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.4);
+    App.scene[name].position.SetZ(this.colorTop - 1.4 + this.GENERAL_Z);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45)
@@ -501,7 +503,7 @@ export default class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.15);
+    App.scene[name].position.SetZ(this.colorTop - 2.15 + this.GENERAL_Z);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45)
@@ -518,7 +520,7 @@ export default class TableEvents {
     };
     // 3_6_9_12_15_18_21_24_27_30_33_36
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.9);
+    App.scene[name].position.SetZ(this.colorTop - 2.9 + this.GENERAL_Z);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45)
@@ -545,7 +547,7 @@ export default class TableEvents {
         q: 6
       };
       App.scene[name].position.SetY(this.globalY);
-      App.scene[name].position.SetZ(-5.56);
+      App.scene[name].position.SetZ(-5.56 + this.GENERAL_Z);
       App.scene[name].position.SetX(-3.73 + x * 0.7);
       App.scene[name].rotation.rotx = -90;
       App.scene[name].geometry.setScaleByX(-0.1)

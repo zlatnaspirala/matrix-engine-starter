@@ -34,7 +34,7 @@ export default class TableChips {
     var n = 'clearBets';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
     App.scene[n].position.SetY(-1.9);
-    App.scene[n].position.SetZ(-1.8);
+    App.scene[n].position.SetZ(10);
     App.scene[n].position.SetX(2.8);
     App.scene[n].rotation.rotx = -90;
     App.scene[n].geometry.setScaleByX(0.83)

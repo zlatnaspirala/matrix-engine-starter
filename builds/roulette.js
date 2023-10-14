@@ -26967,7 +26967,10 @@ function defineworld(canvas, renderType) {
       customObject.size = size;
       customObject.sides = 12;
       customObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      customObject.rotation.nameUniq = nameUniq; // destroy self  MAy need more improve
+      customObject.rotation.nameUniq = nameUniq; // custom textures
+
+      customObject.custom = new Object();
+      customObject.custom.gl_texture = null; // destroy self  MAy need more improve
 
       customObject.selfDestroy = after => {
         if (after) {
@@ -37251,7 +37254,7 @@ class TableChips {
     var n = 'clearBets';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
     App.scene[n].position.SetY(-1.9);
-    App.scene[n].position.SetZ(-1.8);
+    App.scene[n].position.SetZ(10);
     App.scene[n].position.SetX(2.8);
     App.scene[n].rotation.rotx = -90;
     App.scene[n].geometry.setScaleByX(0.83);
@@ -37361,7 +37364,9 @@ class TableEvents {
     this.markTex = {
       source: ["res/images/senka1.png"],
       mix_operation: "multiply"
-    }; // common position
+    }; // common position - move table bets by z axis.
+
+    this.GENERAL_Z = 10; // internal commons - read only
 
     this.globalY = -1.88;
     this.colorTop = -4.5;
@@ -37379,7 +37384,7 @@ class TableEvents {
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
     App.scene.atable.raycast.enabled = false;
     App.scene.atable.position.SetY(-1.95);
-    App.scene.atable.position.SetZ(-6);
+    App.scene.atable.position.SetZ(-6 + this.GENERAL_Z);
     App.scene.atable.position.SetX(0);
     App.scene.atable.rotation.rotx = -90;
     App.scene.atable.geometry.setScaleByX(5);
@@ -37396,7 +37401,7 @@ class TableEvents {
       q: 36
     };
     App.scene[zero].position.SetY(this.globalY);
-    App.scene[zero].position.SetZ(-6.8);
+    App.scene[zero].position.SetZ(-6.8 + this.GENERAL_Z);
     App.scene[zero].position.SetX(-4.8);
     App.scene[zero].rotation.rotx = -90;
     App.scene[zero].geometry.setScaleByX(0.23);
@@ -37416,7 +37421,7 @@ class TableEvents {
           q: 36
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-8.05 + y * 0.68);
+        App.scene[name].position.SetZ(-8.05 + y * 0.68 + this.GENERAL_Z);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.23);
@@ -37443,7 +37448,7 @@ class TableEvents {
           q: 18
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-7.75 + y * 0.705);
+        App.scene[name].position.SetZ(-7.75 + y * 0.705 + this.GENERAL_Z);
         App.scene[name].position.SetX(-4.08 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.1);
@@ -37473,7 +37478,7 @@ class TableEvents {
           q: 18
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-8.07 + y * 0.705);
+        App.scene[name].position.SetZ(-8.07 + y * 0.705 + this.GENERAL_Z);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.1);
@@ -37495,7 +37500,7 @@ class TableEvents {
       q: 12
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.84);
+    App.scene[name].position.SetZ(this.colorTop - 1.84 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1);
@@ -37511,7 +37516,7 @@ class TableEvents {
       q: 12
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.5);
+    App.scene[name].position.SetZ(this.colorTop - 2.5 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1);
@@ -37527,7 +37532,7 @@ class TableEvents {
       q: 9
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.04);
+    App.scene[name].position.SetZ(this.colorTop - 1.04 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1);
@@ -37543,7 +37548,7 @@ class TableEvents {
       q: 18
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.4);
+    App.scene[name].position.SetZ(this.colorTop - 1.4 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1);
@@ -37560,7 +37565,7 @@ class TableEvents {
       q: 18
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.15);
+    App.scene[name].position.SetZ(this.colorTop - 2.15 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1);
@@ -37577,7 +37582,7 @@ class TableEvents {
     }; // 3_6_9_12_15_18_21_24_27_30_33_36
 
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.9);
+    App.scene[name].position.SetZ(this.colorTop - 2.9 + this.GENERAL_Z);
     App.scene[name].position.SetX(-4.45);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.1);
@@ -37603,7 +37608,7 @@ class TableEvents {
           q: 9
         };
         App.scene[name].position.SetY(this.globalY);
-        App.scene[name].position.SetZ(-5.6 - y * 0.705);
+        App.scene[name].position.SetZ(-5.6 - y * 0.705 + this.GENERAL_Z);
         App.scene[name].position.SetX(-3.72 + x * 0.7);
         App.scene[name].rotation.rotx = -90;
         App.scene[name].geometry.setScaleByX(-0.1);
@@ -37628,7 +37633,7 @@ class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(-0.95);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
@@ -37644,7 +37649,7 @@ class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(0.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
@@ -37663,7 +37668,7 @@ class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(-3.75);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
@@ -37679,7 +37684,7 @@ class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(3.3);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
@@ -37698,7 +37703,7 @@ class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(-2.35);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
@@ -37714,7 +37719,7 @@ class TableEvents {
       q: 2
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
     App.scene[name].position.SetX(1.9);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.7);
@@ -37733,7 +37738,7 @@ class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 0.6);
+    App.scene[name].position.SetZ(this.colorTop - 0.6 + this.GENERAL_Z);
     App.scene[name].position.SetX(-3);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35);
@@ -37749,7 +37754,7 @@ class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 0.6);
+    App.scene[name].position.SetZ(this.colorTop - 0.6 + this.GENERAL_Z);
     App.scene[name].position.SetX(-0.24);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35);
@@ -37765,7 +37770,7 @@ class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 0.6);
+    App.scene[name].position.SetZ(this.colorTop - 0.6 + this.GENERAL_Z);
     App.scene[name].position.SetX(2.55);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-1.35);
@@ -37789,7 +37794,7 @@ class TableEvents {
         q: 12
       };
       App.scene[name].position.SetY(this.globalY);
-      App.scene[name].position.SetZ(-5.56);
+      App.scene[name].position.SetZ(-5.56 + this.GENERAL_Z);
       App.scene[name].position.SetX(-4.08 + x * 0.7);
       App.scene[name].rotation.rotx = -90;
       App.scene[name].geometry.setScaleByX(-0.1);
@@ -37813,7 +37818,7 @@ class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 1.4);
+    App.scene[name].position.SetZ(this.colorTop - 1.4 + this.GENERAL_Z);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45);
@@ -37830,7 +37835,7 @@ class TableEvents {
       q: 3
     };
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.15);
+    App.scene[name].position.SetZ(this.colorTop - 2.15 + this.GENERAL_Z);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45);
@@ -37847,7 +37852,7 @@ class TableEvents {
     }; // 3_6_9_12_15_18_21_24_27_30_33_36
 
     App.scene[name].position.SetY(this.globalY);
-    App.scene[name].position.SetZ(this.colorTop - 2.9);
+    App.scene[name].position.SetZ(this.colorTop - 2.9 + this.GENERAL_Z);
     App.scene[name].position.SetX(4.5);
     App.scene[name].rotation.rotx = -90;
     App.scene[name].geometry.setScaleByX(-0.45);
@@ -37874,7 +37879,7 @@ class TableEvents {
         q: 6
       };
       App.scene[name].position.SetY(this.globalY);
-      App.scene[name].position.SetZ(-5.56);
+      App.scene[name].position.SetZ(-5.56 + this.GENERAL_Z);
       App.scene[name].position.SetX(-3.73 + x * 0.7);
       App.scene[name].rotation.rotx = -90;
       App.scene[name].geometry.setScaleByX(-0.1);
@@ -37962,6 +37967,7 @@ class Wheel {
       console.log('Ball already created.');
       this.ballBody.position.set(posArg[0], posArg[1], posArg[2]);
       this.ballBody.angularVelocity.setZero();
+      this.ballBody.quaternion.set(0, 0, 0, 0);
       this.ballBody.force.set(force[0], force[1], force[2]);
       return;
     }
@@ -37997,7 +38003,10 @@ class Wheel {
   addStaticWheel() {
     // matrix-engine obj
     var tex = {
-      source: ["res/images/wheel-roll/skin/skin1.jpg"],
+      // reflection-wheel
+      // source: ["res/images/wheel-roll/metal-separators/reflection-wheel.jpg"],
+      // source: ["res/images/wheel-roll/metal/2.jpg"],
+      source: ["res/images/wheel-roll/center/wood.jpg"],
       mix_operation: "multiply"
     }; // wheel config
 
@@ -38025,6 +38034,7 @@ class Wheel {
     this.pWorld.world.addBody(bigWheel);
     App.scene.bigWheel.physics.currentBody = bigWheel;
     App.scene.bigWheel.physics.enabled = true;
+    App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22);
   }
 
   addCenterRoll() {
@@ -38044,7 +38054,8 @@ class Wheel {
       inner_rad: inner_rad,
       outerRad: outerRad
     });
-    App.scene.centerWheel.glDrawElements.mode = 'LINES'; // cannon
+    App.scene.centerWheel.glDrawElements.mode = 'LINES';
+    App.scene.centerWheel.LightsData.ambientLight.set(1, 3, 3); // cannon
 
     var centerWheel = new CANNON.Body({
       mass: 0,
@@ -38056,7 +38067,33 @@ class Wheel {
     window.centerWheel = centerWheel;
     this.pWorld.world.addBody(centerWheel);
     App.scene.centerWheel.physics.currentBody = centerWheel;
-    App.scene.centerWheel.physics.enabled = true;
+    App.scene.centerWheel.physics.enabled = true; // 3d object is decoration no direct connection with cannonjs
+
+    var loadCenterObj = new Promise((resolve, reject) => {
+      var name = 'centerRollDecoration';
+
+      function onLoadObj(meshes) {
+        try {
+          matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[name]);
+          var tex = {
+            source: ["res/3d-objects/center.png"],
+            mix_operation: "multiply"
+          };
+          matrixEngine.matrixWorld.world.Add("obj", 100, name, tex, meshes[name]);
+          App.scene[name].raycast.enabled = false;
+          App.scene[name].position.y = 1;
+          App.scene[name].position.z = -21;
+          App.scene[name].mesh.setScale(45);
+          resolve(App.scene[name]);
+        } catch (err) {
+          reject('Loading obj chip error: ' + err);
+        }
+      }
+
+      var _name = {};
+      _name[name] = "res/3d-objects/center.obj";
+      matrixEngine.objLoader.downloadMeshes(_name, onLoadObj);
+    });
   }
 
   animateRoll() {
@@ -38077,6 +38114,7 @@ class Wheel {
         p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
         App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1.);
         App.scene['centerWheel' + i].physics.currentBody.position.set(p3.x, p3.y - 30, -0.2);
+        if (App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 1000;
       }
 
       this.C = this.C + this.speedRollInit;
