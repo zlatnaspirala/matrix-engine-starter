@@ -59,7 +59,7 @@
     "fs": "0.0.1-security",
     "matrix-engine": "^1.9.24",
     "matrix-engine-plugins": "0.0.8",
-    "matrix-network": "^1.0.6",
+    "matrix-network": "^1.0.8",
     "nidza": "^1.2.15",
     "voice-commander": "0.0.5"
   },

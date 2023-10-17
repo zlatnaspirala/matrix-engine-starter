@@ -3,7 +3,7 @@ import TableEvents from "./table-events.js"
 import Wheel from "./wheel.js";
 import * as CANNON from 'cannon';
 import {Nidza} from 'nidza';
-import {createNidzaTextureText} from "./2d-draw.js";
+import {create2dHUD, funnyStar} from "./2d-draw.js";
 
 export class MatrixRoulette {
   physics = null;
@@ -42,6 +42,12 @@ export class MatrixRoulette {
   runVideoChat() {
     matrixEngine.Engine.activateNet();
     // let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
+
+    var tex = {
+      source: ["res/images/field.png"],
+      mix_operation: "multiply",
+    };
+
     addEventListener('stream-loaded', (e) => {
       var _ = document.querySelectorAll('.media-box')
       var name = "videochat-" + e.detail.data.userId;
@@ -88,17 +94,20 @@ export class MatrixRoulette {
         } else {
           // own stream 
           function onLoadObj(meshes) {
-            App.meshes = meshes;
-            matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes.TV);
-            setTimeout(function() {
-              world.Add("obj", 1, "TV", tex, App.meshes.TV);
-              App.scene.TV.position.setPosition(-9, 4, -15)
-              App.scene.TV.rotation.rotateY(90);
+            // App.meshes = meshes;
+            matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
+            
+              matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
+              App.scene.TV.position.setPosition(-10, 5, -15)
+              App.scene.TV.mesh.setScale(7)
+              // App.scene.TV.rotation.rotateY(90);
               App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
+
               App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-            }, 1000)
+
+              
           }
-          matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/balltest2.obj"}, onLoadObj);
+          matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
         }
       })
     })
@@ -182,7 +191,7 @@ export class MatrixRoulette {
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene.balance.rotation.rotx = 90;
 
-    createNidzaTextureText(this.nidza).then(canvas2d => {
+    create2dHUD(this.nidza).then(canvas2d => {
       App.scene.balance.streamTextures = {
         videoImage: canvas2d,
       }
@@ -192,9 +201,7 @@ export class MatrixRoulette {
       })
     })
 
-    //
-    
-
+    // funnyStar(this.nidza)
   }
 
 }

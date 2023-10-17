@@ -39417,11 +39417,12 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createNidzaTextureText = createNidzaTextureText;
+exports.create2dHUD = create2dHUD;
+exports.funnyStar = funnyStar;
 
 var _standardFonts = require("../../matrix-slot/scripts/standard-fonts");
 
-function createNidzaTextureText(nidza) {
+function create2dHUD(nidza) {
   return new Promise((resolve, reject) => {
     let myFirstNidzaObjectOptions = {
       id: "footerLabel",
@@ -39469,6 +39470,37 @@ function createNidzaTextureText(nidza) {
     resolve(texCanvas);
     return texCanvas;
   });
+}
+
+function funnyStar(nidza) {
+  let colorR = new nidza.Osc(0, 255, 15);
+  let colorG = new nidza.Osc(0, 255, 16);
+  let colorB = new nidza.Osc(0, 255, 17);
+  colorR.setDelay(0);
+  colorB.setDelay(0);
+  colorG.setDelay(0);
+  let j = 3;
+  let sceneGroup = setInterval(() => {
+    let myStarElement = nidza.access.footerLabel.addStarComponent({
+      id: "star",
+      radius: 55,
+      inset: j,
+      n: 6,
+      color: "rgb(" + colorR.getValue() + "," + colorG.getValue() + "," + colorB.getValue() + ")",
+      position: {
+        x: 50,
+        y: 50
+      },
+      dimension: {
+        width: 180,
+        height: 180
+      }
+    });
+    let rotationOption = new nidza.Osc(0, 360, 1);
+    myStarElement.rotation.setRotation(rotationOption);
+    j -= 0.1;
+    if (j < 0) clearInterval(sceneGroup);
+  }, 20);
 }
 
 },{"../../matrix-slot/scripts/standard-fonts":60}],56:[function(require,module,exports){
@@ -39529,6 +39561,10 @@ class MatrixRoulette {
   runVideoChat() {
     matrixEngine.Engine.activateNet(); // let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
 
+    var tex = {
+      source: ["res/images/field.png"],
+      mix_operation: "multiply"
+    };
     addEventListener('stream-loaded', e => {
       var _ = document.querySelectorAll('.media-box');
 
@@ -39575,19 +39611,18 @@ class MatrixRoulette {
         } else {
           // own stream 
           function onLoadObj(meshes) {
-            App.meshes = meshes;
-            matrixEngine.objLoader.initMeshBuffers(world.GL.gl, App.meshes.TV);
-            setTimeout(function () {
-              world.Add("obj", 1, "TV", tex, App.meshes.TV);
-              App.scene.TV.position.setPosition(-9, 4, -15);
-              App.scene.TV.rotation.rotateY(90);
-              App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
-              App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-            }, 1000);
+            // App.meshes = meshes;
+            matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
+            matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
+            App.scene.TV.position.setPosition(-10, 5, -15);
+            App.scene.TV.mesh.setScale(7); // App.scene.TV.rotation.rotateY(90);
+
+            App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
+            App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
           }
 
           matrixEngine.objLoader.downloadMeshes({
-            TV: "res/3d-objects/balltest2.obj"
+            TV: "res/3d-objects/tv.obj"
           }, onLoadObj);
         }
       });
@@ -39670,7 +39705,7 @@ class MatrixRoulette {
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene.balance.rotation.rotx = 90;
-    (0, _dDraw.createNidzaTextureText)(this.nidza).then(canvas2d => {
+    (0, _dDraw.create2dHUD)(this.nidza).then(canvas2d => {
       App.scene.balance.streamTextures = {
         videoImage: canvas2d
       };
@@ -39678,7 +39713,7 @@ class MatrixRoulette {
         roulette.nidza.access.footerLabel.elements[0].text = 'BLABAL';
         roulette.nidza.access.footerLabel.elements[0].activateRotator();
       });
-    }); //
+    }); // funnyStar(this.nidza)
   }
 
 }
