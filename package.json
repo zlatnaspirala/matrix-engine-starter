@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "How to use matrix engine from npm service. MatrixEngine is opengles2.0/3.0 ObjectOriented scene engine based on glmatrix engine lib. PWA Fully powered with static/dynamic cache , add to home page in same time fixed autoplay audio/video context construction.",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "examples": "watchify App-Examples.js -p [esmify --noImplicitAny] -o builds/examples.me.js",
     "app": "watchify App.js -p [esmify --noImplicitAny] -o builds/app.js",
@@ -55,8 +56,10 @@
   "homepage": "https://github.com/zlatnaspirala/matrix-engine#readme",
   "dependencies": {
     "audio-commander": "^1.0.3",
-    "matrix-engine": "^1.9.21",
+    "fs": "0.0.1-security",
+    "matrix-engine": "^1.9.24",
     "matrix-engine-plugins": "0.0.8",
+    "matrix-network": "^1.0.6",
     "nidza": "^1.2.15",
     "voice-commander": "0.0.5"
   },

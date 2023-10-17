@@ -27,6 +27,10 @@ export default class TableChips {
       }
     })
 
+    addEventListener("clear-chips", (e) => {
+      this.clearAll()
+    })
+
     this.addHUDBtns()
   }
 
@@ -34,7 +38,7 @@ export default class TableChips {
     var n = 'clearBets';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
     App.scene[n].position.SetY(-1.9);
-    App.scene[n].position.SetZ(10);
+    App.scene[n].position.SetZ(7);
     App.scene[n].position.SetX(2.8);
     App.scene[n].rotation.rotx = -90;
     App.scene[n].geometry.setScaleByX(0.83)
@@ -50,13 +54,10 @@ export default class TableChips {
     // is not to mush interest but need be uniq
     var name = "chips_" + o.name;
     this.addObjChip(name).then((d) => {
-      console.log('WHAT IS D => ', d)
       var b2 = new CANNON.Body({
         mass: 1,
         linearDamping: 0.01,
-        // need position data from trigered field
         position: new CANNON.Vec3(o.position.x, o.position.z, o.position.y + 0.5 + (o.tableEvents.chips * 0.16)),
-        //                                     x      z     y
         shape: new CANNON.Box(new CANNON.Vec3(size, size, 0.042))
       });
       this.physics.world.addBody(b2);
