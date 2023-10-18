@@ -21093,7 +21093,7 @@ class RotationVector {
 
   rotateX(x, em) {
     this.rotx = x;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         x: this.rotx
       },
@@ -21103,7 +21103,7 @@ class RotationVector {
 
   rotateY(y, em) {
     this.roty = y;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         y: this.roty
       },
@@ -21113,7 +21113,7 @@ class RotationVector {
 
   rotateZ(z, em) {
     this.rotz = z;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         z: this.rotz
       },
@@ -21230,7 +21230,7 @@ class Position {
         this.x += this.velX;
         this.y += this.velY;
         this.z += this.velZ;
-        if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+        if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
           netPos: {
             x: this.x,
             y: this.y,
@@ -21244,7 +21244,7 @@ class Position {
         this.z = this.targetZ;
         this.inMove = false;
         this.onTargetPositionReach();
-        if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+        if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
           netPos: {
             x: this.x,
             y: this.y,
@@ -21313,7 +21313,7 @@ class Position {
     this.targetY = newy;
     this.targetZ = newz;
     this.inMove = false;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (_manifest.default.scene[this.nameUniq] && _engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x,
         y: this.y,
@@ -21444,7 +21444,7 @@ class SquareVertex {
     this.pointB.x = -scale;
     this.pointC.x = scale;
     this.pointD.x = -scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_manifest.default.scene[this.nameUniq] && _engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         x: scale
       },
@@ -21462,7 +21462,7 @@ class SquareVertex {
     this.pointB.y = scale;
     this.pointC.y = -scale;
     this.pointD.y = -scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_manifest.default.scene[this.nameUniq] && _engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         y: scale
       },
@@ -21477,7 +21477,7 @@ class SquareVertex {
 
   setScale(scale, em) {
     this.size = scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_manifest.default.scene[this.nameUniq] && _engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -39593,14 +39593,15 @@ class MatrixRoulette {
           App.scene[name].geometry.setScaleByX(-2); // App.scene[name].rotx = 45
           // App.scene[name].rotation.rotz = -90
 
-          App.scene[name].LightsData.ambientLight.set(1, 1, 1);
-          App.scene[name].net.enable = false;
-          App.scene[name].net.activate();
+          App.scene[name].LightsData.ambientLight.set(1, 1, 1); // App.scene[name].net.enable = false;
+
+          console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length); //  App.scene[name].net.activate();
+
           App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1]);
           addEventListener('net.remove-user', event => {
             var n = "videochat_" + event.detail.data.userid;
 
-            if (typeof App.scene[n] !== 'undefinde' && typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
+            if (typeof App.scene[n] !== 'undefined' && typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
               App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
               App.scene[n].selfDestroy(1);
             }

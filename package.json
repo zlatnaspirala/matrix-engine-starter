@@ -61,7 +61,7 @@
   "dependencies": {
     "audio-commander": "^1.0.3",
     "fs": "0.0.1-security",
-    "matrix-engine": "^1.9.26",
+    "matrix-engine": "^1.9.27",
     "matrix-engine-plugins": "0.0.8",
     "matrix-network": "^1.0.8",
     "nidza": "^1.2.15",

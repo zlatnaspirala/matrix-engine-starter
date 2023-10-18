@@ -77,13 +77,17 @@ export class MatrixRoulette {
           // App.scene[name].rotx = 45
           // App.scene[name].rotation.rotz = -90
           App.scene[name].LightsData.ambientLight.set(1, 1, 1);
-          App.scene[name].net.enable = false;
-          App.scene[name].net.activate();
+
+          // App.scene[name].net.enable = false;
+
+          console.log( 'App.network.c  h => ' + App.network.connection.getAllParticipants().length)
+          //  App.scene[name].net.activate();
+          
           App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1])
 
           addEventListener('net.remove-user', (event) => {
             var n = "videochat_" + event.detail.data.userid;
-            if(typeof App.scene[n] !== 'undefinde' &&
+            if(typeof App.scene[n] !== 'undefined' &&
               typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
               App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
               App.scene[n].selfDestroy(1)
