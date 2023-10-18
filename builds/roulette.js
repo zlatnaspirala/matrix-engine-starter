@@ -39583,16 +39583,15 @@ class MatrixRoulette {
         if (e.detail.data.userId != App.network.connection.userid && App.scene[name] !== 'undefined' && sessionStorage.getItem('a_' + name) == null) {
           sessionStorage.setItem('a_' + name, name); // This is video element!
 
-          console.log("this. stream-loaded  ", name);
+          console.log("stream-loaded => ", name);
           matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
           console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length);
           App.scene[name].position.x = 10;
           App.scene[name].position.z = -20;
           App.scene[name].position.y = 7;
-          App.scene[name].geometry.setScale(-1);
-          App.scene[name].geometry.setScaleByX(-2); // App.scene[name].rotx = 45
-          // App.scene[name].rotation.rotz = -90
+          App.scene[name].geometry.setScale(-1); // invert tex coords
 
+          App.scene[name].geometry.setScaleByX(-2);
           App.scene[name].LightsData.ambientLight.set(1, 1, 1); // App.scene[name].net.enable = false;
 
           console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length); //  App.scene[name].net.activate();
@@ -39609,13 +39608,15 @@ class MatrixRoulette {
         } else {
           // own stream 
           if (sessionStorage.getItem('alocal_' + name) == null) {
-            console.log('this. stream-loaded LOCAL ');
             var name = 'LOCAL_STREAM';
             matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
             App.scene[name].position.x = 0;
             App.scene[name].position.z = -30;
             App.scene[name].position.y = 7;
-            App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]); // function onLoadObj(meshes) {
+            App.scene[name].geometry.setScale(-1);
+            App.scene[name].geometry.setScaleByX(-2);
+            App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]); // TV OBJ
+            // function onLoadObj(meshes) {
             //   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
             //   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
             //   App.scene.TV.position.setPosition(-20, 2, -25)
@@ -39692,6 +39693,7 @@ class MatrixRoulette {
   }
 
   addHUD() {
+    // 2d canvas nidza.js lib
     this.tex = {
       source: ["res/images/chip1.png"],
       mix_operation: "multiply"
