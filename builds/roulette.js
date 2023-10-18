@@ -16760,9 +16760,14 @@ function resizeView() {
 let net = null;
 exports.net = net;
 
-let activateNet = () => {
-  if (typeof _manifest.default.net !== 'undefinde' && _manifest.default.net === true) {
-    var t = new _clientConfig.default();
+let activateNet = CustomConfig => {
+  if (typeof _manifest.default.net !== 'undefined' && _manifest.default.net === true) {
+    if (typeof CustomConfig !== 'undefined') {
+      var t = new customConfig();
+    } else {
+      var t = new _clientConfig.default();
+    }
+
     exports.net = net = new _net.Broadcaster(t);
     _manifest.default.network = net;
     console.info('Networking is active.', net);
@@ -21260,7 +21265,7 @@ class Position {
     this.targetX = newx;
     this.inMove = false;
 
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') {
+    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) {
       _engine.net.connection.send({
         netPos: {
           x: this.x,
@@ -21276,7 +21281,7 @@ class Position {
     this.y = newy;
     this.targetY = newy;
     this.inMove = false;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x,
         y: this.y,
@@ -21290,7 +21295,7 @@ class Position {
     this.z = newz;
     this.targetZ = newz;
     this.inMove = false;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x,
         y: this.y,
@@ -21308,7 +21313,7 @@ class Position {
     this.targetY = newy;
     this.targetZ = newz;
     this.inMove = false;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_engine.net && _engine.net.connection && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x,
         y: this.y,
@@ -39549,18 +39554,20 @@ class MatrixRoulette {
     this.tableBet = new _tableEvents.default(this.physics);
     this.wheelSystem = new _wheel.default(this.physics);
     this.attachMatrixRay();
-    this.attachGamePlayEvents();
+    this.attachGamePlayEvents(); // 2d canvas small library
+    // Text oriented - transformation also 3d context variant of components shader oriented
+
     this.nidza = new _nidza.Nidza();
     matrixEngine.Events.camera.pitch = -35;
     matrixEngine.Events.camera.zPos = -6;
-    matrixEngine.Events.camera.yPos = 19.2;
+    matrixEngine.Events.camera.yPos = 19.2; // nidza.js small 2d canvas lib
+
     this.addHUD();
     this.runVideoChat();
   }
 
   runVideoChat() {
-    matrixEngine.Engine.activateNet(); // let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
-
+    matrixEngine.Engine.activateNet();
     var tex = {
       source: ["res/images/field.png"],
       mix_operation: "multiply"
@@ -39568,40 +39575,30 @@ class MatrixRoulette {
     addEventListener('stream-loaded', e => {
       var _ = document.querySelectorAll('.media-box');
 
-      var name = "videochat-" + e.detail.data.userId;
+      var name = "videochat_" + e.detail.data.userId;
 
       _.forEach(i => {
-        // App.network.connection.userid  REPRESENT LOCAL STREAM 
-        if (e.detail.data.userId != App.network.connection.userid) {
-          // This is video element!
-          world.Add("cubeLightTex", 3, name, tex);
-          App.scene[name].position.x = 0;
-          App.scene[name].position.z = -20; // App.scene[name].rotx = 45
+        var name = "videochat_" + e.detail.data.userId;
+
+        if (e.detail.data.userId != App.network.connection.userid && App.scene[name] !== 'undefined' && sessionStorage.getItem('a_' + name) == null) {
+          sessionStorage.setItem('a_' + name, name); // This is video element!
+
+          console.log("this. stream-loaded  ", name);
+          matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+          console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length);
+          App.scene[name].position.x = 10;
+          App.scene[name].position.z = -20;
+          App.scene[name].position.y = 7;
+          App.scene[name].geometry.setScale(-1);
+          App.scene[name].geometry.setScaleByX(-2); // App.scene[name].rotx = 45
           // App.scene[name].rotation.rotz = -90
 
           App.scene[name].LightsData.ambientLight.set(1, 1, 1);
-          App.scene[name].net.enable = true;
+          App.scene[name].net.enable = false;
           App.scene[name].net.activate();
           App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1]);
-          objGenerator(App.scene[name]);
-          App.CUSTOM_TIMER = setInterval(() => {
-            try {
-              if (typeof App.scene[name] !== 'undefined' && typeof App.scene[name].geometry !== 'undefined') {
-                App.scene[name].geometry.texCoordsPoints.front.right_top.x += 0.001;
-                App.scene[name].geometry.texCoordsPoints.front.left_bottom.x += 0.001;
-                App.scene[name].geometry.texCoordsPoints.front.left_top.x += 0.001;
-                App.scene[name].geometry.texCoordsPoints.front.right_bottom.x += 0.001;
-              } else {
-                clearInterval(App.CUSTOM_TIMER);
-                App.CUSTOM_TIMER = null;
-              }
-            } catch (err) {
-              clearInterval(App.CUSTOM_TIMER);
-              App.CUSTOM_TIMER = null;
-            }
-          }, 1);
           addEventListener('net.remove-user', event => {
-            var n = "videochat-" + event.detail.data.userid;
+            var n = "videochat_" + event.detail.data.userid;
 
             if (typeof App.scene[n] !== 'undefinde' && typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
               App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
@@ -39610,20 +39607,25 @@ class MatrixRoulette {
           });
         } else {
           // own stream 
-          function onLoadObj(meshes) {
-            // App.meshes = meshes;
-            matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
-            matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
-            App.scene.TV.position.setPosition(-10, 5, -15);
-            App.scene.TV.mesh.setScale(7); // App.scene.TV.rotation.rotateY(90);
-
-            App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
-            App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+          if (sessionStorage.getItem('alocal_' + name) == null) {
+            console.log('this. stream-loaded LOCAL ');
+            var name = 'LOCAL_STREAM';
+            matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+            App.scene[name].position.x = 0;
+            App.scene[name].position.z = -30;
+            App.scene[name].position.y = 7;
+            App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]); // function onLoadObj(meshes) {
+            //   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
+            //   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
+            //   App.scene.TV.position.setPosition(-20, 2, -25)
+            //   App.scene.TV.mesh.setScale(7)
+            //   // App.scene.TV.rotation.rotateY(90);
+            //   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
+            //   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+            // }
+            // sessionStorage.setItem('alocal_' + name, name)
+            // matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
           }
-
-          matrixEngine.objLoader.downloadMeshes({
-            TV: "res/3d-objects/tv.obj"
-          }, onLoadObj);
         }
       });
     });
@@ -39676,7 +39678,6 @@ class MatrixRoulette {
       mix_operation: "multiply"
     });
     this.physics.broadphase = new CANNON.NaiveBroadphase();
-    console.log('this.physics', this.physics);
     this.physics.world.solver.iterations = 5; // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
 
@@ -39753,8 +39754,8 @@ class TableChips {
       if (e.detail.name.indexOf('clearBets') != -1) {
         this.clearAll();
       } else {
-        console.log('Add chip =>', e.detail.name);
-        this.addChip(e.detail);
+        console.log('Add chip tableEvents.chips =>', e.detail.name);
+        if (e.detail.tableEvents) this.addChip(e.detail);
       }
     });
     addEventListener("clear-chips", e => {
@@ -39864,187 +39865,20 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 const ROLES = {
   red: [1, 3, 5, 7, 9, 10, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
   black: [2, 4, 6, 8, 11, 13, 15, 17, 20, 24, 26, 28, 29, 31, 33, 35]
-};
-const rouletteMapInit = {
-  TOTAL_BET: 0,
-  CENTER: {
-    "single0": 0,
-    "single1": 0,
-    "single2": 0,
-    "single3": 0,
-    "single4": 0,
-    "single5": 0,
-    "single6": 0,
-    "single7": 0,
-    "single8": 0,
-    "single9": 0,
-    "single10": 0,
-    "single11": 0,
-    "single12": 0,
-    "single13": 0,
-    "single14": 0,
-    "single15": 0,
-    "single16": 0,
-    "single17": 0,
-    "single18": 0,
-    "single19": 0,
-    "single20": 0,
-    "single21": 0,
-    "single22": 0,
-    "single23": 0,
-    "single24": 0,
-    "single25": 0,
-    "single26": 0,
-    "single27": 0,
-    "single28": 0,
-    "single29": 0,
-    "single30": 0,
-    "single31": 0,
-    "single32": 0,
-    "single33": 0,
-    "single34": 0,
-    "single35": 0,
-    "single36": 0
-  },
-  SPLIT: {
-    "s1_2": 0,
-    "s1_4": 0,
-    "s1_0": 0,
-    "s2_0": 0,
-    "s2_3": 0,
-    "s2_5": 0,
-    "s3_0": 0,
-    "s3_6": 0,
-    "s4_5": 0,
-    "s4_7": 0,
-    "s5_6": 0,
-    "s5_8": 0,
-    "s6_9": 0,
-    "s7_8": 0,
-    "s7_10": 0,
-    "s8_9": 0,
-    "s8_11": 0,
-    "s9_12": 0,
-    "s10_11": 0,
-    "s10_13": 0,
-    "s11_12": 0,
-    "s11_14": 0,
-    "s12_15": 0,
-    "s13_14": 0,
-    "s13_16": 0,
-    "s14_15": 0,
-    "s14_17": 0,
-    "s15_18": 0,
-    "s16_17": 0,
-    "s16_19": 0,
-    "s17_18": 0,
-    "s17_20": 0,
-    "s18_21": 0,
-    "s19_20": 0,
-    "s19_22": 0,
-    "s20_21": 0,
-    "s20_23": 0,
-    "s21_24": 0,
-    "s22_23": 0,
-    "s22_25": 0,
-    "s23_24": 0,
-    "s23_26": 0,
-    "s24_27": 0,
-    "s25_26": 0,
-    "s25_28": 0,
-    "s26_27": 0,
-    "s26_29": 0,
-    "s27_30": 0,
-    "s28_29": 0,
-    "s28_31": 0,
-    "s29_30": 0,
-    "s29_32": 0,
-    "s30_33": 0,
-    "s31_32": 0,
-    "s31_34": 0,
-    "s32_33": 0,
-    "s32_35": 0,
-    "s33_36": 0,
-    "s34_35": 0,
-    "s35_36": 0
-  },
-  CORNER: {
-    "c0_1_2_3": 0,
-    "c1_2_4_5": 0,
-    "c2_3_5_6": 0,
-    "c4_5_7_8": 0,
-    "c5_6_8_9": 0,
-    "c7_8_10_11": 0,
-    "c8_9_11_12": 0,
-    "c10_11_13_14": 0,
-    "c11_12_14_15": 0,
-    "c13_14_16_17": 0,
-    "c14_15_17_18": 0,
-    "c16_17_19_20": 0,
-    "c17_18_20_21": 0,
-    "c19_20_22_23": 0,
-    "c20_21_23_24": 0,
-    "c22_23_25_26": 0,
-    "c23_24_26_27": 0,
-    "c25_26_28_29": 0,
-    "c26_27_29_30": 0,
-    "c28_29_31_32": 0,
-    "c29_30_32_33": 0,
-    "c31_32_34_35": 0,
-    "c32_33_35_36": 0
-  },
-  LINE_BET: {
-    "l1_2_3_4_5_6": 0,
-    "l4_5_6_7_8_9": 0,
-    "l7_8_9_10_11_12": 0,
-    "l10_11_12_13_14_15": 0,
-    "l13_14_15_16_17_18": 0,
-    "l16_17_18_19_20_21": 0,
-    "l19_20_21_22_23_24": 0,
-    "l22_23_24_25_26_27": 0,
-    "l25_26_27_28_29_30": 0,
-    "l28_29_30_31_32_33": 0,
-    "l31_32_33_34_35_36": 0
-  },
-  STREET: {
-    "street0_1_2": 0,
-    "street0_2_3": 0,
-    "street1_2_3": 0,
-    "street4_5_6": 0,
-    "street7_8_9": 0,
-    "street10_11_12": 0,
-    "street13_14_15": 0,
-    "street16_17_18": 0,
-    "street19_20_21": 0,
-    "street22_23_24": 0,
-    "street25_26_27": 0,
-    "street28_29_30": 0,
-    "street31_32_33": 0,
-    "street34_35_36": 0
-  },
-  COLOR: {
-    "red": 0,
-    "black": 0
-  },
-  EVEN_ODD: {
-    "even": 0,
-    "odd": 0
-  },
-  DOZENS: {
-    "from1_12": 0,
-    "from13_24": 0,
-    "from25_36": 0
-  },
-  LOW_HIGH: {
-    "low": 0,
-    "high": 0
-  },
-  COLUMN: {
-    "top_col": 0,
-    "mid_col": 0,
-    "bot_col": 0
-  }
-};
+}; // const rouletteMapInit = {
+//   TOTAL_BET: 0,
+//   CENTER: {"single0": 0, "single1": 0, "single2": 0, "single3": 0, "single4": 0, "single5": 0, "single6": 0, "single7": 0, "single8": 0, "single9": 0, "single10": 0, "single11": 0, "single12": 0, "single13": 0, "single14": 0, "single15": 0, "single16": 0, "single17": 0, "single18": 0, "single19": 0, "single20": 0, "single21": 0, "single22": 0, "single23": 0, "single24": 0, "single25": 0, "single26": 0, "single27": 0, "single28": 0, "single29": 0, "single30": 0, "single31": 0, "single32": 0, "single33": 0, "single34": 0, "single35": 0, "single36": 0, },
+//   SPLIT: {"s1_2": 0, "s1_4": 0, "s1_0": 0, "s2_0": 0, "s2_3": 0, "s2_5": 0, "s3_0": 0, "s3_6": 0, "s4_5": 0, "s4_7": 0, "s5_6": 0, "s5_8": 0, "s6_9": 0, "s7_8": 0, "s7_10": 0, "s8_9": 0, "s8_11": 0, "s9_12": 0, "s10_11": 0, "s10_13": 0, "s11_12": 0, "s11_14": 0, "s12_15": 0, "s13_14": 0, "s13_16": 0, "s14_15": 0, "s14_17": 0, "s15_18": 0, "s16_17": 0, "s16_19": 0, "s17_18": 0, "s17_20": 0, "s18_21": 0, "s19_20": 0, "s19_22": 0, "s20_21": 0, "s20_23": 0, "s21_24": 0, "s22_23": 0, "s22_25": 0, "s23_24": 0, "s23_26": 0, "s24_27": 0, "s25_26": 0, "s25_28": 0, "s26_27": 0, "s26_29": 0, "s27_30": 0, "s28_29": 0, "s28_31": 0, "s29_30": 0, "s29_32": 0, "s30_33": 0, "s31_32": 0, "s31_34": 0, "s32_33": 0, "s32_35": 0, "s33_36": 0, "s34_35": 0, "s35_36": 0},
+//   CORNER: {"c0_1_2_3": 0, "c1_2_4_5": 0, "c2_3_5_6": 0, "c4_5_7_8": 0, "c5_6_8_9": 0, "c7_8_10_11": 0, "c8_9_11_12": 0, "c10_11_13_14": 0, "c11_12_14_15": 0, "c13_14_16_17": 0, "c14_15_17_18": 0, "c16_17_19_20": 0, "c17_18_20_21": 0, "c19_20_22_23": 0, "c20_21_23_24": 0, "c22_23_25_26": 0, "c23_24_26_27": 0, "c25_26_28_29": 0, "c26_27_29_30": 0, "c28_29_31_32": 0, "c29_30_32_33": 0, "c31_32_34_35": 0, "c32_33_35_36": 0, },
+//   LINE_BET: {"l1_2_3_4_5_6": 0, "l4_5_6_7_8_9": 0, "l7_8_9_10_11_12": 0, "l10_11_12_13_14_15": 0, "l13_14_15_16_17_18": 0, "l16_17_18_19_20_21": 0, "l19_20_21_22_23_24": 0, "l22_23_24_25_26_27": 0, "l25_26_27_28_29_30": 0, "l28_29_30_31_32_33": 0, "l31_32_33_34_35_36": 0, },
+//   STREET: {"street0_1_2": 0, "street0_2_3": 0, "street1_2_3": 0, "street4_5_6": 0, "street7_8_9": 0, "street10_11_12": 0, "street13_14_15": 0, "street16_17_18": 0, "street19_20_21": 0, "street22_23_24": 0, "street25_26_27": 0, "street28_29_30": 0, "street31_32_33": 0, "street34_35_36": 0, },
+//   COLOR: {"red": 0, "black": 0, },
+//   EVEN_ODD: {"even": 0, "odd": 0, },
+//   DOZENS: {"from1_12": 0, "from13_24": 0, "from25_36": 0},
+//   LOW_HIGH: {"low": 0, "high": 0},
+//   COLUMN: {"top_col": 0, "mid_col": 0, "bot_col": 0, },
+// }
+
 /**
  * @description
  * This class used for bet place objects

@@ -22,8 +22,8 @@ export default class TableChips {
       if(e.detail.name.indexOf('clearBets') != -1) {
         this.clearAll()
       } else {
-        console.log('Add chip =>', e.detail.name)
-        this.addChip(e.detail);
+        console.log('Add chip tableEvents.chips =>', e.detail.name)
+        if (e.detail.tableEvents) this.addChip(e.detail);
       }
     })
 

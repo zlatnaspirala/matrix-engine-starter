@@ -28,12 +28,15 @@ export class MatrixRoulette {
     this.attachMatrixRay()
     this.attachGamePlayEvents()
 
+    // 2d canvas small library
+    // Text oriented - transformation also 3d context variant of components shader oriented
     this.nidza = new Nidza();
 
     matrixEngine.Events.camera.pitch = -35
     matrixEngine.Events.camera.zPos = -6
     matrixEngine.Events.camera.yPos = 19.2
 
+    // nidza.js small 2d canvas lib
     this.addHUD()
 
     this.runVideoChat()
@@ -41,7 +44,6 @@ export class MatrixRoulette {
 
   runVideoChat() {
     matrixEngine.Engine.activateNet();
-    // let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
 
     var tex = {
       source: ["res/images/field.png"],
@@ -50,41 +52,37 @@ export class MatrixRoulette {
 
     addEventListener('stream-loaded', (e) => {
       var _ = document.querySelectorAll('.media-box')
-      var name = "videochat-" + e.detail.data.userId;
+
+      var name = "videochat_" + e.detail.data.userId;
+
       _.forEach((i) => {
-        // App.network.connection.userid  REPRESENT LOCAL STREAM 
-        if(e.detail.data.userId != App.network.connection.userid) {
+        var name = "videochat_" + e.detail.data.userId;
+        if(e.detail.data.userId != App.network.connection.userid &&
+          App.scene[name] !== 'undefined' &&
+          sessionStorage.getItem('a_' + name) == null) {
+          sessionStorage.setItem('a_' + name, name)
           // This is video element!
-          world.Add("cubeLightTex", 3, name, tex);
-          App.scene[name].position.x = 0;
+          console.log("this. stream-loaded  ", name)
+          matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+
+          console.log( 'App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length)
+
+          App.scene[name].position.x = 10;
           App.scene[name].position.z = -20;
+          App.scene[name].position.y = 7;
+
+          App.scene[name].geometry.setScale(-1)
+          App.scene[name].geometry.setScaleByX(-2)
+
           // App.scene[name].rotx = 45
           // App.scene[name].rotation.rotz = -90
           App.scene[name].LightsData.ambientLight.set(1, 1, 1);
-          App.scene[name].net.enable = true;
+          App.scene[name].net.enable = false;
           App.scene[name].net.activate();
           App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1])
-          objGenerator(App.scene[name])
-  
-          App.CUSTOM_TIMER = setInterval(() => {
-            try {
-              if(typeof App.scene[name] !== 'undefined' && typeof App.scene[name].geometry !== 'undefined') {
-                App.scene[name].geometry.texCoordsPoints.front.right_top.x += 0.001;
-                App.scene[name].geometry.texCoordsPoints.front.left_bottom.x += 0.001;
-                App.scene[name].geometry.texCoordsPoints.front.left_top.x += 0.001;
-                App.scene[name].geometry.texCoordsPoints.front.right_bottom.x += 0.001;
-              } else {
-                clearInterval(App.CUSTOM_TIMER)
-                App.CUSTOM_TIMER = null;
-              }
-            } catch(err) {
-              clearInterval(App.CUSTOM_TIMER)
-              App.CUSTOM_TIMER = null;
-            }
-          }, 1);
-  
+
           addEventListener('net.remove-user', (event) => {
-            var n = "videochat-" + event.detail.data.userid;
+            var n = "videochat_" + event.detail.data.userid;
             if(typeof App.scene[n] !== 'undefinde' &&
               typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
               App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
@@ -93,21 +91,28 @@ export class MatrixRoulette {
           })
         } else {
           // own stream 
-          function onLoadObj(meshes) {
-            // App.meshes = meshes;
-            matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
-            
-              matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
-              App.scene.TV.position.setPosition(-10, 5, -15)
-              App.scene.TV.mesh.setScale(7)
-              // App.scene.TV.rotation.rotateY(90);
-              App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
+          if(sessionStorage.getItem('alocal_' + name) == null) {
+            console.log('this. stream-loaded LOCAL ')
 
-              App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+            var name = 'LOCAL_STREAM';
+            matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+            App.scene[name].position.x = 0;
+            App.scene[name].position.z = -30;
+            App.scene[name].position.y = 7;
+            App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
 
-              
+            // function onLoadObj(meshes) {
+            //   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
+            //   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
+            //   App.scene.TV.position.setPosition(-20, 2, -25)
+            //   App.scene.TV.mesh.setScale(7)
+            //   // App.scene.TV.rotation.rotateY(90);
+            //   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
+            //   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+            // }
+            // sessionStorage.setItem('alocal_' + name, name)
+            // matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
           }
-          matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
         }
       })
     })
@@ -159,9 +164,7 @@ export class MatrixRoulette {
       source: ["res/images/bg-pow2.png"],
       mix_operation: "multiply",
     });
-
     this.physics.broadphase = new CANNON.NaiveBroadphase();
-    console.log('this.physics', this.physics)
     this.physics.world.solver.iterations = 5;
     // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;

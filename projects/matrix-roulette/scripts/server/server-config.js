@@ -31,7 +31,7 @@ export default class ServerConfig {
      * Interest prop for manipulation.
      * This can be upgraded to the Object type.
      */
-    this.masterServerKey = "matrix-engine.maximum";
+    this.masterServerKey = "matrix-engine.maximum1";
 
     /**
      * @description

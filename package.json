@@ -23,6 +23,7 @@
     "url": "git+https://github.com/zlatnaspirala/matrix-engine.git"
   },
   "keywords": [
+    "matrix-engine",
     "matrix-engine-examples",
     "raycast-triangle",
     "3d-font",
@@ -46,7 +47,10 @@
     "blender-glmatrix-export",
     "obj",
     "games",
-    "web-anatomy"
+    "web-anatomy",
+    "3d-roulette",
+    "3d-roulette-webgl",
+    "3d-roulette-real-physics"
   ],
   "author": "Nikola Lukic zlatnaspirala",
   "license": "MIT",
@@ -57,7 +61,7 @@
   "dependencies": {
     "audio-commander": "^1.0.3",
     "fs": "0.0.1-security",
-    "matrix-engine": "^1.9.24",
+    "matrix-engine": "^1.9.26",
     "matrix-engine-plugins": "0.0.8",
     "matrix-network": "^1.0.8",
     "nidza": "^1.2.15",
