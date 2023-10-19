@@ -31,21 +31,6 @@ export default class TableChips {
       this.clearAll()
     })
 
-    this.addHUDBtns()
-  }
-
-  addHUDBtns() {
-    var n = 'clearBets';
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
-    App.scene[n].position.SetY(-1.9);
-    App.scene[n].position.SetZ(7);
-    App.scene[n].position.SetX(2.8);
-    App.scene[n].rotation.rotx = -90;
-    App.scene[n].geometry.setScaleByX(0.83)
-    App.scene[n].geometry.setScaleByY(0.5)
-    App.scene[n].glBlend.blendEnabled = true;
-    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
   }
 
   addChip(o) {

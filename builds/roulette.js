@@ -39427,37 +39427,38 @@ exports.funnyStar = funnyStar;
 
 var _standardFonts = require("../../matrix-slot/scripts/standard-fonts");
 
-function create2dHUD(nidza) {
+function create2dHUD(nidza, playerInfo) {
   return new Promise((resolve, reject) => {
     let myFirstNidzaObjectOptions = {
       id: "footerLabel",
       size: {
-        width: 400,
-        height: 180
+        width: 600,
+        height: 200
       }
     };
+    console.log('TTTTTTTTTTTTTT', playerInfo);
     nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
     let texCanvas = document.getElementById('footerLabel');
     let statusMessageBox = nidza.access.footerLabel.addTextComponent({
       id: "zlatna",
-      text: "Balance: 100$",
+      text: `Balance: ${playerInfo.balance} ${playerInfo.currency}`,
       color: "lime",
       position: {
         x: 50,
-        y: 20
+        y: 40
       },
       dimension: {
         width: 365,
-        height: 120
+        height: 180
       },
       border: {
         fillColor: "rgba(110,10,1,1)",
         strokeColor: "rgba(0,0,0,0)"
       },
       font: {
-        fontSize: "40px",
+        fontSize: "60px",
         fontStyle: "normal",
-        fontName: _standardFonts.stdFonts.CourierNew
+        fontName: _standardFonts.stdFonts.Verdana
       }
     }); // Create one simple oscillator
     // let rotationOption = new nidza.Osc( 0, 360, 2 );
@@ -39540,9 +39541,23 @@ class MatrixRoulette {
 
   tableBet = null;
   wheelSystem = null;
-  preventDBTrigger = null;
+  preventDBTrigger = null; // Top level vars
+
+  status = {
+    cameraView: 'bets'
+  }; // Top level func
+
+  updateBalance(newBalance) {
+    dispatchEvent(new CustomEvent('update-balance', {
+      detail: 'Balance: ' + newBalance + this.playerInfo.currency
+    }));
+  }
 
   constructor() {
+    this.playerInfo = {
+      balance: 1000,
+      currency: '$'
+    };
     var App = matrixEngine.App; // dev only
 
     window.App = App;
@@ -39558,12 +39573,43 @@ class MatrixRoulette {
     // Text oriented - transformation also 3d context variant of components shader oriented
 
     this.nidza = new _nidza.Nidza();
-    matrixEngine.Events.camera.pitch = -35;
-    matrixEngine.Events.camera.zPos = -6;
-    matrixEngine.Events.camera.yPos = 19.2; // nidza.js small 2d canvas lib
+    this.setupCameraView('initbets'); // nidza.js small 2d canvas lib
 
-    this.addHUD();
+    this.addHUD(this.playerInfo);
     this.runVideoChat();
+  }
+
+  setupCameraView(type) {
+    let OSC = matrixEngine.utility.OSCILLATOR;
+    console.log('current camera status:', this.status.cameraView);
+    console.log('next camera status:', type);
+    if (type == this.status.cameraView) return;
+    console.log('current camera status:', this.status.cameraView);
+
+    if (type == 'bets') {
+      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -58.970000000000034, 0.001);
+      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 10.226822219793473, 0.001);
+      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos, 6.49717201776934, 0.001);
+      this.c0i = setInterval(() => {
+        c0.on_maximum_value = () => {
+          this.status.cameraView = 'bets';
+          clearInterval(this.c0i);
+        };
+
+        matrixEngine.Events.camera.pitch = c0.UPDATE();
+        matrixEngine.Events.camera.zPos = c1.UPDATE();
+        matrixEngine.Events.camera.yPos = c2.UPDATE();
+      }, 20);
+    } else if (type == 'wheel') {
+      matrixEngine.Events.camera.pitch = -52.67999999999999;
+      matrixEngine.Events.camera.zPos = -4.6962394866880635;
+      matrixEngine.Events.camera.yPos = 19.500000000000007;
+      this.status.cameraView = 'wheel';
+    } else {
+      matrixEngine.Events.camera.pitch = -58.970000000000034;
+      matrixEngine.Events.camera.zPos = 0.226822219793473;
+      matrixEngine.Events.camera.yPos = 6.49717201776934;
+    }
   }
 
   runVideoChat() {
@@ -39692,7 +39738,7 @@ class MatrixRoulette {
     });
   }
 
-  addHUD() {
+  addHUD(playerInfo) {
     // 2d canvas nidza.js lib
     this.tex = {
       source: ["res/images/chip1.png"],
@@ -39709,15 +39755,34 @@ class MatrixRoulette {
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene.balance.rotation.rotx = 90;
-    (0, _dDraw.create2dHUD)(this.nidza).then(canvas2d => {
+    (0, _dDraw.create2dHUD)(this.nidza, playerInfo).then(canvas2d => {
       App.scene.balance.streamTextures = {
         videoImage: canvas2d
       };
       addEventListener('update-balance', e => {
-        roulette.nidza.access.footerLabel.elements[0].text = 'BLABAL';
+        roulette.nidza.access.footerLabel.elements[0].text = e.detail;
         roulette.nidza.access.footerLabel.elements[0].activateRotator();
       });
     }); // funnyStar(this.nidza)
+
+    this.addHUDBtns();
+  }
+
+  addHUDBtns() {
+    var n = 'clearBets';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
+      source: ["res/images/clearH.png"],
+      mix_operation: "multiply"
+    });
+    App.scene[n].position.SetY(-1.9);
+    App.scene[n].position.SetZ(7);
+    App.scene[n].position.SetX(2.8);
+    App.scene[n].rotation.rotx = -90;
+    App.scene[n].geometry.setScaleByX(0.83);
+    App.scene[n].geometry.setScaleByY(0.5);
+    App.scene[n].glBlend.blendEnabled = true;
+    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
   }
 
 }
@@ -39764,21 +39829,6 @@ class TableChips {
     addEventListener("clear-chips", e => {
       this.clearAll();
     });
-    this.addHUDBtns();
-  }
-
-  addHUDBtns() {
-    var n = 'clearBets';
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
-    App.scene[n].position.SetY(-1.9);
-    App.scene[n].position.SetZ(7);
-    App.scene[n].position.SetX(2.8);
-    App.scene[n].rotation.rotx = -90;
-    App.scene[n].geometry.setScaleByX(0.83);
-    App.scene[n].geometry.setScaleByY(0.5);
-    App.scene[n].glBlend.blendEnabled = true;
-    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
   }
 
   addChip(o) {
