@@ -263,6 +263,7 @@ export class MatrixRoulette {
     // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
     App.scene.FLOOR_STATIC.geometry.setScale(3)
+    App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5)
   }
 
   attachGamePlayEvents() {

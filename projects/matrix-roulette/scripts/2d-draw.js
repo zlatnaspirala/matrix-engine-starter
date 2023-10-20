@@ -25,7 +25,7 @@ export function create2dHUD(nidza, playerInfo) {
         color: "lime",
         position: {
           x: 50,
-          y: 40
+          y: 50
         },
         dimension: {
           width: 365,
@@ -103,26 +103,25 @@ export function funnyStar(nidza) {
 
 export function balanceDecorations(nidza) {
 
-
-  var A1 = 100,
+  var A1 = 111,
     f1 = 2,
-    p1 = 1 / 16,
-    d1 = 0.02;
-  var A2 = 10,
+    p1 = 1 / 2,
+    d1 = 0.2;
+  var A2 = 22,
     f2 = 4,
     p2 = 3 / 2,
     d2 = 0.0315;
-  var A3 = 200,
+  var A3 = 31,
     f3 = 4,
     p3 = 13 / 15,
-    d3 = 0.00012;
-  var A4 = 10,
+    d3 = 0.0012;
+  var A4 = 50,
     f4 = 4,
     p4 = 1,
     d4 = 0.012;
-  var r = 10,
-    g = 10,
-    b = 0;
+  var r = 110,
+    g = 110,
+    b = 110;
 
   var makeHarmonograph = function(c) {
     f1 = (f1 / 10) % 10;
@@ -130,48 +129,28 @@ export function balanceDecorations(nidza) {
     f3 = (f3 + Math.random() / 80) % 10;
     f4 = (f4 + Math.random() / 411) % 10;
     p1 += 0.5 % (Math.PI * 2);
+    if (p1 > 500)  p1 = 0;
     drawHarmonograph(c);
   }
 
   var drawHarmonograph = function(ctx) {
-    ctx.clearRect(0, 0, 850, 450);
+    ctx.clearRect(0, 0, 600, 400);
     ctx.save();
-    ctx.fillStyle = "#000000";
-    ctx.strokeStyle = "rgb(" + r + "," + g + "," + b + ")";
-    ctx.fillRect(0, 0, 800, 400);
-    ctx.translate(0, 250);
+    ctx.fillStyle = "rgb(" + A1 + "," + g + "," + b + ")";
+    ctx.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
+    ctx.fillRect(0, 0, 600, 400);
+    ctx.translate(0, 100);
     ctx.beginPath();
-    if(A1 > 100) {
-    }
-    for(var t = 0;t < 100;t += 0.1) {
+    for(var t = 0;t < 3;t += 0.1) {
       var x =
         A1 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) +
         A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
       var y =
         A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) +
         A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
-
       ctx.lineTo(x * x + 1, y + 1 / x);
     }
-
     ctx.stroke();
-    ctx.translate(A1, 0);
-    ctx.rotate(1.57);
-    ctx.beginPath();
-
-    for(var t = 0;t < 100;t += 0.1) {
-      var x =
-        A1 * A3 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) +
-        A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
-      var y =
-        A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) +
-        A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
-
-      ctx.lineTo(x * x + 1, y + 1 / x);
-    }
-
-    ctx.stroke();
-
     ctx.restore();
   }
 
@@ -179,18 +158,21 @@ export function balanceDecorations(nidza) {
     id: "CUSTOM",
     draw: function(e) {
       if(e instanceof CanvasRenderingContext2D == false) return;
-
       e.fillStyle = 'red';
-
-
-      // Create gradient
-      var myGradient = e.createLinearGradient(0, 0, 600, 200);
-      myGradient.addColorStop(0, 'purple');
-      myGradient.addColorStop(1, '#f53564');
-      e.fillStyle = myGradient;
-      e.fillRect(0, 0, 600, 200);
-
       makeHarmonograph(e)
+      e.fillStyle = 'rgba(0,0,0,0.4)';
+      e.fillRect(50, 50, 100 + p1, 100);
+      e.fillRect(50, 20, 500 - p1, 20);
+      e.fillRect(50, 170, 500 - p1, 20);
+
+      
+      var myGradient = e.createLinearGradient(350, 0, 650, 50);
+      myGradient.addColorStop(0, 'purple');
+      myGradient.addColorStop(1, 'green');
+
+      e.fillStyle = myGradient;
+      e.fillRect(450 - p1, 80, 250 , 10)
+
 
     },
     position: {

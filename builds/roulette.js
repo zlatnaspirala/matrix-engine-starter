@@ -39447,7 +39447,7 @@ function create2dHUD(nidza, playerInfo) {
       color: "lime",
       position: {
         x: 50,
-        y: 40
+        y: 50
       },
       dimension: {
         width: 365,
@@ -39512,25 +39512,25 @@ function funnyStar(nidza) {
 }
 
 function balanceDecorations(nidza) {
-  var A1 = 100,
+  var A1 = 111,
       f1 = 2,
-      p1 = 1 / 16,
-      d1 = 0.02;
-  var A2 = 10,
+      p1 = 1 / 2,
+      d1 = 0.2;
+  var A2 = 22,
       f2 = 4,
       p2 = 3 / 2,
       d2 = 0.0315;
-  var A3 = 200,
+  var A3 = 31,
       f3 = 4,
       p3 = 13 / 15,
-      d3 = 0.00012;
-  var A4 = 10,
+      d3 = 0.0012;
+  var A4 = 50,
       f4 = 4,
       p4 = 1,
       d4 = 0.012;
-  var r = 10,
-      g = 10,
-      b = 0;
+  var r = 110,
+      g = 110,
+      b = 110;
 
   var makeHarmonograph = function (c) {
     f1 = f1 / 10 % 10;
@@ -39538,33 +39538,21 @@ function balanceDecorations(nidza) {
     f3 = (f3 + Math.random() / 80) % 10;
     f4 = (f4 + Math.random() / 411) % 10;
     p1 += 0.5 % (Math.PI * 2);
+    if (p1 > 500) p1 = 0;
     drawHarmonograph(c);
   };
 
   var drawHarmonograph = function (ctx) {
-    ctx.clearRect(0, 0, 850, 450);
+    ctx.clearRect(0, 0, 600, 400);
     ctx.save();
-    ctx.fillStyle = "#000000";
-    ctx.strokeStyle = "rgb(" + r + "," + g + "," + b + ")";
-    ctx.fillRect(0, 0, 800, 400);
-    ctx.translate(0, 250);
+    ctx.fillStyle = "rgb(" + A1 + "," + g + "," + b + ")";
+    ctx.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
+    ctx.fillRect(0, 0, 600, 400);
+    ctx.translate(0, 100);
     ctx.beginPath();
 
-    if (A1 > 100) {}
-
-    for (var t = 0; t < 100; t += 0.1) {
+    for (var t = 0; t < 3; t += 0.1) {
       var x = A1 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) + A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
-      var y = A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) + A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
-      ctx.lineTo(x * x + 1, y + 1 / x);
-    }
-
-    ctx.stroke();
-    ctx.translate(A1, 0);
-    ctx.rotate(1.57);
-    ctx.beginPath();
-
-    for (var t = 0; t < 100; t += 0.1) {
-      var x = A1 * A3 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) + A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
       var y = A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) + A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
       ctx.lineTo(x * x + 1, y + 1 / x);
     }
@@ -39577,14 +39565,17 @@ function balanceDecorations(nidza) {
     id: "CUSTOM",
     draw: function (e) {
       if (e instanceof CanvasRenderingContext2D == false) return;
-      e.fillStyle = 'red'; // Create gradient
-
-      var myGradient = e.createLinearGradient(0, 0, 600, 200);
-      myGradient.addColorStop(0, 'purple');
-      myGradient.addColorStop(1, '#f53564');
-      e.fillStyle = myGradient;
-      e.fillRect(0, 0, 600, 200);
+      e.fillStyle = 'red';
       makeHarmonograph(e);
+      e.fillStyle = 'rgba(0,0,0,0.4)';
+      e.fillRect(50, 50, 100 + p1, 100);
+      e.fillRect(50, 20, 500 - p1, 20);
+      e.fillRect(50, 170, 500 - p1, 20);
+      var myGradient = e.createLinearGradient(350, 0, 650, 50);
+      myGradient.addColorStop(0, 'purple');
+      myGradient.addColorStop(1, 'green');
+      e.fillStyle = myGradient;
+      e.fillRect(450 - p1, 80, 250, 10);
     },
     position: {
       x: 10,
@@ -39884,6 +39875,7 @@ class MatrixRoulette {
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
 
     App.scene.FLOOR_STATIC.geometry.setScale(3);
+    App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5);
   }
 
   attachGamePlayEvents() {
@@ -40149,8 +40141,19 @@ class TableEvents {
     App.scene[zero].geometry.setScaleByX(0.23);
     App.scene[zero].geometry.setScaleByY(1.1);
     App.scene[zero].glBlend.blendEnabled = true;
-    App.scene[zero].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    App.scene[zero].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    App.scene[zero].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    App.scene[zero].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[zero].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[zero].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     this.registerBetPlaces.push(App.scene[zero]);
     var numID = 1;
 
@@ -40174,10 +40177,7 @@ class TableEvents {
 
         App.scene[name].hoverEffect = me => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5]; // setTimeout(() => {
-          //   me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-          //   me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3]
-          // }, 150)
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
         };
 
         App.scene[name].hoverLeaveEffect = me => {
@@ -40210,8 +40210,19 @@ class TableEvents {
         App.scene[name].geometry.setScaleByX(-0.1);
         App.scene[name].geometry.setScaleByY(-0.1);
         App.scene[name].glBlend.blendEnabled = true;
-        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+
+        App.scene[name].hoverEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        };
+
+        App.scene[name].hoverLeaveEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        };
+
         this.registerBetPlaces.push(App.scene[name]);
         numID++;
         numID2++;
@@ -40240,8 +40251,19 @@ class TableEvents {
         App.scene[name].geometry.setScaleByX(-0.1);
         App.scene[name].geometry.setScaleByY(-0.1);
         App.scene[name].glBlend.blendEnabled = true;
-        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+
+        App.scene[name].hoverEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        };
+
+        App.scene[name].hoverLeaveEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        };
+
         this.registerBetPlaces.push(App.scene[name]);
         numID++;
         numID2++;
@@ -40264,6 +40286,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     this.registerBetPlaces.push(App.scene[name]);
     name = 'trio_0_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
@@ -40280,6 +40313,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     this.registerBetPlaces.push(App.scene[name]);
     name = 'topline_0_1_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
@@ -40296,6 +40340,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     this.registerBetPlaces.push(App.scene[name]);
     name = 'split_0_1';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
@@ -40312,6 +40367,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     this.registerBetPlaces.push(App.scene[name]);
     name = 'split_0_2'; // 2_5_8_11_14_17_20_23_26_29_32_35
 
@@ -40329,6 +40395,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     this.registerBetPlaces.push(App.scene[name]);
     name = 'split_0_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
@@ -40346,6 +40423,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     this.registerBetPlaces.push(App.scene[name]);
   }
 
@@ -40372,6 +40460,17 @@ class TableEvents {
         App.scene[name].glBlend.blendEnabled = true;
         App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
         App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+        App.scene[name].hoverEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        };
+
+        App.scene[name].hoverLeaveEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        };
+
         this.registerBetPlaces.push(App.scene[name]);
         numID = numID + y;
         numID2 = numID2 + y;
@@ -40397,6 +40496,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    };
+
     this.registerBetPlaces.push(App.scene[name]);
     name = 'black';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
@@ -40414,6 +40524,16 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    };
   }
 
   constructLowHigh() {
@@ -40433,6 +40553,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     name = 'high';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -40449,6 +40580,16 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
   }
 
   constructOddEven() {
@@ -40468,7 +40609,19 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-    name = 'odd';
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    }; // setTimeout(() => {
+
+
+    var name = 'odd';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -40484,6 +40637,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    }; // }, 10)
+
   }
 
   constructSt12() {
@@ -40503,6 +40667,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     name = 'from13_24';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -40519,6 +40694,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     name = 'from25_36';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -40535,6 +40721,16 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
   }
 
   constructStreets() {
@@ -40559,6 +40755,17 @@ class TableEvents {
       App.scene[name].glBlend.blendEnabled = true;
       App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
       App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+      App.scene[name].hoverEffect = me => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      };
+
+      App.scene[name].hoverLeaveEffect = me => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      };
+
       numID = numID + 3;
       numID2 = numID2 + 3;
       numID3 = numID3 + 3;
@@ -40583,6 +40790,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     name = 'column_2'; // 2_5_8_11_14_17_20_23_26_29_32_35
 
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
@@ -40600,6 +40818,17 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
+
     name = 'column_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
@@ -40617,6 +40846,16 @@ class TableEvents {
     App.scene[name].glBlend.blendEnabled = true;
     App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+    App.scene[name].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    };
+
+    App.scene[name].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    };
   }
 
   constructDBStreets() {
@@ -40643,6 +40882,17 @@ class TableEvents {
       App.scene[name].glBlend.blendEnabled = true;
       App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
       App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+
+      App.scene[name].hoverEffect = me => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      };
+
+      App.scene[name].hoverLeaveEffect = me => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+      };
+
       this.registerBetPlaces.push(App.scene[name]);
       numID = numID + 3;
       numID2 = numID2 + 3;
