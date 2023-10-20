@@ -39424,6 +39424,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.create2dHUD = create2dHUD;
 exports.funnyStar = funnyStar;
+exports.balanceDecorations = balanceDecorations;
 
 var _standardFonts = require("../../matrix-slot/scripts/standard-fonts");
 
@@ -39436,9 +39437,10 @@ function create2dHUD(nidza, playerInfo) {
         height: 200
       }
     };
-    console.log('TTTTTTTTTTTTTT', playerInfo);
+    console.log('Player info 2d draws ', playerInfo);
     nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
     let texCanvas = document.getElementById('footerLabel');
+    balanceDecorations(nidza);
     let statusMessageBox = nidza.access.footerLabel.addTextComponent({
       id: "zlatna",
       text: `Balance: ${playerInfo.balance} ${playerInfo.currency}`,
@@ -39452,8 +39454,8 @@ function create2dHUD(nidza, playerInfo) {
         height: 180
       },
       border: {
-        fillColor: "rgba(110,10,1,1)",
-        strokeColor: "rgba(0,0,0,0)"
+        fillColor: "rgba(0,0,0,0)",
+        strokeColor: "rgba(110,0,0,0)"
       },
       font: {
         fontSize: "60px",
@@ -39507,6 +39509,93 @@ function funnyStar(nidza) {
     j -= 0.1;
     if (j < 0) clearInterval(sceneGroup);
   }, 20);
+}
+
+function balanceDecorations(nidza) {
+  var A1 = 100,
+      f1 = 2,
+      p1 = 1 / 16,
+      d1 = 0.02;
+  var A2 = 10,
+      f2 = 4,
+      p2 = 3 / 2,
+      d2 = 0.0315;
+  var A3 = 200,
+      f3 = 4,
+      p3 = 13 / 15,
+      d3 = 0.00012;
+  var A4 = 10,
+      f4 = 4,
+      p4 = 1,
+      d4 = 0.012;
+  var r = 10,
+      g = 10,
+      b = 0;
+
+  var makeHarmonograph = function (c) {
+    f1 = f1 / 10 % 10;
+    f2 = f2 / 40 % 10;
+    f3 = (f3 + Math.random() / 80) % 10;
+    f4 = (f4 + Math.random() / 411) % 10;
+    p1 += 0.5 % (Math.PI * 2);
+    drawHarmonograph(c);
+  };
+
+  var drawHarmonograph = function (ctx) {
+    ctx.clearRect(0, 0, 850, 450);
+    ctx.save();
+    ctx.fillStyle = "#000000";
+    ctx.strokeStyle = "rgb(" + r + "," + g + "," + b + ")";
+    ctx.fillRect(0, 0, 800, 400);
+    ctx.translate(0, 250);
+    ctx.beginPath();
+
+    if (A1 > 100) {}
+
+    for (var t = 0; t < 100; t += 0.1) {
+      var x = A1 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) + A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
+      var y = A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) + A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
+      ctx.lineTo(x * x + 1, y + 1 / x);
+    }
+
+    ctx.stroke();
+    ctx.translate(A1, 0);
+    ctx.rotate(1.57);
+    ctx.beginPath();
+
+    for (var t = 0; t < 100; t += 0.1) {
+      var x = A1 * A3 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) + A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
+      var y = A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) + A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
+      ctx.lineTo(x * x + 1, y + 1 / x);
+    }
+
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  let myStarElement = nidza.access.footerLabel.addCustom2dComponent({
+    id: "CUSTOM",
+    draw: function (e) {
+      if (e instanceof CanvasRenderingContext2D == false) return;
+      e.fillStyle = 'red'; // Create gradient
+
+      var myGradient = e.createLinearGradient(0, 0, 600, 200);
+      myGradient.addColorStop(0, 'purple');
+      myGradient.addColorStop(1, '#f53564');
+      e.fillStyle = myGradient;
+      e.fillRect(0, 0, 600, 200);
+      makeHarmonograph(e);
+    },
+    position: {
+      x: 10,
+      y: 10
+    },
+    dimension: {
+      width: 400,
+      height: 200
+    }
+  });
+  nidza.access.footerLabel.elements[0].activeDraw();
 }
 
 },{"../../matrix-slot/scripts/standard-fonts":60}],56:[function(require,module,exports){
@@ -39580,25 +39669,71 @@ class MatrixRoulette {
   }
 
   setupCameraView(type) {
-    let OSC = matrixEngine.utility.OSCILLATOR;
-    console.log('current camera status:', this.status.cameraView);
-    console.log('next camera status:', type);
+    let OSC = matrixEngine.utility.OSCILLATOR; // console.log('current camera status:', this.status.cameraView)
+
     if (type == this.status.cameraView) return;
     console.log('current camera status:', this.status.cameraView);
 
     if (type == 'bets') {
-      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -58.970000000000034, 0.001);
-      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 10.226822219793473, 0.001);
-      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos, 6.49717201776934, 0.001);
-      this.c0i = setInterval(() => {
-        c0.on_maximum_value = () => {
-          this.status.cameraView = 'bets';
-          clearInterval(this.c0i);
-        };
+      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 58.970000000000034, 0.05);
+      console.log('matrixEngine.Events.camera.yPos ', matrixEngine.Events.camera.yPos);
+      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.05); // trick OSC when min > max 
 
-        matrixEngine.Events.camera.pitch = c0.UPDATE();
-        matrixEngine.Events.camera.zPos = c1.UPDATE();
-        matrixEngine.Events.camera.yPos = c2.UPDATE();
+      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -6.49717201776934, 0.05);
+      this.internal_flag = 0;
+      this.flagc0 = false;
+      this.flagc1 = false;
+      this.flagc2 = false;
+
+      c0.on_maximum_value = () => {
+        console.log('c0 max');
+        this.status.cameraView = 'bets';
+        this.internal_flag++;
+        this.flagc0 = true;
+
+        if (this.internal_flag == 3) {
+          console.log('c0 stop max');
+          clearInterval(this.c0i);
+        }
+      };
+
+      c1.on_maximum_value = () => {
+        console.log('c1 max');
+        this.status.cameraView = 'bets';
+        this.internal_flag++;
+        this.flagc1 = true;
+
+        if (this.internal_flag == 3) {
+          console.log('c1 stop max');
+          clearInterval(this.c0i);
+        }
+      };
+
+      c2.on_maximum_value = () => {
+        console.log('c2 max');
+        this.status.cameraView = 'bets';
+        this.internal_flag++;
+        this.flagc2 = true;
+
+        if (this.internal_flag == 3) {
+          console.log('c2 stop max');
+          clearInterval(this.c0i);
+        }
+      };
+
+      this.c0i = setInterval(() => {
+        if (this.flagc0 == false) {
+          matrixEngine.Events.camera.pitch = -c0.UPDATE();
+        }
+
+        if (this.flagc1 == false) {
+          matrixEngine.Events.camera.zPos = c1.UPDATE();
+        }
+
+        if (this.flagc2 == false) {
+          matrixEngine.Events.camera.yPos = -c2.UPDATE();
+          console.log('c2', matrixEngine.Events.camera.yPos);
+        }
       }, 20);
     } else if (type == 'wheel') {
       matrixEngine.Events.camera.pitch = -52.67999999999999;
@@ -39606,9 +39741,10 @@ class MatrixRoulette {
       matrixEngine.Events.camera.yPos = 19.500000000000007;
       this.status.cameraView = 'wheel';
     } else {
+      // bets
       matrixEngine.Events.camera.pitch = -58.970000000000034;
-      matrixEngine.Events.camera.zPos = 0.226822219793473;
-      matrixEngine.Events.camera.yPos = 6.49717201776934;
+      matrixEngine.Events.camera.zPos = 11.526822219793473;
+      matrixEngine.Events.camera.yPos = 7.49717201776934;
     }
   }
 
@@ -39683,15 +39819,35 @@ class MatrixRoulette {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', ev => {
+      App.onlyClicksPass = true;
+      matrixEngine.raycaster.checkingProcedure(ev);
+      setTimeout(() => {
+        App.onlyClicksPass = false;
+      }, 10);
+    });
+    canvas.addEventListener('mousemove', ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
+    var LAST_HOVER = null;
     window.addEventListener('ray.hit.event', ev => {
       // all physics chips have name prefix chips_
       // must be fixed from matrix engine source !!!
       if (ev.detail.hitObject.name.indexOf('chips_') != -1 || ev.detail.hitObject.name.indexOf('roll') != -1) {
-        console.log("PREEDVNT NO CHIPS TRAY: ", ev.detail.hitObject.name);
+        console.log("PREVENT NO CHIPS TRAY: ", ev.detail.hitObject.name);
         return;
       }
+
+      if (ev.detail.hitObject.hoverEffect) {
+        if (LAST_HOVER != null && LAST_HOVER.name != ev.detail.hitObject.name) {
+          LAST_HOVER.hoverLeaveEffect(LAST_HOVER);
+        } else {
+          ev.detail.hitObject.hoverEffect(ev.detail.hitObject);
+        }
+
+        LAST_HOVER = ev.detail.hitObject;
+      }
+
+      if (App.onlyClicksPass != true) return;
 
       if (this.preventDBTrigger == null) {
         this.preventDBTrigger = Date.now();
@@ -39712,9 +39868,7 @@ class MatrixRoulette {
 
       dispatchEvent(new CustomEvent("chip-bet", {
         detail: ev.detail.hitObject
-      })); // if(ev.detail.hitObject.physics.enabled == true) {
-      //   // ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
-      // }
+      }));
     });
   }
 
@@ -39750,10 +39904,10 @@ class MatrixRoulette {
     App.scene[n].position.SetZ(7);
     App.scene.balance.position.SetX(-3.1);
     App.scene[n].geometry.setScaleByX(1.83);
-    App.scene[n].geometry.setScaleByY(0.5);
-    App.scene[n].glBlend.blendEnabled = true;
-    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene[n].geometry.setScaleByY(0.5); // App.scene[n].glBlend.blendEnabled = true;
+    // App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    // App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+
     App.scene.balance.rotation.rotx = 90;
     (0, _dDraw.create2dHUD)(this.nidza, playerInfo).then(canvas2d => {
       App.scene.balance.streamTextures = {
@@ -39764,6 +39918,7 @@ class MatrixRoulette {
         roulette.nidza.access.footerLabel.elements[0].activateRotator();
       });
     }); // funnyStar(this.nidza)
+    // balanceDecorations(this.nidza)
 
     this.addHUDBtns();
   }
@@ -40016,6 +40171,20 @@ class TableEvents {
         App.scene[name].glBlend.blendEnabled = true;
         App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+
+        App.scene[name].hoverEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5]; // setTimeout(() => {
+          //   me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+          //   me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3]
+          // }, 150)
+        };
+
+        App.scene[name].hoverLeaveEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        };
+
         this.registerBetPlaces.push(App.scene[name]);
         numID++;
       }

@@ -3,7 +3,7 @@ import TableEvents from "./table-events.js"
 import Wheel from "./wheel.js";
 import * as CANNON from 'cannon';
 import {Nidza} from 'nidza';
-import {create2dHUD, funnyStar} from "./2d-draw.js";
+import {create2dHUD} from "./2d-draw.js";
 
 export class MatrixRoulette {
   physics = null;
@@ -22,7 +22,7 @@ export class MatrixRoulette {
   updateBalance(newBalance) {
     dispatchEvent(new CustomEvent('update-balance',
       {
-        detail: 'Balance: ' + newBalance +  this.playerInfo.currency
+        detail: 'Balance: ' + newBalance + this.playerInfo.currency
       }))
   }
 
@@ -57,43 +57,79 @@ export class MatrixRoulette {
 
   setupCameraView(type) {
     let OSC = matrixEngine.utility.OSCILLATOR;
-    console.log('current camera status:', this.status.cameraView)
-    console.log('next camera status:', type)
-
-    if (type == this.status.cameraView) return;
-    
+    // console.log('current camera status:', this.status.cameraView)
+    if(type == this.status.cameraView) return;
     console.log('current camera status:', this.status.cameraView)
 
-    if (type == 'bets') {
+    if(type == 'bets') {
+      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 58.970000000000034, 0.05)
+      console.log('matrixEngine.Events.camera.yPos ', matrixEngine.Events.camera.yPos)
+      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.05)
+      // trick OSC when min > max 
+      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -6.49717201776934, 0.05)
 
-      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -58.970000000000034 , 0.001 )
-      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 10.226822219793473 , 0.001 )
-      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos,  6.49717201776934 , 0.001 )
+      this.internal_flag = 0;
+      this.flagc0 = false;
+      this.flagc1 = false;
+      this.flagc2 = false;
 
-      this.c0i = setInterval (() => {
-        c0.on_maximum_value = () => {
-          this.status.cameraView = 'bets'
+      c0.on_maximum_value = () => {
+        console.log('c0 max')
+        this.status.cameraView = 'bets'
+        this.internal_flag++;
+        this.flagc0 = true;
+        if(this.internal_flag == 3) {
+          console.log('c0 stop max')
           clearInterval(this.c0i)
         }
-        matrixEngine.Events.camera.pitch = c0.UPDATE()
-        matrixEngine.Events.camera.zPos = c1.UPDATE()
-        matrixEngine.Events.camera.yPos = c2.UPDATE()        
+      }
+      c1.on_maximum_value = () => {
+        console.log('c1 max')
+        this.status.cameraView = 'bets'
+        this.internal_flag++;
+        this.flagc1 = true;
+        if(this.internal_flag == 3) {
+          console.log('c1 stop max')
+          clearInterval(this.c0i)
+        }
+      }
+      c2.on_maximum_value = () => {
+        console.log('c2 max')
+        this.status.cameraView = 'bets'
+        this.internal_flag++;
+        this.flagc2 = true;
+        if(this.internal_flag == 3) {
+          console.log('c2 stop max')
+          clearInterval(this.c0i)
+        }
+      }
+
+      this.c0i = setInterval(() => {
+        if(this.flagc0 == false) {matrixEngine.Events.camera.pitch = -c0.UPDATE()}
+        if(this.flagc1 == false) {
+          matrixEngine.Events.camera.zPos = c1.UPDATE()
+        }
+        if(this.flagc2 == false) {
+          matrixEngine.Events.camera.yPos = -c2.UPDATE()
+          console.log('c2', matrixEngine.Events.camera.yPos)
+        }
       }, 20)
 
-    } else if (type == 'wheel') {
+    } else if(type == 'wheel') {
 
       matrixEngine.Events.camera.pitch = -52.67999999999999
-      matrixEngine.Events.camera.zPos = -4.6962394866880635 
+      matrixEngine.Events.camera.zPos = -4.6962394866880635
       matrixEngine.Events.camera.yPos = 19.500000000000007
 
       this.status.cameraView = 'wheel'
 
     } else {
+      // bets
       matrixEngine.Events.camera.pitch = -58.970000000000034
-      matrixEngine.Events.camera.zPos = 0.226822219793473
-      matrixEngine.Events.camera.yPos = 6.49717201776934
+      matrixEngine.Events.camera.zPos = 11.526822219793473
+      matrixEngine.Events.camera.yPos = 7.49717201776934
     }
-    
+
   }
 
   runVideoChat() {
@@ -168,17 +204,36 @@ export class MatrixRoulette {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', (ev) => {
+      App.onlyClicksPass = true;
+      matrixEngine.raycaster.checkingProcedure(ev);
+      setTimeout(() => {
+        App.onlyClicksPass = false;
+      }, 10)
+    });
+
+    canvas.addEventListener('mousemove', (ev) => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
 
+    var LAST_HOVER = null;
     window.addEventListener('ray.hit.event', (ev) => {
       // all physics chips have name prefix chips_
       // must be fixed from matrix engine source !!!
       if(ev.detail.hitObject.name.indexOf('chips_') != -1 ||
         ev.detail.hitObject.name.indexOf('roll') != -1) {
-        console.log("PREEDVNT NO CHIPS TRAY: ", ev.detail.hitObject.name)
+        console.log("PREVENT NO CHIPS TRAY: ", ev.detail.hitObject.name)
         return;
       }
+      if(ev.detail.hitObject.hoverEffect) {
+        if(LAST_HOVER != null && LAST_HOVER.name != ev.detail.hitObject.name) {
+          LAST_HOVER.hoverLeaveEffect(LAST_HOVER)
+        } else {
+          ev.detail.hitObject.hoverEffect(ev.detail.hitObject)
+        }
+        LAST_HOVER = ev.detail.hitObject;
+      }
+
+      if(App.onlyClicksPass != true) return;
 
       if(this.preventDBTrigger == null) {
         this.preventDBTrigger = Date.now()
@@ -191,15 +246,8 @@ export class MatrixRoulette {
         this.preventDBTrigger = null;
       }
 
-      if(ev.detail.hitObject.raycast.enabled != true) {
-        return;
-      }
-
-      dispatchEvent(new CustomEvent("chip-bet",
-        {detail: ev.detail.hitObject}));
-      // if(ev.detail.hitObject.physics.enabled == true) {
-      //   // ev.detail.hitObject.physics.currentBody.force.set(0,0,1000)
-      // }
+      if(ev.detail.hitObject.raycast.enabled != true) {return }
+      dispatchEvent(new CustomEvent("chip-bet", {detail: ev.detail.hitObject}))
     });
   }
 
@@ -236,9 +284,9 @@ export class MatrixRoulette {
     App.scene.balance.position.SetX(-3.1);
     App.scene[n].geometry.setScaleByX(1.83)
     App.scene[n].geometry.setScaleByY(0.5)
-    App.scene[n].glBlend.blendEnabled = true;
-    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    // App.scene[n].glBlend.blendEnabled = true;
+    // App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    // App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene.balance.rotation.rotx = 90;
 
     create2dHUD(this.nidza, playerInfo).then(canvas2d => {
@@ -253,13 +301,15 @@ export class MatrixRoulette {
 
     // funnyStar(this.nidza)
 
+    // balanceDecorations(this.nidza)
+
     this.addHUDBtns()
 
   }
 
   addHUDBtns() {
     var n = 'clearBets';
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, n,  {
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
       source: ["res/images/clearH.png"],
       mix_operation: "multiply",
     });
