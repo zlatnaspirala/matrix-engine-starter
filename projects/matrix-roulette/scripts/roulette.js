@@ -3,7 +3,7 @@ import TableEvents from "./table-events.js"
 import Wheel from "./wheel.js";
 import * as CANNON from 'cannon';
 import {Nidza} from 'nidza';
-import {create2dHUD} from "./2d-draw.js";
+import {create2dHUD, createStatusBoxHUD} from "./2d-draw.js";
 
 export class MatrixRoulette {
   physics = null;
@@ -12,18 +12,9 @@ export class MatrixRoulette {
   tableBet = null;
   wheelSystem = null;
   preventDBTrigger = null;
-
   // Top level vars
   status = {
     cameraView: 'bets'
-  }
-
-  // Top level func
-  updateBalance(newBalance) {
-    dispatchEvent(new CustomEvent('update-balance',
-      {
-        detail: 'Balance: ' + newBalance + this.playerInfo.currency
-      }))
   }
 
   constructor() {
@@ -33,7 +24,8 @@ export class MatrixRoulette {
       currency: '$'
     };
 
-    var App = matrixEngine.App
+    var App = matrixEngine.App;
+
     // dev only
     window.App = App
     this.world = matrixEngine.matrixWorld.world;
@@ -141,6 +133,17 @@ export class MatrixRoulette {
     };
 
     addEventListener('stream-loaded', (e) => {
+
+      // Safe place for access socket io
+
+      // 'STATUS_MR' Event is only used for Matrix Roulette
+      App.network.connection.socket.on('STATUS_MR', (e) => {
+        console.log('MSG FROM SERVER: ', e.message)
+        if (e.message == '') {
+
+        }
+      })
+
       var _ = document.querySelectorAll('.media-box')
       var name = "videochat_" + e.detail.data.userId;
       _.forEach((i) => {
@@ -173,6 +176,11 @@ export class MatrixRoulette {
           })
         } else {
           // own stream 
+
+          if(App.network.connection.isInitiator == true) {
+            console.log('isInitiator is TRUE!')
+          }
+
           if(sessionStorage.getItem('alocal_' + name) == null) {
             var name = 'LOCAL_STREAM';
             matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
@@ -198,6 +206,7 @@ export class MatrixRoulette {
         }
       })
     })
+
   }
 
   attachMatrixRay() {
@@ -247,7 +256,10 @@ export class MatrixRoulette {
       }
 
       if(ev.detail.hitObject.raycast.enabled != true) {return }
-      dispatchEvent(new CustomEvent("chip-bet", {detail: ev.detail.hitObject}))
+
+      console.log('VALIDATION BALANCE', this.playerInfo.balance >= 1)
+      if(this.playerInfo.balance >= 1) dispatchEvent(new CustomEvent("chip-bet", {detail: ev.detail.hitObject}))
+
     });
   }
 
@@ -290,14 +302,23 @@ export class MatrixRoulette {
     // App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene.balance.rotation.rotx = 90;
 
-    create2dHUD(this.nidza, playerInfo).then(canvas2d => {
+    this.create2dHUD = create2dHUD.bind(this);
+
+    this.create2dHUD(this).then(canvas2d => {
       App.scene.balance.streamTextures = {
         videoImage: canvas2d,
       }
-      addEventListener('update-balance', (e) => {
-        roulette.nidza.access.footerLabel.elements[0].text = e.detail
-        roulette.nidza.access.footerLabel.elements[0].activateRotator()
-      })
+    })
+
+    addEventListener('update-balance', (e) => {
+
+      console.log('TEST DETAILS', e.detail)
+      console.log('TEST DETAILS', this.playerInfo.balance)
+
+      var t = this.playerInfo.balance - e.detail;
+      this.playerInfo.balance = t;
+      roulette.nidza.access.footerLabel.elements[0].text = t
+      // roulette.nidza.access.footerLabel.elements[0].activateRotator()
     })
 
     // funnyStar(this.nidza)
@@ -305,6 +326,8 @@ export class MatrixRoulette {
     // balanceDecorations(this.nidza)
 
     this.addHUDBtns()
+
+    this.addHUDStatus()
 
   }
 
@@ -323,6 +346,34 @@ export class MatrixRoulette {
     App.scene[n].glBlend.blendEnabled = true;
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+  }
+
+  addHUDStatus() {
+    this.tex = {
+      source: ["res/images/chip1.png"],
+      mix_operation: "multiply",
+    }
+    var n = 'statusBox';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
+    App.scene[n].position.SetY(-1.6);
+    App.scene[n].position.SetZ(1.45);
+    App.scene.statusBox.position.SetX(0);
+    App.scene[n].geometry.setScaleByX(3.83)
+    App.scene[n].geometry.setScaleByY(0.5)
+    // App.scene[n].glBlend.blendEnabled = true;
+    // App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    // App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene.statusBox.rotation.rotx = 122;
+
+
+    createStatusBoxHUD(this.nidza, this.playerInfo).then(canvas2d => {
+      App.scene.statusBox.streamTextures = {
+        videoImage: canvas2d,
+      }
+      // addEventListener('update-balance', (e) => {
+      //    console.log(' update bala from statusBox')
+      // })
+    })
   }
 
 }

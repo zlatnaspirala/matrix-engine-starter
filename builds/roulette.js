@@ -27328,7 +27328,7 @@ class Broadcaster {
     };
 
     this.connection.onclose = function (dataStreamEvent) {
-      root.injector.leaveGamePlay(dataStreamEvent);
+      if (root.injector) root.injector.leaveGamePlay(dataStreamEvent);
 
       if (root.connection.getAllParticipants().length) {
         document.querySelector("#rtc3log").value = "You are still connected with:" + root.connection.getAllParticipants().join(", ");
@@ -27339,7 +27339,7 @@ class Broadcaster {
 
     this.connection.onUserStatusChanged = function (event) {
       if (event.status === "offline") {
-        root.injector.leaveGamePlay(event);
+        if (root.injector) root.injector.leaveGamePlay(event);
       }
     };
 
@@ -27922,8 +27922,7 @@ function checkingProcedureCalc(object) {
           rez1 = rotate2dPlot(0, 0, triangleInZero[1][0], triangleInZero[1][1], object.rotation.rz);
           rez2 = rotate2dPlot(0, 0, triangleInZero[2][0], triangleInZero[2][1], object.rotation.rz);
           triangle = [[rez0[0] + object.position.worldLocation[0], rez0[1] + object.position.worldLocation[1], triangleInZero[0][2]], [rez1[0] + object.position.worldLocation[0], rez1[1] + object.position.worldLocation[1], triangleInZero[1][2]], [rez2[0] + object.position.worldLocation[0], rez2[1] + object.position.worldLocation[1], triangleInZero[2][2]]];
-        } else {
-          console.info('must be handled rz vs rx');
+        } else {// console.info('must be handled rz vs rx');
         }
       }
     } // no rot
@@ -39422,13 +39421,19 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.create2dHUD = create2dHUD;
-exports.funnyStar = funnyStar;
 exports.balanceDecorations = balanceDecorations;
+exports.createStatusBoxHUD = createStatusBoxHUD;
+exports.create2dHUD = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _standardFonts = require("../../matrix-slot/scripts/standard-fonts");
 
-function create2dHUD(nidza, playerInfo) {
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var create2dHUD = ref => {
   return new Promise((resolve, reject) => {
     let myFirstNidzaObjectOptions = {
       id: "footerLabel",
@@ -39436,17 +39441,17 @@ function create2dHUD(nidza, playerInfo) {
         width: 600,
         height: 200
       }
-    };
-    console.log('Player info 2d draws ', playerInfo);
-    nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
+    }; // console.log('Player info 2d draws ', playerInfo)
+
+    ref.nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
     let texCanvas = document.getElementById('footerLabel');
-    balanceDecorations(nidza);
-    let statusMessageBox = nidza.access.footerLabel.addTextComponent({
+    balanceDecorations(ref.nidza, ref.playerInfo, ref);
+    ref.nidza.access.footerLabel.addTextComponent({
       id: "zlatna",
-      text: `Balance: ${playerInfo.balance} ${playerInfo.currency}`,
-      color: "lime",
+      text: `Balance: `,
+      color: "white",
       position: {
-        x: 50,
+        x: 10,
         y: 50
       },
       dimension: {
@@ -39473,45 +39478,14 @@ function create2dHUD(nidza, playerInfo) {
     // statusMessageBox.rotation.setRotation( rotationOption )
     // statusMessageBox.rotation.osc.setDelay( 0 )
 
-    nidza.access.footerLabel.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
-    window.footerLabel = nidza.access.footerLabel;
-    resolve(texCanvas);
-    return texCanvas;
+    ref.nidza.access.footerLabel.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    resolve(texCanvas); // return texCanvas;
   });
-}
+};
 
-function funnyStar(nidza) {
-  let colorR = new nidza.Osc(0, 255, 15);
-  let colorG = new nidza.Osc(0, 255, 16);
-  let colorB = new nidza.Osc(0, 255, 17);
-  colorR.setDelay(0);
-  colorB.setDelay(0);
-  colorG.setDelay(0);
-  let j = 3;
-  let sceneGroup = setInterval(() => {
-    let myStarElement = nidza.access.footerLabel.addStarComponent({
-      id: "star",
-      radius: 55,
-      inset: j,
-      n: 6,
-      color: "rgb(" + colorR.getValue() + "," + colorG.getValue() + "," + colorB.getValue() + ")",
-      position: {
-        x: 50,
-        y: 50
-      },
-      dimension: {
-        width: 180,
-        height: 180
-      }
-    });
-    let rotationOption = new nidza.Osc(0, 360, 1);
-    myStarElement.rotation.setRotation(rotationOption);
-    j -= 0.1;
-    if (j < 0) clearInterval(sceneGroup);
-  }, 20);
-}
+exports.create2dHUD = create2dHUD;
 
-function balanceDecorations(nidza) {
+function balanceDecorations(nidza, playerInfo, ref) {
   var A1 = 111,
       f1 = 2,
       p1 = 1 / 2,
@@ -39551,7 +39525,7 @@ function balanceDecorations(nidza) {
     ctx.translate(0, 100);
     ctx.beginPath();
 
-    for (var t = 0; t < 3; t += 0.1) {
+    for (var t = 0; t < 22; t += 0.2) {
       var x = A1 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) + A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
       var y = A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) + A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
       ctx.lineTo(x * x + 1, y + 1 / x);
@@ -39561,6 +39535,8 @@ function balanceDecorations(nidza) {
     ctx.restore();
   };
 
+  var byY_ = new matrixEngine.utility.OSCILLATOR(90, 110, 0.3);
+  console.log('WARN THIS ', ref);
   let myStarElement = nidza.access.footerLabel.addCustom2dComponent({
     id: "CUSTOM",
     draw: function (e) {
@@ -39571,11 +39547,10 @@ function balanceDecorations(nidza) {
       e.fillRect(50, 50, 100 + p1, 100);
       e.fillRect(50, 20, 500 - p1, 20);
       e.fillRect(50, 170, 500 - p1, 20);
-      var myGradient = e.createLinearGradient(350, 0, 650, 50);
-      myGradient.addColorStop(0, 'purple');
-      myGradient.addColorStop(1, 'green');
-      e.fillStyle = myGradient;
-      e.fillRect(450 - p1, 80, 250, 10);
+      e.fillStyle = 'rgba(250,250,250,1)';
+      e.font = 'bold 60px stormfaze';
+      e.textAlign = 'left';
+      e.fillText(`${ref.playerInfo.balance} ${ref.playerInfo.currency}`, 350, byY_.UPDATE(), 200, 40);
     },
     position: {
       x: 10,
@@ -39589,7 +39564,61 @@ function balanceDecorations(nidza) {
   nidza.access.footerLabel.elements[0].activeDraw();
 }
 
-},{"../../matrix-slot/scripts/standard-fonts":60}],56:[function(require,module,exports){
+function createStatusBoxHUD(nidza, playerInfo) {
+  return new Promise((resolve, reject) => {
+    let n = {
+      id: "statusBox",
+      size: {
+        width: 600,
+        height: 200
+      }
+    };
+    console.log('Player info 2d draws ', playerInfo);
+    nidza.createNidzaIndentity(n);
+    let texCanvas = document.getElementById('statusBox');
+    var p1 = new matrixEngine.utility.OSCILLATOR(1, 600, 0.6);
+    let myStarElement = nidza.access.statusBox.addCustom2dComponent({
+      id: "CUSTOM",
+      draw: function (e) {
+        if (e instanceof CanvasRenderingContext2D == false) return; // e.fillStyle = 'red';
+
+        e.fillStyle = 'rgba(120,0,0,0.4)';
+        e.fillRect(50, 170, 500 - p1.UPDATE(), 30);
+        e.textAlign = 'left';
+        e.font = 'normal 20px stormfaze';
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillRect(170, 66, 250, 43);
+        e.fillStyle = 'rgba(250,50,50,1)';
+        e.fillText(`maximumroulette.com`, 170, 78, 250, 33);
+        e.fillText(`github.com/zlatnaspirala`, 170, 100, 250, 33);
+        e.font = 'normal 40px stormfaze';
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`matrix roulette 1.0 open source GPL v3`, 20, 50, 550, 25);
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`Game status: `, 20, 160, 250, 25); // var myGradient = e.createLinearGradient(0, 0, 650, 250);
+        // myGradient.addColorStop(0, 'red');
+        // myGradient.addColorStop(1, 'orange');
+        // e.fillStyle = myGradient;
+        // e.fillRect(450 - p1.UPDATE(), 0, 5 , 200)
+      },
+      position: {
+        x: 10,
+        y: 10
+      },
+      dimension: {
+        width: 600,
+        height: 200
+      }
+    });
+    nidza.access.statusBox.elements[0].activeDraw();
+    nidza.access.statusBox.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none"); // window.footerLabel = nidza.access.footerLabel;
+
+    resolve(texCanvas);
+    return texCanvas;
+  });
+}
+
+},{"../../matrix-slot/scripts/standard-fonts":60,"matrix-engine":8}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39625,13 +39654,7 @@ class MatrixRoulette {
 
   status = {
     cameraView: 'bets'
-  }; // Top level func
-
-  updateBalance(newBalance) {
-    dispatchEvent(new CustomEvent('update-balance', {
-      detail: 'Balance: ' + newBalance + this.playerInfo.currency
-    }));
-  }
+  };
 
   constructor() {
     this.playerInfo = {
@@ -39746,6 +39769,14 @@ class MatrixRoulette {
       mix_operation: "multiply"
     };
     addEventListener('stream-loaded', e => {
+      // Safe place for access socket io
+      // 'STATUS_MR' Event is only used for Matrix Roulette
+      App.network.connection.socket.on('STATUS_MR', e => {
+        console.log('MSG FROM SERVER: ', e.message);
+
+        if (e.message == '') {}
+      });
+
       var _ = document.querySelectorAll('.media-box');
 
       var name = "videochat_" + e.detail.data.userId;
@@ -39780,6 +39811,10 @@ class MatrixRoulette {
           });
         } else {
           // own stream 
+          if (App.network.connection.isInitiator == true) {
+            console.log('isInitiator is TRUE!');
+          }
+
           if (sessionStorage.getItem('alocal_' + name) == null) {
             var name = 'LOCAL_STREAM';
             matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
@@ -39857,7 +39892,8 @@ class MatrixRoulette {
         return;
       }
 
-      dispatchEvent(new CustomEvent("chip-bet", {
+      console.log('VALIDATION BALANCE', this.playerInfo.balance >= 1);
+      if (this.playerInfo.balance >= 1) dispatchEvent(new CustomEvent("chip-bet", {
         detail: ev.detail.hitObject
       }));
     });
@@ -39901,18 +39937,23 @@ class MatrixRoulette {
     // App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
 
     App.scene.balance.rotation.rotx = 90;
-    (0, _dDraw.create2dHUD)(this.nidza, playerInfo).then(canvas2d => {
+    this.create2dHUD = _dDraw.create2dHUD.bind(this);
+    this.create2dHUD(this).then(canvas2d => {
       App.scene.balance.streamTextures = {
         videoImage: canvas2d
       };
-      addEventListener('update-balance', e => {
-        roulette.nidza.access.footerLabel.elements[0].text = e.detail;
-        roulette.nidza.access.footerLabel.elements[0].activateRotator();
-      });
+    });
+    addEventListener('update-balance', e => {
+      console.log('TEST DETAILS', e.detail);
+      console.log('TEST DETAILS', this.playerInfo.balance);
+      var t = this.playerInfo.balance - e.detail;
+      this.playerInfo.balance = t;
+      roulette.nidza.access.footerLabel.elements[0].text = t; // roulette.nidza.access.footerLabel.elements[0].activateRotator()
     }); // funnyStar(this.nidza)
     // balanceDecorations(this.nidza)
 
     this.addHUDBtns();
+    this.addHUDStatus();
   }
 
   addHUDBtns() {
@@ -39930,6 +39971,31 @@ class MatrixRoulette {
     App.scene[n].glBlend.blendEnabled = true;
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+  }
+
+  addHUDStatus() {
+    this.tex = {
+      source: ["res/images/chip1.png"],
+      mix_operation: "multiply"
+    };
+    var n = 'statusBox';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
+    App.scene[n].position.SetY(-1.6);
+    App.scene[n].position.SetZ(1.45);
+    App.scene.statusBox.position.SetX(0);
+    App.scene[n].geometry.setScaleByX(3.83);
+    App.scene[n].geometry.setScaleByY(0.5); // App.scene[n].glBlend.blendEnabled = true;
+    // App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    // App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+
+    App.scene.statusBox.rotation.rotx = 122;
+    (0, _dDraw.createStatusBoxHUD)(this.nidza, this.playerInfo).then(canvas2d => {
+      App.scene.statusBox.streamTextures = {
+        videoImage: canvas2d
+      }; // addEventListener('update-balance', (e) => {
+      //    console.log(' update bala from statusBox')
+      // })
+    });
   }
 
 }
@@ -39995,6 +40061,10 @@ class TableChips {
       d.physics.enabled = true; // memo bet
 
       o.tableEvents.chips++;
+      dispatchEvent(new CustomEvent('update-balance', {
+        detail: 1
+      })); // dispatchEvent(new CustomEvent('add-chip', { details : 1}))
+
       this.register.push({
         chipObj: d,
         betPlace: o
@@ -40146,7 +40216,7 @@ class TableEvents {
 
     App.scene[zero].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[zero].hoverLeaveEffect = me => {
@@ -40172,17 +40242,17 @@ class TableEvents {
         App.scene[name].geometry.setScaleByX(-0.23);
         App.scene[name].geometry.setScaleByY(-0.23);
         App.scene[name].glBlend.blendEnabled = true;
-        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
 
         App.scene[name].hoverEffect = me => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         };
 
         App.scene[name].hoverLeaveEffect = me => {
-          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
         };
 
         this.registerBetPlaces.push(App.scene[name]);
@@ -40215,7 +40285,7 @@ class TableEvents {
 
         App.scene[name].hoverEffect = me => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         };
 
         App.scene[name].hoverLeaveEffect = me => {
@@ -40256,7 +40326,7 @@ class TableEvents {
 
         App.scene[name].hoverEffect = me => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         };
 
         App.scene[name].hoverLeaveEffect = me => {
@@ -40289,7 +40359,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40316,7 +40386,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40343,7 +40413,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40370,7 +40440,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40398,7 +40468,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40426,7 +40496,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40463,7 +40533,7 @@ class TableEvents {
 
         App.scene[name].hoverEffect = me => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         };
 
         App.scene[name].hoverLeaveEffect = me => {
@@ -40499,7 +40569,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40527,7 +40597,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40556,7 +40626,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40583,7 +40653,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40612,7 +40682,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40640,7 +40710,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40670,7 +40740,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40697,7 +40767,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40724,7 +40794,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40758,7 +40828,7 @@ class TableEvents {
 
       App.scene[name].hoverEffect = me => {
         me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
       };
 
       App.scene[name].hoverLeaveEffect = me => {
@@ -40793,7 +40863,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40821,7 +40891,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40849,7 +40919,7 @@ class TableEvents {
 
     App.scene[name].hoverEffect = me => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     };
 
     App.scene[name].hoverLeaveEffect = me => {
@@ -40885,7 +40955,7 @@ class TableEvents {
 
       App.scene[name].hoverEffect = me => {
         me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
       };
 
       App.scene[name].hoverLeaveEffect = me => {

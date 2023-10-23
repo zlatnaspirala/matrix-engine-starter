@@ -48,8 +48,12 @@ export default class TableChips {
       this.physics.world.addBody(b2);
       d.physics.currentBody = b2;
       d.physics.enabled = true;
+
       // memo bet
       o.tableEvents.chips++;
+      dispatchEvent(new CustomEvent('update-balance',{detail: 1}))
+      // dispatchEvent(new CustomEvent('add-chip', { details : 1}))
+
       this.register.push({ chipObj: d, betPlace: o })
     })
   }

@@ -1,30 +1,25 @@
+import * as matrixEngine from "matrix-engine"
 import {stdFonts} from "../../matrix-slot/scripts/standard-fonts";
 
-
-export function create2dHUD(nidza, playerInfo) {
+export var create2dHUD = (ref) => {
   return new Promise((resolve, reject) => {
     let myFirstNidzaObjectOptions = {
       id: "footerLabel",
-      size: {
-        width: 600,
-        height: 200
-      }
+      size: {width: 600, height: 200}
     }
-
-    console.log('Player info 2d draws ', playerInfo)
-
-    nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
+    // console.log('Player info 2d draws ', playerInfo)
+    ref.nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
     let texCanvas = document.getElementById('footerLabel');
 
-    balanceDecorations(nidza)
+    balanceDecorations(ref.nidza, ref.playerInfo, ref)
 
-    let statusMessageBox = nidza.access.footerLabel.addTextComponent(
+    ref.nidza.access.footerLabel.addTextComponent(
       {
         id: "zlatna",
-        text: `Balance: ${playerInfo.balance} ${playerInfo.currency}`,
-        color: "lime",
+        text: `Balance: `,
+        color: "white",
         position: {
-          x: 50,
+          x: 10,
           y: 50
         },
         dimension: {
@@ -44,65 +39,22 @@ export function create2dHUD(nidza, playerInfo) {
 
     // Create one simple oscillator
     // let rotationOption = new nidza.Osc( 0, 360, 2 );
-
     // rotationOption.onRepeat = function ( osc ) {
     //   // console.info( "Values reached onrepeat targets osc: ", osc )
     //   statusMessageBox.rotation.clearUpdate();
     //   dispatchEvent( new CustomEvent( "deactivate-updater",
     //     {detail: {id: osc.elementIdentity}} ) );
     // }
-
     // statusMessageBox.rotation.setRotation( rotationOption )
     // statusMessageBox.rotation.osc.setDelay( 0 )
-
-    nidza.access.footerLabel.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
-
-    window.footerLabel = nidza.access.footerLabel;
+    ref.nidza.access.footerLabel.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
     resolve(texCanvas);
-    return texCanvas;
+    // return texCanvas;
   });
 
 }
 
-
-export function funnyStar(nidza) {
-
-  let colorR = new nidza.Osc(0, 255, 15);
-  let colorG = new nidza.Osc(0, 255, 16);
-  let colorB = new nidza.Osc(0, 255, 17);
-  colorR.setDelay(0);
-  colorB.setDelay(0);
-  colorG.setDelay(0);
-
-  let j = 3;
-  let sceneGroup = setInterval(() => {
-    let myStarElement = nidza.access.footerLabel.addStarComponent({
-      id: "star",
-      radius: 55,
-      inset: j,
-      n: 6,
-      color: "rgb(" + colorR.getValue() + "," + colorG.getValue() + "," + colorB.getValue() + ")",
-      position: {
-        x: 50,
-        y: 50
-      },
-      dimension: {
-        width: 180,
-        height: 180
-      }
-    });
-
-    let rotationOption = new nidza.Osc(0, 360, 1);
-    myStarElement.rotation.setRotation(rotationOption);
-
-    j -= 0.1;
-    if(j < 0) clearInterval(sceneGroup);
-  }, 20)
-
-}
-
-export function balanceDecorations(nidza) {
-
+export function balanceDecorations(nidza, playerInfo, ref) {
   var A1 = 111,
     f1 = 2,
     p1 = 1 / 2,
@@ -129,7 +81,7 @@ export function balanceDecorations(nidza) {
     f3 = (f3 + Math.random() / 80) % 10;
     f4 = (f4 + Math.random() / 411) % 10;
     p1 += 0.5 % (Math.PI * 2);
-    if (p1 > 500)  p1 = 0;
+    if(p1 > 500) p1 = 0;
     drawHarmonograph(c);
   }
 
@@ -141,7 +93,7 @@ export function balanceDecorations(nidza) {
     ctx.fillRect(0, 0, 600, 400);
     ctx.translate(0, 100);
     ctx.beginPath();
-    for(var t = 0;t < 3;t += 0.1) {
+    for(var t = 0;t < 22;t += 0.2) {
       var x =
         A1 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) +
         A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
@@ -154,6 +106,9 @@ export function balanceDecorations(nidza) {
     ctx.restore();
   }
 
+  var byY_ = new matrixEngine.utility.OSCILLATOR(90, 110, 0.3);
+
+  console.log('WARN THIS ', ref)
   let myStarElement = nidza.access.footerLabel.addCustom2dComponent({
     id: "CUSTOM",
     draw: function(e) {
@@ -165,15 +120,10 @@ export function balanceDecorations(nidza) {
       e.fillRect(50, 20, 500 - p1, 20);
       e.fillRect(50, 170, 500 - p1, 20);
 
-      
-      var myGradient = e.createLinearGradient(350, 0, 650, 50);
-      myGradient.addColorStop(0, 'purple');
-      myGradient.addColorStop(1, 'green');
-
-      e.fillStyle = myGradient;
-      e.fillRect(450 - p1, 80, 250 , 10)
-
-
+      e.fillStyle = 'rgba(250,250,250,1)';
+      e.font = 'bold 60px stormfaze'
+      e.textAlign = 'left';
+      e.fillText(`${ref.playerInfo.balance} ${ref.playerInfo.currency}`, 350, byY_.UPDATE(), 200, 40)
     },
     position: {
       x: 10,
@@ -186,5 +136,72 @@ export function balanceDecorations(nidza) {
   });
 
   nidza.access.footerLabel.elements[0].activeDraw()
+
+}
+
+export function createStatusBoxHUD(nidza, playerInfo) {
+  return new Promise((resolve, reject) => {
+    let n = {
+      id: "statusBox",
+      size: {
+        width: 600,
+        height: 200
+      }
+    }
+    console.log('Player info 2d draws ', playerInfo)
+    nidza.createNidzaIndentity(n);
+    let texCanvas = document.getElementById('statusBox');
+
+    var p1 = new matrixEngine.utility.OSCILLATOR(1, 600, 0.6);
+
+    let myStarElement = nidza.access.statusBox.addCustom2dComponent({
+      id: "CUSTOM",
+      draw: function(e) {
+        if(e instanceof CanvasRenderingContext2D == false) return;
+        // e.fillStyle = 'red';
+
+        e.fillStyle = 'rgba(120,0,0,0.4)';
+        e.fillRect(50, 170, 500 - p1.UPDATE(), 30);
+
+        e.textAlign = 'left';
+        e.font = 'normal 20px stormfaze'
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillRect(170, 66, 250, 43)
+
+        e.fillStyle = 'rgba(250,50,50,1)';
+        e.fillText(`maximumroulette.com`, 170, 78, 250, 33)
+        e.fillText(`github.com/zlatnaspirala`, 170, 100, 250, 33)
+
+        e.font = 'normal 40px stormfaze'
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`matrix roulette 1.0 open source GPL v3`, 20, 50, 550, 25)
+
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`Game status: `, 20, 160, 250, 25)
+        // var myGradient = e.createLinearGradient(0, 0, 650, 250);
+        // myGradient.addColorStop(0, 'red');
+        // myGradient.addColorStop(1, 'orange');
+        // e.fillStyle = myGradient;
+        // e.fillRect(450 - p1.UPDATE(), 0, 5 , 200)
+
+      },
+      position: {
+        x: 10,
+        y: 10
+      },
+      dimension: {
+        width: 600,
+        height: 200
+      }
+    });
+
+    nidza.access.statusBox.elements[0].activeDraw()
+
+    nidza.access.statusBox.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+
+    // window.footerLabel = nidza.access.footerLabel;
+    resolve(texCanvas);
+    return texCanvas;
+  });
 
 }

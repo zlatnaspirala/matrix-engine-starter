@@ -99,7 +99,7 @@ export default class TableEvents {
 
     App.scene[zero].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[zero].hoverLeaveEffect = (me) => {
@@ -125,17 +125,17 @@ export default class TableEvents {
         App.scene[name].geometry.setScaleByX(-0.23)
         App.scene[name].geometry.setScaleByY(-0.23)
         App.scene[name].glBlend.blendEnabled = true;
-        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+        App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
 
         App.scene[name].hoverEffect = (me) => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         }
 
         App.scene[name].hoverLeaveEffect = (me) => {
-          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
         }
 
         this.registerBetPlaces.push(App.scene[name])
@@ -168,7 +168,7 @@ export default class TableEvents {
 
         App.scene[name].hoverEffect = (me) => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         }
 
         App.scene[name].hoverLeaveEffect = (me) => {
@@ -211,7 +211,7 @@ export default class TableEvents {
 
         App.scene[name].hoverEffect = (me) => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         }
 
         App.scene[name].hoverLeaveEffect = (me) => {
@@ -244,7 +244,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -272,7 +272,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -300,7 +300,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -328,7 +328,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -357,7 +357,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -386,7 +386,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -421,7 +421,7 @@ export default class TableEvents {
 
         App.scene[name].hoverEffect = (me) => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
         }
 
         App.scene[name].hoverLeaveEffect = (me) => {
@@ -457,7 +457,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -484,7 +484,7 @@ export default class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -514,7 +514,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -541,7 +541,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -571,7 +571,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -599,7 +599,7 @@ export default class TableEvents {
 
       App.scene[name].hoverEffect = (me) => {
         me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
       }
 
       App.scene[name].hoverLeaveEffect = (me) => {
@@ -631,7 +631,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -658,7 +658,7 @@ export default class TableEvents {
 
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -684,7 +684,7 @@ export default class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -717,7 +717,7 @@ export default class TableEvents {
       App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
       App.scene[name].hoverEffect = (me) => {
         me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
       }
 
       App.scene[name].hoverLeaveEffect = (me) => {
@@ -751,7 +751,7 @@ export default class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -778,7 +778,7 @@ export default class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -805,7 +805,7 @@ export default class TableEvents {
     App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene[name].hoverEffect = (me) => {
       me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     }
 
     App.scene[name].hoverLeaveEffect = (me) => {
@@ -842,7 +842,7 @@ export default class TableEvents {
 
       App.scene[name].hoverEffect = (me) => {
         me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
       }
 
       App.scene[name].hoverLeaveEffect = (me) => {
