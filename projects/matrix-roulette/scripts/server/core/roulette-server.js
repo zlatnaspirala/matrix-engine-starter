@@ -21,12 +21,7 @@ export var MatrixRouletteServer = {
     MatrixRouletteServer.coretimer = setInterval(() => {
       if(MatrixRouletteServer.delta < 20) {
         console.log('\x1b[42m', `----------------------MATRIX ROULETTE MEDITATE-[${MatrixRouletteServer.delta}]---------------------`, Reset, Reset)
-
         if(typeof MatrixRouletteServer.broadcaster.mySockets[0] !== 'undefined') {
-          // console.log("Server msg => " + MatrixRouletteServer.broadcaster.mySockets[0].emit('STATUS_MR', { message: 'MEDITATE'} ))
-          // for (var key in MatrixRouletteServer.broadcaster.mySockets[0]) {
-          //   // console.log( "NET =>>> " + key)
-          // }
           MatrixRouletteServer.broadcaster.mySockets[0].emit('STATUS_MR',
             {
               message: 'MEDITATE',
@@ -37,6 +32,12 @@ export var MatrixRouletteServer = {
       } else if(MatrixRouletteServer.delta == 20) {
         var R = MatrixRouletteServer.giveMeNum();
         console.log('\x1b[12m', `----------------------MATRIX ROULETTE RESULTS-[${R}]-🤘-------------------`, Reset)
+        MatrixRouletteServer.broadcaster.mySockets[0].emit('STATUS_MR',
+            {
+              message: 'MEDITATE',
+              counter: MatrixRouletteServer.delta,
+              deltaIsZero: true
+            })
         MatrixRouletteServer.delta = 0;
       } else {
         console.log('RR WAIT FOR RESULTS')
