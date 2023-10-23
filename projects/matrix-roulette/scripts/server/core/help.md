@@ -1,4 +1,9 @@
 
+##Notes
+
+ - It is important to run in https protocol fwor production also for localhost !
+
+
 Keys for socket!
 
 Socket =>>> _events

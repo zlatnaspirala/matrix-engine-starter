@@ -36,11 +36,15 @@ And navigate to app.html, examples.html etc.
 
 ### Projects
 
-#### 3d roulette 
-- Video presentation
+#### Matrix Roulette - 3d physics roulette 
+
+##### Notes
+ - Used cannon.js integration for matrix-engine.
+ - It is important to run in https protocol fworw production also for localhost !www
+ - Video presentation
   https://www.youtube.com/watch?v=2N_vgMu5QoI&ab_channel=javascriptfanatic
 
-  ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette.png)
+![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette.png)
 
 #### Web-Anatomy underconstructing
 
