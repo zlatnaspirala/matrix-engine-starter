@@ -105,7 +105,7 @@ export default class Wheel {
     var tex = {
       // reflection-wheel
       // source: ["res/images/wheel-roll/metal-separators/reflection-wheel.jpg"],
-      // source: ["res/images/wheel-roll/metal/2.jpg"],
+      // source: ["res/images/wheel-roll/skin/skin.jpg"],
       source: ["res/images/wheel-roll/center/wood.jpg"],
       mix_operation: "multiply",
     };

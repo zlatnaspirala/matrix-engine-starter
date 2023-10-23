@@ -351,6 +351,23 @@ export class MatrixRoulette {
     App.scene[n].glBlend.blendEnabled = true;
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+
+
+    var n = 'manualSpin';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
+      source: ["res/images/clearH.png"],
+      mix_operation: "multiply",
+    });
+    App.scene[n].position.SetY(-1.9);
+    App.scene[n].position.SetZ(7);
+    App.scene[n].position.SetX(0);
+    App.scene[n].rotation.rotx = -90;
+    App.scene[n].geometry.setScaleByX(0.83)
+    App.scene[n].geometry.setScaleByY(0.5)
+    App.scene[n].glBlend.blendEnabled = true;
+    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+
   }
 
   addHUDStatus() {

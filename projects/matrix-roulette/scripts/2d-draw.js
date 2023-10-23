@@ -152,29 +152,54 @@ export function createStatusBoxHUD(nidza, playerInfo) {
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBox');
 
+    var previewR = '-1';
+
+    var colorForCOLOR = 'rgba(120,0,0,0.4)'
+    var colorForOpenGame = 'lime'
+    var colorForLastMoment = 'rgba(220,10,20,1)'
     var p1 = 0;
     addEventListener('MEDITATE_SERVER', (e) => {
       console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       p1 = e.detail * 10
+
+      if (e.detail > 15)  {
+        colorForCOLOR = colorForLastMoment
+      } else {
+        colorForCOLOR = colorForOpenGame
+      }
     })
 
+    // var p2 = new nidza.Osc(1, 400, 1 , "STOP");
     addEventListener('RESULTS_FROM_SERVER', (e) => {
       console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      // p2 = new nidza.Osc(1, 400, 0.6 , "STOP");
+      previewR = '🟥' + e.detail + '✮'
     })
 
-    // var p1 = new matrixEngine.utility.OSCILLATOR(1, 600, 0.6);
 
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
       id: "CUSTOM",
       draw: function(e) {
         if(e instanceof CanvasRenderingContext2D == false) return;
-        e.fillStyle = 'rgba(120,0,0,0.4)';
+
+        e.fillStyle = colorForCOLOR;
         e.fillRect(50, 170, 200 - p1, 30);
+        // e.fillRect(50, 130, 400 - p2.getValue(), 5);
+
+
+        e.textAlign = 'left';
+        e.font = 'bold 60px stormfaze'
+        e.fillStyle = 'rgba(250,250,250,1)';
+        // if (previewR != -1) 
+        e.fillText("" + previewR.toString(), 370, 148, 250)
+
+
+        e.fillRect(170, 66, 250, 43)
 
         e.textAlign = 'left';
         e.font = 'normal 20px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillRect(170, 66, 250, 43)
+
 
         e.fillStyle = 'rgba(250,50,50,1)';
         e.fillText(`maximumroulette.com`, 170, 78, 250, 33)
@@ -185,7 +210,7 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         e.fillText(`matrix roulette 1.0 open source GPL v3`, 20, 50, 550, 25)
 
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`Game status: `, 20, 160, 250, 25)
+        e.fillText(`Game status`, 20, 160, 250, 25)
         // var myGradient = e.createLinearGradient(0, 0, 650, 250);
         // myGradient.addColorStop(0, 'red');
         // myGradient.addColorStop(1, 'orange');
