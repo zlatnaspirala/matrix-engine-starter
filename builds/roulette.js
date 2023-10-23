@@ -39576,14 +39576,21 @@ function createStatusBoxHUD(nidza, playerInfo) {
     console.log('Player info 2d draws ', playerInfo);
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBox');
-    var p1 = new matrixEngine.utility.OSCILLATOR(1, 600, 0.6);
+    var p1 = 0;
+    addEventListener('MEDITATE_SERVER', e => {
+      console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e);
+      p1 = e.detail * 10;
+    });
+    addEventListener('RESULTS_FROM_SERVER', e => {
+      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e);
+    }); // var p1 = new matrixEngine.utility.OSCILLATOR(1, 600, 0.6);
+
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
       id: "CUSTOM",
       draw: function (e) {
-        if (e instanceof CanvasRenderingContext2D == false) return; // e.fillStyle = 'red';
-
+        if (e instanceof CanvasRenderingContext2D == false) return;
         e.fillStyle = 'rgba(120,0,0,0.4)';
-        e.fillRect(50, 170, 500 - p1.UPDATE(), 30);
+        e.fillRect(50, 170, 200 - p1, 30);
         e.textAlign = 'left';
         e.font = 'normal 20px stormfaze';
         e.fillStyle = 'rgba(250,250,250,1)';
@@ -39689,11 +39696,11 @@ class MatrixRoulette {
     console.log('current camera status:', this.status.cameraView);
 
     if (type == 'bets') {
-      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 58.970000000000034, 0.05);
+      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, 0.05);
       console.log('matrixEngine.Events.camera.yPos ', matrixEngine.Events.camera.yPos);
       var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.05); // trick OSC when min > max 
 
-      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -6.49717201776934, 0.05);
+      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, 0.05);
       this.internal_flag = 0;
       this.flagc0 = false;
       this.flagc1 = false;
@@ -39756,7 +39763,7 @@ class MatrixRoulette {
       this.status.cameraView = 'wheel';
     } else {
       // bets
-      matrixEngine.Events.camera.pitch = -58.970000000000034;
+      matrixEngine.Events.camera.pitch = -54.970000000000034;
       matrixEngine.Events.camera.zPos = 11.526822219793473;
       matrixEngine.Events.camera.yPos = 7.49717201776934;
     }
@@ -39771,10 +39778,21 @@ class MatrixRoulette {
     addEventListener('stream-loaded', e => {
       // Safe place for access socket io
       // 'STATUS_MR' Event is only used for Matrix Roulette
+      // It is symbolic for now - results must fake physics to preview right number.
       App.network.connection.socket.on('STATUS_MR', e => {
-        console.log('MSG FROM SERVER: ', e.message);
-
-        if (e.message == '') {}
+        if (e.message == 'RESULTS') {
+          console.log('tick-> ', e.message);
+          console.log('counter-> ', e.counter);
+          console.log('winNumber-> ', e.winNumber);
+          dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {
+            detail: e.winNumber
+          }));
+        } else {
+          console.log('tick-> ', e.counter);
+          dispatchEvent(new CustomEvent('MEDITATE_SERVER', {
+            detail: e.counter
+          }));
+        }
       });
 
       var _ = document.querySelectorAll('.media-box');

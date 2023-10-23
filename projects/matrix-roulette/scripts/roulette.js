@@ -54,11 +54,11 @@ export class MatrixRoulette {
     console.log('current camera status:', this.status.cameraView)
 
     if(type == 'bets') {
-      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 58.970000000000034, 0.05)
+      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, 0.05)
       console.log('matrixEngine.Events.camera.yPos ', matrixEngine.Events.camera.yPos)
       var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.05)
       // trick OSC when min > max 
-      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -6.49717201776934, 0.05)
+      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, 0.05)
 
       this.internal_flag = 0;
       this.flagc0 = false;
@@ -117,7 +117,7 @@ export class MatrixRoulette {
 
     } else {
       // bets
-      matrixEngine.Events.camera.pitch = -58.970000000000034
+      matrixEngine.Events.camera.pitch = -54.970000000000034
       matrixEngine.Events.camera.zPos = 11.526822219793473
       matrixEngine.Events.camera.yPos = 7.49717201776934
     }
@@ -133,14 +133,19 @@ export class MatrixRoulette {
     };
 
     addEventListener('stream-loaded', (e) => {
-
       // Safe place for access socket io
-
       // 'STATUS_MR' Event is only used for Matrix Roulette
+      // It is symbolic for now - results must fake physics to preview right number.
       App.network.connection.socket.on('STATUS_MR', (e) => {
-        console.log('MSG FROM SERVER: ', e.message)
-        if (e.message == '') {
+        if (e.message == 'RESULTS') {
+          console.log('tick-> ', e.message)
+          console.log('counter-> ', e.counter)
+          console.log('winNumber-> ', e.winNumber)
 
+          dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {detail: e.winNumber}))
+        } else {
+          console.log('tick-> ', e.counter)
+          dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: e.counter}))
         }
       })
 

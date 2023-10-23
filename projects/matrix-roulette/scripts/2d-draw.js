@@ -152,16 +152,24 @@ export function createStatusBoxHUD(nidza, playerInfo) {
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBox');
 
-    var p1 = new matrixEngine.utility.OSCILLATOR(1, 600, 0.6);
+    var p1 = 0;
+    addEventListener('MEDITATE_SERVER', (e) => {
+      console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      p1 = e.detail * 10
+    })
+
+    addEventListener('RESULTS_FROM_SERVER', (e) => {
+      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+    })
+
+    // var p1 = new matrixEngine.utility.OSCILLATOR(1, 600, 0.6);
 
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
       id: "CUSTOM",
       draw: function(e) {
         if(e instanceof CanvasRenderingContext2D == false) return;
-        // e.fillStyle = 'red';
-
         e.fillStyle = 'rgba(120,0,0,0.4)';
-        e.fillRect(50, 170, 500 - p1.UPDATE(), 30);
+        e.fillRect(50, 170, 200 - p1, 30);
 
         e.textAlign = 'left';
         e.font = 'normal 20px stormfaze'
