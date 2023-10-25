@@ -22,8 +22,14 @@ export default class TableChips {
       if(e.detail.name.indexOf('clearBets') != -1) {
         this.clearAll()
       } else {
-        console.log('Add chip tableEvents.chips =>', e.detail.name)
-        if (e.detail.tableEvents) this.addChip(e.detail);
+        if(e.detail.tableEvents) {
+          if(roulette.status.game == 'MEDITATE') {
+            this.addChip(e.detail);
+            console.log('Add chip roulette.status.game  =>', roulette.status.game)
+          } else {
+            console.log('Add chip PREVENT GAMEPLAY MODE WAIT_FOR_RESULTS =>')
+          }
+        }
       }
     })
 
@@ -51,10 +57,10 @@ export default class TableChips {
 
       // memo bet
       o.tableEvents.chips++;
-      dispatchEvent(new CustomEvent('update-balance',{detail: 1}))
+      dispatchEvent(new CustomEvent('update-balance', {detail: 1}))
       // dispatchEvent(new CustomEvent('add-chip', { details : 1}))
 
-      this.register.push({ chipObj: d, betPlace: o })
+      this.register.push({chipObj: d, betPlace: o})
     })
   }
 
@@ -85,7 +91,10 @@ export default class TableChips {
   clearAll() {
     this.register.forEach((i, index, array) => {
       array[index].chipObj.selfDestroy(1)
+
+      console.log(' TEST CLEAR ', array[index].betPlace.tableEvents.chips)
       array[index].betPlace.tableEvents.chips = 0;
+
       delete array[index];
     })
   }

@@ -8,9 +8,9 @@
   "enableLogs": "false",
   "autoRebootServerOnFailure": "false",
   "isUseHTTPs": "true",
-  "sslKey": "./rtc/apache-local-cert/server.key",
-  "sslCert": "./rtc/apache-local-cert/server.crt",
-  "sslCabundle": "./rtc/apache-local-cert/server.csr",
+  "sslKey": "./apache-local-cert/server.key",
+  "sslCert": "./apache-local-cert/server.crt",
+  "sslCabundle": "./apache-local-cert/server.csr",
   "enableAdmin": "false",
   "adminUserName": "username",
   "adminPassword": "password"

@@ -108,7 +108,7 @@ export function balanceDecorations(nidza, playerInfo, ref) {
 
   var byY_ = new matrixEngine.utility.OSCILLATOR(90, 110, 0.3);
 
-  console.log('WARN THIS ', ref)
+  // console.log('WARN THIS ', ref)
   let myStarElement = nidza.access.footerLabel.addCustom2dComponent({
     id: "CUSTOM",
     draw: function(e) {
@@ -145,7 +145,7 @@ export function createStatusBoxHUD(nidza, playerInfo) {
       id: "statusBox",
       size: {
         width: 600,
-        height: 200
+        height: 250
       }
     }
     console.log('Player info 2d draws ', playerInfo)
@@ -156,26 +156,23 @@ export function createStatusBoxHUD(nidza, playerInfo) {
 
     var colorForCOLOR = 'rgba(120,0,0,0.4)'
     var colorForOpenGame = 'lime'
-    var colorForLastMoment = 'rgba(220,10,20,1)'
+    var colorForLastMoment = 'rgba(255,15,15,1)'
     var p1 = 0;
+
     addEventListener('MEDITATE_SERVER', (e) => {
-      console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
-      p1 = e.detail * 10
-
-      if (e.detail > 15)  {
-        colorForCOLOR = colorForLastMoment
-      } else {
-        colorForCOLOR = colorForOpenGame
-      }
+      // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      p1 = e.detail * 17
+      colorForCOLOR = colorForOpenGame
     })
-
-    // var p2 = new nidza.Osc(1, 400, 1 , "STOP");
+    addEventListener('WAIT_FOR_RESULT', (e) => {
+      // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      p1 = e.detail * 17
+      colorForCOLOR = colorForLastMoment
+    })
     addEventListener('RESULTS_FROM_SERVER', (e) => {
-      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
-      // p2 = new nidza.Osc(1, 400, 0.6 , "STOP");
-      previewR = '🟥' + e.detail + '✮'
+      // console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      previewR = '🟥' + e.detail 
     })
-
 
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
       id: "CUSTOM",
@@ -183,10 +180,15 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         if(e instanceof CanvasRenderingContext2D == false) return;
 
         e.fillStyle = colorForCOLOR;
-        e.fillRect(50, 170, 200 - p1, 30);
-        // e.fillRect(50, 130, 400 - p2.getValue(), 5);
+        e.fillRect(50, 185, 500 - p1, 22);
 
+        e.fillRect(50 + 500 - (20*17) , 180, 500 - (10*17), 3);
+        e.fillRect(50 + 500 - (20*17) , 209, 500 - (10*17), 3);
 
+        e.fillStyle = colorForLastMoment
+        e.fillRect(50, 180, 500 - (20*17), 3);
+        e.fillRect(50, 209, 500 - (20*17), 3);
+        
         e.textAlign = 'left';
         e.font = 'bold 60px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
@@ -224,7 +226,7 @@ export function createStatusBoxHUD(nidza, playerInfo) {
       },
       dimension: {
         width: 600,
-        height: 200
+        height: 250
       }
     });
 

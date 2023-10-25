@@ -11,6 +11,8 @@ export default class Wheel {
   speedRollInit = 0.15;
   rollTimer = null;
 
+  ballCollideFlag = false;
+
   constructor(pWorld) {
     console.log('wheel constructor')
     this.pWorld = pWorld;
@@ -42,18 +44,22 @@ export default class Wheel {
   }
 
   momentOftouch = (e) => {
-
     if(typeof e.body.matrixRouletteId === 'undefined') {
       return;
     }
     console.log("Collided with number:", e.body.matrixRouletteId);
     dispatchEvent(new CustomEvent('matrix.roulette.win.number', {detail: e.body.matrixRouletteId}))
     this.ballBody.removeEventListener("collide", this.momentOftouch);
+    this.ballCollideFlag = false;
   }
 
-  fireBall = () => {
-    this.ballBody.addEventListener("collide", this.momentOftouch);
-    roulette.wheelSystem.addBall(0.3, [4., -11.4, 3], [-11000, 320, 11])
+  fireBall = (props) => {
+    if (typeof props === 'undefined') props = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
+    roulette.wheelSystem.addBall(props[0], props[1], props[2])
+    if(this.ballCollideFlag == false) {
+      this.ballBody.addEventListener("collide", this.momentOftouch);
+      this.ballCollideFlag = true;
+    }
   }
 
   addBall = (j, posArg, force) => {
@@ -167,7 +173,7 @@ export default class Wheel {
     App.scene.bigWheelTop.physics.currentBody = bigWheelTop;
     App.scene.bigWheelTop.physics.enabled = true;
     App.scene.bigWheelTop.position.y = 6;
-    
+
     App.scene.bigWheelTop.LightsData.directionLight.g = 0
     App.scene.bigWheelTop.LightsData.directionLight.r = 0
 

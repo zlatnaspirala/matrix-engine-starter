@@ -7,9 +7,12 @@ import TableChips from './table-chips.js';
  * Player gameplay bet MAP
  * 
  */
-const ROLES = {
+const RULES = {
   red: [1, 3, 5, 7, 9, 10, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
-  black: [2, 4, 6, 8, 11, 13, 15, 17, 20, 24, 26, 28, 29, 31, 33, 35]
+  black: [2, 4, 6, 8, 11, 13, 15, 17, 20, 24, 26, 28, 29, 31, 33, 35],
+  column3: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
+  column2: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
+  column1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
 }
 
 // const rouletteMapInit = {
@@ -78,6 +81,15 @@ export default class TableEvents {
 
     // new class
     this.chips = new TableChips(pWorld, this.registerBetPlaces)
+
+    // fake results - not working for wheel just test
+    // also calc for win sum.
+    addEventListener('RESULTS_FROM_SERVER', (e) => {
+      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY ', e.detail)
+      var t = this.calculateWin(e.detail)
+      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY CALCULATION FOR WIN=> ', t)
+    })
+
   }
 
   constructSingleNums() {
@@ -150,7 +162,7 @@ export default class TableEvents {
     // split 1
     for(var x = 0;x < 12;x++) {
       for(var y = 2;y > 0;y--) {
-        var name = 's' + numID + '_' + numID2;
+        var name = 'split_' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
         App.scene[name].tableEvents = {
           chips: 0,
@@ -192,7 +204,7 @@ export default class TableEvents {
     // split 2
     for(var x = 0;x < 11;x++) {
       for(var y = 3;y > 0;y--) {
-        var name = 's' + numID + '_' + numID2;
+        var name = 'split_' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
         App.scene[name].tableEvents = {
           chips: 0,
@@ -403,7 +415,7 @@ export default class TableEvents {
     var numID4 = 5;
     for(var x = 0;x < 11;x++) {
       for(var y = 1;y < 3;y++) {
-        var name = 'c' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4;
+        var name = 'corner' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
         App.scene[name].tableEvents = {
           chips: 0,
@@ -580,32 +592,32 @@ export default class TableEvents {
     }
 
     // setTimeout(() => {
-     var name = 'odd';
-      matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
-      App.scene[name].tableEvents = {
-        chips: 0,
-        q: 2
-      };
-      App.scene[name].position.SetY(this.globalY);
-      App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
-      App.scene[name].position.SetX(1.9);
-      App.scene[name].rotation.rotx = -90;
-      App.scene[name].geometry.setScaleByX(-0.7)
-      App.scene[name].geometry.setScaleByY(-0.3)
-      this.registerBetPlaces.push(App.scene[name])
-      App.scene[name].glBlend.blendEnabled = true;
-      App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    var name = 'odd';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
+    App.scene[name].tableEvents = {
+      chips: 0,
+      q: 2
+    };
+    App.scene[name].position.SetY(this.globalY);
+    App.scene[name].position.SetZ(this.colorTop + this.GENERAL_Z);
+    App.scene[name].position.SetX(1.9);
+    App.scene[name].rotation.rotx = -90;
+    App.scene[name].geometry.setScaleByX(-0.7)
+    App.scene[name].geometry.setScaleByY(-0.3)
+    this.registerBetPlaces.push(App.scene[name])
+    App.scene[name].glBlend.blendEnabled = true;
+    App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+    App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
 
-      App.scene[name].hoverEffect = (me) => {
-        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-      }
+    App.scene[name].hoverEffect = (me) => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+    }
 
-      App.scene[name].hoverLeaveEffect = (me) => {
-        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-      }
+    App.scene[name].hoverLeaveEffect = (me) => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+    }
 
     // }, 10)
 
@@ -861,24 +873,110 @@ export default class TableEvents {
   }
 
   calculateWin(winningNumber) {
+
+    winningNumber = parseFloat(winningNumber)
     var win = 0;
-
     this.registerBetPlaces.forEach((ele) => {
-
       if(ele.tableEvents.chips > 0) {
+
         if(ele.name == 'red') {
-          if(ROLES.red.indexOf(winningNumber) != -1) {
+          if(RULES.red.indexOf(winningNumber) != -1) {
             win += ele.tableEvents.chips * ele.tableEvents.q
           }
         } else if(ele.name == 'black') {
-          if(ROLES.black.indexOf(winningNumber) != -1) {
+          if(RULES.black.indexOf(winningNumber) != -1) {
             win += ele.tableEvents.chips * ele.tableEvents.q
           }
         }
-        console.log('TEST chips !!', ele.tableEvents)
-        win += ele.tableEvents.chips * ele.tableEvents.q
-      }
 
+        if(ele.name.indexOf('single') != -1 && winningNumber == parseFloat(ele.name.split('gle')[1])) {
+          win += ele.tableEvents.chips * ele.tableEvents.q
+          console.log('WINNER SINGLE FIELD1  chips ', ele.tableEvents)
+        }
+
+        if(ele.name.indexOf('low') != -1 && winningNumber <= 18) {
+          console.log('WINNER LOW FIELD1  chips ', ele.tableEvents)
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+        if(ele.name.indexOf('high') != -1 && winningNumber >= 19) {
+          console.log('WINNER HIGH FIELD1  chips ', ele.tableEvents)
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+        var test = false;
+        if(ele.name.indexOf('corner') != -1 && ele.name.split('orner').length == 2) {
+          test = ele.name.split('orner')[1].split('_')
+          test.forEach((num) => {
+
+            if(winningNumber == parseFloat(num)) {
+              console.log('WINNER CORNER FIELD1  chips ', num)
+              win += ele.tableEvents.chips * ele.tableEvents.q
+            }
+
+          })
+        }
+
+        var testSplit = false;
+        if(ele.name.indexOf('split') != -1 && ele.name.split('plit').length == 2) {
+          // testSplit = ele.name.split('plit_')[1].split('_') no problem
+          testSplit = ele.name.split('plit')[1].split('_')
+          testSplit.forEach((num) => {
+            if(winningNumber == parseFloat(num)) {
+              console.log('WINNER SPLIT FIELD chips ', num)
+              win += ele.tableEvents.chips * ele.tableEvents.q
+            }
+          })
+        }
+
+        var testStreet = false;
+        if(ele.name.indexOf('street') != -1 && ele.name.split('treet').length == 2) {
+          testStreet = ele.name.split('treet')[1].split('_')
+          testStreet.forEach((num) => {
+            if(winningNumber == parseFloat(num)) {
+              console.log('WINNER testStreet FIELD chips ', num)
+              win += ele.tableEvents.chips * ele.tableEvents.q
+            }
+          })
+        }
+
+        if(ele.name == 'column_1' && RULES.column1.indexOf(winningNumber) != -1) {
+          console.log('WINNER column FIELD1  chips ', ele.tableEvents)
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+        if(ele.name == 'column_2' && RULES.column2.indexOf(winningNumber) != -1) {
+          console.log('WINNER column FIELD2  chips ', ele.tableEvents)
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+        if(ele.name == 'column_3' && RULES.column3.indexOf(winningNumber) != -1) {
+          console.log('WINNER column FIELD3  chips ', ele.tableEvents)
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+        var isOdd = function(x) {return x & 1;};
+        var isEven = function(x) {return !(x & 1);};
+
+        if(ele.name == 'even' && isEven(winningNumber) == true) {
+          console.log('WINNER even FIELD3  chips ', ele.tableEvents)
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+        if(ele.name == 'odd' && isOdd(winningNumber) == true) {
+          console.log('WINNER odd FIELD3  chips ', ele.tableEvents)
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+        if(ele.name == 'from1_12' && winningNumber <= 12) {
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        } else if(ele.name == 'from13_24' && winningNumber >= 13 && winningNumber <= 24) {
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        } else if(ele.name == 'from25_36' && winningNumber >= 25) {
+          win += ele.tableEvents.chips * ele.tableEvents.q
+        }
+
+      }
     })
 
     return win;
@@ -888,17 +986,21 @@ export default class TableEvents {
     var playerBetMap = [];
     var played = [];
     this.registerBetPlaces.forEach((ele) => {
+
       playerBetMap.push({
         id: ele.name,
         chips: ele.tableEvents.chips
       })
+
       if(ele.tableEvents.chips > 0) {
         played.push({
           id: ele.name,
           chips: ele.tableEvents.chips
         })
       }
+
     })
+
     return {
       map: playerBetMap,
       played: played

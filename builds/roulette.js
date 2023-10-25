@@ -39535,8 +39535,8 @@ function balanceDecorations(nidza, playerInfo, ref) {
     ctx.restore();
   };
 
-  var byY_ = new matrixEngine.utility.OSCILLATOR(90, 110, 0.3);
-  console.log('WARN THIS ', ref);
+  var byY_ = new matrixEngine.utility.OSCILLATOR(90, 110, 0.3); // console.log('WARN THIS ', ref)
+
   let myStarElement = nidza.access.footerLabel.addCustom2dComponent({
     id: "CUSTOM",
     draw: function (e) {
@@ -39570,7 +39570,7 @@ function createStatusBoxHUD(nidza, playerInfo) {
       id: "statusBox",
       size: {
         width: 600,
-        height: 200
+        height: 250
       }
     };
     console.log('Player info 2d draws ', playerInfo);
@@ -39579,31 +39579,33 @@ function createStatusBoxHUD(nidza, playerInfo) {
     var previewR = '-1';
     var colorForCOLOR = 'rgba(120,0,0,0.4)';
     var colorForOpenGame = 'lime';
-    var colorForLastMoment = 'rgba(220,10,20,1)';
+    var colorForLastMoment = 'rgba(255,15,15,1)';
     var p1 = 0;
     addEventListener('MEDITATE_SERVER', e => {
-      console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e);
-      p1 = e.detail * 10;
-
-      if (e.detail > 15) {
-        colorForCOLOR = colorForLastMoment;
-      } else {
-        colorForCOLOR = colorForOpenGame;
-      }
-    }); // var p2 = new nidza.Osc(1, 400, 1 , "STOP");
-
+      // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      p1 = e.detail * 17;
+      colorForCOLOR = colorForOpenGame;
+    });
+    addEventListener('WAIT_FOR_RESULT', e => {
+      // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      p1 = e.detail * 17;
+      colorForCOLOR = colorForLastMoment;
+    });
     addEventListener('RESULTS_FROM_SERVER', e => {
-      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e); // p2 = new nidza.Osc(1, 400, 0.6 , "STOP");
-
-      previewR = '🟥' + e.detail + '✮';
+      // console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      previewR = '🟥' + e.detail;
     });
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
       id: "CUSTOM",
       draw: function (e) {
         if (e instanceof CanvasRenderingContext2D == false) return;
         e.fillStyle = colorForCOLOR;
-        e.fillRect(50, 170, 200 - p1, 30); // e.fillRect(50, 130, 400 - p2.getValue(), 5);
-
+        e.fillRect(50, 185, 500 - p1, 22);
+        e.fillRect(50 + 500 - 20 * 17, 180, 500 - 10 * 17, 3);
+        e.fillRect(50 + 500 - 20 * 17, 209, 500 - 10 * 17, 3);
+        e.fillStyle = colorForLastMoment;
+        e.fillRect(50, 180, 500 - 20 * 17, 3);
+        e.fillRect(50, 209, 500 - 20 * 17, 3);
         e.textAlign = 'left';
         e.font = 'bold 60px stormfaze';
         e.fillStyle = 'rgba(250,250,250,1)'; // if (previewR != -1) 
@@ -39632,7 +39634,7 @@ function createStatusBoxHUD(nidza, playerInfo) {
       },
       dimension: {
         width: 600,
-        height: 200
+        height: 250
       }
     });
     nidza.access.statusBox.elements[0].activeDraw();
@@ -39678,7 +39680,9 @@ class MatrixRoulette {
   preventDBTrigger = null; // Top level vars
 
   status = {
-    cameraView: 'bets'
+    winNumberMomentDelay: 5000,
+    cameraView: 'bets',
+    game: 'MEDITATE'
   };
 
   constructor() {
@@ -39705,58 +39709,77 @@ class MatrixRoulette {
 
     this.addHUD(this.playerInfo);
     this.runVideoChat();
+    this.cameraInMove = false;
   }
 
   setupCameraView(type) {
-    let OSC = matrixEngine.utility.OSCILLATOR; // console.log('current camera status:', this.status.cameraView)
+    // let OSC = matrixEngine.utility.OSCILLATOR;
+    if (type == this.status.cameraView) return; // console.log('current camera status:', this.status.cameraView)
 
-    if (type == this.status.cameraView) return;
-    console.log('current camera status:', this.status.cameraView);
+    if (type == 'bets' && this.cameraInMove == false) {
+      this.cameraInMove = true; // Disable user access to the camera
+      // App.camera.SceneController = false;
 
-    if (type == 'bets') {
-      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, 0.05);
-      console.log('matrixEngine.Events.camera.yPos ', matrixEngine.Events.camera.yPos);
-      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.05); // trick OSC when min > max 
+      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, 0.2);
+      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.2); // trick OSC when min > max 
 
-      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, 0.05);
+      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, 0.2);
       this.internal_flag = 0;
       this.flagc0 = false;
       this.flagc1 = false;
       this.flagc2 = false;
 
       c0.on_maximum_value = () => {
-        console.log('c0 max');
+        // console.log('c0 max')
         this.status.cameraView = 'bets';
         this.internal_flag++;
         this.flagc0 = true;
 
         if (this.internal_flag == 3) {
-          console.log('c0 stop max');
+          // console.log('c0 stop max')
+          // Enable user access to the camera
           clearInterval(this.c0i);
+          this.c0i = null;
+          this.cameraInMove = false;
+          dispatchEvent(new CustomEvent('camera-view-wheel', {
+            detail: {}
+          }));
         }
       };
 
       c1.on_maximum_value = () => {
-        console.log('c1 max');
+        // console.log('c1 max')
         this.status.cameraView = 'bets';
         this.internal_flag++;
         this.flagc1 = true;
 
         if (this.internal_flag == 3) {
-          console.log('c1 stop max');
+          // console.log('c1 stop max')
+          // Enable user access to the camera
           clearInterval(this.c0i);
+          this.c0i = null;
+          this.cameraInMove = false;
+          dispatchEvent(new CustomEvent('camera-view-bets', {
+            detail: {}
+          }));
         }
       };
 
       c2.on_maximum_value = () => {
-        console.log('c2 max');
+        // console.log('c2 max')
         this.status.cameraView = 'bets';
         this.internal_flag++;
         this.flagc2 = true;
 
         if (this.internal_flag == 3) {
-          console.log('c2 stop max');
+          // console.log('c2 stop max')
+          // Enable user access to the camera
           clearInterval(this.c0i);
+          this.c0i = null;
+          this.cameraInMove = false;
+          dispatchEvent(new CustomEvent('camera-view-bets', {
+            detail: {}
+          }));
         }
       };
 
@@ -39771,16 +39794,88 @@ class MatrixRoulette {
 
         if (this.flagc2 == false) {
           matrixEngine.Events.camera.yPos = -c2.UPDATE();
-          console.log('c2', matrixEngine.Events.camera.yPos);
         }
-      }, 20);
-    } else if (type == 'wheel') {
-      matrixEngine.Events.camera.pitch = -52.67999999999999;
-      matrixEngine.Events.camera.zPos = -4.6962394866880635;
-      matrixEngine.Events.camera.yPos = 19.500000000000007;
-      this.status.cameraView = 'wheel';
+      }, 15);
+    } else if (type == 'wheel' && this.cameraInMove == false) {
+      this.cameraInMove = true; // Disable user access to the camera
+      // App.camera.SceneController = false;
+      // trick OSC when min > max - OSCILLATOR from matrix engine utility must be upgraded...
+
+      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -52.970000000000034, 0.2);
+      var c1 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.zPos, 4.6962394866880635, 0.2);
+      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos, 19.500000000000007, 0.2);
+      this.internal_flag = 0;
+      this.flagc0 = false;
+      this.flagc1 = false;
+      this.flagc2 = false;
+
+      c0.on_maximum_value = () => {
+        this.status.cameraView = 'wheel';
+        this.internal_flag++;
+        this.flagc0 = true;
+
+        if (this.internal_flag == 3) {
+          console.log('c0 stop'); // Enable user access to the camera
+
+          clearInterval(this.c0i);
+          this.c0i = null;
+          this.cameraInMove = false;
+          dispatchEvent(new CustomEvent('camera-view-wheel', {
+            detail: {}
+          }));
+        }
+      };
+
+      c1.on_maximum_value = () => {
+        this.status.cameraView = 'wheel';
+        this.internal_flag++;
+        this.flagc1 = true;
+
+        if (this.internal_flag == 3) {
+          console.log('c1 stop', this.c0i); // Enable user access to the camera
+
+          clearInterval(this.c0i);
+          this.c0i = null;
+          this.cameraInMove = false;
+          dispatchEvent(new CustomEvent('camera-view-wheel', {
+            detail: {}
+          }));
+        }
+      };
+
+      c2.on_maximum_value = () => {
+        this.status.cameraView = 'wheel';
+        this.internal_flag++;
+        this.flagc2 = true;
+
+        if (this.internal_flag == 3) {
+          console.log('c2 stop'); // Enable user access to the camera
+
+          clearInterval(this.c0i);
+          this.c0i = null;
+          this.cameraInMove = false;
+          dispatchEvent(new CustomEvent('camera-view-wheel', {
+            detail: {}
+          }));
+        }
+      };
+
+      this.c0i = setInterval(() => {
+        if (this.flagc0 == false) {
+          matrixEngine.Events.camera.pitch = c0.UPDATE();
+        }
+
+        if (this.flagc1 == false) {
+          matrixEngine.Events.camera.zPos = -c1.UPDATE();
+        }
+
+        if (this.flagc2 == false) {
+          matrixEngine.Events.camera.yPos = c2.UPDATE();
+        }
+      }, 15);
     } else {
-      // bets
+      // bets default
+      if (this.cameraInMove == true) return;
       matrixEngine.Events.camera.pitch = -54.970000000000034;
       matrixEngine.Events.camera.zPos = 11.526822219793473;
       matrixEngine.Events.camera.yPos = 7.49717201776934;
@@ -39800,14 +39895,16 @@ class MatrixRoulette {
       App.network.connection.socket.on('STATUS_MR', e => {
         if (e.message == 'RESULTS') {
           console.log('tick-> ', e.message);
-          console.log('counter-> ', e.counter);
           console.log('winNumber-> ', e.winNumber);
           dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {
             detail: e.winNumber
           }));
         } else {
-          console.log('tick-> ', e.counter);
-          dispatchEvent(new CustomEvent('MEDITATE_SERVER', {
+          // console.log('tick-> ', e.counter)
+          if (e.message == 'MEDITATE') dispatchEvent(new CustomEvent('MEDITATE_SERVER', {
+            detail: e.counter
+          }));
+          if (e.message == 'WAIT_FOR_RESULT') dispatchEvent(new CustomEvent('WAIT_FOR_RESULT', {
             detail: e.counter
           }));
         }
@@ -39895,7 +39992,7 @@ class MatrixRoulette {
       // all physics chips have name prefix chips_
       // must be fixed from matrix engine source !!!
       if (ev.detail.hitObject.name.indexOf('chips_') != -1 || ev.detail.hitObject.name.indexOf('roll') != -1) {
-        console.log("PREVENT NO CHIPS TRAY: ", ev.detail.hitObject.name);
+        // console.log("PREVENT NO CHIPS TRAY: ", ev.detail.hitObject.name)
         return;
       }
 
@@ -39924,6 +40021,16 @@ class MatrixRoulette {
         this.preventDBTrigger = null;
       }
 
+      if (ev.detail.hitObject.name == 'manualSpin') {
+        console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name);
+        dispatchEvent(new CustomEvent('SPIN', {
+          detail: {
+            type: 'manual'
+          }
+        }));
+        return;
+      }
+
       if (ev.detail.hitObject.raycast.enabled != true) {
         return;
       }
@@ -39936,7 +40043,7 @@ class MatrixRoulette {
   }
 
   preparePhysics() {
-    let gravityVector = [0, 0, -9.82];
+    let gravityVector = [0, 0, -10];
     this.physics = this.world.loadPhysics(gravityVector);
     this.physics.addGround(matrixEngine.App, this.world, {
       source: ["res/images/bg-pow2.png"],
@@ -39950,9 +40057,36 @@ class MatrixRoulette {
     App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5);
   }
 
+  prepareFire() {
+    setTimeout(() => {
+      // clear double call
+      roulette.wheelSystem.fireBall();
+      removeEventListener('camera-view-wheel', this.prepareFire);
+    }, this.status.winNumberMomentDelay);
+  }
+
   attachGamePlayEvents() {
     window.addEventListener('matrix.roulette.win.number', ev => {
-      alert(ev.detail);
+      // Final winning number
+      console.log(ev.detail);
+      setTimeout(() => {
+        this.setupCameraView('bets');
+      }, this.status.winNumberMomentDelay);
+    }); // ONLY SYNTETIC - ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER
+    // IT IS THE PHYSICS REALM
+
+    addEventListener('MEDITATE_SERVER', e => {
+      this.status.game = 'MEDITATE';
+    });
+    addEventListener('WAIT_FOR_RESULT', e => {
+      this.status.game = 'RESULTS';
+    });
+    addEventListener('SPIN', e => {
+      console.log('SPIN PROCEDUTE');
+      addEventListener('camera-view-wheel', this.prepareFire, {
+        passive: true
+      });
+      this.setupCameraView('wheel');
     });
   }
 
@@ -40005,11 +40139,11 @@ class MatrixRoulette {
     App.scene[n].geometry.setScaleByX(0.83);
     App.scene[n].geometry.setScaleByY(0.5);
     App.scene[n].glBlend.blendEnabled = true;
-    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
     var n = 'manualSpin';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
-      source: ["res/images/clearH.png"],
+      source: ["res/images/spin.png"],
       mix_operation: "multiply"
     });
     App.scene[n].position.SetY(-1.9);
@@ -40019,8 +40153,18 @@ class MatrixRoulette {
     App.scene[n].geometry.setScaleByX(0.83);
     App.scene[n].geometry.setScaleByY(0.5);
     App.scene[n].glBlend.blendEnabled = true;
-    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene['manualSpin'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene['manualSpin'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+
+    App.scene['manualSpin'].hoverEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    };
+
+    App.scene['manualSpin'].hoverLeaveEffect = me => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+    };
   }
 
   addHUDStatus() {
@@ -40030,21 +40174,19 @@ class MatrixRoulette {
     };
     var n = 'statusBox';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, n, this.tex);
-    App.scene[n].position.SetY(-1.6);
+    App.scene[n].position.SetY(-.6);
     App.scene[n].position.SetZ(1.45);
     App.scene.statusBox.position.SetX(0);
     App.scene[n].geometry.setScaleByX(3.83);
-    App.scene[n].geometry.setScaleByY(0.5); // App.scene[n].glBlend.blendEnabled = true;
-    // App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-    // App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-
+    App.scene[n].geometry.setScaleByY(1.55);
+    App.scene[n].glBlend.blendEnabled = true;
+    App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[6];
+    App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene.statusBox.rotation.rotx = 122;
     (0, _dDraw.createStatusBoxHUD)(this.nidza, this.playerInfo).then(canvas2d => {
       App.scene.statusBox.streamTextures = {
         videoImage: canvas2d
-      }; // addEventListener('update-balance', (e) => {
-      //    console.log(' update bala from statusBox')
-      // })
+      };
     });
   }
 
@@ -40085,8 +40227,14 @@ class TableChips {
       if (e.detail.name.indexOf('clearBets') != -1) {
         this.clearAll();
       } else {
-        console.log('Add chip tableEvents.chips =>', e.detail.name);
-        if (e.detail.tableEvents) this.addChip(e.detail);
+        if (e.detail.tableEvents) {
+          if (roulette.status.game == 'MEDITATE') {
+            this.addChip(e.detail);
+            console.log('Add chip roulette.status.game  =>', roulette.status.game);
+          } else {
+            console.log('Add chip PREVENT GAMEPLAY MODE WAIT_FOR_RESULTS =>');
+          }
+        }
       }
     });
     addEventListener("clear-chips", e => {
@@ -40150,6 +40298,7 @@ class TableChips {
   clearAll() {
     this.register.forEach((i, index, array) => {
       array[index].chipObj.selfDestroy(1);
+      console.log(' TEST CLEAR ', array[index].betPlace.tableEvents.chips);
       array[index].betPlace.tableEvents.chips = 0;
       delete array[index];
     });
@@ -40182,9 +40331,12 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * Player gameplay bet MAP
  * 
  */
-const ROLES = {
+const RULES = {
   red: [1, 3, 5, 7, 9, 10, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
-  black: [2, 4, 6, 8, 11, 13, 15, 17, 20, 24, 26, 28, 29, 31, 33, 35]
+  black: [2, 4, 6, 8, 11, 13, 15, 17, 20, 24, 26, 28, 29, 31, 33, 35],
+  column3: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
+  column2: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
+  column1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
 }; // const rouletteMapInit = {
 //   TOTAL_BET: 0,
 //   CENTER: {"single0": 0, "single1": 0, "single2": 0, "single3": 0, "single4": 0, "single5": 0, "single6": 0, "single7": 0, "single8": 0, "single9": 0, "single10": 0, "single11": 0, "single12": 0, "single13": 0, "single14": 0, "single15": 0, "single16": 0, "single17": 0, "single18": 0, "single19": 0, "single20": 0, "single21": 0, "single22": 0, "single23": 0, "single24": 0, "single25": 0, "single26": 0, "single27": 0, "single28": 0, "single29": 0, "single30": 0, "single31": 0, "single32": 0, "single33": 0, "single34": 0, "single35": 0, "single36": 0, },
@@ -40244,7 +40396,14 @@ class TableEvents {
     App.scene.atable.geometry.setScaleByX(5);
     App.scene.atable.geometry.setScaleByY(1.8); // new class
 
-    this.chips = new _tableChips.default(pWorld, this.registerBetPlaces);
+    this.chips = new _tableChips.default(pWorld, this.registerBetPlaces); // fake results - not working for wheel just test
+    // also calc for win sum.
+
+    addEventListener('RESULTS_FROM_SERVER', e => {
+      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY ', e.detail);
+      var t = this.calculateWin(e.detail);
+      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY CALCULATION FOR WIN=> ', t);
+    });
   }
 
   constructSingleNums() {
@@ -40317,7 +40476,7 @@ class TableEvents {
 
     for (var x = 0; x < 12; x++) {
       for (var y = 2; y > 0; y--) {
-        var name = 's' + numID + '_' + numID2;
+        var name = 'split_' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
         App.scene[name].tableEvents = {
           chips: 0,
@@ -40358,7 +40517,7 @@ class TableEvents {
 
     for (var x = 0; x < 11; x++) {
       for (var y = 3; y > 0; y--) {
-        var name = 's' + numID + '_' + numID2;
+        var name = 'split_' + numID + '_' + numID2;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
         App.scene[name].tableEvents = {
           chips: 0,
@@ -40565,7 +40724,7 @@ class TableEvents {
 
     for (var x = 0; x < 11; x++) {
       for (var y = 1; y < 3; y++) {
-        var name = 'c' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4;
+        var name = 'corner' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4;
         matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
         App.scene[name].tableEvents = {
           chips: 0,
@@ -41024,21 +41183,112 @@ class TableEvents {
   }
 
   calculateWin(winningNumber) {
+    winningNumber = parseFloat(winningNumber);
     var win = 0;
     this.registerBetPlaces.forEach(ele => {
       if (ele.tableEvents.chips > 0) {
         if (ele.name == 'red') {
-          if (ROLES.red.indexOf(winningNumber) != -1) {
+          if (RULES.red.indexOf(winningNumber) != -1) {
             win += ele.tableEvents.chips * ele.tableEvents.q;
           }
         } else if (ele.name == 'black') {
-          if (ROLES.black.indexOf(winningNumber) != -1) {
+          if (RULES.black.indexOf(winningNumber) != -1) {
             win += ele.tableEvents.chips * ele.tableEvents.q;
           }
         }
 
-        console.log('TEST chips !!', ele.tableEvents);
-        win += ele.tableEvents.chips * ele.tableEvents.q;
+        if (ele.name.indexOf('single') != -1 && winningNumber == parseFloat(ele.name.split('gle')[1])) {
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+          console.log('WINNER SINGLE FIELD1  chips ', ele.tableEvents);
+        }
+
+        if (ele.name.indexOf('low') != -1 && winningNumber <= 18) {
+          console.log('WINNER LOW FIELD1  chips ', ele.tableEvents);
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
+
+        if (ele.name.indexOf('high') != -1 && winningNumber >= 19) {
+          console.log('WINNER HIGH FIELD1  chips ', ele.tableEvents);
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
+
+        var test = false;
+
+        if (ele.name.indexOf('corner') != -1 && ele.name.split('orner').length == 2) {
+          test = ele.name.split('orner')[1].split('_');
+          test.forEach(num => {
+            if (winningNumber == parseFloat(num)) {
+              console.log('WINNER CORNER FIELD1  chips ', num);
+              win += ele.tableEvents.chips * ele.tableEvents.q;
+            }
+          });
+        }
+
+        var testSplit = false;
+
+        if (ele.name.indexOf('split') != -1 && ele.name.split('plit').length == 2) {
+          // testSplit = ele.name.split('plit_')[1].split('_') no problem
+          testSplit = ele.name.split('plit')[1].split('_');
+          testSplit.forEach(num => {
+            if (winningNumber == parseFloat(num)) {
+              console.log('WINNER SPLIT FIELD chips ', num);
+              win += ele.tableEvents.chips * ele.tableEvents.q;
+            }
+          });
+        }
+
+        var testStreet = false;
+
+        if (ele.name.indexOf('street') != -1 && ele.name.split('treet').length == 2) {
+          testStreet = ele.name.split('treet')[1].split('_');
+          testStreet.forEach(num => {
+            if (winningNumber == parseFloat(num)) {
+              console.log('WINNER testStreet FIELD chips ', num);
+              win += ele.tableEvents.chips * ele.tableEvents.q;
+            }
+          });
+        }
+
+        if (ele.name == 'column_1' && RULES.column1.indexOf(winningNumber) != -1) {
+          console.log('WINNER column FIELD1  chips ', ele.tableEvents);
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
+
+        if (ele.name == 'column_2' && RULES.column2.indexOf(winningNumber) != -1) {
+          console.log('WINNER column FIELD2  chips ', ele.tableEvents);
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
+
+        if (ele.name == 'column_3' && RULES.column3.indexOf(winningNumber) != -1) {
+          console.log('WINNER column FIELD3  chips ', ele.tableEvents);
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
+
+        var isOdd = function (x) {
+          return x & 1;
+        };
+
+        var isEven = function (x) {
+          return !(x & 1);
+        };
+
+        if (ele.name == 'even' && isEven(winningNumber) == true) {
+          console.log('WINNER even FIELD3  chips ', ele.tableEvents);
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
+
+        if (ele.name == 'odd' && isOdd(winningNumber) == true) {
+          console.log('WINNER odd FIELD3  chips ', ele.tableEvents);
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
+
+        if (ele.name == 'from1_12' && winningNumber <= 12) {
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        } else if (ele.name == 'from13_24' && winningNumber >= 13 && winningNumber <= 24) {
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        } else if (ele.name == 'from25_36' && winningNumber >= 25) {
+          win += ele.tableEvents.chips * ele.tableEvents.q;
+        }
       }
     });
     return win;
@@ -41095,6 +41345,7 @@ class Wheel {
   ballBody = null;
   speedRollInit = 0.15;
   rollTimer = null;
+  ballCollideFlag = false;
 
   constructor(pWorld) {
     console.log('wheel constructor');
@@ -41132,10 +41383,16 @@ class Wheel {
       detail: e.body.matrixRouletteId
     }));
     this.ballBody.removeEventListener("collide", this.momentOftouch);
+    this.ballCollideFlag = false;
   };
-  fireBall = () => {
-    this.ballBody.addEventListener("collide", this.momentOftouch);
-    roulette.wheelSystem.addBall(0.3, [4., -11.4, 3], [-11000, 320, 11]);
+  fireBall = props => {
+    if (typeof props === 'undefined') props = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
+    roulette.wheelSystem.addBall(props[0], props[1], props[2]);
+
+    if (this.ballCollideFlag == false) {
+      this.ballBody.addEventListener("collide", this.momentOftouch);
+      this.ballCollideFlag = true;
+    }
   };
   addBall = (j, posArg, force) => {
     if (this.ballBody !== null) {

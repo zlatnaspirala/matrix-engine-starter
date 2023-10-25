@@ -1,6 +1,8 @@
 # matrix-engine-starter
 
 Test matrix-engine usage with npm service (`npm i matrix-engine`).
+I have single package.json file for client and server staff.
+
 
 ### Prerequirement
 
@@ -38,9 +40,31 @@ And navigate to app.html, examples.html etc.
 
 #### Matrix Roulette - 3d physics roulette 
 
+ In `projects\matrix-roulette` First time is used inject if gameplay logic intro broadcaster(matrix-networks)
+ Networking is based for now only on websocket tech.
+ - Video chat P2P/webRTC
+ - Data channels - matrix-roulette server part
+
+If you wanna run server part best way is to navigate to the folder `projects\matrix-roulette\scripts\server`
+And then from server folder run Node.js file:
+
+```bash
+node roulette
+```
+
+For windows users:
+```bash
+matrix-network.bat
+```
+
+For Linux/Mac users:
+```bash
+matrix-network.sh
+```
+
 ##### Notes
  - Used cannon.js integration for matrix-engine.
- - It is important to run in https protocol fworw production also for localhost !www
+ - It is important to run in `https` protocol for production also for localhost!
  - Video presentation
   https://www.youtube.com/watch?v=2N_vgMu5QoI&ab_channel=javascriptfanatic
 
