@@ -171,7 +171,7 @@ export function createStatusBoxHUD(nidza, playerInfo) {
     })
     addEventListener('RESULTS_FROM_SERVER', (e) => {
       // console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
-      previewR = '🟥' + e.detail 
+      previewR = '🟥' + e.detail
     })
 
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
@@ -182,13 +182,13 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         e.fillStyle = colorForCOLOR;
         e.fillRect(50, 185, 500 - p1, 22);
 
-        e.fillRect(50 + 500 - (20*17) , 180, 500 - (10*17), 3);
-        e.fillRect(50 + 500 - (20*17) , 209, 500 - (10*17), 3);
+        e.fillRect(50 + 500 - (20 * 17), 180, 500 - (10 * 17), 3);
+        e.fillRect(50 + 500 - (20 * 17), 209, 500 - (10 * 17), 3);
 
         e.fillStyle = colorForLastMoment
-        e.fillRect(50, 180, 500 - (20*17), 3);
-        e.fillRect(50, 209, 500 - (20*17), 3);
-        
+        e.fillRect(50, 180, 500 - (20 * 17), 3);
+        e.fillRect(50, 209, 500 - (20 * 17), 3);
+
         e.textAlign = 'left';
         e.font = 'bold 60px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
@@ -239,4 +239,50 @@ export function createStatusBoxHUD(nidza, playerInfo) {
     return texCanvas;
   });
 
+}
+
+export function create2dHUDStatusLine(nidza) {
+  return new Promise((resolve, reject) => {
+    let n = {
+      id: "statusBoxLine",
+      size: {
+        width: 600,
+        height: 150
+      }
+    }
+    console.log('STATUS HUD')
+    nidza.createNidzaIndentity(n);
+    let texCanvas = document.getElementById('statusBoxLine');
+    let myStarElement = nidza.access.statusBoxLine.addCustom2dComponent({
+      id: "CUSTOM",
+      draw: function(e) {
+        if(e instanceof CanvasRenderingContext2D == false) return;
+
+        e.fillRect(170, 76, 350, 3)
+        e.textAlign = 'left';
+        e.font = 'normal 45px stormfaze'
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`matrix roulette 1.0 status line`, 10, 60, 550, 150)
+
+        // var myGradient = e.createLinearGradient(0, 0, 650, 250);
+        // myGradient.addColorStop(0, 'red');
+        // myGradient.addColorStop(1, 'orange');
+        // e.fillStyle = myGradient;
+        // e.fillRect(450 - p1.UPDATE(), 0, 5 , 200)
+
+      },
+      position: {
+        x: 10,
+        y: 10
+      },
+      dimension: {
+        width: 500,
+        height: 150
+      }
+    });
+
+    nidza.access.statusBoxLine.elements[0].activeDraw()
+    nidza.access.statusBoxLine.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    resolve(texCanvas);
+  })
 }

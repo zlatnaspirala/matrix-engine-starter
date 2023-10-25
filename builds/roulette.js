@@ -39423,6 +39423,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.balanceDecorations = balanceDecorations;
 exports.createStatusBoxHUD = createStatusBoxHUD;
+exports.create2dHUDStatusLine = create2dHUDStatusLine;
 exports.create2dHUD = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
@@ -39645,6 +39646,47 @@ function createStatusBoxHUD(nidza, playerInfo) {
   });
 }
 
+function create2dHUDStatusLine(nidza) {
+  return new Promise((resolve, reject) => {
+    let n = {
+      id: "statusBoxLine",
+      size: {
+        width: 600,
+        height: 150
+      }
+    };
+    console.log('STATUS HUD');
+    nidza.createNidzaIndentity(n);
+    let texCanvas = document.getElementById('statusBoxLine');
+    let myStarElement = nidza.access.statusBoxLine.addCustom2dComponent({
+      id: "CUSTOM",
+      draw: function (e) {
+        if (e instanceof CanvasRenderingContext2D == false) return;
+        e.fillRect(170, 76, 350, 3);
+        e.textAlign = 'left';
+        e.font = 'normal 45px stormfaze';
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`matrix roulette 1.0 status line`, 10, 60, 550, 150); // var myGradient = e.createLinearGradient(0, 0, 650, 250);
+        // myGradient.addColorStop(0, 'red');
+        // myGradient.addColorStop(1, 'orange');
+        // e.fillStyle = myGradient;
+        // e.fillRect(450 - p1.UPDATE(), 0, 5 , 200)
+      },
+      position: {
+        x: 10,
+        y: 10
+      },
+      dimension: {
+        width: 500,
+        height: 150
+      }
+    });
+    nidza.access.statusBoxLine.elements[0].activeDraw();
+    nidza.access.statusBoxLine.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    resolve(texCanvas);
+  });
+}
+
 },{"../../matrix-slot/scripts/standard-fonts":60,"matrix-engine":8}],56:[function(require,module,exports){
 "use strict";
 
@@ -39673,7 +39715,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 class MatrixRoulette {
   physics = null;
-  world = null; // gameplay staff
+  world = null; // Gameplay staff
 
   tableBet = null;
   wheelSystem = null;
@@ -39701,8 +39743,8 @@ class MatrixRoulette {
     this.tableBet = new _tableEvents.default(this.physics);
     this.wheelSystem = new _wheel.default(this.physics);
     this.attachMatrixRay();
-    this.attachGamePlayEvents(); // 2d canvas small library
-    // Text oriented - transformation also 3d context variant of components shader oriented
+    this.attachGamePlayEvents(); // nidza.js / 2d canvas small library
+    // Text oriented - transformation also 3d context variant of components shader oriented.
 
     this.nidza = new _nidza.Nidza();
     this.setupCameraView('initbets'); // nidza.js small 2d canvas lib
@@ -40068,7 +40110,7 @@ class MatrixRoulette {
   attachGamePlayEvents() {
     window.addEventListener('matrix.roulette.win.number', ev => {
       // Final winning number
-      console.log(ev.detail);
+      console.log('Winning number: ' + ev.detail);
       setTimeout(() => {
         this.setupCameraView('bets');
       }, this.status.winNumberMomentDelay);
@@ -40114,19 +40156,35 @@ class MatrixRoulette {
       };
     });
     addEventListener('update-balance', e => {
-      console.log('TEST DETAILS', e.detail);
-      console.log('TEST DETAILS', this.playerInfo.balance);
+      console.info('Event: update-balance => ', e.detail);
       var t = this.playerInfo.balance - e.detail;
       this.playerInfo.balance = t;
-      roulette.nidza.access.footerLabel.elements[0].text = t; // roulette.nidza.access.footerLabel.elements[0].activateRotator()
-    }); // funnyStar(this.nidza)
-    // balanceDecorations(this.nidza)
-
+      roulette.nidza.access.footerLabel.elements[0].text = t;
+    });
     this.addHUDBtns();
     this.addHUDStatus();
   }
 
   addHUDBtns() {
+    var n = 'bottomStatusLine';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
+      source: ["res/images/spin.png"],
+      mix_operation: "multiply"
+    });
+    App.scene[n].position.SetY(-1.9);
+    App.scene[n].position.SetZ(6.1);
+    App.scene[n].position.SetX(0);
+    App.scene[n].rotation.rotx = -90;
+    App.scene[n].geometry.setScaleByX(3.83);
+    App.scene[n].geometry.setScaleByY(-0.25);
+    App.scene[n].glBlend.blendEnabled = true;
+    App.scene['bottomStatusLine'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene['bottomStatusLine'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+    (0, _dDraw.create2dHUDStatusLine)(this.nidza).then(canvas2d => {
+      App.scene.bottomStatusLine.streamTextures = {
+        videoImage: canvas2d
+      };
+    });
     var n = 'clearBets';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
       source: ["res/images/clearH.png"],

@@ -3,12 +3,12 @@ import TableEvents from "./table-events.js"
 import Wheel from "./wheel.js";
 import * as CANNON from 'cannon';
 import {Nidza} from 'nidza';
-import {create2dHUD, createStatusBoxHUD} from "./2d-draw.js";
+import {create2dHUD, createStatusBoxHUD, create2dHUDStatusLine} from "./2d-draw.js";
 
 export class MatrixRoulette {
   physics = null;
   world = null;
-  // gameplay staff
+  // Gameplay staff
   tableBet = null;
   wheelSystem = null;
   preventDBTrigger = null;
@@ -27,9 +27,9 @@ export class MatrixRoulette {
     };
 
     var App = matrixEngine.App;
-
     // dev only
     window.App = App
+
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
@@ -40,8 +40,9 @@ export class MatrixRoulette {
     this.wheelSystem = new Wheel(this.physics)
     this.attachMatrixRay()
     this.attachGamePlayEvents()
-    // 2d canvas small library
-    // Text oriented - transformation also 3d context variant of components shader oriented
+
+    // nidza.js / 2d canvas small library
+    // Text oriented - transformation also 3d context variant of components shader oriented.
     this.nidza = new Nidza();
     this.setupCameraView('initbets')
     // nidza.js small 2d canvas lib
@@ -336,7 +337,7 @@ export class MatrixRoulette {
 
       if(ev.detail.hitObject.name == 'manualSpin') {
         console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name)
-        dispatchEvent(new CustomEvent('SPIN', { detail: { type: 'manual' } }))
+        dispatchEvent(new CustomEvent('SPIN', {detail: {type: 'manual'}}))
         return;
       }
 
@@ -368,14 +369,14 @@ export class MatrixRoulette {
       // clear double call
       roulette.wheelSystem.fireBall()
       removeEventListener('camera-view-wheel', this.prepareFire)
-    },this.status.winNumberMomentDelay)
+    }, this.status.winNumberMomentDelay)
   }
 
   attachGamePlayEvents() {
 
     window.addEventListener('matrix.roulette.win.number', (ev) => {
       // Final winning number
-      console.log(ev.detail)
+      console.log('Winning number: ' + ev.detail)
       setTimeout(() => {
         this.setupCameraView('bets')
       }, this.status.winNumberMomentDelay)
@@ -393,7 +394,7 @@ export class MatrixRoulette {
 
     addEventListener('SPIN', (e) => {
       console.log('SPIN PROCEDUTE')
-      addEventListener('camera-view-wheel', this.prepareFire , {passive: true})
+      addEventListener('camera-view-wheel', this.prepareFire, {passive: true})
       this.setupCameraView('wheel')
     })
 
@@ -426,27 +427,37 @@ export class MatrixRoulette {
     })
 
     addEventListener('update-balance', (e) => {
-
-      console.log('TEST DETAILS', e.detail)
-      console.log('TEST DETAILS', this.playerInfo.balance)
-
+      console.info('Event: update-balance => ', e.detail)
       var t = this.playerInfo.balance - e.detail;
       this.playerInfo.balance = t;
       roulette.nidza.access.footerLabel.elements[0].text = t
-      // roulette.nidza.access.footerLabel.elements[0].activateRotator()
     })
 
-    // funnyStar(this.nidza)
-
-    // balanceDecorations(this.nidza)
-
     this.addHUDBtns()
-
     this.addHUDStatus()
-
   }
 
   addHUDBtns() {
+
+    var n = 'bottomStatusLine';
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
+      source: ["res/images/spin.png"],
+      mix_operation: "multiply",
+    });
+    App.scene[n].position.SetY(-1.9);
+    App.scene[n].position.SetZ(6.1);
+    App.scene[n].position.SetX(0);
+    App.scene[n].rotation.rotx = -90;
+    App.scene[n].geometry.setScaleByX(3.83)
+    App.scene[n].geometry.setScaleByY(-0.25)
+    App.scene[n].glBlend.blendEnabled = true;
+    App.scene['bottomStatusLine'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    App.scene['bottomStatusLine'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+
+    create2dHUDStatusLine(this.nidza).then(canvas2d => {
+      App.scene.bottomStatusLine.streamTextures = {videoImage: canvas2d}
+    })
+
     var n = 'clearBets';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
       source: ["res/images/clearH.png"],
