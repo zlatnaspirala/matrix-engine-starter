@@ -247,12 +247,16 @@ export function create2dHUDStatusLine(nidza) {
       id: "statusBoxLine",
       size: {
         width: 600,
-        height: 150
+        height: 100
       }
     }
     console.log('STATUS HUD')
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBoxLine');
+
+    const cols = Math.floor(500 / 20) + 1;
+    const ypos = Array(cols).fill(0);
+
     let myStarElement = nidza.access.statusBoxLine.addCustom2dComponent({
       id: "CUSTOM",
       draw: function(e) {
@@ -262,7 +266,28 @@ export function create2dHUDStatusLine(nidza) {
         e.textAlign = 'left';
         e.font = 'normal 45px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`matrix roulette 1.0 status line`, 10, 60, 550, 150)
+        e.fillText(`🐲 matrix roulette status line 🐲`, 10, 30, 550, 60)
+
+        e.fillStyle = '#0001';
+        e.fillRect(0, 0, 200, 300);
+
+        // Set color to green and font to 15pt monospace in the drawing context
+        e.fillStyle = '#0f0';
+        e.font = '15pt monospace';
+
+        // for each column put a random character at the end
+        ypos.forEach((y, ind) => {
+          // generate a random character
+          const text = String.fromCharCode(Math.random() * 128);
+          // x coordinate of the column, y coordinate is already given
+          const x = ind * 20;
+          // render the character at (x, y)
+          e.fillText(text, x, y);
+          // randomly reset the end of the column if it's at least 100px high
+          if(y > 100 + Math.random() * 10000) ypos[ind] = 0;
+          // otherwise just move the y coordinate for the column 20px down,
+          else ypos[ind] = y + 20;
+        });
 
         // var myGradient = e.createLinearGradient(0, 0, 650, 250);
         // myGradient.addColorStop(0, 'red');

@@ -2,6 +2,7 @@
 
 Test matrix-engine usage with npm service (`npm i matrix-engine`).
 I have single package.json file for client and server staff.
+Compiled lib destionation is folder `./builds`
 
 
 ### Prerequirement
