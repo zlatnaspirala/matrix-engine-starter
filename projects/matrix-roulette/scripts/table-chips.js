@@ -25,6 +25,7 @@ export default class TableChips {
         if(e.detail.tableEvents) {
           if(roulette.status.game == 'MEDITATE') {
             this.addChip(e.detail);
+            roulette.status.text.fillText('PLayed on ' + e.detail.name)
             console.log('Add chip roulette.status.game  =>', roulette.status.game)
           } else {
             console.log('Add chip PREVENT GAMEPLAY MODE WAIT_FOR_RESULTS =>')

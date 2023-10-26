@@ -4,6 +4,7 @@ import Wheel from "./wheel.js";
 import * as CANNON from 'cannon';
 import {Nidza} from 'nidza';
 import {create2dHUD, createStatusBoxHUD, create2dHUDStatusLine} from "./2d-draw.js";
+import {MTM} from 'matrix-engine-plugins';
 
 export class MatrixRoulette {
   physics = null;
@@ -14,6 +15,7 @@ export class MatrixRoulette {
   preventDBTrigger = null;
   // Top level vars
   status = {
+    text:new MTM('WELCOME MY FRIEND!', { deltaRemove : 1, deltaFill: 40}),
     winNumberMomentDelay: 5000,
     cameraView: 'bets',
     game: 'MEDITATE'
@@ -454,7 +456,7 @@ export class MatrixRoulette {
     App.scene['bottomStatusLine'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene['bottomStatusLine'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
 
-    create2dHUDStatusLine(this.nidza).then(canvas2d => {
+    create2dHUDStatusLine(this.nidza, this.status).then(canvas2d => {
       App.scene.bottomStatusLine.streamTextures = {videoImage: canvas2d}
     })
 

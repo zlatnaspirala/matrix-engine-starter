@@ -836,7 +836,7 @@ export default class TableEvents {
     var numID6 = 6;
     // split 1
     for(var x = 0;x < 11;x++) {
-      var name = 'l' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4 + '_' + numID5 + '_' + numID6;
+      var name = 'line_' + numID + '_' + numID2 + '_' + numID3 + '_' + numID4 + '_' + numID5 + '_' + numID6;
       matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
       App.scene[name].tableEvents = {
         chips: 0,
@@ -935,6 +935,17 @@ export default class TableEvents {
           testStreet.forEach((num) => {
             if(winningNumber == parseFloat(num)) {
               console.log('WINNER testStreet FIELD chips ', num)
+              win += ele.tableEvents.chips * ele.tableEvents.q
+            }
+          })
+        }
+
+        var testLine = false;
+        if(ele.name.indexOf('line_') != -1 && ele.name.split('ine_').length == 2) {
+          testLine = ele.name.split('ine_')[1].split('_')
+          testLine.forEach((num) => {
+            if(winningNumber == parseFloat(num)) {
+              console.log('WINNER test Line chips ', num)
               win += ele.tableEvents.chips * ele.tableEvents.q
             }
           })

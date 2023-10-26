@@ -1,5 +1,6 @@
 import * as matrixEngine from "matrix-engine"
 import {stdFonts} from "../../matrix-slot/scripts/standard-fonts";
+import {MTM} from "matrix-engine-plugins";
 
 export var create2dHUD = (ref) => {
   return new Promise((resolve, reject) => {
@@ -241,13 +242,14 @@ export function createStatusBoxHUD(nidza, playerInfo) {
 
 }
 
-export function create2dHUDStatusLine(nidza) {
+export function create2dHUDStatusLine(nidza, status) {
+  var T = status.text;
   return new Promise((resolve, reject) => {
     let n = {
       id: "statusBoxLine",
       size: {
         width: 600,
-        height: 100
+        height: 70
       }
     }
     console.log('STATUS HUD')
@@ -266,7 +268,7 @@ export function create2dHUDStatusLine(nidza) {
         e.textAlign = 'left';
         e.font = 'normal 45px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`🐲 matrix roulette status line 🐲`, 10, 30, 550, 60)
+        e.fillText(`🐲 ${T.text} 🐲`, 10, 30, 550, 60)
 
         e.fillStyle = '#0001';
         e.fillRect(0, 0, 200, 300);
@@ -297,12 +299,12 @@ export function create2dHUDStatusLine(nidza) {
 
       },
       position: {
-        x: 10,
-        y: 10
+        x: 30,
+        y: 50
       },
       dimension: {
         width: 500,
-        height: 150
+        height: 100
       }
     });
 
