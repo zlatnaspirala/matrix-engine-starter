@@ -70,7 +70,11 @@ matrix-network.sh
  - Video presentation
   https://www.youtube.com/watch?v=2N_vgMu5QoI&ab_channel=javascriptfanatic
 
-![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette.png)
+### table bet view
+![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette-1.png)
+
+### Wheel view
+![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette-2.png)
 
 #### Web-Anatomy underconstructing
 
