@@ -34,6 +34,8 @@ export class MatrixRoulette {
     // dev only
     window.App = App
 
+    window.addEventListener('click', this.firstClick)
+
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
@@ -56,8 +58,29 @@ export class MatrixRoulette {
     this.cameraInMove = false;
 
     if (this.soundsEnabled() == true) {
-      matrixEngine.App.sounds.createAudio('background', '')
+
+      matrixEngine.App.sounds.createAudio('background', 'res/audios/mellow_club_vibe-stargazer_jazz.mp3')
+      matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3')
+      matrixEngine.App.sounds.createAudio('spining', 'res/audios/spining.mp3')
+      matrixEngine.App.sounds.createAudio('spiningEnd', 'res/audios/spining-end.mp3')
+
+      matrixEngine.App.sounds.audios.background.loop = true
+      matrixEngine.App.sounds.audios.background.play()
+
     }
+
+    if (this.isManual() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', { detail: 'manual'}))
+    if (this.serverGiveResults()== true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', { detail: 'server'}))
+
+  }
+
+  firstClick = (e) => {
+
+    if (this.soundsEnabled() == true) {
+      matrixEngine.App.sounds.audios.background.play()
+    }
+
+    removeEventListener('click', this.firstClick)
   }
 
   setupCameraView(type) {
@@ -295,6 +318,8 @@ export class MatrixRoulette {
       })
     })
 
+    // hide netoworking div
+    setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display='none' , 2200)
   }
 
   soundsEnabled() {
@@ -315,11 +340,22 @@ export class MatrixRoulette {
     }
   }
 
+  serverGiveResults() {
+    if(typeof matrixEngine.utility.QueryString.server == 'undefined' ||
+      matrixEngine.utility.QueryString.server == 'giveResults') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', (ev) => {
       App.onlyClicksPass = true;
+
+      // no need maybe ?!
       matrixEngine.raycaster.checkingProcedure(ev);
       setTimeout(() => {
         App.onlyClicksPass = false;
@@ -365,6 +401,7 @@ export class MatrixRoulette {
       if(ev.detail.hitObject.name == 'manualSpin') {
         if(typeof matrixEngine.utility.QueryString.server !== 'undefined' &&
           matrixEngine.utility.QueryString.server == 'manual') {
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', { detail: 'SPINNING'}))
           console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name)
           dispatchEvent(new CustomEvent('SPIN', {detail: {type: 'manual'}}))
           return;
@@ -432,7 +469,6 @@ export class MatrixRoulette {
     addEventListener('WAIT_FOR_RESULT', (e) => {
       this.status.game = 'RESULTS';
     })
-
   }
 
   addHUD(playerInfo) {

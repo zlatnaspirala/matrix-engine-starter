@@ -20,15 +20,20 @@ export default class TableChips {
 
     addEventListener("chip-bet", (e) => {
       if(e.detail.name.indexOf('clearBets') != -1) {
-        this.clearAll()
+        dispatchEvent(new CustomEvent('clear-chips', {detail: 'CLEAR BETS'}))
       } else {
         if(e.detail.tableEvents) {
           if(roulette.status.game == 'MEDITATE') {
+
             this.addChip(e.detail);
-            roulette.status.text.fillText('PLayed on ' + e.detail.name)
+            roulette.status.text.fillText('Played on ' + e.detail.name)
+
+            if (roulette.soundsEnabled() == true) {
+              matrixEngine.App.sounds.audios.chip.play()
+            }
             console.log('Add chip roulette.status.game  =>', roulette.status.game)
           } else {
-            console.log('Add chip PREVENT GAMEPLAY MODE WAIT_FOR_RESULTS =>')
+            console.log('Add chip PREVENT MODE WAIT_FOR_RESULTS')
           }
         }
       }
@@ -36,6 +41,7 @@ export default class TableChips {
 
     addEventListener("clear-chips", (e) => {
       this.clearAll()
+      dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {detail: '✫CLEAR BETS✫'}))
     })
 
   }
@@ -98,5 +104,6 @@ export default class TableChips {
 
       delete array[index];
     })
+    
   }
 }

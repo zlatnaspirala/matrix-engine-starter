@@ -39992,9 +39992,13 @@ function balanceDecorations(nidza, playerInfo, ref) {
   let myStarElement = nidza.access.footerLabel.addCustom2dComponent({
     id: "CUSTOM",
     draw: function (e) {
-      if (e instanceof CanvasRenderingContext2D == false) return;
-      e.fillStyle = 'red';
-      makeHarmonograph(e);
+      if (e instanceof CanvasRenderingContext2D == false) return; // e.fillStyle = 'red';
+      // makeHarmonograph(e)
+      // e.clearRect(0, 0, 600, 400);
+
+      e.fillStyle = "rgb(" + A1 + "," + g + "," + b + ")";
+      e.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
+      e.fillRect(0, 0, 600, 400);
       e.fillStyle = 'rgba(0,0,0,0.4)';
       e.fillRect(50, 50, 100 + p1, 100);
       e.fillRect(50, 20, 500 - p1, 20);
@@ -40016,6 +40020,14 @@ function balanceDecorations(nidza, playerInfo, ref) {
   nidza.access.footerLabel.elements[0].activeDraw();
 }
 
+const soundsEnabled = () => {
+  if (typeof matrixEngine.utility.QueryString.sounds == 'undefined' || matrixEngine.utility.QueryString.sounds == 'true') {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 function createStatusBoxHUD(nidza, playerInfo) {
   return new Promise((resolve, reject) => {
     let n = {
@@ -40024,11 +40036,12 @@ function createStatusBoxHUD(nidza, playerInfo) {
         width: 600,
         height: 250
       }
-    };
-    console.log('Player info 2d draws ', playerInfo);
+    }; // console.log('Player info 2d draws ', playerInfo)
+
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBox');
-    var previewR = '-1';
+    var previewR = '';
+    var previewTitle = 'matrix roulette 1.0 ' + (soundsEnabled() == true ? ' sounds: ON' : ' sounds Off');
     var colorForCOLOR = 'rgba(120,0,0,0.4)';
     var colorForOpenGame = 'lime';
     var colorForLastMoment = 'rgba(255,15,15,1)';
@@ -40047,6 +40060,14 @@ function createStatusBoxHUD(nidza, playerInfo) {
       // console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       previewR = '🟥' + e.detail;
     });
+    addEventListener('SET_STATUSBOX_TEXT', e => {
+      console.log('previewTitle CONNECT WITH PROGRESS BAR IN 2d HUD', e);
+      previewR = e.detail;
+    });
+    addEventListener('SET_STATUSBOX_TITLE', e => {
+      console.log('SET_STATUSBOX_TEXT CONNECT WITH PROGRESS BAR IN 2d HUD', e);
+      previewTitle = e.detail;
+    });
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
       id: "CUSTOM",
       draw: function (e) {
@@ -40062,7 +40083,7 @@ function createStatusBoxHUD(nidza, playerInfo) {
         e.font = 'bold 60px stormfaze';
         e.fillStyle = 'rgba(250,250,250,1)'; // if (previewR != -1) 
 
-        e.fillText("" + previewR.toString(), 370, 148, 250);
+        e.fillText("" + previewR.toString(), 340, 148, 250);
         e.fillRect(170, 66, 250, 43);
         e.textAlign = 'left';
         e.font = 'normal 20px stormfaze';
@@ -40070,9 +40091,9 @@ function createStatusBoxHUD(nidza, playerInfo) {
         e.fillStyle = 'rgba(250,50,50,1)';
         e.fillText(`maximumroulette.com`, 170, 78, 250, 33);
         e.fillText(`github.com/zlatnaspirala`, 170, 100, 250, 33);
-        e.font = 'normal 40px stormfaze';
+        e.font = 'normal 33px stormfaze';
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`matrix roulette 1.0 open source GPL v3`, 20, 50, 550, 25);
+        e.fillText(previewTitle, 20, 50, 550, 25);
         e.fillStyle = 'rgba(250,250,250,1)';
         e.fillText(`Game status`, 20, 160, 250, 25); // var myGradient = e.createLinearGradient(0, 0, 650, 250);
         // myGradient.addColorStop(0, 'red');
@@ -40098,31 +40119,39 @@ function createStatusBoxHUD(nidza, playerInfo) {
 }
 
 function create2dHUDStatusLine(nidza, status) {
-  var T = status.text;
+  try {
+    var T = status.text;
+  } catch (err) {
+    console.error('Secound arg status.text must be instance of MTM class from matrix-engine-plugins');
+    return;
+  }
+
   return new Promise((resolve, reject) => {
     let n = {
       id: "statusBoxLine",
       size: {
-        width: 600,
-        height: 70
+        width: 650,
+        height: 50
       }
     };
-    console.log('STATUS HUD');
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBoxLine');
+    addEventListener('SET_STATUS_LINE_TEXT', e => {
+      T.fillText(e.detail); // console.log('STATUS LINE')
+    }); // matrix effect in bg
+
     const cols = Math.floor(500 / 20) + 1;
     const ypos = Array(cols).fill(0);
-    let myStarElement = nidza.access.statusBoxLine.addCustom2dComponent({
+    nidza.access.statusBoxLine.addCustom2dComponent({
       id: "CUSTOM",
       draw: function (e) {
-        if (e instanceof CanvasRenderingContext2D == false) return;
-        e.fillRect(170, 76, 350, 3);
+        if (e instanceof CanvasRenderingContext2D == false) return; // e.fillRect(0, 2, 550, 2)
+
         e.textAlign = 'left';
         e.font = 'normal 45px stormfaze';
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`🐲 ${T.text} 🐲`, 10, 30, 550, 60);
-        e.fillStyle = '#0001';
-        e.fillRect(0, 0, 200, 300); // Set color to green and font to 15pt monospace in the drawing context
+        e.fillText(`☞ ${T.text}🐲`, 10, 31, 550, 60);
+        e.fillStyle = '#0001'; // Set color to green and font to 15pt monospace in the drawing context
 
         e.fillStyle = '#0f0';
         e.font = '15pt monospace'; // for each column put a random character at the end
@@ -40145,7 +40174,7 @@ function create2dHUDStatusLine(nidza, status) {
       },
       position: {
         x: 30,
-        y: 50
+        y: 40
       },
       dimension: {
         width: 500,
@@ -40214,6 +40243,7 @@ class MatrixRoulette {
     var App = matrixEngine.App; // dev only
 
     window.App = App;
+    window.addEventListener('click', this.firstClick);
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
@@ -40233,9 +40263,29 @@ class MatrixRoulette {
     this.cameraInMove = false;
 
     if (this.soundsEnabled() == true) {
-      matrixEngine.App.sounds.createAudio('background', '');
+      matrixEngine.App.sounds.createAudio('background', 'res/audios/mellow_club_vibe-stargazer_jazz.mp3');
+      matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3');
+      matrixEngine.App.sounds.createAudio('spining', 'res/audios/spining.mp3');
+      matrixEngine.App.sounds.createAudio('spiningEnd', 'res/audios/spining-end.mp3');
+      matrixEngine.App.sounds.audios.background.loop = true;
+      matrixEngine.App.sounds.audios.background.play();
     }
+
+    if (this.isManual() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+      detail: 'manual'
+    }));
+    if (this.serverGiveResults() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+      detail: 'server'
+    }));
   }
+
+  firstClick = e => {
+    if (this.soundsEnabled() == true) {
+      matrixEngine.App.sounds.audios.background.play();
+    }
+
+    removeEventListener('click', this.firstClick);
+  };
 
   setupCameraView(type) {
     // let OSC = matrixEngine.utility.OSCILLATOR;
@@ -40497,7 +40547,9 @@ class MatrixRoulette {
           }
         }
       });
-    });
+    }); // hide netoworking div
+
+    setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200);
   }
 
   soundsEnabled() {
@@ -40516,11 +40568,20 @@ class MatrixRoulette {
     }
   }
 
+  serverGiveResults() {
+    if (typeof matrixEngine.utility.QueryString.server == 'undefined' || matrixEngine.utility.QueryString.server == 'giveResults') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', ev => {
-      App.onlyClicksPass = true;
+      App.onlyClicksPass = true; // no need maybe ?!
+
       matrixEngine.raycaster.checkingProcedure(ev);
       setTimeout(() => {
         App.onlyClicksPass = false;
@@ -40565,6 +40626,9 @@ class MatrixRoulette {
 
       if (ev.detail.hitObject.name == 'manualSpin') {
         if (typeof matrixEngine.utility.QueryString.server !== 'undefined' && matrixEngine.utility.QueryString.server == 'manual') {
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+            detail: 'SPINNING'
+          }));
           console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name);
           dispatchEvent(new CustomEvent('SPIN', {
             detail: {
@@ -40790,21 +40854,31 @@ class TableChips {
     };
     addEventListener("chip-bet", e => {
       if (e.detail.name.indexOf('clearBets') != -1) {
-        this.clearAll();
+        dispatchEvent(new CustomEvent('clear-chips', {
+          detail: 'CLEAR BETS'
+        }));
       } else {
         if (e.detail.tableEvents) {
           if (roulette.status.game == 'MEDITATE') {
             this.addChip(e.detail);
-            roulette.status.text.fillText('PLayed on ' + e.detail.name);
+            roulette.status.text.fillText('Played on ' + e.detail.name);
+
+            if (roulette.soundsEnabled() == true) {
+              matrixEngine.App.sounds.audios.chip.play();
+            }
+
             console.log('Add chip roulette.status.game  =>', roulette.status.game);
           } else {
-            console.log('Add chip PREVENT GAMEPLAY MODE WAIT_FOR_RESULTS =>');
+            console.log('Add chip PREVENT MODE WAIT_FOR_RESULTS');
           }
         }
       }
     });
     addEventListener("clear-chips", e => {
       this.clearAll();
+      dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {
+        detail: '✫CLEAR BETS✫'
+      }));
     });
   }
 

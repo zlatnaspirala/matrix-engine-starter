@@ -114,8 +114,14 @@ export function balanceDecorations(nidza, playerInfo, ref) {
     id: "CUSTOM",
     draw: function(e) {
       if(e instanceof CanvasRenderingContext2D == false) return;
-      e.fillStyle = 'red';
-      makeHarmonograph(e)
+      // e.fillStyle = 'red';
+
+      // makeHarmonograph(e)
+      // e.clearRect(0, 0, 600, 400);
+      e.fillStyle = "rgb(" + A1 + "," + g + "," + b + ")";
+      e.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
+      e.fillRect(0, 0, 600, 400);
+
       e.fillStyle = 'rgba(0,0,0,0.4)';
       e.fillRect(50, 50, 100 + p1, 100);
       e.fillRect(50, 20, 500 - p1, 20);
@@ -140,6 +146,15 @@ export function balanceDecorations(nidza, playerInfo, ref) {
 
 }
 
+const soundsEnabled = () => {
+  if(typeof matrixEngine.utility.QueryString.sounds == 'undefined' ||
+    matrixEngine.utility.QueryString.sounds == 'true') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export function createStatusBoxHUD(nidza, playerInfo) {
   return new Promise((resolve, reject) => {
     let n = {
@@ -149,11 +164,12 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         height: 250
       }
     }
-    console.log('Player info 2d draws ', playerInfo)
+    // console.log('Player info 2d draws ', playerInfo)
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBox');
 
-    var previewR = '-1';
+    var previewR = '';
+    var previewTitle = 'matrix roulette 1.0 ' + (soundsEnabled() == true ? ' sounds: ON': ' sounds Off');
 
     var colorForCOLOR = 'rgba(120,0,0,0.4)'
     var colorForOpenGame = 'lime'
@@ -175,6 +191,16 @@ export function createStatusBoxHUD(nidza, playerInfo) {
       previewR = '🟥' + e.detail
     })
 
+    addEventListener('SET_STATUSBOX_TEXT', (e) => {
+      console.log('previewTitle CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      previewR = e.detail
+    })
+
+    addEventListener('SET_STATUSBOX_TITLE', (e) => {
+      console.log('SET_STATUSBOX_TEXT CONNECT WITH PROGRESS BAR IN 2d HUD', e)
+      previewTitle = e.detail
+    })
+
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
       id: "CUSTOM",
       draw: function(e) {
@@ -194,7 +220,7 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         e.font = 'bold 60px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
         // if (previewR != -1) 
-        e.fillText("" + previewR.toString(), 370, 148, 250)
+        e.fillText("" + previewR.toString(), 340, 148, 250)
 
 
         e.fillRect(170, 66, 250, 43)
@@ -208,9 +234,9 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         e.fillText(`maximumroulette.com`, 170, 78, 250, 33)
         e.fillText(`github.com/zlatnaspirala`, 170, 100, 250, 33)
 
-        e.font = 'normal 40px stormfaze'
+        e.font = 'normal 33px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`matrix roulette 1.0 open source GPL v3`, 20, 50, 550, 25)
+        e.fillText(previewTitle, 20, 50, 550, 25)
 
         e.fillStyle = 'rgba(250,250,250,1)';
         e.fillText(`Game status`, 20, 160, 250, 25)
@@ -243,36 +269,46 @@ export function createStatusBoxHUD(nidza, playerInfo) {
 }
 
 export function create2dHUDStatusLine(nidza, status) {
-  var T = status.text;
+
+  try {
+    var T = status.text;
+  } catch(err) {
+    console.error('Secound arg status.text must be instance of MTM class from matrix-engine-plugins')
+    return;
+  }
+
   return new Promise((resolve, reject) => {
     let n = {
       id: "statusBoxLine",
       size: {
-        width: 600,
-        height: 70
+        width: 650,
+        height: 50
       }
     }
-    console.log('STATUS HUD')
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBoxLine');
 
+    addEventListener('SET_STATUS_LINE_TEXT', (e) => {
+      T.fillText(e.detail)
+      // console.log('STATUS LINE')
+    })
+
+    // matrix effect in bg
     const cols = Math.floor(500 / 20) + 1;
     const ypos = Array(cols).fill(0);
 
-    let myStarElement = nidza.access.statusBoxLine.addCustom2dComponent({
+    nidza.access.statusBoxLine.addCustom2dComponent({
       id: "CUSTOM",
       draw: function(e) {
         if(e instanceof CanvasRenderingContext2D == false) return;
 
-        e.fillRect(170, 76, 350, 3)
+        // e.fillRect(0, 2, 550, 2)
         e.textAlign = 'left';
         e.font = 'normal 45px stormfaze'
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`🐲 ${T.text} 🐲`, 10, 30, 550, 60)
+        e.fillText(`☞ ${T.text}🐲`, 10, 31, 550, 60)
 
         e.fillStyle = '#0001';
-        e.fillRect(0, 0, 200, 300);
-
         // Set color to green and font to 15pt monospace in the drawing context
         e.fillStyle = '#0f0';
         e.font = '15pt monospace';
@@ -300,7 +336,7 @@ export function create2dHUDStatusLine(nidza, status) {
       },
       position: {
         x: 30,
-        y: 50
+        y: 40
       },
       dimension: {
         width: 500,
