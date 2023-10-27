@@ -5,6 +5,7 @@ import * as CANNON from 'cannon';
 import {Nidza} from 'nidza';
 import {create2dHUD, createStatusBoxHUD, create2dHUDStatusLine} from "./2d-draw.js";
 import {MTM} from 'matrix-engine-plugins';
+import ClientConfig from "../client-config.js";
 
 export class MatrixRoulette {
   physics = null;
@@ -13,6 +14,7 @@ export class MatrixRoulette {
   tableBet = null;
   wheelSystem = null;
   preventDBTrigger = null;
+
   // Top level vars
   status = {
     text:new MTM('WELCOME MY FRIEND!', { deltaRemove : 1, deltaFill: 40}),
@@ -202,7 +204,8 @@ export class MatrixRoulette {
   }
 
   runVideoChat() {
-    matrixEngine.Engine.activateNet();
+    // Sending class reference
+    matrixEngine.Engine.activateNet(ClientConfig);
 
     var tex = {
       source: ["res/images/field.png"],

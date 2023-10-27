@@ -15,20 +15,6 @@ const RULES = {
   column1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
 }
 
-// const rouletteMapInit = {
-//   TOTAL_BET: 0,
-//   CENTER: {"single0": 0, "single1": 0, "single2": 0, "single3": 0, "single4": 0, "single5": 0, "single6": 0, "single7": 0, "single8": 0, "single9": 0, "single10": 0, "single11": 0, "single12": 0, "single13": 0, "single14": 0, "single15": 0, "single16": 0, "single17": 0, "single18": 0, "single19": 0, "single20": 0, "single21": 0, "single22": 0, "single23": 0, "single24": 0, "single25": 0, "single26": 0, "single27": 0, "single28": 0, "single29": 0, "single30": 0, "single31": 0, "single32": 0, "single33": 0, "single34": 0, "single35": 0, "single36": 0, },
-//   SPLIT: {"s1_2": 0, "s1_4": 0, "s1_0": 0, "s2_0": 0, "s2_3": 0, "s2_5": 0, "s3_0": 0, "s3_6": 0, "s4_5": 0, "s4_7": 0, "s5_6": 0, "s5_8": 0, "s6_9": 0, "s7_8": 0, "s7_10": 0, "s8_9": 0, "s8_11": 0, "s9_12": 0, "s10_11": 0, "s10_13": 0, "s11_12": 0, "s11_14": 0, "s12_15": 0, "s13_14": 0, "s13_16": 0, "s14_15": 0, "s14_17": 0, "s15_18": 0, "s16_17": 0, "s16_19": 0, "s17_18": 0, "s17_20": 0, "s18_21": 0, "s19_20": 0, "s19_22": 0, "s20_21": 0, "s20_23": 0, "s21_24": 0, "s22_23": 0, "s22_25": 0, "s23_24": 0, "s23_26": 0, "s24_27": 0, "s25_26": 0, "s25_28": 0, "s26_27": 0, "s26_29": 0, "s27_30": 0, "s28_29": 0, "s28_31": 0, "s29_30": 0, "s29_32": 0, "s30_33": 0, "s31_32": 0, "s31_34": 0, "s32_33": 0, "s32_35": 0, "s33_36": 0, "s34_35": 0, "s35_36": 0},
-//   CORNER: {"c0_1_2_3": 0, "c1_2_4_5": 0, "c2_3_5_6": 0, "c4_5_7_8": 0, "c5_6_8_9": 0, "c7_8_10_11": 0, "c8_9_11_12": 0, "c10_11_13_14": 0, "c11_12_14_15": 0, "c13_14_16_17": 0, "c14_15_17_18": 0, "c16_17_19_20": 0, "c17_18_20_21": 0, "c19_20_22_23": 0, "c20_21_23_24": 0, "c22_23_25_26": 0, "c23_24_26_27": 0, "c25_26_28_29": 0, "c26_27_29_30": 0, "c28_29_31_32": 0, "c29_30_32_33": 0, "c31_32_34_35": 0, "c32_33_35_36": 0, },
-//   LINE_BET: {"l1_2_3_4_5_6": 0, "l4_5_6_7_8_9": 0, "l7_8_9_10_11_12": 0, "l10_11_12_13_14_15": 0, "l13_14_15_16_17_18": 0, "l16_17_18_19_20_21": 0, "l19_20_21_22_23_24": 0, "l22_23_24_25_26_27": 0, "l25_26_27_28_29_30": 0, "l28_29_30_31_32_33": 0, "l31_32_33_34_35_36": 0, },
-//   STREET: {"street0_1_2": 0, "street0_2_3": 0, "street1_2_3": 0, "street4_5_6": 0, "street7_8_9": 0, "street10_11_12": 0, "street13_14_15": 0, "street16_17_18": 0, "street19_20_21": 0, "street22_23_24": 0, "street25_26_27": 0, "street28_29_30": 0, "street31_32_33": 0, "street34_35_36": 0, },
-//   COLOR: {"red": 0, "black": 0, },
-//   EVEN_ODD: {"even": 0, "odd": 0, },
-//   DOZENS: {"from1_12": 0, "from13_24": 0, "from25_36": 0},
-//   LOW_HIGH: {"low": 0, "high": 0},
-//   COLUMN: {"top_col": 0, "mid_col": 0, "bot_col": 0, },
-// }
-
 /**
  * @description
  * This class used for bet place objects
@@ -67,7 +53,7 @@ export default class TableEvents {
     this.constructSt12()
     this.constructStreets()
     this.constructColumn()
-    this.constructDBStreets()
+    this.constructLine()
 
     // Ground [physics]
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
@@ -238,7 +224,7 @@ export default class TableEvents {
     }
 
     // zero connected
-    var name = 'trio_0_1_2';
+    var name = 'street_0_1_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -266,7 +252,7 @@ export default class TableEvents {
 
     this.registerBetPlaces.push(App.scene[name])
 
-    name = 'trio_0_2_3';
+    name = 'street_0_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -294,7 +280,7 @@ export default class TableEvents {
 
     this.registerBetPlaces.push(App.scene[name])
 
-    name = 'topline_0_1_2_3';
+    name = 'corner0_1_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -827,7 +813,7 @@ export default class TableEvents {
 
   }
 
-  constructDBStreets() {
+  constructLine() {
     var numID = 1;
     var numID2 = 2;
     var numID3 = 3;

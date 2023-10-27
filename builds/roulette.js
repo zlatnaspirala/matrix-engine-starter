@@ -39703,7 +39703,168 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/roulette":60,"matrix-engine":12}],59:[function(require,module,exports){
+},{"./scripts/roulette":61,"matrix-engine":12}],59:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+/**
+ * @description
+ * ClientConfig is config file for client part of networking.
+ */
+class ClientConfig {
+  // Not implemented yet
+  // Free to define what ever -> injectCanvas
+  recordCanvasOption = {
+    injectCanvas: () => document.getElementsByTagName("canvas")[0],
+    frameRequestRate: 30,
+    videoDuration: 20,
+    outputFilename: "record-gameplay.mp4",
+    mineType: "video/mp4",
+    resolutions: '800x600'
+  };
+  /**
+   * @description
+   * Default setup is `dev`.
+   * recommendent to use for local propose LAN ip
+   * like : 192.168.0.XXX if you wanna run ant test app with server.
+   */
+  // domain = "maximumroulette.com";
+
+  domain = "localhost";
+  /**
+   * @description Important note for this property: if you
+   * disable (false) you can't use Account system or any other
+   * network. Use 'false' if you wanna make single player game.
+   * In other way keep it 'true'.
+   */
+
+  showBroadcasterOnInt = true;
+  /**
+   * networkDeepLogs control of dev logs for webRTC context only.
+   */
+
+  networkDeepLogs = false;
+  /**
+   * masterServerKey is channel access id used to connect
+   * multimedia server channel/multiRTC3
+   */
+
+  masterServerKey = "maximumroulette.matrix-engine.roulette";
+  /**
+   * @description
+   * runBroadcasterOnInt load broadcaster
+   */
+
+  runBroadcasterOnInt = true;
+  broadcastAutoConnect = true;
+  /**
+   * @description
+   * broadcasterPort Port used to connect multimedia server MultiRTC3.
+   * I will use it for explicit video chat multiplatform support.
+   * Default value is 999
+   */
+
+  broadcasterPort = 999;
+  /**
+   * @description
+   * broadcaster rtc session init values.
+   * Change it for production regime
+   */
+
+  broadcasterSessionDefaults = {
+    sessionAudio: true,
+    sessionVideo: false,
+    sessionData: true,
+    enableFileSharing: true
+  };
+  /**
+   * @description
+   * Optimal for dev stage.
+   * read more about webRtc protocols.
+   * Recommended: coturn open source project.
+   */
+
+  stunList = ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun.l.google.com:19302?transport=udp"];
+  /**
+   * @description
+   * constructor will save interest data for game platform
+   * For now it is just name of the game. I use it in
+   * pre gameplay UI game selector.
+   */
+
+  constructor() {}
+
+  getRecordCanvasOptions() {
+    return this.recordCanvasOption;
+  }
+
+  getRunBroadcasterOnInt() {
+    return this.runBroadcasterOnInt;
+  }
+
+  didAppUseBroadcast() {
+    return this.appUseBroadcaster;
+  }
+
+  getStunList() {
+    return this.stunList;
+  }
+
+  getBroadcastSockRoute() {
+    return this.getProtocolFromAddressBar() + this.getDomain() + ":" + this.broadcasterPort + "/";
+  }
+
+  getDomain() {
+    // localhost vs prodc domain not works CORS not equal!
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      return window.location.hostname;
+    }
+
+    return this.domain;
+  }
+
+  getBroadcastAutoConnect() {
+    return this.broadcastAutoConnect;
+  }
+
+  getShowBroadcasterOnInt() {
+    return this.showBroadcasterOnInt;
+  }
+
+  getBroadcasterPort() {
+    return this.broadcasterPort;
+  }
+
+  getBroadcasterSessionDefaults() {
+    return this.broadcasterSessionDefaults;
+  }
+
+  getProtocolFromAddressBar() {
+    return location.protocol === "https:" ? "https://" : "http://";
+  }
+
+  setNetworkDeepLog(newState) {
+    this.networkDeepLogs = newState;
+  }
+
+  getNetworkDeepLog() {
+    return this.networkDeepLogs;
+  }
+
+  getMasterServerKey() {
+    return this.masterServerKey;
+  }
+
+}
+
+var _default = ClientConfig;
+exports.default = _default;
+
+},{}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39997,7 +40158,7 @@ function create2dHUDStatusLine(nidza, status) {
   });
 }
 
-},{"../../matrix-slot/scripts/standard-fonts":64,"matrix-engine":12,"matrix-engine-plugins":7}],60:[function(require,module,exports){
+},{"../../matrix-slot/scripts/standard-fonts":65,"matrix-engine":12,"matrix-engine-plugins":7}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40018,6 +40179,8 @@ var _nidza = require("nidza");
 var _dDraw = require("./2d-draw.js");
 
 var _matrixEnginePlugins = require("matrix-engine-plugins");
+
+var _clientConfig = _interopRequireDefault(require("../client-config.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40241,7 +40404,8 @@ class MatrixRoulette {
   }
 
   runVideoChat() {
-    matrixEngine.Engine.activateNet();
+    // Sending class reference
+    matrixEngine.Engine.activateNet(_clientConfig.default);
     var tex = {
       source: ["res/images/field.png"],
       mix_operation: "multiply"
@@ -40568,7 +40732,7 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"./2d-draw.js":59,"./table-events.js":62,"./wheel.js":63,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"nidza":39}],61:[function(require,module,exports){
+},{"../client-config.js":59,"./2d-draw.js":60,"./table-events.js":63,"./wheel.js":64,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"nidza":39}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40683,7 +40847,7 @@ class TableChips {
 
 exports.default = TableChips;
 
-},{"cannon":5,"matrix-engine":12}],62:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":12}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40712,20 +40876,7 @@ const RULES = {
   column3: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
   column2: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
   column1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
-}; // const rouletteMapInit = {
-//   TOTAL_BET: 0,
-//   CENTER: {"single0": 0, "single1": 0, "single2": 0, "single3": 0, "single4": 0, "single5": 0, "single6": 0, "single7": 0, "single8": 0, "single9": 0, "single10": 0, "single11": 0, "single12": 0, "single13": 0, "single14": 0, "single15": 0, "single16": 0, "single17": 0, "single18": 0, "single19": 0, "single20": 0, "single21": 0, "single22": 0, "single23": 0, "single24": 0, "single25": 0, "single26": 0, "single27": 0, "single28": 0, "single29": 0, "single30": 0, "single31": 0, "single32": 0, "single33": 0, "single34": 0, "single35": 0, "single36": 0, },
-//   SPLIT: {"s1_2": 0, "s1_4": 0, "s1_0": 0, "s2_0": 0, "s2_3": 0, "s2_5": 0, "s3_0": 0, "s3_6": 0, "s4_5": 0, "s4_7": 0, "s5_6": 0, "s5_8": 0, "s6_9": 0, "s7_8": 0, "s7_10": 0, "s8_9": 0, "s8_11": 0, "s9_12": 0, "s10_11": 0, "s10_13": 0, "s11_12": 0, "s11_14": 0, "s12_15": 0, "s13_14": 0, "s13_16": 0, "s14_15": 0, "s14_17": 0, "s15_18": 0, "s16_17": 0, "s16_19": 0, "s17_18": 0, "s17_20": 0, "s18_21": 0, "s19_20": 0, "s19_22": 0, "s20_21": 0, "s20_23": 0, "s21_24": 0, "s22_23": 0, "s22_25": 0, "s23_24": 0, "s23_26": 0, "s24_27": 0, "s25_26": 0, "s25_28": 0, "s26_27": 0, "s26_29": 0, "s27_30": 0, "s28_29": 0, "s28_31": 0, "s29_30": 0, "s29_32": 0, "s30_33": 0, "s31_32": 0, "s31_34": 0, "s32_33": 0, "s32_35": 0, "s33_36": 0, "s34_35": 0, "s35_36": 0},
-//   CORNER: {"c0_1_2_3": 0, "c1_2_4_5": 0, "c2_3_5_6": 0, "c4_5_7_8": 0, "c5_6_8_9": 0, "c7_8_10_11": 0, "c8_9_11_12": 0, "c10_11_13_14": 0, "c11_12_14_15": 0, "c13_14_16_17": 0, "c14_15_17_18": 0, "c16_17_19_20": 0, "c17_18_20_21": 0, "c19_20_22_23": 0, "c20_21_23_24": 0, "c22_23_25_26": 0, "c23_24_26_27": 0, "c25_26_28_29": 0, "c26_27_29_30": 0, "c28_29_31_32": 0, "c29_30_32_33": 0, "c31_32_34_35": 0, "c32_33_35_36": 0, },
-//   LINE_BET: {"l1_2_3_4_5_6": 0, "l4_5_6_7_8_9": 0, "l7_8_9_10_11_12": 0, "l10_11_12_13_14_15": 0, "l13_14_15_16_17_18": 0, "l16_17_18_19_20_21": 0, "l19_20_21_22_23_24": 0, "l22_23_24_25_26_27": 0, "l25_26_27_28_29_30": 0, "l28_29_30_31_32_33": 0, "l31_32_33_34_35_36": 0, },
-//   STREET: {"street0_1_2": 0, "street0_2_3": 0, "street1_2_3": 0, "street4_5_6": 0, "street7_8_9": 0, "street10_11_12": 0, "street13_14_15": 0, "street16_17_18": 0, "street19_20_21": 0, "street22_23_24": 0, "street25_26_27": 0, "street28_29_30": 0, "street31_32_33": 0, "street34_35_36": 0, },
-//   COLOR: {"red": 0, "black": 0, },
-//   EVEN_ODD: {"even": 0, "odd": 0, },
-//   DOZENS: {"from1_12": 0, "from13_24": 0, "from25_36": 0},
-//   LOW_HIGH: {"low": 0, "high": 0},
-//   COLUMN: {"top_col": 0, "mid_col": 0, "bot_col": 0, },
-// }
-
+};
 /**
  * @description
  * This class used for bet place objects
@@ -40760,7 +40911,7 @@ class TableEvents {
     this.constructSt12();
     this.constructStreets();
     this.constructColumn();
-    this.constructDBStreets(); // Ground [physics]
+    this.constructLine(); // Ground [physics]
 
     matrixEngine.matrixWorld.world.Add("squareTex", 1, "atable", this.texTableNumbers);
     App.scene.atable.raycast.enabled = false;
@@ -40925,7 +41076,7 @@ class TableEvents {
     } // zero connected
 
 
-    var name = 'trio_0_1_2';
+    var name = 'street_0_1_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -40952,7 +41103,7 @@ class TableEvents {
     };
 
     this.registerBetPlaces.push(App.scene[name]);
-    name = 'trio_0_2_3';
+    name = 'street_0_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -40979,7 +41130,7 @@ class TableEvents {
     };
 
     this.registerBetPlaces.push(App.scene[name]);
-    name = 'topline_0_1_2_3';
+    name = 'corner0_1_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -41512,7 +41663,7 @@ class TableEvents {
     };
   }
 
-  constructDBStreets() {
+  constructLine() {
     var numID = 1;
     var numID2 = 2;
     var numID3 = 3;
@@ -41707,7 +41858,7 @@ class TableEvents {
 
 exports.default = TableEvents;
 
-},{"./table-chips.js":61,"matrix-engine":12}],63:[function(require,module,exports){
+},{"./table-chips.js":62,"matrix-engine":12}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42051,7 +42202,7 @@ class Wheel {
 
 exports.default = Wheel;
 
-},{"cannon":5,"matrix-engine":12}],64:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":12}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

@@ -1,9 +1,10 @@
 # matrix-engine-starter
-
-Test matrix-engine usage with npm service (`npm i matrix-engine`).
+## Objective
+ - Real matrix-engine projects help examples.
+ - Test matrix-engine usage with npm service (`npm i matrix-engine`).
+ 
 I have single package.json file for client and server staff.
-Compiled lib destionation is folder `./builds`
-
+Compiled lib destionation is folder `./builds`.
 
 ### Prerequirement
 
@@ -93,6 +94,11 @@ Implemented skeletal system ~ 20mb data
 
 ### Demo from this repo [matrix-engine-starter]
 
+- https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-roulette/
+- https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-slot/
+- https://maximumroulette.com/apps/matrix-engine-starter/projects/web-anatomy/ WIP
+
+Standard Matrix engine apps/examples:
 - https://maximumroulette.com/apps/matrix-engine-starter/examples.html
 - https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-slot/
 - https://maximumroulette.com/apps/matrix-engine-starter/app-build.html [anatomy]
@@ -115,3 +121,9 @@ https://github.com/zlatnaspirala/matrix-engine
   Modification (optimisation) on origin data
   CCAttribution-Share Alike 2.1 Japan ©
   Nikola Lukic maximumroulette.com
+
+### Licence
+
+ Projects folder `projects/` under licence:
+`GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007`
+All other folders are under `Mit licence`.
