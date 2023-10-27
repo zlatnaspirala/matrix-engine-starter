@@ -17,7 +17,7 @@ export class MatrixRoulette {
 
   // Top level vars
   status = {
-    text:new MTM('WELCOME MY FRIEND!', { deltaRemove : 1, deltaFill: 40}),
+    text: new MTM('WELCOME MY FRIEND!', {deltaRemove: 1, deltaFill: 40}),
     winNumberMomentDelay: 5000,
     cameraView: 'bets',
     game: 'MEDITATE'
@@ -293,6 +293,15 @@ export class MatrixRoulette {
 
   }
 
+  isManual() {
+    if(typeof matrixEngine.utility.QueryString.server == 'undefined' ||
+      matrixEngine.utility.QueryString.server == 'manual') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
@@ -341,8 +350,12 @@ export class MatrixRoulette {
       }
 
       if(ev.detail.hitObject.name == 'manualSpin') {
-        console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name)
-        dispatchEvent(new CustomEvent('SPIN', {detail: {type: 'manual'}}))
+        if(typeof matrixEngine.utility.QueryString.server !== 'undefined' &&
+          matrixEngine.utility.QueryString.server == 'manual') {
+          console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name)
+          dispatchEvent(new CustomEvent('SPIN', {detail: {type: 'manual'}}))
+          return;
+        }
         return;
       }
 
@@ -379,13 +392,23 @@ export class MatrixRoulette {
 
   attachGamePlayEvents() {
 
-    window.addEventListener('matrix.roulette.win.number', (ev) => {
-      // Final winning number
-      console.log('Winning number: ' + ev.detail)
-      setTimeout(() => {
-        this.setupCameraView('bets')
-      }, this.status.winNumberMomentDelay)
-    })
+    if(this.isManual() == true) {
+
+      window.addEventListener('matrix.roulette.win.number', (ev) => {
+        // Final winning number
+        console.log('Winning number: ' + ev.detail)
+        setTimeout(() => {
+          this.setupCameraView('bets')
+        }, this.status.winNumberMomentDelay)
+      })
+
+      addEventListener('SPIN', (e) => {
+        console.log('SPIN PROCEDUTE')
+        addEventListener('camera-view-wheel', this.prepareFire, {passive: true})
+        this.setupCameraView('wheel')
+      })
+
+    }
 
     // ONLY SYNTETIC - ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER
     // IT IS THE PHYSICS REALM
@@ -395,12 +418,6 @@ export class MatrixRoulette {
 
     addEventListener('WAIT_FOR_RESULT', (e) => {
       this.status.game = 'RESULTS';
-    })
-
-    addEventListener('SPIN', (e) => {
-      console.log('SPIN PROCEDUTE')
-      addEventListener('camera-view-wheel', this.prepareFire, {passive: true})
-      this.setupCameraView('wheel')
     })
 
   }

@@ -64,6 +64,30 @@ For Linux/Mac users:
 matrix-network.sh
 ```
 
+### Url parameters:
+<pre>
+ +-----------------------------------------------------------------------------------+
+ |-----------------------------------------------------------------------------------+
+ ||       URLParameter          value          Description                           |
+ +-----------------------------------------------------------------------------------+
+ |                                                                                   |
+ |        ?server=              giveResults    You need to run server:               |
+ |                                             ./scripts/server/node roulette.js     |
+ |                                             Win will be calculated by server      |
+ |                                             return value.No wheel view for now.   |
+ |                                                                                   |
+ |                              manual         Server is used for video chat etc not |
+ |                                             gameplay results.Wheel view is called |
+ |                                                              on SPIN procedure.   |
+ |                                                                                   |
+ |                              initator       Only initator play rela physics other |
+ |                                             playes get results from initator.     |
+ |                                             UNDERCOSTRUCT                         |
+ |                                                                                   |
+ +-----------------------------------------------------------------------------------+
+
+</pre>
+
 ##### Notes
  - Used cannon.js integration for matrix-engine.
  - It is important to run in `https` protocol for production also for localhost!
