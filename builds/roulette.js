@@ -17051,7 +17051,7 @@ exports.net = net;
 let activateNet = CustomConfig => {
   if (typeof _manifest.default.net !== 'undefined' && _manifest.default.net === true) {
     if (typeof CustomConfig !== 'undefined') {
-      var t = new customConfig();
+      var t = new CustomConfig();
     } else {
       var t = new _clientConfig.default();
     }
@@ -40231,6 +40231,10 @@ class MatrixRoulette {
     this.addHUD(this.playerInfo);
     this.runVideoChat();
     this.cameraInMove = false;
+
+    if (this.soundsEnabled() == true) {
+      matrixEngine.App.sounds.createAudio('background', '');
+    }
   }
 
   setupCameraView(type) {
@@ -40496,6 +40500,22 @@ class MatrixRoulette {
     });
   }
 
+  soundsEnabled() {
+    if (typeof matrixEngine.utility.QueryString.sounds == 'undefined' || matrixEngine.utility.QueryString.sounds == 'true') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  isManual() {
+    if (typeof matrixEngine.utility.QueryString.server == 'undefined' || matrixEngine.utility.QueryString.server == 'manual') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
@@ -40544,12 +40564,16 @@ class MatrixRoulette {
       }
 
       if (ev.detail.hitObject.name == 'manualSpin') {
-        console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name);
-        dispatchEvent(new CustomEvent('SPIN', {
-          detail: {
-            type: 'manual'
-          }
-        }));
+        if (typeof matrixEngine.utility.QueryString.server !== 'undefined' && matrixEngine.utility.QueryString.server == 'manual') {
+          console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name);
+          dispatchEvent(new CustomEvent('SPIN', {
+            detail: {
+              type: 'manual'
+            }
+          }));
+          return;
+        }
+
         return;
       }
 
@@ -40588,27 +40612,30 @@ class MatrixRoulette {
   }
 
   attachGamePlayEvents() {
-    window.addEventListener('matrix.roulette.win.number', ev => {
-      // Final winning number
-      console.log('Winning number: ' + ev.detail);
-      setTimeout(() => {
-        this.setupCameraView('bets');
-      }, this.status.winNumberMomentDelay);
-    }); // ONLY SYNTETIC - ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER
+    if (this.isManual() == true) {
+      window.addEventListener('matrix.roulette.win.number', ev => {
+        // Final winning number
+        console.log('Winning number: ' + ev.detail);
+        setTimeout(() => {
+          this.setupCameraView('bets');
+        }, this.status.winNumberMomentDelay);
+      });
+      addEventListener('SPIN', e => {
+        console.log('SPIN PROCEDUTE');
+        addEventListener('camera-view-wheel', this.prepareFire, {
+          passive: true
+        });
+        this.setupCameraView('wheel');
+      });
+    } // ONLY SYNTETIC - ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER
     // IT IS THE PHYSICS REALM
+
 
     addEventListener('MEDITATE_SERVER', e => {
       this.status.game = 'MEDITATE';
     });
     addEventListener('WAIT_FOR_RESULT', e => {
       this.status.game = 'RESULTS';
-    });
-    addEventListener('SPIN', e => {
-      console.log('SPIN PROCEDUTE');
-      addEventListener('camera-view-wheel', this.prepareFire, {
-        passive: true
-      });
-      this.setupCameraView('wheel');
     });
   }
 

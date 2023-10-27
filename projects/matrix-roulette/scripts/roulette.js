@@ -54,6 +54,10 @@ export class MatrixRoulette {
     this.runVideoChat()
 
     this.cameraInMove = false;
+
+    if (this.soundsEnabled() == true) {
+      matrixEngine.App.sounds.createAudio('background', '')
+    }
   }
 
   setupCameraView(type) {
@@ -291,6 +295,15 @@ export class MatrixRoulette {
       })
     })
 
+  }
+
+  soundsEnabled() {
+    if(typeof matrixEngine.utility.QueryString.sounds == 'undefined' ||
+      matrixEngine.utility.QueryString.sounds == 'true') {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   isManual() {
