@@ -80,6 +80,7 @@ export class MatrixRoulette {
 
     if(this.soundsEnabled() == true) {
       matrixEngine.App.sounds.audios.background.play()
+      matrixEngine.App.sounds.audios.background.loop = true;
     }
 
     removeEventListener('click', this.firstClick)
@@ -547,6 +548,16 @@ export class MatrixRoulette {
     App.scene[n].glBlend.blendEnabled = true;
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+
+    App.scene['clearBets'].hoverEffect = (me) => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+    }
+
+    App.scene['clearBets'].hoverLeaveEffect = (me) => {
+      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+    }
 
     if(this.isManual() == true) {
       var n = 'manualSpin';
