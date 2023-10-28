@@ -10,27 +10,23 @@ export default class Wheel {
   ballBody = null;
   speedRollInit = 0.15;
   rollTimer = null;
-
   ballCollideFlag = false;
 
   constructor(pWorld) {
     console.log('wheel constructor')
     this.pWorld = pWorld;
-
     this.texRollWheel = {
       source: ["res/images/ball.png"],
       mix_operation: "multiply",
     };
-
     this.addStaticWheel()
     this.addCenterRoll()
     this.addFields()
-    // this.addBall(0.3, [-5.,-11.4, 3.2], [0,1,0])
     this.animateRoll()
+    addEventListener('fire-ball' , this.fireBall)
   }
 
   orbit(cx, cy, angle, p) {
-
     var s = Math.sin(angle);
     var c = Math.cos(angle);
     p.x -= cx;
@@ -40,22 +36,26 @@ export default class Wheel {
     p.x = xnew + cx;
     p.y = ynew + cy;
     return p;
-
   }
 
   momentOftouch = (e) => {
-    if(typeof e.body.matrixRouletteId === 'undefined') {
-      return;
-    }
+    if(typeof e.body.matrixRouletteId === 'undefined') return;
+
     console.log("Collided with number:", e.body.matrixRouletteId);
+    matrixEngine.App.sounds.play('spiningEnd')
+    matrixEngine.App.sounds.audios.spining.pause();
+    matrixEngine.App.sounds.audios.spining.currentTime = 0;
     dispatchEvent(new CustomEvent('matrix.roulette.win.number', {detail: e.body.matrixRouletteId}))
     this.ballBody.removeEventListener("collide", this.momentOftouch);
     this.ballCollideFlag = false;
+    matrixEngine.App.sounds.audios.spining.pause()
   }
 
   fireBall = (props) => {
-    if (typeof props === 'undefined') props = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
-    roulette.wheelSystem.addBall(props[0], props[1], props[2])
+    if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
+    console.log("props", props.detail)
+    roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2])
+    matrixEngine.App.sounds.play('spining')
     if(this.ballCollideFlag == false) {
       this.ballBody.addEventListener("collide", this.momentOftouch);
       this.ballCollideFlag = true;
@@ -63,7 +63,6 @@ export default class Wheel {
   }
 
   addBall = (j, posArg, force) => {
-
     if(this.ballBody !== null) {
       console.log('Ball already created.')
       this.ballBody.position.set(posArg[0], posArg[1], posArg[2])

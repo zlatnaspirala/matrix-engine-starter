@@ -40267,6 +40267,8 @@ class MatrixRoulette {
       matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3');
       matrixEngine.App.sounds.createAudio('spining', 'res/audios/spining.mp3');
       matrixEngine.App.sounds.createAudio('spiningEnd', 'res/audios/spining-end.mp3');
+      matrixEngine.App.sounds.createAudio('error', 'res/audios/error.mp3');
+      matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3');
       matrixEngine.App.sounds.audios.background.loop = true;
       matrixEngine.App.sounds.audios.background.play();
     }
@@ -40670,7 +40672,10 @@ class MatrixRoulette {
   prepareFire() {
     setTimeout(() => {
       // clear double call
-      roulette.wheelSystem.fireBall();
+      // roulette.wheelSystem.fireBall()
+      dispatchEvent(new CustomEvent('fire-ball', {
+        detail: [0.3, [4., -11.4, 3], [-13000, 220, 11]]
+      }));
       removeEventListener('camera-view-wheel', this.prepareFire);
     }, this.status.winNumberMomentDelay);
   }
@@ -40770,30 +40775,33 @@ class MatrixRoulette {
     App.scene[n].glBlend.blendEnabled = true;
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
-    var n = 'manualSpin';
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
-      source: ["res/images/spin.png"],
-      mix_operation: "multiply"
-    });
-    App.scene[n].position.SetY(-1.9);
-    App.scene[n].position.SetZ(7);
-    App.scene[n].position.SetX(0);
-    App.scene[n].rotation.rotx = -90;
-    App.scene[n].geometry.setScaleByX(0.83);
-    App.scene[n].geometry.setScaleByY(0.5);
-    App.scene[n].glBlend.blendEnabled = true;
-    App.scene['manualSpin'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-    App.scene['manualSpin'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
 
-    App.scene['manualSpin'].hoverEffect = me => {
-      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-    };
+    if (this.isManual() == true) {
+      var n = 'manualSpin';
+      matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
+        source: ["res/images/spin.png"],
+        mix_operation: "multiply"
+      });
+      App.scene[n].position.SetY(-1.9);
+      App.scene[n].position.SetZ(7);
+      App.scene[n].position.SetX(0);
+      App.scene[n].rotation.rotx = -90;
+      App.scene[n].geometry.setScaleByX(0.83);
+      App.scene[n].geometry.setScaleByY(0.5);
+      App.scene[n].glBlend.blendEnabled = true;
+      App.scene['manualSpin'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+      App.scene['manualSpin'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
 
-    App.scene['manualSpin'].hoverLeaveEffect = me => {
-      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
-    };
+      App.scene['manualSpin'].hoverEffect = me => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+      };
+
+      App.scene['manualSpin'].hoverLeaveEffect = me => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+      };
+    }
   }
 
   addHUDStatus() {
@@ -40864,10 +40872,10 @@ class TableChips {
             roulette.status.text.fillText('Played on ' + e.detail.name);
 
             if (roulette.soundsEnabled() == true) {
-              matrixEngine.App.sounds.audios.chip.play();
+              matrixEngine.App.sounds.play('chip');
             }
 
-            console.log('Add chip roulette.status.game  =>', roulette.status.game);
+            console.log('Add chip game status =>', roulette.status.game);
           } else {
             console.log('Add chip PREVENT MODE WAIT_FOR_RESULTS');
           }
@@ -40879,6 +40887,7 @@ class TableChips {
       dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {
         detail: '✫CLEAR BETS✫'
       }));
+      matrixEngine.App.sounds.play('clear');
     });
   }
 
@@ -41995,9 +42004,9 @@ class Wheel {
     };
     this.addStaticWheel();
     this.addCenterRoll();
-    this.addFields(); // this.addBall(0.3, [-5.,-11.4, 3.2], [0,1,0])
-
+    this.addFields();
     this.animateRoll();
+    addEventListener('fire-ball', this.fireBall);
   }
 
   orbit(cx, cy, angle, p) {
@@ -42013,20 +42022,23 @@ class Wheel {
   }
 
   momentOftouch = e => {
-    if (typeof e.body.matrixRouletteId === 'undefined') {
-      return;
-    }
-
+    if (typeof e.body.matrixRouletteId === 'undefined') return;
     console.log("Collided with number:", e.body.matrixRouletteId);
+    matrixEngine.App.sounds.play('spiningEnd');
+    matrixEngine.App.sounds.audios.spining.pause();
+    matrixEngine.App.sounds.audios.spining.currentTime = 0;
     dispatchEvent(new CustomEvent('matrix.roulette.win.number', {
       detail: e.body.matrixRouletteId
     }));
     this.ballBody.removeEventListener("collide", this.momentOftouch);
     this.ballCollideFlag = false;
+    matrixEngine.App.sounds.audios.spining.pause();
   };
   fireBall = props => {
-    if (typeof props === 'undefined') props = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
-    roulette.wheelSystem.addBall(props[0], props[1], props[2]);
+    if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
+    console.log("props", props.detail);
+    roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2]);
+    matrixEngine.App.sounds.play('spining');
 
     if (this.ballCollideFlag == false) {
       this.ballBody.addEventListener("collide", this.momentOftouch);

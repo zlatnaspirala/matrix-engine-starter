@@ -57,26 +57,28 @@ export class MatrixRoulette {
 
     this.cameraInMove = false;
 
-    if (this.soundsEnabled() == true) {
+    if(this.soundsEnabled() == true) {
 
       matrixEngine.App.sounds.createAudio('background', 'res/audios/mellow_club_vibe-stargazer_jazz.mp3')
       matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3')
       matrixEngine.App.sounds.createAudio('spining', 'res/audios/spining.mp3')
       matrixEngine.App.sounds.createAudio('spiningEnd', 'res/audios/spining-end.mp3')
+      matrixEngine.App.sounds.createAudio('error', 'res/audios/error.mp3')
+      matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3')
 
       matrixEngine.App.sounds.audios.background.loop = true
       matrixEngine.App.sounds.audios.background.play()
 
     }
 
-    if (this.isManual() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', { detail: 'manual'}))
-    if (this.serverGiveResults()== true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', { detail: 'server'}))
+    if(this.isManual() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'manual'}))
+    if(this.serverGiveResults() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'server'}))
 
   }
 
   firstClick = (e) => {
 
-    if (this.soundsEnabled() == true) {
+    if(this.soundsEnabled() == true) {
       matrixEngine.App.sounds.audios.background.play()
     }
 
@@ -319,7 +321,7 @@ export class MatrixRoulette {
     })
 
     // hide netoworking div
-    setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display='none' , 2200)
+    setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200)
   }
 
   soundsEnabled() {
@@ -401,7 +403,7 @@ export class MatrixRoulette {
       if(ev.detail.hitObject.name == 'manualSpin') {
         if(typeof matrixEngine.utility.QueryString.server !== 'undefined' &&
           matrixEngine.utility.QueryString.server == 'manual') {
-          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', { detail: 'SPINNING'}))
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'SPINNING'}))
           console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name)
           dispatchEvent(new CustomEvent('SPIN', {detail: {type: 'manual'}}))
           return;
@@ -435,7 +437,9 @@ export class MatrixRoulette {
   prepareFire() {
     setTimeout(() => {
       // clear double call
-      roulette.wheelSystem.fireBall()
+      // roulette.wheelSystem.fireBall()
+      dispatchEvent(new CustomEvent('fire-ball', {detail: [0.3, [4., -11.4, 3], [-13000, 220, 11]]}))
+
       removeEventListener('camera-view-wheel', this.prepareFire)
     }, this.status.winNumberMomentDelay)
   }
@@ -544,32 +548,32 @@ export class MatrixRoulette {
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
 
+    if(this.isManual() == true) {
+      var n = 'manualSpin';
+      matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
+        source: ["res/images/spin.png"],
+        mix_operation: "multiply",
+      });
+      App.scene[n].position.SetY(-1.9);
+      App.scene[n].position.SetZ(7);
+      App.scene[n].position.SetX(0);
+      App.scene[n].rotation.rotx = -90;
+      App.scene[n].geometry.setScaleByX(0.83)
+      App.scene[n].geometry.setScaleByY(0.5)
+      App.scene[n].glBlend.blendEnabled = true;
+      App.scene['manualSpin'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+      App.scene['manualSpin'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
 
-    var n = 'manualSpin';
-    matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
-      source: ["res/images/spin.png"],
-      mix_operation: "multiply",
-    });
-    App.scene[n].position.SetY(-1.9);
-    App.scene[n].position.SetZ(7);
-    App.scene[n].position.SetX(0);
-    App.scene[n].rotation.rotx = -90;
-    App.scene[n].geometry.setScaleByX(0.83)
-    App.scene[n].geometry.setScaleByY(0.5)
-    App.scene[n].glBlend.blendEnabled = true;
-    App.scene['manualSpin'].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-    App.scene['manualSpin'].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+      App.scene['manualSpin'].hoverEffect = (me) => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+      }
 
-    App.scene['manualSpin'].hoverEffect = (me) => {
-      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+      App.scene['manualSpin'].hoverLeaveEffect = (me) => {
+        me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+        me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+      }
     }
-
-    App.scene['manualSpin'].hoverLeaveEffect = (me) => {
-      me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-      me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
-    }
-
   }
 
   addHUDStatus() {

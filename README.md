@@ -84,6 +84,8 @@ matrix-network.sh
  |                                             playes get results from initator.     |
  |                                             UNDERCOSTRUCT                         |
  |                                                                                   |
+ |        &sounds=              true           Sounds are active only if url param   |
+ |                                             is true.                              |
  +-----------------------------------------------------------------------------------+
 
 </pre>

@@ -28,10 +28,10 @@ export default class TableChips {
             this.addChip(e.detail);
             roulette.status.text.fillText('Played on ' + e.detail.name)
 
-            if (roulette.soundsEnabled() == true) {
-              matrixEngine.App.sounds.audios.chip.play()
+            if(roulette.soundsEnabled() == true) {
+              matrixEngine.App.sounds.play('chip')
             }
-            console.log('Add chip roulette.status.game  =>', roulette.status.game)
+            console.log('Add chip game status =>', roulette.status.game)
           } else {
             console.log('Add chip PREVENT MODE WAIT_FOR_RESULTS')
           }
@@ -42,6 +42,7 @@ export default class TableChips {
     addEventListener("clear-chips", (e) => {
       this.clearAll()
       dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {detail: '✫CLEAR BETS✫'}))
+      matrixEngine.App.sounds.play('clear')
     })
 
   }
@@ -104,6 +105,6 @@ export default class TableChips {
 
       delete array[index];
     })
-    
+
   }
 }
