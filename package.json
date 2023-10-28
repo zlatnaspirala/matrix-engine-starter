@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "examples": "watchify App-Examples.js -p [esmify --noImplicitAny] -o builds/examples.me.js",
-    "app": "watchify App.js -p [esmify --noImplicitAny] -o builds/app.js",
+    "anatomy": "watchify App.js -p [esmify --noImplicitAny] -o builds/app.js",
     "slot": "watchify projects/matrix-slot/App.js -p [esmify --noImplicitAny] -o builds/slot.js",
     "roulette": "watchify projects/matrix-roulette/App.js -p [esmify --noImplicitAny] -o builds/roulette.js",
     "build.roulette": "browserify projects/matrix-roulette/App.js -p esmify > builds/roulette.js",
