@@ -60,5 +60,49 @@ export function createNidzaHudBalance(nidza, statusText, TEXTS, TEXTSHOVERS) {
     nidza.access.statusLine.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
     resolve(texCanvas)
   });
+}
+
+  /**
+ * @description 
+ * Status text
+ */
+export function createHudBtnRotZ(nidza) {
+  return new Promise((resolve, reject) => {
+    let n = {
+      id: "cmdRotZ",
+      size: {
+        width: 150,
+        height: 50
+      }
+    };
+    var cmdRotZ = nidza.createNidzaIndentity(n);
+    let texCanvas = document.getElementById('cmdRotZ');
+    nidza.access.cmdRotZ.addCustom2dComponent({
+      id: "CUSTOM",
+      draw: function(e) {
+        if(e instanceof CanvasRenderingContext2D == false) return;
+        e.fillStyle = 'rgba(5,5,140,40)';
+        e.fillRect(0, 2, 550, 2)
+
+        e.textAlign = 'left';
+        e.font = 'normal 44px stormfaze'
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`ROTZ`, 0, 25, 150, 30)
+      },
+      position: {
+        x: 30,
+        y: 40
+      },
+      dimension: {
+        width: 500,
+        height:250
+      }
+    });
+
+    nidza.access.cmdRotZ.elements[0].activeDraw()
+    nidza.access.cmdRotZ.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    resolve(texCanvas)
+  });
+
 
 }

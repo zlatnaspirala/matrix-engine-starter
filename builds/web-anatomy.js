@@ -39819,6 +39819,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createNidzaHudBalance = createNidzaHudBalance;
+exports.createHudBtnRotZ = createHudBtnRotZ;
 
 var _standardFonts = require("./standard-fonts");
 
@@ -39878,6 +39879,48 @@ function createNidzaHudBalance(nidza, statusText, TEXTS, TEXTSHOVERS) {
     });
     nidza.access.statusLine.elements[0].activeDraw();
     nidza.access.statusLine.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    resolve(texCanvas);
+  });
+}
+/**
+* @description 
+* Status text
+*/
+
+
+function createHudBtnRotZ(nidza) {
+  return new Promise((resolve, reject) => {
+    let n = {
+      id: "cmdRotZ",
+      size: {
+        width: 150,
+        height: 50
+      }
+    };
+    var cmdRotZ = nidza.createNidzaIndentity(n);
+    let texCanvas = document.getElementById('cmdRotZ');
+    nidza.access.cmdRotZ.addCustom2dComponent({
+      id: "CUSTOM",
+      draw: function (e) {
+        if (e instanceof CanvasRenderingContext2D == false) return;
+        e.fillStyle = 'rgba(5,5,140,40)';
+        e.fillRect(0, 2, 550, 2);
+        e.textAlign = 'left';
+        e.font = 'normal 44px stormfaze';
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`ROTZ`, 0, 25, 150, 30);
+      },
+      position: {
+        x: 30,
+        y: 40
+      },
+      dimension: {
+        width: 500,
+        height: 250
+      }
+    });
+    nidza.access.cmdRotZ.elements[0].activeDraw();
+    nidza.access.cmdRotZ.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
     resolve(texCanvas);
   });
 }
@@ -40346,6 +40389,20 @@ let loadSystemSkeletal = (App, world) => {
         App.scene[id].position.y = 0;
         App.scene[id].rotation.rotx = 90;
         App.scene[id].rotation.roty = 0;
+        App.scene[id].glBlend.blendEnabled = true;
+        App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+        App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+
+        App.scene[id].hoverEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+        };
+
+        App.scene[id].hoverLeaveEffect = me => {
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+        };
+
         h.push(App.scene[id]);
         resolve(h); // App.scene[id].rotation.rotz = 0;
         // App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
@@ -40401,7 +40458,7 @@ class WebAnatomy {
     this.skeletalSystem = null;
     App.camera.SceneController = true; // Make it adaptive for blender exported data.
 
-    App.camera.speedAmp = 1;
+    App.camera.speedAmp = 0.1;
     App.camera.sceneControllerDragAmp = 3.3;
     matrixEngine.Events.camera.zPos = 140;
     matrixEngine.Events.camera.yPos = 40; // inject voice commander
@@ -40413,7 +40470,7 @@ class WebAnatomy {
       deltaRemove: 1,
       deltaFill: 40
     });
-    this.statusText1 = new _matrixEnginePlugins.MTM('--L-O-A-D-I-N-G--S-K-E-L-E-T-A-L--', {
+    this.statusText1 = new _matrixEnginePlugins.MTM('-L-O-A-D-I-N-G--S-K-E-L-E-T-A-L-', {
       deltaRemove: 1,
       deltaFill: 1
     });
@@ -40424,13 +40481,13 @@ class WebAnatomy {
       text: ' - 💀 Skeletal System []'
     };
     this.statusText4 = {
-      text: '------------------------'
+      text: ''
     };
     this.statusText5 = {
       text: 'Based on matrix-engine'
     };
     this.statusText6 = {
-      text: 'Licence GLPv3'
+      text: '@zlatnaspirala'
     };
     this.statusText7 = {
       text: 'maximumroulette.com'
@@ -40453,6 +40510,17 @@ class WebAnatomy {
     App.scene.topHeader.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     this.createNidzaHudBalance(this.nidza, this.statusText, TESTARRAY, TESTARRAYHOVER).then(canvas2d => {
       App.scene.topHeader.streamTextures = {
+        videoImage: canvas2d
+      };
+    });
+    world.Add("squareTex", 1, "cmdRotZ", texTopHeader);
+    App.scene.cmdRotZ.geometry.setScaleByX(4);
+    App.scene.cmdRotZ.geometry.setScaleByY(-3);
+    App.scene.cmdRotZ.position.z = 21;
+    App.scene.cmdRotZ.position.x = -20;
+    App.scene.cmdRotZ.position.y = 40;
+    (0, _activeTextures.createHudBtnRotZ)(this.nidza, this.statusText, TESTARRAY, TESTARRAYHOVER).then(canvas2d => {
+      App.scene.cmdRotZ.streamTextures = {
         videoImage: canvas2d
       };
     });
@@ -40541,25 +40609,36 @@ class WebAnatomy {
         App.scene.topHeader.position.translateByXY(48, 75);
         setTimeout(() => {
           console.log('TEST this.statusText1 ', this.statusText1.fillText);
-          this.statusText1.blocker = false;
-          this.statusText1.fillText('Skeletal parts:');
+          this.statusText1.blocker = false; // this.statusText1.fillText('Skeletal parts:')
+
+          this.statusText1.text = 'Skeletal parts:';
         }, 1000);
       }, 3000);
     });
   };
   addRaycaster = () => {
-    window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
-      var r = matrixEngineRaycastEvent.detail.hitObject.name;
-      console.log("details > ", r); // this.statusText2.fillText(r)
-
+    var LAST_HOVER = null;
+    window.addEventListener("ray.hit.event", ev => {
+      var r = ev.detail.hitObject.name;
       this['statusText7'].text = this['statusText6'].text;
+
+      if (ev.detail.hitObject.hoverEffect) {
+        if (LAST_HOVER != null && LAST_HOVER.name != ev.detail.hitObject.name) {
+          LAST_HOVER.hoverLeaveEffect(LAST_HOVER);
+        } else {
+          ev.detail.hitObject.hoverEffect(ev.detail.hitObject);
+        }
+
+        LAST_HOVER = ev.detail.hitObject;
+      }
+
       this['statusText6'].text = this['statusText5'].text;
       this['statusText5'].text = this['statusText4'].text;
       this['statusText4'].text = this['statusText3'].text;
       this['statusText3'].text = this['statusText2'].text;
       this['statusText2'].text = r;
     });
-    canvas.addEventListener("mousedown", ev => {
+    canvas.addEventListener("mousemove", ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
   };

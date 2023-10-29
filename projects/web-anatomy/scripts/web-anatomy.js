@@ -1,11 +1,12 @@
 import * as matrixEngine from "matrix-engine";
 import {planeFont, planeUVFont} from "matrix-engine-plugins";
 import {startSpin, stopSpin} from "./matrix-audio";
-import {createNidzaHudBalance} from "./active-textures";
+import {createNidzaHudBalance, createHudBtnRotZ} from "./active-textures";
 import {Nidza} from "nidza";
 import {beep} from "./audio-gen";
 import {loadSystemSkeletal} from "./systems/skeletal";
 import {MTM} from 'matrix-engine-plugins';
+
 
 let OSC = matrixEngine.utility.OSCILLATOR;
 let App = matrixEngine.App;
@@ -20,7 +21,7 @@ export default class WebAnatomy {
 
     App.camera.SceneController = true;
     // Make it adaptive for blender exported data.
-    App.camera.speedAmp = 1;
+    App.camera.speedAmp = 0.1;
     App.camera.sceneControllerDragAmp = 3.3;
     matrixEngine.Events.camera.zPos = 140;
     matrixEngine.Events.camera.yPos = 40;
@@ -30,14 +31,14 @@ export default class WebAnatomy {
     this.nidza = new Nidza();
     this.createNidzaHudBalance = createNidzaHudBalance;
     this.statusText = new MTM('Matrix Anatomy', {deltaRemove: 1, deltaFill: 40})
-    this.statusText1 = new MTM('--L-O-A-D-I-N-G--S-K-E-L-E-T-A-L--', {deltaRemove: 1, deltaFill: 1})
+    this.statusText1 = new MTM('-L-O-A-D-I-N-G--S-K-E-L-E-T-A-L-', {deltaRemove: 1, deltaFill: 1})
 
-    this.statusText2 = { text: 'Supported:'}
-    this.statusText3 = { text: ' - 💀 Skeletal System []'}
-    this.statusText4 = { text: '------------------------'}
-    this.statusText5 = { text: 'Based on matrix-engine'}
-    this.statusText6 = { text: 'Licence GLPv3'}
-    this.statusText7 = { text: 'maximumroulette.com'}
+    this.statusText2 = {text: 'Supported:'}
+    this.statusText3 = {text: ' - 💀 Skeletal System []'}
+    this.statusText4 = {text: ''}
+    this.statusText5 = {text: 'Based on matrix-engine'}
+    this.statusText6 = {text: '@zlatnaspirala'}
+    this.statusText7 = {text: 'maximumroulette.com'}
 
     var TESTARRAY = [this.statusText1]
     var TESTARRAYHOVER = [this.statusText2, this.statusText3, this.statusText4, this.statusText5, this.statusText6, this.statusText7]
@@ -64,6 +65,19 @@ export default class WebAnatomy {
         videoImage: canvas2d
       }
     })
+
+    world.Add("squareTex", 1, "cmdRotZ", texTopHeader);
+    App.scene.cmdRotZ.geometry.setScaleByX(4);
+    App.scene.cmdRotZ.geometry.setScaleByY(-3);
+    App.scene.cmdRotZ.position.z = 21;
+    App.scene.cmdRotZ.position.x = -20;
+    App.scene.cmdRotZ.position.y = 40;
+    createHudBtnRotZ(this.nidza, this.statusText, TESTARRAY, TESTARRAYHOVER).then((canvas2d) => {
+      App.scene.cmdRotZ.streamTextures = {
+        videoImage: canvas2d
+      }
+    })
+
 
     this.addAnatomySystems(world);
     this.addRaycaster();
@@ -136,35 +150,39 @@ export default class WebAnatomy {
     loadSystemSkeletal(App, world).then((skeletal) => {
       this.skeletalSystem = skeletal;
       console.info("Anatomy is constructed.");
-      setTimeout(()=>{
-        App.scene.topHeader.position.translateByXY(48,75)
-        setTimeout(()=> {
+      setTimeout(() => {
+        App.scene.topHeader.position.translateByXY(48, 75)
+        setTimeout(() => {
           console.log('TEST this.statusText1 ', this.statusText1.fillText)
           this.statusText1.blocker = false;
-          this.statusText1.fillText('Skeletal parts:')
+          // this.statusText1.fillText('Skeletal parts:')
+          this.statusText1.text = 'Skeletal parts:'
         }, 1000)
       }, 3000)
     });
   };
 
   addRaycaster = () => {
-
-    window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
-
-      var r = matrixEngineRaycastEvent.detail.hitObject.name;
-      console.log("details > ", r);
-      // this.statusText2.fillText(r)
-        this['statusText7'].text =  this['statusText6'].text;
-        this['statusText6'].text =  this['statusText5'].text;
-        this['statusText5'].text =  this['statusText4'].text;
-        this['statusText4'].text =  this['statusText3'].text;
-         this['statusText3'].text = this['statusText2'].text;
-         this['statusText2'].text = r;
-
-
+    var LAST_HOVER = null;
+    window.addEventListener("ray.hit.event", ev => {
+      var r = ev.detail.hitObject.name;
+      this['statusText7'].text = this['statusText6'].text;
+      if(ev.detail.hitObject.hoverEffect) {
+        if(LAST_HOVER != null && LAST_HOVER.name != ev.detail.hitObject.name) {
+          LAST_HOVER.hoverLeaveEffect(LAST_HOVER)
+        } else {
+          ev.detail.hitObject.hoverEffect(ev.detail.hitObject)
+        }
+        LAST_HOVER = ev.detail.hitObject;
+      }
+      this['statusText6'].text = this['statusText5'].text;
+      this['statusText5'].text = this['statusText4'].text;
+      this['statusText4'].text = this['statusText3'].text;
+      this['statusText3'].text = this['statusText2'].text;
+      this['statusText2'].text = r;
     });
 
-    canvas.addEventListener("mousedown", ev => {
+    canvas.addEventListener("mousemove", ev => {
       matrixEngine.raycaster.checkingProcedure(ev);
     });
   };
@@ -211,21 +229,21 @@ export default class WebAnatomy {
   changeRotY = (a) => {
     for(let key in App.scene) {
       if(App.scene[key].name.indexOf("s_") !== -1) {
-        App.scene[key].rotation.roty =  a;
+        App.scene[key].rotation.roty = a;
       }
     }
   }
   changeRotX = (a) => {
     for(let key in App.scene) {
       if(App.scene[key].name.indexOf("s_") !== -1) {
-        App.scene[key].rotation.rotx =  a;
+        App.scene[key].rotation.rotx = a;
       }
     }
   }
   changeRotZ = (a) => {
     for(let key in App.scene) {
       if(App.scene[key].name.indexOf("s_") !== -1) {
-        App.scene[key].rotation.rotz =  a;
+        App.scene[key].rotation.rotz = a;
       }
     }
   }
@@ -236,6 +254,6 @@ export default class WebAnatomy {
         App.scene[key].glDrawElements.mode = a;
       }
     }
-    
+
   }
 }
