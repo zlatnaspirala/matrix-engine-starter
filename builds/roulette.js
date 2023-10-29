@@ -24354,7 +24354,9 @@ _manifest.default.operation.CameraPerspective = function () {
 };
 
 var callReDraw_ = function () {
-  requestAnimationFrame(_matrixWorld.reDraw);
+  setTimeout(function () {
+    (0, _matrixWorld.reDraw)();
+  }, 60); // requestAnimationFrame(reDraw);
 };
 
 exports.callReDraw_ = callReDraw_;

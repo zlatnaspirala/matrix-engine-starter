@@ -17,7 +17,7 @@ import WebAnatomy from "./scripts/web-anatomy";
 // // Activate listen operation
 // VoiceCommanderInstance.run();
 
-var world, mashine;
+var world;
 var App = matrixEngine.App;
 
 App.webAnatomy = {};

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "examples": "watchify App-Examples.js -p [esmify --noImplicitAny] -o builds/examples.me.js",
-    "anatomy": "watchify App.js -p [esmify --noImplicitAny] -o builds/app.js",
+    "anatomy": "watchify projects/web-anatomy/App.js -p [esmify --noImplicitAny] -o builds/web-anatomy.js",
     "slot": "watchify projects/matrix-slot/App.js -p [esmify --noImplicitAny] -o builds/slot.js",
     "roulette": "watchify projects/matrix-roulette/App.js -p [esmify --noImplicitAny] -o builds/roulette.js",
     "build.roulette": "browserify projects/matrix-roulette/App.js -p esmify > builds/roulette.js",
@@ -50,7 +50,8 @@
     "web-anatomy",
     "3d-roulette",
     "3d-roulette-webgl",
-    "3d-roulette-real-physics"
+    "3d-roulette-real-physics",
+    "web-anatomy"
   ],
   "author": "Nikola Lukic zlatnaspirala",
   "license": "MIT",

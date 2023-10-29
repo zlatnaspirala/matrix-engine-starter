@@ -5,6 +5,7 @@ import {createNidzaHudBalance} from "./active-textures";
 import {Nidza} from "nidza";
 import {beep} from "./audio-gen";
 import {loadSystemSkeletal} from "./systems/skeletal";
+import {MTM} from 'matrix-engine-plugins';
 
 let OSC = matrixEngine.utility.OSCILLATOR;
 let App = matrixEngine.App;
@@ -15,18 +16,54 @@ export default class WebAnatomy {
     this.config = config;
     this.world = world;
 
-    // Slot status general
-    // this.status = "free";
+    this.skeletalSystem = null;
 
     App.camera.SceneController = true;
+    // Make it adaptive for blender exported data.
+    App.camera.speedAmp = 1;
+    App.camera.sceneControllerDragAmp = 3.3;
+    matrixEngine.Events.camera.zPos = 140;
+    matrixEngine.Events.camera.yPos = 40;
 
     // inject voice commander
     this.vc = {};
-
     this.nidza = new Nidza();
-    // this.createNidzaTextureText = createNidzaTextureText;
-    // this.createNidzaHudLinesInfo = createNidzaHudLinesInfo;
     this.createNidzaHudBalance = createNidzaHudBalance;
+    this.statusText = new MTM('Matrix Anatomy', {deltaRemove: 1, deltaFill: 40})
+    this.statusText1 = new MTM('--L-O-A-D-I-N-G--S-K-E-L-E-T-A-L--', {deltaRemove: 1, deltaFill: 1})
+
+    this.statusText2 = { text: 'Supported:'}
+    this.statusText3 = { text: ' - 💀 Skeletal System []'}
+    this.statusText4 = { text: '------------------------'}
+    this.statusText5 = { text: 'Based on matrix-engine'}
+    this.statusText6 = { text: 'Licence GLPv3'}
+    this.statusText7 = { text: 'maximumroulette.com'}
+
+    var TESTARRAY = [this.statusText1]
+    var TESTARRAYHOVER = [this.statusText2, this.statusText3, this.statusText4, this.statusText5, this.statusText6, this.statusText7]
+
+    var texTopHeader = {
+      source: ["res/images/metal.jpg"],
+      mix_operation: "multiply",
+    };
+
+    world.Add("squareTex", 1, "topHeader", texTopHeader);
+    App.scene.topHeader.geometry.setScaleByX(30);
+    App.scene.topHeader.geometry.setScaleByY(-20);
+    App.scene.topHeader.position.z = 21;
+    App.scene.topHeader.position.x = 10;
+    App.scene.topHeader.position.y = 40;
+    App.scene.topHeader.position.thrust = 15.2;
+
+    App.scene.topHeader.glBlend.blendEnabled = true;
+    App.scene.topHeader.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[6];
+    App.scene.topHeader.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+
+    this.createNidzaHudBalance(this.nidza, this.statusText, TESTARRAY, TESTARRAYHOVER).then((canvas2d) => {
+      App.scene.topHeader.streamTextures = {
+        videoImage: canvas2d
+      }
+    })
 
     this.addAnatomySystems(world);
     this.addRaycaster();
@@ -36,9 +73,7 @@ export default class WebAnatomy {
         console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
       }
     }
-
   }
-
 
   /**
    * @description
@@ -98,56 +133,35 @@ export default class WebAnatomy {
   }
 
   addAnatomySystems = function(world) {
-
-    // Make it natural
-    App.camera.speedAmp = 0.001;
-    App.camera.sceneControllerDragAmp = 0.2;
-    let OSCILLATOR = matrixEngine.utility.OSCILLATOR;
-    var oscilltor_variable = new OSCILLATOR(0.1, 3, 0.004);
-
-    var texTopHeader = {
-      source: ["res/images/metal.jpg"],
-      mix_operation: "multiply",
-    };
-
-    // var texMenu = {
-    //   source: ["res/images/metal-half.jpg"],
-    //   mix_operation: "multiply",
-    // };
-
-    // world.Add("squareTex", 1, "topHeader", texTopHeader);
-    // App.scene.topHeader.geometry.setScaleByX(4);
-    // App.scene.topHeader.geometry.setScaleByY(2.9);
-    // App.scene.topHeader.position.SetY(5)
-    // App.scene.topHeader.position.z = -6.5;
-
-    // App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
-    // App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
-    // App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
-    // App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
-    // App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
-    // App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
-    // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
-    // App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
- 
-    console.log("nidza component setup dimensions...", this.nidza);
-    loadSystemSkeletal(App, world);
-    // this.incraseNumOfDrawInstance();
-    console.info("Anatomy is constructed.");
-    console.info(
-      "Mashine is constructed. after 2 secunds open gate start up animation."
-    );
+    loadSystemSkeletal(App, world).then((skeletal) => {
+      this.skeletalSystem = skeletal;
+      console.info("Anatomy is constructed.");
+      setTimeout(()=>{
+        App.scene.topHeader.position.translateByXY(48,75)
+        setTimeout(()=> {
+          console.log('TEST this.statusText1 ', this.statusText1.fillText)
+          this.statusText1.blocker = false;
+          this.statusText1.fillText('Skeletal parts:')
+        }, 1000)
+      }, 3000)
+    });
   };
 
   addRaycaster = () => {
+
     window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
-      console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
+
       var r = matrixEngineRaycastEvent.detail.hitObject.name;
-      if(r == "spinBtn") {
-        this.activateSpinning();
-      } else if(r.indexOf("wheel") != -1) {
-        this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
-      }
+      console.log("details > ", r);
+      // this.statusText2.fillText(r)
+        this['statusText7'].text =  this['statusText6'].text;
+        this['statusText6'].text =  this['statusText5'].text;
+        this['statusText5'].text =  this['statusText4'].text;
+        this['statusText4'].text =  this['statusText3'].text;
+         this['statusText3'].text = this['statusText2'].text;
+         this['statusText2'].text = r;
+
+
     });
 
     canvas.addEventListener("mousedown", ev => {
@@ -156,34 +170,72 @@ export default class WebAnatomy {
   };
 
   changeGlBlend = (src, dest, rot) => {
-    
-    for (let key in App.scene) {
-      if (App.scene[key].name.indexOf("skeletal_") !== -1) {
-
-      // still must be called with method - SCALE for OBJ Mesh
-      // App.scene[id].mesh.setScale(-0.01)
-      // App.scene[key].glBlend.blendEnabled = true;
-      // App.scene[id].position.y =  2;
-
-      App.scene[key].rotation.rotx = rot.x;
-      App.scene[key].rotation.roty = rot.y;
-      App.scene[key].rotation.rotz = rot.z;
-
-      //App.scene[key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[src];
-      //App.scene[key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[dest];
-    }
-  }
-
-  setInterval(function () {
-    for (let key in App.scene) {
-      if (App.scene[key].name.indexOf("skeletal_") !== -1) {
-    App.scene.MyCubeTex.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
-    App.scene.MyCubeTex.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+    for(let key in App.scene) {
+      if(App.scene[key].name.indexOf("s_") !== -1) {
+        App.scene[key].glBlend.blendEnabled = true;
+        // App.scene[id].position.y =  2;
+        App.scene[key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[src];
+        App.scene[key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[dest];
       }
     }
 
-  }, 100);
+    // setInterval(function() {
+    //   for(let key in App.scene) {
+    //     if(App.scene[key].name.indexOf("skeletal_") !== -1) {
+    //       App.scene.MyCubeTex.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
+    //       App.scene.MyCubeTex.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+    //     }
+    //   }
+
+    // }, 100);
 
   }
 
+  changeScale = (src) => {
+    for(let key in App.scene) {
+      if(App.scene[key].name.indexOf("s_") !== -1) {
+        // App.scene[id].position.y =  2;
+        App.scene[key].mesh.setScale(src)
+      }
+    }
+    // setInterval(function() {
+    //   for(let key in App.scene) {
+    //     if(App.scene[key].name.indexOf("skeletal_") !== -1) {
+    //       App.scene.MyCubeTex.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
+    //       App.scene.MyCubeTex.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
+    //     }
+    //   }
+    // }, 100);
+  }
+
+  changeRotY = (a) => {
+    for(let key in App.scene) {
+      if(App.scene[key].name.indexOf("s_") !== -1) {
+        App.scene[key].rotation.roty =  a;
+      }
+    }
+  }
+  changeRotX = (a) => {
+    for(let key in App.scene) {
+      if(App.scene[key].name.indexOf("s_") !== -1) {
+        App.scene[key].rotation.rotx =  a;
+      }
+    }
+  }
+  changeRotZ = (a) => {
+    for(let key in App.scene) {
+      if(App.scene[key].name.indexOf("s_") !== -1) {
+        App.scene[key].rotation.rotz =  a;
+      }
+    }
+  }
+
+  changeDrawType(a) {
+    for(let key in App.scene) {
+      if(App.scene[key].name.indexOf("s_") !== -1) {
+        App.scene[key].glDrawElements.mode = a;
+      }
+    }
+    
+  }
 }

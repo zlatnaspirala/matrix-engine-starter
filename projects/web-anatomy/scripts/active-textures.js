@@ -1,191 +1,64 @@
 
-import { stdFonts } from "./standard-fonts";
+import {stdFonts} from "./standard-fonts";
 import * as matrixEngine from "matrix-engine";
 var App = matrixEngine.App;
 
 /**
  * @description 
- * AI voice commander ceter top footer text
+ * Status text
  */
-export function createNidzaTextureText( nidza ) {
-  return new Promise( ( resolve, reject ) => {
-
-    let myFirstNidzaObjectOptions = {
-      id: "footerLabel",
+export function createNidzaHudBalance(nidza, statusText, TEXTS, TEXTSHOVERS) {
+  return new Promise((resolve, reject) => {
+    let n = {
+      id: "statusLine",
       size: {
-        width: window.innerWidth/100*90,
-        height: 135
+        width: 500,
+        height: 250
       }
     };
-    //  object.streamTextures.videoImage
-    nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
-    let texCanvas = document.getElementById( 'footerLabel' );
-    let statusMessageBox = nidza.access.footerLabel.addTextComponent(
-      {
-        id: "zlatna",
-        text: "Welcome here. What's your name ?",
-        color: "lime",
-        position: {
-          x: 50,
-          y: 10
-        },
-        dimension: {
-          width: 65,
-          height: 20
-        },
-        border: {
-          fillColor: "rgba(110,10,10,0.5)",
-          strokeColor: "rgba(0,0,0,0)"
-        },
-        font: {
-          fontSize: "130%",
-          fontStyle: "normal",
-          fontName: stdFonts.CourierNew
-        }
-      } );
+    var statusLine = nidza.createNidzaIndentity(n);
+    let texCanvas = document.getElementById('statusLine');
 
-    // Create one simple oscillator
-    let rotationOption = new nidza.Osc( 0, 360, 2 );
-
-    rotationOption.onRepeat = function ( osc ) {
-      console.info( "Values reached onrepeat targets osc: ", osc )
-      statusMessageBox.rotation.clearUpdate();
-      dispatchEvent( new CustomEvent( "deactivate-updater",
-        {detail: {id: osc.elementIdentity}} ) );
-    }
-
-    statusMessageBox.rotation.setRotation( rotationOption )
-    statusMessageBox.rotation.osc.setDelay( 0 )
-
-    nidza.access.footerLabel.canvasDom.setAttribute( "style", "position: absolute; left: 0;display:none" );
-
-    window.footerLabel = nidza.access.footerLabel;
-    resolve( texCanvas );
-    return texCanvas;
-  } );
-
-}
-
-/**
- * @description 
- * Active lines
- */
-
-// define
-export let footerLinesInfo;
-export let footerBalance;
-export var activeLinePriview = 0;
+    console.log(statusText.text)
 
 
-export function createNidzaHudLinesInfo( nidza ) {
-  return new Promise( ( resolve, reject ) => {
-    let myFirstNidzaObjectOptions = {
-      id: "footerLinesInfo",
-      size: {
-        width: 350,
-        height: 55
+    nidza.access.statusLine.addCustom2dComponent({
+      id: "CUSTOM",
+      draw: function(e) {
+        if(e instanceof CanvasRenderingContext2D == false) return;
+        // e.fillStyle = 'rgba(50,20,20,0.5)';
+        // e.fillRect(0, 2, 550, 2)
+
+        e.textAlign = 'left';
+        e.font = 'normal 44px stormfaze'
+        e.fillStyle = 'rgba(250,250,250,1)';
+        e.fillText(`☞ ${statusText.text}🐲`, 0, 25, 550, 70)
+
+        TEXTS.forEach((element, index) => {
+          e.font = 'normal 25px stormfaze'
+          e.fillStyle = 'rgba(250,10,150,1)';
+          e.fillText(`☞ ${element.text}✮ `, 10, 55 + index * 24, 570, 60)
+        });
+
+        TEXTSHOVERS.forEach((element, index) => {
+          e.font = 'normal 18px stormfaze'
+          e.fillStyle = 'rgba(250,60,50,1)';
+          e.fillText(`☞ ${element.text}✮ `, 10, 100 + index * 24, 570, 60)
+        });
+      },
+      position: {
+        x: 30,
+        y: 40
+      },
+      dimension: {
+        width: 500,
+        height:250
       }
-    };
-    footerLinesInfo = nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
-    let texCanvas = document.getElementById( 'footerLinesInfo' );
-    let activeLines = footerLinesInfo.addTextComponent(
-      {
-        id: "linesInfo",
-        text: "Active lines",
-        color: "lime",
-        position: {
-          x: 25,
-          y: 44
-        },
-        dimension: {
-          width: 220,
-          height: 20
-        },
-        font: {
-          fontSize: "18px",
-          fontStyle: "normal",
-          fontName: stdFonts.CourierNew
-        }
-      });
+    });
 
-    // Create one simple oscillator
-    // let rotationOption = new nidza.Osc( 0, 360, 2 );
-
-    /*
-    rotationOption.onRepeat = function ( osc ) {
-      console.info( "Values reached onrepeat targets osc: ", osc )
-      statusMessageBox.rotation.clearUpdate();
-      dispatchEvent( new CustomEvent( "deactivate-updater",
-        {detail: {id: osc.elementIdentity}} ) );
-    } */
-
-    // statusMessageBox.rotation.setRotation( rotationOption )
-    // statusMessageBox.rotation.osc.setDelay( 0 )
-    nidza.access.footerLinesInfo.canvasDom.setAttribute( "style", "position: absolute; left: 0;display:none" );
-
-    // window.footerLinesInfo = nidza.access.footerLinesInfo;
-    resolve( { texCanvas: texCanvas, activeLines: activeLines });
-    // return texCanvas;
-  } );
-
-}
-
-/**
- * @description 
- * Footer Balance
- */
- export function createNidzaHudBalance( nidza ) {
-  return new Promise( ( resolve, reject ) => {
-    let myFirstNidzaObjectOptions = {
-      id: "footerBalance",
-      size: {
-        width: 400,
-        height: 80
-      }
-    };
-    footerBalance = nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
-    let texCanvas = document.getElementById( 'footerBalance' );
-
-    App.config.loadingMessage.forEach((item, index) => {
-
-    let footerTitleComponent = footerBalance.addTextComponent(
-      {
-        id: "footerBalance" + index,
-        text: item,
-        color: "lime",
-        position: {
-          x: 15 + 10*index,
-          y: 25
-        },
-        dimension: {
-          width: 500,
-          height: 100
-        },
-        font: {
-          fontSize: "45px",
-          fontStyle: "normal",
-          fontName: stdFonts.CourierNew
-        }
-      });
-
-    var oscAng = new matrixEngine.utility.OSCILLATOR(0, 100, 5);
-
-    footerTitleComponent.myOsc = oscAng;
-    footerTitleComponent.position.translateX(oscAng.UPDATE())
-    footerTitleComponent.position.onTargetReached = () => {
-      // oscAng.step += 10;
-      footerTitleComponent.position.translateX(oscAng.UPDATE())
-    };
-
+    nidza.access.statusLine.elements[0].activeDraw()
+    nidza.access.statusLine.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
+    resolve(texCanvas)
   });
-
-    // statusMessageBox.rotation.setRotation( rotationOption )
-    // statusMessageBox.rotation.osc.setDelay( 0 )
-    nidza.access.footerBalance.canvasDom.setAttribute( "style", "position: absolute; left: 0;display:none" );
-
-    window.footerBalance = nidza.access.footerBalance;
-    resolve( texCanvas );
-    return texCanvas;
-  } );
 
 }
