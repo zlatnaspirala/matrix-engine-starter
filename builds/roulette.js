@@ -17015,13 +17015,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* eslint-disable no-undef */
 
 /* eslint-disable no-unused-vars */
+if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
+  console.log('App.offScreenCanvas =>', _manifest.default.offScreenCanvas);
+
+  _utility.scriptManager.LOAD('./hacker-timer/hack-timer.js');
+} else {
+  _manifest.default.offScreenCanvas = false;
+}
+
 var wd = 0,
     ht = 0,
     lastTime = 0,
     totalTime = 0,
     updateTime = 0,
-    updateFrames = 0; // export let EVENTS_INSTANCE = null;
-
+    updateFrames = 0;
 exports.updateFrames = updateFrames;
 exports.updateTime = updateTime;
 exports.totalTime = totalTime;
@@ -24022,7 +24029,7 @@ window.PLEASE = 'CE';
 
 _manifest.default.operation.reDrawGlobal = function (time) {
   (0, _engine.modifyLooper)(0);
-  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.reDrawGlobal);
 
   _matrixWorld.world.renderPerspective();
 
@@ -24078,9 +24085,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   // - non FBO and FBO option draw coroutine
   // hc 512
 
-  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB); // world.FBOS.forEach((fbo) => {
-  // 
-  // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, fbo.fb);
+  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB);
 
   _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
 
@@ -24329,6 +24334,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   secondPass++;
   physicsLooper = 0;
   (0, _engine.updateFPS)(1);
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.reDrawGlobal(), _manifest.default.redrawInterval);
 
   if (_matrixWorld.world.animLine) {
     // animatinLine
@@ -24353,18 +24359,14 @@ _manifest.default.operation.CameraPerspective = function () {
   mat4.perspective(this.pMatrix, (0, _engine.degToRad)(_manifest.default.camera.viewAngle), this.GL.gl.viewportWidth / this.GL.gl.viewportHeight, _manifest.default.camera.nearViewpoint, _manifest.default.camera.farViewpoint);
 };
 
-var callReDraw_ = function () {
-  // setTimeout(function() {
-  //   reDraw()
-  // },30)
-  requestAnimationFrame(_matrixWorld.reDraw);
+var callReDraw_ = function () {// requestAnimationFrame(reDraw);
 };
 
 exports.callReDraw_ = callReDraw_;
 
 _manifest.default.operation.simplyRender = function (time) {
   (0, _engine.modifyLooper)(0);
-  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.simplyRender);
 
   _matrixWorld.world.renderPerspective();
 
@@ -24492,6 +24494,8 @@ _manifest.default.operation.simplyRender = function (time) {
     document.getElementById('globalAnimCounter').innerText = _matrixWorld.world.globalAnimCounter;
     document.getElementById('timeline').value = _matrixWorld.world.globalAnimCounter;
   }
+
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.simplyRender(), _manifest.default.redrawInterval);
 };
 
 },{"../program/manifest":38,"./engine":13,"./matrix-world":26,"./raycast":30,"./utility":36}],22:[function(require,module,exports){
@@ -25872,7 +25876,6 @@ var updateFrames = 0;
 
 var objListToDispose = new Array();
 /* Need to stop the redraw when disposing            */
-// var reDrawID = 0;
 
 exports.objListToDispose = objListToDispose;
 var reDraw;
@@ -27371,7 +27374,7 @@ function defineworld(canvas, renderType) {
     }
   };
 
-  world.callReDraw = _matrixRender.callReDraw_;
+  world.callReDraw = reDraw;
   world.destroy = _manifest.default.operation.destroyWorld;
   return world;
 }
@@ -37084,13 +37087,15 @@ exports.default = void 0;
 /* eslint-disable no-unused-vars */
 var App = {
   name: "Matrix Engine Manifest",
-  version: "1.0.9",
+  version: "1.1.1",
   events: true,
   sounds: true,
   logs: false,
   draw_interval: 10,
   antialias: false,
   openglesShaderVersion: '3',
+  offScreenCanvas: false,
+  redrawInterval: 30,
   camera: {
     viewAngle: 45,
     nearViewpoint: 0.1,
@@ -40528,6 +40533,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 // VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
 // Activate listen operation
 // VoiceCommanderInstance.run();
+matrixEngine.App.offScreenCanvas = false;
 var world;
 var App = matrixEngine.App;
 window.matrixEngine = matrixEngine;
@@ -42024,6 +42030,8 @@ class TableChips {
       console.log('ONLY PLAYED ', o);
       return o;
     });
+    var testLOW = false,
+        testHIGH = false;
     test.forEach((item, index, array) => {
       if (array[index].betPlace.name.indexOf('single') != -1) {
         // it is a single number
@@ -42032,9 +42040,9 @@ class TableChips {
           array[index].betPlace.tableEvents.chips = 0;
           array[index].chipObj.selfDestroy(1);
         }
-      }
+      } // console.log('  CORNER remove lost chips ')
 
-      console.log('WINNER CORNER remove lost chips ');
+
       var test = false,
           passedCorner = false;
 
@@ -42052,9 +42060,9 @@ class TableChips {
             passedCorner = null;
           }
         });
-      }
+      } // console.log('  split remove lost chips ')
 
-      console.log('WINNER split remove lost chips ');
+
       var testSplit = false,
           passedSplit = false;
 
@@ -42072,6 +42080,26 @@ class TableChips {
             passedSplit = null;
           }
         });
+      }
+
+      if (array[index].betPlace.name.indexOf('low') != -1 && winNumber <= 18 && winNumber != 0) {
+        console.log('HIGH remove lost   chips ', array[index].betPlace.tableEvents);
+        testHIGH = true;
+
+        if (testLOW == true) {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1);
+        }
+      }
+
+      if (array[index].betPlace.name.indexOf('high') != -1 && winNumber >= 19 && winNumber != 0) {
+        console.log('  HIGH FIELD1  chips ', ele.tableEvents);
+        testLOW = true;
+
+        if (testHIGH == true) {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1);
+        }
       }
 
       if (winNumberColor == 'red') {
@@ -42980,12 +43008,12 @@ class TableEvents {
           console.log('WINNER SINGLE FIELD1  chips ', ele.tableEvents);
         }
 
-        if (ele.name.indexOf('low') != -1 && winningNumber <= 18) {
+        if (ele.name.indexOf('low') != -1 && winningNumber <= 18 && winningNumber != 0) {
           console.log('WINNER LOW FIELD1  chips ', ele.tableEvents);
           win += ele.tableEvents.chips * ele.tableEvents.q;
         }
 
-        if (ele.name.indexOf('high') != -1 && winningNumber >= 19) {
+        if (ele.name.indexOf('high') != -1 && winningNumber >= 19 && winningNumber != 0) {
           console.log('WINNER HIGH FIELD1  chips ', ele.tableEvents);
           win += ele.tableEvents.chips * ele.tableEvents.q;
         }
@@ -43186,8 +43214,7 @@ class Wheel {
   fireBall = props => {
     if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
     console.log("props", props.detail);
-    roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2]);
-    matrixEngine.App.sounds.play('spining');
+    roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2]); // matrixEngine.App.sounds.play('spining')
 
     if (this.ballCollideFlag == false) {
       this.ballBody.addEventListener("collide", this.momentOftouch);
@@ -43372,7 +43399,9 @@ class Wheel {
   animateRoll() {
     console.warn('ONCE CALL!!!!!!!!!');
     this.C = 0;
-    this.rollTimer = setInterval(() => {
+    this.rollTimer = {};
+
+    this.rollTimer.UPDATE = () => {
       for (var i = 0; i < 37; i++) {
         var p = {
           x: 0.1,
@@ -43393,11 +43422,13 @@ class Wheel {
 
       this.C = this.C + this.speedRollInit;
 
-      if (this.speedRollInit < 0.008) {// clearInterval(this.rollTimer)
+      if (this.speedRollInit < 0.004) {// clearInterval(this.rollTimer)
       } else {
         this.speedRollInit = this.speedRollInit - 0.001;
       }
-    }, 1);
+    };
+
+    App.updateBeforeDraw.push(this.rollTimer);
   }
 
   addFields() {

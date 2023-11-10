@@ -68,7 +68,7 @@ export default class Wheel {
     if(typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
     console.log("props", props.detail)
     roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2])
-    matrixEngine.App.sounds.play('spining')
+    // matrixEngine.App.sounds.play('spining')
     if(this.ballCollideFlag == false) {
       this.ballBody.addEventListener("collide", this.momentOftouch);
       this.ballCollideFlag = true;
@@ -278,7 +278,10 @@ export default class Wheel {
 
     console.warn('ONCE CALL!!!!!!!!!')
     this.C = 0;
-    this.rollTimer = setInterval(() => {
+
+    this.rollTimer = {};
+
+    this.rollTimer.UPDATE = () => {
 
       for(var i = 0;i < 37;i++) {
         var p = {x: 0.1, y: 0.1, z: 0};
@@ -291,13 +294,15 @@ export default class Wheel {
         if(App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 600
       }
       this.C = this.C + this.speedRollInit
-      if(this.speedRollInit < 0.008) {
+      if(this.speedRollInit < 0.004) {
         // clearInterval(this.rollTimer)
       } else {
         this.speedRollInit = this.speedRollInit - 0.001
       }
 
-    }, 1)
+    };
+
+    App.updateBeforeDraw.push(this.rollTimer)
 
   }
 

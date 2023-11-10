@@ -12,6 +12,10 @@ import { MatrixRoulette } from "./scripts/roulette";
 // VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
 // Activate listen operation
 // VoiceCommanderInstance.run();
+
+matrixEngine.App.offScreenCanvas = false;
+
+
 var world;
 var App = matrixEngine.App;
 window.matrixEngine = matrixEngine;
@@ -23,6 +27,7 @@ if ("serviceWorker" in navigator) {
 }
 
 function webGLStart() {
+
   world = matrixEngine.matrixWorld.defineworld(canvas);
   world.callReDraw();
   let roulette = new MatrixRoulette()

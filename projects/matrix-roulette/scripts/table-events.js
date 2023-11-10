@@ -879,12 +879,12 @@ export default class TableEvents {
           console.log('WINNER SINGLE FIELD1  chips ', ele.tableEvents)
         }
 
-        if(ele.name.indexOf('low') != -1 && winningNumber <= 18) {
+        if(ele.name.indexOf('low') != -1 && winningNumber <= 18 && winningNumber != 0) {
           console.log('WINNER LOW FIELD1  chips ', ele.tableEvents)
           win += ele.tableEvents.chips * ele.tableEvents.q
         }
 
-        if(ele.name.indexOf('high') != -1 && winningNumber >= 19) {
+        if(ele.name.indexOf('high') != -1 && winningNumber >= 19 && winningNumber != 0) {
           console.log('WINNER HIGH FIELD1  chips ', ele.tableEvents)
           win += ele.tableEvents.chips * ele.tableEvents.q
         }
