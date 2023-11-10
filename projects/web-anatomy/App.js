@@ -27,7 +27,8 @@ App.config = {
 
 function webGLStart() {
   // from 1.9.12 => simply render draw funct without FBO
-  world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
+  // world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
+  world = matrixEngine.matrixWorld.defineworld(canvas);
   world.callReDraw();
   App.webAnatomy = new WebAnatomy(world, App.config);
   window.App = App;

@@ -26,8 +26,8 @@ export let loadSystemSkeletal = (App, world) => {
         App.scene[id].rotation.roty = 0;
 
         App.scene[id].glBlend.blendEnabled = true;
-        App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-        App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+        App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+        App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     
         App.scene[id].hoverEffect = (me) => {
           me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];

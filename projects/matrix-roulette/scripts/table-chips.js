@@ -1,5 +1,6 @@
 import * as matrixEngine from "matrix-engine"
 import * as CANNON from 'cannon';
+import {RULES} from "./table-events";
 
 export default class TableChips {
 
@@ -99,12 +100,96 @@ export default class TableChips {
   clearAll() {
     this.register.forEach((i, index, array) => {
       array[index].chipObj.selfDestroy(1)
-
       console.log(' TEST CLEAR ', array[index].betPlace.tableEvents.chips)
       array[index].betPlace.tableEvents.chips = 0;
-
       delete array[index];
     })
+  }
 
+  removeLostChips(winNumber) {
+
+    var winNumberColor = '';
+    if(RULES.red.indexOf(parseInt(winNumber)) != -1) {
+      winNumberColor = 'red'
+    } else if(RULES.black.indexOf(parseInt(winNumber)) != -1) {
+      winNumberColor = 'black';
+    } else if(e.detail == 0) {
+      winNumberColor = 'ZERO'
+    }
+
+    var test = this.register.filter(
+      (o) => o.betPlace.tableEvents.chips > 0
+    ).map(o => {
+      console.log('ONLY PLAYED ', o)
+      return o;
+    })
+
+    test.forEach((item, index, array) => {
+
+      if(array[index].betPlace.name.indexOf('single') != -1) {
+        // it is a single number
+        if(winNumber != parseFloat(array[index].betPlace.name.split('gle')[1])) {
+          //
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1)
+        }
+      }
+      
+      console.log('WINNER CORNER remove lost chips ')
+      var test = false, passedCorner = false;
+      if(array[index].betPlace.name.indexOf('corner') != -1 && array[index].betPlace.name.split('orner').length == 2) {
+        test = array[index].betPlace.name.split('orner')[1].split('_')
+
+        test.forEach((num) => {
+          if(winNumber == parseFloat(num)) {
+            passedCorner = true
+          }
+        })
+        test.forEach((num) => {
+          if(passedCorner == false) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(1)
+            passedCorner = null;
+          }
+        })
+      }
+
+      console.log('WINNER split remove lost chips ')
+      var testSplit = false, passedSplit = false;
+      if(array[index].betPlace.name.indexOf('split') != -1 && array[index].betPlace.name.split('plit').length == 2) {
+        testSplit = array[index].betPlace.name.split('plit')[1].split('_')
+
+        testSplit.forEach((num) => {
+          if(winNumber == parseFloat(num)) {
+            passedSplit = true
+          }
+        })
+        testSplit.forEach((num) => {
+          if(passedSplit == false) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(1)
+            passedSplit = null;
+          }
+        })
+      }
+
+      if(winNumberColor == 'red') { // check zero name ???
+        if(array[index].betPlace.name == 'black' || array[index].betPlace.name == 'single0') {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1)
+          console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace)
+        }
+      } else if(winNumberColor == 'black') {
+        console.log('win is balck TEST FILTER2 ')
+        if(array[index].betPlace.name == 'red' || array[index].betPlace.name == 'single0') {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1)
+          console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace)
+        }
+      }
+
+
+
+    })
   }
 }

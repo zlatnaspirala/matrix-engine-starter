@@ -86,6 +86,11 @@ matrix-network.sh
  |                                                                                   |
  |        &sounds=              true           Sounds are active only if url param   |
  |                                             is true.                              |
+ |                                                                                   |
+ |        &cameraSpeed=         Number         Best range values from 0.5 to 1       |
+ |                                                                                   |
+ |        &nui=                 Boolean        Use NUICommander or not.              |
+ |                                                                                   |
  +-----------------------------------------------------------------------------------+
 
 </pre>

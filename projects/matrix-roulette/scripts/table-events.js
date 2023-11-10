@@ -1,13 +1,12 @@
 import * as matrixEngine from "matrix-engine"
 import TableChips from './table-chips.js';
 
-
 /**
  * @description
  * Player gameplay bet MAP
  * 
  */
-const RULES = {
+export const RULES = {
   red: [1, 3, 5, 7, 9, 10, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
   black: [2, 4, 6, 8, 11, 13, 15, 17, 20, 24, 26, 28, 29, 31, 33, 35],
   column3: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],

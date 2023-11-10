@@ -66,6 +66,7 @@
     "matrix-engine-plugins": "0.1.0",
     "matrix-network": "^1.0.12",
     "nidza": "^1.2.15",
+    "nui-commander": "0.0.7",
     "voice-commander": "0.0.5"
   },
   "devDependencies": {

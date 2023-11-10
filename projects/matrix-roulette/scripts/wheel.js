@@ -8,7 +8,8 @@ import * as CANNON from 'cannon';
  */
 export default class Wheel {
   ballBody = null;
-  speedRollInit = 0.15;
+  // speedRollInit = 0.15;
+  speedRollInit = 0.20;
   rollTimer = null;
   ballCollideFlag = false;
 
@@ -22,8 +23,10 @@ export default class Wheel {
     this.addStaticWheel()
     this.addCenterRoll()
     this.addFields()
+
     this.animateRoll()
-    addEventListener('fire-ball' , this.fireBall)
+
+    addEventListener('fire-ball', this.fireBall)
   }
 
   orbit(cx, cy, angle, p) {
@@ -40,19 +43,29 @@ export default class Wheel {
 
   momentOftouch = (e) => {
     if(typeof e.body.matrixRouletteId === 'undefined') return;
-
     console.log("Collided with number:", e.body.matrixRouletteId);
-    matrixEngine.App.sounds.play('spiningEnd')
-    matrixEngine.App.sounds.audios.spining.pause();
-    matrixEngine.App.sounds.audios.spining.currentTime = 0;
+
+
     dispatchEvent(new CustomEvent('matrix.roulette.win.number', {detail: e.body.matrixRouletteId}))
     this.ballBody.removeEventListener("collide", this.momentOftouch);
     this.ballCollideFlag = false;
-    matrixEngine.App.sounds.audios.spining.pause()
+
+    if(matrixEngine.App.sounds.audios.spining) {
+
+      try {
+        matrixEngine.App.sounds.play('spiningEnd')
+      } catch(err) {
+        // unhandled
+      }
+      
+      matrixEngine.App.sounds.audios.spining.pause();
+      matrixEngine.App.sounds.audios.spining.currentTime = 0;
+    }
+
   }
 
   fireBall = (props) => {
-    if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
+    if(typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
     console.log("props", props.detail)
     roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2])
     matrixEngine.App.sounds.play('spining')
@@ -263,6 +276,7 @@ export default class Wheel {
 
   animateRoll() {
 
+    console.warn('ONCE CALL!!!!!!!!!')
     this.C = 0;
     this.rollTimer = setInterval(() => {
 
@@ -274,16 +288,16 @@ export default class Wheel {
         App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1.)
         App.scene['centerWheel' + i].physics.currentBody.position.set(p3.x, p3.y - 30, -0.2)
 
-        if(App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 1000
+        if(App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 600
       }
       this.C = this.C + this.speedRollInit
       if(this.speedRollInit < 0.008) {
         // clearInterval(this.rollTimer)
       } else {
-        this.speedRollInit = this.speedRollInit - 0.002
+        this.speedRollInit = this.speedRollInit - 0.001
       }
 
-    }, 30)
+    }, 1)
 
   }
 

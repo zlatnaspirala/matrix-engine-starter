@@ -1,6 +1,7 @@
 import * as matrixEngine from "matrix-engine"
 import {stdFonts} from "../../matrix-slot/scripts/standard-fonts";
 import {MTM} from "matrix-engine-plugins";
+import {RULES} from "./table-events";
 
 export var create2dHUD = (ref) => {
   return new Promise((resolve, reject) => {
@@ -55,36 +56,36 @@ export var create2dHUD = (ref) => {
 
 }
 
-export function balanceDecorations(nidza, playerInfo, ref) {
-  var A1 = 111,
-    f1 = 2,
-    p1 = 1 / 2,
-    d1 = 0.2;
-  var A2 = 22,
-    f2 = 4,
-    p2 = 3 / 2,
-    d2 = 0.0315;
-  var A3 = 31,
-    f3 = 4,
-    p3 = 13 / 15,
-    d3 = 0.0012;
-  var A4 = 50,
-    f4 = 4,
-    p4 = 1,
-    d4 = 0.012;
-  var r = 110,
-    g = 110,
-    b = 110;
+export function balanceDecorations(nidza, wwwwwwwwwwwwwwww, ref) {
+  // var A1 = 111,
+  //   f1 = 2,
+  //   p1 = 1 / 2,
+  //   d1 = 0.2;
+  // var A2 = 22,
+  //   f2 = 4,
+  //   p2 = 3 / 2,
+  //   d2 = 0.0315;
+  // var A3 = 31,
+  //   f3 = 4,
+  //   p3 = 13 / 15,
+  //   d3 = 0.0012;
+  // var A4 = 50,
+  //   f4 = 4,
+  //   p4 = 1,
+  //   d4 = 0.012;
+  // var r = 110,
+  //   g = 110,
+  //   b = 110;
 
-  var makeHarmonograph = function(c) {
-    f1 = (f1 / 10) % 10;
-    f2 = (f2 / 40) % 10;
-    f3 = (f3 + Math.random() / 80) % 10;
-    f4 = (f4 + Math.random() / 411) % 10;
-    p1 += 0.5 % (Math.PI * 2);
-    if(p1 > 500) p1 = 0;
-    drawHarmonograph(c);
-  }
+  // var makeHarmonograph = function(c) {
+  //   f1 = (f1 / 10) % 10;
+  //   f2 = (f2 / 40) % 10;
+  //   f3 = (f3 + Math.random() / 80) % 10;
+  //   f4 = (f4 + Math.random() / 411) % 10;
+  //   p1 += 0.5 % (Math.PI * 2);
+  //   if(p1 > 500) p1 = 0;
+  //   drawHarmonograph(c);
+  // }
 
   var drawHarmonograph = function(ctx) {
     ctx.clearRect(0, 0, 600, 400);
@@ -118,19 +119,20 @@ export function balanceDecorations(nidza, playerInfo, ref) {
 
       // makeHarmonograph(e)
       // e.clearRect(0, 0, 600, 400);
-      e.fillStyle = "rgb(" + A1 + "," + g + "," + b + ")";
-      e.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
+      // e.fillStyle = "rgb(" + matrixEngine.utility.randomIntFromTo(0,250) + "," +  matrixEngine.utility.randomIntFromTo(0,250) + "," +  matrixEngine.utility.randomIntFromTo(0,250) + ")";
+      // e.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
+      e.fillStyle = "rgb(113,145,144)"
       e.fillRect(0, 0, 600, 400);
 
       e.fillStyle = 'rgba(0,0,0,0.4)';
-      e.fillRect(50, 50, 100 + p1, 100);
-      e.fillRect(50, 20, 500 - p1, 20);
-      e.fillRect(50, 170, 500 - p1, 20);
+      e.fillRect(50, 50, 100 , 100);
+      e.fillRect(50, 20, 500 , 20);
+      e.fillRect(50, 170, 500 , 20);
 
       e.fillStyle = 'rgba(250,250,250,1)';
       e.font = 'bold 60px stormfaze'
       e.textAlign = 'left';
-      e.fillText(`${ref.playerInfo.balance} ${ref.playerInfo.currency}`, 350, byY_.UPDATE(), 200, 40)
+      e.fillText(`${ref.playerInfo.balance} ${ref.playerInfo.currency}`, 350, 95, 200, 40)
     },
     position: {
       x: 10,
@@ -165,11 +167,15 @@ export function createStatusBoxHUD(nidza, playerInfo) {
       }
     }
     // console.log('Player info 2d draws ', playerInfo)
+    let last10 = [];
+
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBox');
 
+    var previewR__small = '';
+    var previewR__ = '';
     var previewR = '';
-    var previewTitle = 'matrix roulette 1.0 ' + (soundsEnabled() == true ? ' sounds: ON': ' sounds Off');
+    var previewTitle = 'matrix roulette 1.0 ' + (soundsEnabled() == true ? ' sounds: ON' : ' sounds Off');
 
     var colorForCOLOR = 'rgba(120,0,0,0.4)'
     var colorForOpenGame = 'lime'
@@ -177,18 +183,44 @@ export function createStatusBoxHUD(nidza, playerInfo) {
     var p1 = 0;
 
     addEventListener('MEDITATE_SERVER', (e) => {
-      // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       p1 = e.detail * 17
       colorForCOLOR = colorForOpenGame
     })
+
     addEventListener('WAIT_FOR_RESULT', (e) => {
       // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       p1 = e.detail * 17
       colorForCOLOR = colorForLastMoment
     })
+
     addEventListener('RESULTS_FROM_SERVER', (e) => {
-      // console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
-      previewR = '🟥' + e.detail
+      console.log('RESULTS_FROM_SERVER ADD TO LAST 10 ', e.detail)
+      last10.push(e.detail)
+      if(RULES.red.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail
+        previewR__ = '🔴'
+      } else if(RULES.black.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail
+        previewR__ = '⚫'
+      } else if(e.detail == 0) {
+        previewR = 'ZERO ' + e.detail
+        previewR__ = ''
+      }
+    })
+
+    addEventListener('RESULTS_FROM_MANUAL', (e) => {
+      console.log('RESULTS_FROM_MANUAL ADD TO LAST 10 ', e.detail)
+      last10.push(e.detail)
+      if(RULES.red.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail
+        previewR__ = '🔴'
+      } else if(RULES.black.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail
+        previewR__ = '⚫'
+      } else if(e.detail == 0) {
+        previewR = 'ZERO ' + e.detail
+        previewR__ = ''
+      }
     })
 
     addEventListener('SET_STATUSBOX_TEXT', (e) => {
@@ -216,10 +248,13 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         e.fillRect(50, 180, 500 - (20 * 17), 3);
         e.fillRect(50, 209, 500 - (20 * 17), 3);
 
-        e.textAlign = 'left';
-        e.font = 'bold 60px stormfaze'
+        e.textAlign = 'center';
+
         e.fillStyle = 'rgba(250,250,250,1)';
         // if (previewR != -1) 
+        e.font = 'bold 60px stormfaze'
+        e.fillText("" + previewR__.toString(), 340, 152, 250)
+        e.font = 'bold 40px stormfaze'
         e.fillText("" + previewR.toString(), 340, 148, 250)
 
 
@@ -245,6 +280,23 @@ export function createStatusBoxHUD(nidza, playerInfo) {
         // myGradient.addColorStop(1, 'orange');
         // e.fillStyle = myGradient;
         // e.fillRect(450 - p1.UPDATE(), 0, 5 , 200)
+
+        // last10
+        e.textAlign = 'center';
+        last10.forEach((winNum, index) => {
+          e.font = 'normal 23px stormfaze'
+          if(RULES.red.indexOf(parseInt(winNum)) != -1) {
+            previewR__small = '🔴'
+          } else if(RULES.black.indexOf(parseInt(winNum)) != -1) {
+            previewR__small = '⚫'
+          } else if(winNum == 0) {
+            previewR__small = 'ZERO'
+          }
+          e.fillText(previewR__small, 20 + index*30, 230, 250, 25)
+          
+          e.fillText(winNum, 20 + index*30, 230, 250, 25)
+
+        })
 
       },
       position: {
@@ -290,12 +342,10 @@ export function create2dHUDStatusLine(nidza, status) {
 
     addEventListener('SET_STATUS_LINE_TEXT', (e) => {
       T.fillText(e.detail)
-      // console.log('STATUS LINE')
     })
-
     // matrix effect in bg
-    const cols = Math.floor(500 / 20) + 1;
-    const ypos = Array(cols).fill(0);
+    // const cols = Math.floor(500 / 20) + 1;
+    // const ypos = Array(cols).fill(0);
 
     nidza.access.statusBoxLine.addCustom2dComponent({
       id: "CUSTOM",
@@ -308,24 +358,24 @@ export function create2dHUDStatusLine(nidza, status) {
         e.fillStyle = 'rgba(250,250,250,1)';
         e.fillText(`☞ ${T.text}🐲`, 10, 31, 550, 60)
 
-        e.fillStyle = '#0001';
-        // Set color to green and font to 15pt monospace in the drawing context
-        e.fillStyle = '#0f0';
-        e.font = '15pt monospace';
+        // e.fillStyle = '#0001';
+        // // Set color to green and font to 15pt monospace in the drawing context
+        // e.fillStyle = '#0f0';
+        // e.font = '15pt monospace';
 
-        // for each column put a random character at the end
-        ypos.forEach((y, ind) => {
-          // generate a random character
-          const text = String.fromCharCode(Math.random() * 128);
-          // x coordinate of the column, y coordinate is already given
-          const x = ind * 20;
-          // render the character at (x, y)
-          e.fillText(text, x, y);
-          // randomly reset the end of the column if it's at least 100px high
-          if(y > 100 + Math.random() * 10000) ypos[ind] = 0;
-          // otherwise just move the y coordinate for the column 20px down,
-          else ypos[ind] = y + 20;
-        });
+        // // for each column put a random character at the end
+        // ypos.forEach((y, ind) => {
+        //   // generate a random character
+        //   const text = String.fromCharCode(Math.random() * 128);
+        //   // x coordinate of the column, y coordinate is already given
+        //   const x = ind * 20;
+        //   // render the character at (x, y)
+        //   e.fillText(text, x, y);
+        //   // randomly reset the end of the column if it's at least 100px high
+        //   if(y > 100 + Math.random() * 10000) ypos[ind] = 0;
+        //   // otherwise just move the y coordinate for the column 20px down,
+        //   else ypos[ind] = y + 20;
+        // });
 
         // var myGradient = e.createLinearGradient(0, 0, 650, 250);
         // myGradient.addColorStop(0, 'red');

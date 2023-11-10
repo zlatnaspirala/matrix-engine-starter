@@ -6,16 +6,24 @@ import {Nidza} from 'nidza';
 import {create2dHUD, createStatusBoxHUD, create2dHUDStatusLine} from "./2d-draw.js";
 import {MTM} from 'matrix-engine-plugins';
 import ClientConfig from "../client-config.js";
+import NUICommander from './nui.js';
+import {byId} from "matrix-engine/lib/utility.js";
 
 export class MatrixRoulette {
+  // General physics and ME world
   physics = null;
   world = null;
   // Gameplay staff
   tableBet = null;
   wheelSystem = null;
   preventDBTrigger = null;
-
+  // Optimal - control switch with url param nui=true or undefined.
+  NUI = null;
   // Top level vars
+  // - Initial line text
+  // - Delay interval on winning number
+  // - camera view bets/wheel
+  // - status of matix roulette server
   status = {
     text: new MTM('WELCOME MY FRIEND!', {deltaRemove: 1, deltaFill: 40}),
     winNumberMomentDelay: 5000,
@@ -24,51 +32,72 @@ export class MatrixRoulette {
   }
 
   constructor() {
-
+    // Player balance var
     this.playerInfo = {
       balance: 1000,
       currency: '$'
     };
 
     var App = matrixEngine.App;
-    // dev only
+    // dev only!
     window.App = App
 
+    if(this.NUIEnabled() == true) {
+      // top level/custom arg
+      this.NUI = new NUICommander(this.isManual())
+      byId('nui-commander-container').style.width = '640px';
+      byId('nui-commander-container').style.height = '256px';
+      // Who to constrol size - best keep it default 640x480
+      // nui-commander must be upgraded.
+      // this.NUI.nuiCommander.drawer.canvasDom.height = '320'
+      // this.NUI.nuiCommander.drawer.canvasDom.width = '480'
+      // byId('canvas-source').width = 320;
+      // byId('canvas-source').height = 240;
+      // byId('webcam').width = 320;
+      // byId('webcam').height = 240;
+      // byId('canvas-blended').width = 320;
+      // byId('canvas-blended').height = 240;
+    }
+
+    // HTML5 fix audios etc.
     window.addEventListener('click', this.firstClick)
 
+    // Matrix-engine staff
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
     App.camera.speedAmp = 0.01;
-
+    // Add physics - ground and main instance of cannonjs
     this.preparePhysics()
+    // Betting/Hovering/table screen/view
     this.tableBet = new TableEvents(this.physics)
+    // Whole wheel system
     this.wheelSystem = new Wheel(this.physics)
+    // Matrix-engine raycast
     this.attachMatrixRay()
+    // Game-play Events
     this.attachGamePlayEvents()
-
     // nidza.js / 2d canvas small library
     // Text oriented - transformation also 3d context variant of components shader oriented.
     this.nidza = new Nidza();
+    // First view
     this.setupCameraView('initbets')
-    // nidza.js small 2d canvas lib
+    // Add canvas2d context to webgl
     this.addHUD(this.playerInfo)
+    // Initial func for Networking general. Based on webRTC/MultiRTC lib.
     this.runVideoChat()
 
     this.cameraInMove = false;
 
     if(this.soundsEnabled() == true) {
-
       matrixEngine.App.sounds.createAudio('background', 'res/audios/mellow_club_vibe-stargazer_jazz.mp3')
-      matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3')
+      matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3', 3)
       matrixEngine.App.sounds.createAudio('spining', 'res/audios/spining.mp3')
       matrixEngine.App.sounds.createAudio('spiningEnd', 'res/audios/spining-end.mp3')
       matrixEngine.App.sounds.createAudio('error', 'res/audios/error.mp3')
-      matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3')
-
+      matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3', 2)
       matrixEngine.App.sounds.audios.background.loop = true
       matrixEngine.App.sounds.audios.background.play()
-
     }
 
     if(this.isManual() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'manual'}))
@@ -77,30 +106,36 @@ export class MatrixRoulette {
   }
 
   firstClick = (e) => {
-
     if(this.soundsEnabled() == true) {
       matrixEngine.App.sounds.audios.background.play()
       matrixEngine.App.sounds.audios.background.loop = true;
     }
-
     removeEventListener('click', this.firstClick)
   }
 
   setupCameraView(type) {
+    var AMP = 0.5;
+    if(typeof matrixEngine.utility.QueryString.cameraSpeed == 'undefined' ||
+      matrixEngine.utility.QueryString.cameraSpeed == null) {
+        // nothing for now
+    } else {
+      if(isNaN(parseFloat(matrixEngine.utility.QueryString.cameraSpeed)) == false) {
+        AMP = matrixEngine.utility.QueryString.cameraSpeed;
+      }
+    }
 
     // let OSC = matrixEngine.utility.OSCILLATOR;
     if(type == this.status.cameraView) return;
-    // console.log('current camera status:', this.status.cameraView)
     if(type == 'bets' && this.cameraInMove == false) {
 
       this.cameraInMove = true;
       // Disable user access to the camera
       // App.camera.SceneController = false;
 
-      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, 0.2)
-      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.2)
-      // trick OSC when min > max 
-      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, 0.2)
+      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, AMP)
+      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, AMP)
+      // trick OSC when min > max! There exist better OSCILLATOR from nidza lib.
+      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, AMP)
 
       this.internal_flag = 0;
       this.flagc0 = false;
@@ -108,13 +143,10 @@ export class MatrixRoulette {
       this.flagc2 = false;
 
       c0.on_maximum_value = () => {
-        // console.log('c0 max')
         this.status.cameraView = 'bets'
         this.internal_flag++;
         this.flagc0 = true;
         if(this.internal_flag == 3) {
-          // console.log('c0 stop max')
-          // Enable user access to the camera
           clearInterval(this.c0i)
           this.c0i = null;
           this.cameraInMove = false;
@@ -122,13 +154,10 @@ export class MatrixRoulette {
         }
       }
       c1.on_maximum_value = () => {
-        // console.log('c1 max')
         this.status.cameraView = 'bets'
         this.internal_flag++;
         this.flagc1 = true;
         if(this.internal_flag == 3) {
-          // console.log('c1 stop max')
-          // Enable user access to the camera
           clearInterval(this.c0i)
           this.c0i = null;
           this.cameraInMove = false;
@@ -136,13 +165,10 @@ export class MatrixRoulette {
         }
       }
       c2.on_maximum_value = () => {
-        // console.log('c2 max')
         this.status.cameraView = 'bets'
         this.internal_flag++;
         this.flagc2 = true;
         if(this.internal_flag == 3) {
-          // console.log('c2 stop max')
-          // Enable user access to the camera
           clearInterval(this.c0i)
           this.c0i = null;
           this.cameraInMove = false;
@@ -154,19 +180,17 @@ export class MatrixRoulette {
         if(this.flagc0 == false) {matrixEngine.Events.camera.pitch = -c0.UPDATE()}
         if(this.flagc1 == false) {matrixEngine.Events.camera.zPos = c1.UPDATE()}
         if(this.flagc2 == false) {matrixEngine.Events.camera.yPos = -c2.UPDATE()}
-      }, 15)
+      }, 1)
 
     } else if(type == 'wheel' && this.cameraInMove == false) {
 
       this.cameraInMove = true;
       // Disable user access to the camera
       // App.camera.SceneController = false;
-
       // trick OSC when min > max - OSCILLATOR from matrix engine utility must be upgraded...
-      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -52.970000000000034, 0.2)
-      var c1 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.zPos, 4.6962394866880635, 0.2)
-      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos, 19.500000000000007, 0.2)
-
+      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -52.970000000000034, AMP)
+      var c1 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.zPos, 4.6962394866880635, AMP)
+      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos, 19.500000000000007, AMP)
       this.internal_flag = 0;
       this.flagc0 = false;
       this.flagc1 = false;
@@ -177,8 +201,6 @@ export class MatrixRoulette {
         this.internal_flag++;
         this.flagc0 = true;
         if(this.internal_flag == 3) {
-          console.log('c0 stop')
-          // Enable user access to the camera
           clearInterval(this.c0i)
           this.c0i = null;
           this.cameraInMove = false;
@@ -190,8 +212,6 @@ export class MatrixRoulette {
         this.internal_flag++;
         this.flagc1 = true;
         if(this.internal_flag == 3) {
-          console.log('c1 stop', this.c0i)
-          // Enable user access to the camera
           clearInterval(this.c0i)
           this.c0i = null;
           this.cameraInMove = false;
@@ -203,8 +223,6 @@ export class MatrixRoulette {
         this.internal_flag++;
         this.flagc2 = true;
         if(this.internal_flag == 3) {
-          console.log('c2 stop')
-          // Enable user access to the camera
           clearInterval(this.c0i)
           this.c0i = null;
           this.cameraInMove = false;
@@ -222,11 +240,10 @@ export class MatrixRoulette {
         if(this.flagc2 == false) {
           matrixEngine.Events.camera.yPos = c2.UPDATE()
         }
-      }, 15)
+      }, 1)
     } else {
       // bets default
       if(this.cameraInMove == true) return;
-
       matrixEngine.Events.camera.pitch = -54.970000000000034
       matrixEngine.Events.camera.zPos = 11.526822219793473
       matrixEngine.Events.camera.yPos = 7.49717201776934
@@ -234,13 +251,13 @@ export class MatrixRoulette {
   }
 
   runVideoChat() {
-    // Sending class reference
-    matrixEngine.Engine.activateNet(ClientConfig);
+    // Sending class reference `ClientConfig` not object/instance
+    matrixEngine.Engine.activateNet(ClientConfig)
 
     var tex = {
       source: ["res/images/field.png"],
-      mix_operation: "multiply",
-    };
+      mix_operation: "multiply"
+    }
 
     addEventListener('stream-loaded', (e) => {
       // Safe place for access socket io
@@ -321,7 +338,7 @@ export class MatrixRoulette {
       })
     })
 
-    // hide netoworking div
+    // hide networking html dom div.
     setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200)
   }
 
@@ -352,18 +369,27 @@ export class MatrixRoulette {
     }
   }
 
+  NUIEnabled() {
+    if(typeof matrixEngine.utility.QueryString.nui == 'undefined' ||
+      matrixEngine.utility.QueryString.nui == 'false' ||
+      matrixEngine.utility.QueryString.nui == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', (ev) => {
       App.onlyClicksPass = true;
-
-      // no need maybe ?!
+      // no need maybe ?!!!?
       matrixEngine.raycaster.checkingProcedure(ev);
       setTimeout(() => {
         App.onlyClicksPass = false;
       }, 10)
-    });
+    })
 
     canvas.addEventListener('mousemove', (ev) => {
       matrixEngine.raycaster.checkingProcedure(ev);
@@ -405,7 +431,7 @@ export class MatrixRoulette {
         if(typeof matrixEngine.utility.QueryString.server !== 'undefined' &&
           matrixEngine.utility.QueryString.server == 'manual') {
           dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'SPINNING'}))
-          console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name)
+          console.log("SPIN PROCEDURE:", ev.detail.hitObject.name)
           dispatchEvent(new CustomEvent('SPIN', {detail: {type: 'manual'}}))
           return;
         }
@@ -413,8 +439,7 @@ export class MatrixRoulette {
       }
 
       if(ev.detail.hitObject.raycast.enabled != true) {return }
-
-      console.log('VALIDATION BALANCE', this.playerInfo.balance >= 1)
+      console.log('dispatch=>chip-bet')
       if(this.playerInfo.balance >= 1) dispatchEvent(new CustomEvent("chip-bet", {detail: ev.detail.hitObject}))
 
     });
@@ -440,7 +465,6 @@ export class MatrixRoulette {
       // clear double call
       // roulette.wheelSystem.fireBall()
       dispatchEvent(new CustomEvent('fire-ball', {detail: [0.3, [4., -11.4, 3], [-13000, 220, 11]]}))
-
       removeEventListener('camera-view-wheel', this.prepareFire)
     }, this.status.winNumberMomentDelay)
   }
@@ -451,9 +475,13 @@ export class MatrixRoulette {
 
       window.addEventListener('matrix.roulette.win.number', (ev) => {
         // Final winning number
+        // For now only for manual status
         console.log('Winning number: ' + ev.detail)
+        this.tableBet.chips.removeLostChips(ev.detail)
+
         setTimeout(() => {
           this.setupCameraView('bets')
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'WIN NUMBER:' + ev.detail}))
         }, this.status.winNumberMomentDelay)
       })
 
@@ -461,6 +489,14 @@ export class MatrixRoulette {
         console.log('SPIN PROCEDUTE')
         addEventListener('camera-view-wheel', this.prepareFire, {passive: true})
         this.setupCameraView('wheel')
+      })
+
+      addEventListener('view-wheel', (e) => {
+        this.setupCameraView('wheel')
+      })
+
+      addEventListener('view-table', (e) => {
+        this.setupCameraView('bets')
       })
 
     }
@@ -604,6 +640,7 @@ export class MatrixRoulette {
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene.statusBox.rotation.rotx = 122;
 
+    // Attaching canvas2d tot he webgl surface.
     createStatusBoxHUD(this.nidza, this.playerInfo).then(canvas2d => {
       App.scene.statusBox.streamTextures = {videoImage: canvas2d}
     })

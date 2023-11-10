@@ -24354,9 +24354,10 @@ _manifest.default.operation.CameraPerspective = function () {
 };
 
 var callReDraw_ = function () {
-  setTimeout(function () {
-    (0, _matrixWorld.reDraw)();
-  }, 60); // requestAnimationFrame(reDraw);
+  // setTimeout(function() {
+  //   reDraw()
+  // },30)
+  requestAnimationFrame(_matrixWorld.reDraw);
 };
 
 exports.callReDraw_ = callReDraw_;
@@ -35535,7 +35536,7 @@ if (typeof define === 'function' && define.amd) {
 }
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":57}],33:[function(require,module,exports){
+},{"_process":64}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39466,6 +39467,854 @@ class Nidza {
 exports.Nidza = Nidza;
 
 },{"./lib/identity":46,"./lib/identity-3d":45,"./lib/operations":48}],57:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "indicatorsBlocks", {
+  enumerable: true,
+  get: function () {
+    return _mainFunctionMenu.indicatorsBlocks;
+  }
+});
+Object.defineProperty(exports, "canvasEngine", {
+  enumerable: true,
+  get: function () {
+    return _canvasEngine.canvasEngine;
+  }
+});
+Object.defineProperty(exports, "DetectBrowser", {
+  enumerable: true,
+  get: function () {
+    return _helper.DetectBrowser;
+  }
+});
+Object.defineProperty(exports, "interActionController", {
+  enumerable: true,
+  get: function () {
+    return _controller.interActionController;
+  }
+});
+Object.defineProperty(exports, "nuiMsgBox", {
+  enumerable: true,
+  get: function () {
+    return _nuiMsgBox.nuiMsgBox;
+  }
+});
+
+var _mainFunctionMenu = require("./scripts/controls/main-function-menu");
+
+var _canvasEngine = require("./scripts/canvasEngine");
+
+var _helper = require("./scripts/helper");
+
+var _controller = require("./scripts/controller");
+
+var _nuiMsgBox = require("./scripts/controls/nui-msg-box");
+
+},{"./scripts/canvasEngine":58,"./scripts/controller":59,"./scripts/controls/main-function-menu":60,"./scripts/controls/nui-msg-box":61,"./scripts/helper":62}],58:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.canvasEngine = canvasEngine;
+
+var _bufferLoad = require("./system/buffer-load");
+
+var _helper = require("./helper");
+
+function canvasEngine(interActionController, options) {
+  if (typeof options === 'undefined') {
+    options = {
+      domVisual: false
+    };
+  }
+
+  this.options = options;
+  var root = this;
+  root.interActionController = interActionController; // create dom element
+
+  this.canvasDom = document.createElement("canvas");
+  this.canvasDom.setAttribute("id", "drawer");
+  this.canvasDom.setAttribute("width", "640px");
+  this.canvasDom.setAttribute("height", "480px");
+  this.canvasDom.setAttribute("style", "position: absolute;z-index:20;left: 0; top: 0;");
+  this.ctx = this.canvasDom.getContext("2d");
+  var content = (0, _helper.getDom)("nui-commander-container");
+  content.appendChild(this.canvasDom);
+  this.systemOnPause = false;
+  this.elements = [];
+
+  this.removeElementByName = function (name) {
+    this.elements.forEach(function (item, index, array) {
+      if (item.name == name) {
+        array.splice(index, 1);
+      }
+    });
+  };
+
+  this.getCanvasWidth = function (per) {
+    if (per == 0) {
+      return 0;
+    }
+
+    return this.canvasDom.width / 100 * per;
+  };
+
+  this.getCanvasHeight = function (per) {
+    if (per == 0) {
+      return 0;
+    }
+
+    return this.canvasDom.height / 100 * per;
+  };
+
+  this.draw = function () {
+    root.ctx.clearRect(0, 0, root.getCanvasWidth(100), root.getCanvasHeight(100));
+    this.elements.forEach(function (element) {
+      element.draw(root);
+      element.update(root);
+    });
+    setTimeout(function () {
+      root.draw();
+    }, 20);
+  }; // NUI STAFF
+
+
+  var content = (0, _helper.getDom)("nui-commander-container");
+  var video = (0, _helper.getDom)('webcam');
+  this.blockIndicatorSize = 8;
+
+  if (root.options.domVisual == true) {
+    for (var j = 0; j < root.blockIndicatorSize * root.blockIndicatorSize; j++) {
+      var domIndicator = document.createElement("div");
+      domIndicator.setAttribute("id", "note" + j);
+      domIndicator.setAttribute("class", "note");
+      domIndicator.innerHTML = `
+          <div class="gui-func-field" > field ` + j + ` </div>
+      `;
+      (0, _helper.getDom)("xylo").appendChild(domIndicator);
+    }
+  }
+
+  var notesPosY = [];
+  var notesPosX = [];
+
+  function hasGetUserMedia() {
+    // Note: Opera builds are unprefixed.
+    return !!(navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+  }
+
+  if (hasGetUserMedia()) {
+    console.log("hasGetUserMedia TRUE");
+  } else {
+    console.warn("hasGetUserMedia FALSE");
+    return;
+  }
+
+  var webcamError = function (e) {
+    alert('Webcam error!', e);
+  };
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({
+      video: true
+    }).then(function (stream) {
+      video.srcObject = stream;
+      initialize();
+    }, webcamError);
+  } else if (navigator.getUserMedia) {
+    navigator.getUserMedia({
+      video: true
+    }, function (stream) {
+      video.srcObject = stream;
+      initialize();
+    }, webcamError);
+  } else if (navigator.webkitGetUserMedia) {
+    navigator.webkitGetUserMedia({
+      video: true
+    }, function (stream) {
+      video.srcObject = window.webkitURL.createObjectURL(stream);
+      initialize();
+    }, webcamError);
+  } else {//video.src = 'somevideo.webm'; // fallback.
+  }
+
+  var AudioContext = window.AudioContext || window.webkitAudioContext || null;
+  var timeOut, lastImageData;
+  var canvasSource = (0, _helper.getDom)("canvas-source");
+  var canvasBlended = (0, _helper.getDom)("canvas-blended");
+  var contextSource = canvasSource.getContext('2d');
+  var contextBlended = canvasBlended.getContext('2d');
+  var soundContext;
+  var bufferLoader;
+  this.notes = []; // mirror video
+
+  contextSource.translate(canvasSource.width, 0);
+  contextSource.scale(-1, 1);
+  var c = 5;
+
+  function initialize() {
+    if (!AudioContext) {
+      alert("AudioContext not supported!");
+    } else {
+      setTimeout(loadSounds, 1000);
+    }
+  }
+
+  function loadSounds() {
+    soundContext = new AudioContext();
+    bufferLoader = new _bufferLoad.BufferLoader(soundContext, ['sounds/note1.mp3', 'sounds/note2.mp3', 'sounds/note3.mp3', 'sounds/note4.mp3', 'sounds/note5.mp3', 'sounds/note6.mp3', 'sounds/note7.mp3', 'sounds/note8.mp3'], finishedLoading);
+    bufferLoader.load();
+  }
+
+  function finishedLoading(bufferList) {
+    for (var j = 0; j < root.blockIndicatorSize; j++) {
+      for (var d = 0; d < root.blockIndicatorSize; d++) {
+        notesPosX.push(d * root.getCanvasWidth(100) / root.blockIndicatorSize);
+        notesPosY.push(j * root.getCanvasHeight(100) / root.blockIndicatorSize);
+      }
+    }
+
+    for (var i = 0; i < root.blockIndicatorSize * root.blockIndicatorSize; i++) {
+      var source = soundContext.createBufferSource();
+      source.buffer = bufferList[i];
+      source.connect(soundContext.destination);
+      var note = null;
+
+      if (root.options.domVisual == true) {
+        note = {
+          note: source,
+          ready: true,
+          visual: (0, _helper.getDom)("note" + i)
+        };
+      } else {
+        note = {
+          note: source,
+          ready: true,
+          visual: false
+        };
+      }
+
+      note.area = {
+        x: notesPosX[i],
+        y: notesPosY[i],
+        w: root.getCanvasWidth(100) / root.blockIndicatorSize,
+        h: root.getCanvasHeight(100) / root.blockIndicatorSize,
+        status: true
+      };
+      root.notes.push(note);
+    }
+
+    if (root.options.domVisual == false) {
+      root.checkAreas = root.checkAreasOverride1;
+    }
+
+    start();
+  }
+
+  function playSound(obj) {
+    if (!obj.ready) return;
+    var source = soundContext.createBufferSource();
+    source.buffer = obj.note.buffer;
+    source.connect(soundContext.destination);
+    source.start(0);
+    obj.ready = false; // throttle the note
+
+    setTimeout(setNoteReady, 400, obj);
+  }
+
+  function setNoteReady(obj) {
+    obj.ready = true;
+  }
+
+  function start() {
+    // getDom(canvasSource).delay(600).fadeIn();
+    // getDom(canvasBlended).delay(600).fadeIn();
+    root.update();
+  }
+
+  window.requestAnimFrame = function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  }();
+
+  this.update = function () {
+    if (!root.systemOnPause) {
+      root.drawVideo();
+      root.blend();
+      root.checkAreas();
+      requestAnimFrame(root.update);
+    }
+  };
+
+  this.drawVideo = function () {
+    contextSource.drawImage(video, 0, 0, video.width, video.height);
+  };
+
+  this.blend = function () {
+    var width = canvasSource.width;
+    var height = canvasSource.height; // get webcam image data
+
+    var sourceData = contextSource.getImageData(0, 0, width, height); // create an image if the previous image doesn’t exist
+
+    if (!lastImageData) lastImageData = contextSource.getImageData(0, 0, width, height); // create a ImageData instance to receive the blended result
+
+    var blendedData = contextSource.createImageData(width, height); // blend the 2 images
+
+    differenceAccuracy(blendedData.data, sourceData.data, lastImageData.data); // draw the result in a canvas
+
+    contextBlended.putImageData(blendedData, 0, 0); // store the current webcam image
+
+    lastImageData = sourceData;
+  };
+
+  function fastAbs(value) {
+    // funky bitwise, equal Math.abs
+    return (value ^ value >> 31) - (value >> 31);
+  }
+
+  function threshold(value) {
+    return value > 0x15 ? 0xFF : 0;
+  }
+
+  function difference(target, data1, data2) {
+    // blend mode difference
+    if (data1.length != data2.length) return null;
+    var i = 0;
+
+    while (i < data1.length * 0.25) {
+      target[4 * i] = data1[4 * i] == 0 ? 0 : fastAbs(data1[4 * i] - data2[4 * i]);
+      target[4 * i + 1] = data1[4 * i + 1] == 0 ? 0 : fastAbs(data1[4 * i + 1] - data2[4 * i + 1]);
+      target[4 * i + 2] = data1[4 * i + 2] == 0 ? 0 : fastAbs(data1[4 * i + 2] - data2[4 * i + 2]);
+      target[4 * i + 3] = 0xFF;
+      ++i;
+    }
+  }
+
+  function differenceAccuracy(target, data1, data2) {
+    if (data1.length != data2.length) return null;
+    var i = 0;
+
+    while (i < data1.length * 0.25) {
+      var average1 = (data1[4 * i] + data1[4 * i + 1] + data1[4 * i + 2]) / 3;
+      var average2 = (data2[4 * i] + data2[4 * i + 1] + data2[4 * i + 2]) / 3;
+      var diff = threshold(fastAbs(average1 - average2));
+      target[4 * i] = diff;
+      target[4 * i + 1] = diff;
+      target[4 * i + 2] = diff;
+      target[4 * i + 3] = 0xFF;
+      ++i;
+    }
+  }
+
+  this.checkAreas = function () {
+    // loop over the note areas
+    for (var r = 0; r < root.notes.length; ++r) {
+      if (root.notes[r].area.status == true) {
+        var blendedData = contextBlended.getImageData(root.notes[r].area.x, root.notes[r].area.y, root.notes[r].area.w, root.notes[r].area.h);
+        var i = 0;
+        var average = 0; // loop over the pixels
+
+        while (i < blendedData.data.length * 0.25) {
+          // make an average between the color channel
+          average += (blendedData.data[i * 4] + blendedData.data[i * 4 + 1] + blendedData.data[i * 4 + 2]) / 3;
+          ++i;
+        } // calculate an average between of the color values of the note area
+
+
+        average = Math.round(average / (blendedData.data.length * 0.25));
+
+        if (average > 10) {
+          // over a small limit, consider that a movement is detected
+          // play a note and show a visual feedback to the user
+          playSound(root.notes[r]);
+
+          if (root.notes[r].visual) {
+            root.notes[r].visual.style.opacity = 1;
+          }
+
+          if (typeof root.interActionController.main[r] !== 'undefined' && typeof root.interActionController.main[r].action !== 'undefined') {
+            root.interActionController.main[r].action();
+          }
+        } else {
+          if (root.notes[r].visual.style.opacity <= 0) {
+            root.notes[r].visual.style.opacity = 0;
+          } else {
+            root.notes[r].visual.style.opacity -= 0.1;
+          }
+        }
+      }
+    }
+  };
+
+  this.checkAreasOverride1 = function () {
+    for (var r = 0; r < root.notes.length; ++r) {
+      if (root.notes[r].area.status == true) {
+        var blendedData = contextBlended.getImageData(root.notes[r].area.x, root.notes[r].area.y, root.notes[r].area.w, root.notes[r].area.h);
+        var i = 0;
+        var average = 0;
+
+        while (i < blendedData.data.length * 0.25) {
+          average += (blendedData.data[i * 4] + blendedData.data[i * 4 + 1] + blendedData.data[i * 4 + 2]) / 3;
+          ++i;
+        }
+
+        average = Math.round(average / (blendedData.data.length * 0.25));
+
+        if (average > 10) {
+          playSound(root.notes[r]);
+
+          if (typeof root.interActionController.main[r] !== 'undefined' && typeof root.interActionController.main[r].action !== 'undefined') {
+            root.interActionController.main[r].action();
+          }
+        } else {
+          /*
+          if (root.notes[r].visual.style.opacity <= 0) {
+            root.notes[r].visual.style.opacity = 0;
+          } else {
+            root.notes[r].visual.style.opacity -= 0.1;
+          }
+          */
+        }
+      }
+    }
+  };
+}
+
+},{"./helper":62,"./system/buffer-load":63}],59:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.interActionController = void 0;
+
+var _bufferLoad = require("./system/buffer-load");
+
+var interActionController = {
+  main: []
+};
+exports.interActionController = interActionController;
+
+for (var x = 0; x < 64; x++) {
+  interActionController.main.push(new _bufferLoad.modelBlock(x));
+}
+
+interActionController.main[0].onAction = function () {
+  console.log("Default command ... ", this.status);
+};
+
+},{"./system/buffer-load":63}],60:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.indicatorsBlocks = void 0;
+
+/**
+ * @description Inline code used to make easy default setup.
+ * For opacity, text, icons(images).
+ * No draws for empty string
+ */
+let indicatorsBlocks = {
+  name: "this",
+  shemaX: 8,
+  shemaY: 8,
+  opacity: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  text: ["HOME", "free", "", "", "", "", "", "ADD SOMETHING", "CONTROL 1", "", "", "", "", "", "", "", "CONTROL 2", "", "", "", "", "", "", "", "CONTROL 3", "", "", "", "", "", "", "", "CONTROL 4", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+  iconsStyle: {
+    localScale: 0
+  },
+  icons: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  draw: function (engine) {
+    var c = 0;
+    engine.ctx.save();
+
+    for (var j = 0; j < this.shemaX; j++) {
+      for (var i = 0; i < this.shemaY; i++) {
+        if (typeof engine.interActionController.main[c] !== 'undefined' && engine.interActionController.main[c].status == true) {
+          this.opacity[c] = this.opacity[c] + 0.02;
+          engine.ctx.fillStyle = "rgba(250, 250, 100, " + this.opacity[c] + " )";
+          engine.ctx.fillRect(engine.getCanvasWidth(100) / this.shemaX * i, engine.getCanvasHeight(100) / this.shemaY * j, engine.getCanvasWidth(100) / this.shemaX, engine.getCanvasHeight(100) / this.shemaY);
+        } else {
+          engine.ctx.fillStyle = "rgba(250, 250, 100, " + this.opacity[c] + " )";
+          engine.ctx.fillRect(engine.getCanvasWidth(100) / this.shemaX * i, engine.getCanvasHeight(100) / this.shemaY * j, engine.getCanvasWidth(100) / this.shemaX, engine.getCanvasHeight(100) / this.shemaY);
+        }
+        /* Disabled
+         engine.ctx.strokeRect(
+          engine.getCanvasWidth(100) / this.shemaX * j,
+          engine.getCanvasHeight(100) / this.shemaY * i,
+          engine.getCanvasWidth(100) / this.shemaX,
+          engine.getCanvasHeight(100) / this.shemaY);
+        */
+
+
+        var localScale = this.iconsStyle.localScale; // draw icons
+
+        if (typeof this.icons[c] !== 'undefined' && this.icons[c] !== null) {
+          engine.ctx.drawImage(this.icons[c], engine.getCanvasWidth(100) / this.shemaX * i + localScale, engine.getCanvasHeight(100) / this.shemaY * j + localScale, engine.getCanvasWidth(100) / this.shemaX - 2 * localScale, engine.getCanvasHeight(100) / this.shemaY - 2 * localScale);
+        } else if (this.text[c] != '') {
+          // For improve                          text opacity
+          engine.ctx.fillStyle = "rgba(250, 100, 100, 1)";
+          engine.ctx.fillRect(engine.getCanvasWidth(100) / this.shemaX * j, engine.getCanvasHeight(100) / this.shemaY * i, engine.getCanvasWidth(100) / this.shemaX, engine.getCanvasHeight(2.1));
+          engine.ctx.fillStyle = "black";
+          engine.ctx.font = "16px arial";
+          engine.ctx.fillText(this.text[c], engine.getCanvasWidth(100) / this.shemaX * j, engine.getCanvasHeight(100) / this.shemaY * i + 10, engine.getCanvasWidth(12.5), engine.getCanvasHeight(12.5));
+        }
+
+        c++;
+      }
+    }
+
+    engine.ctx.restore();
+  },
+  update: function () {
+    this.opacity.forEach(function (item, index, array) {
+      if (item > 0) {
+        array[index] = array[index] - 0.004;
+      } else {
+        array[index] = 0;
+      }
+    });
+  }
+};
+exports.indicatorsBlocks = indicatorsBlocks;
+
+},{}],61:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.nuiMsgBox = nuiMsgBox;
+
+function nuiMsgBox(textMsg, callback) {
+  this.name = "nuiMsgBox";
+  this.sensitivity = "mid";
+  this.callback = callback;
+  this.shemaX = 8;
+  this.shemaY = 8;
+  this.yesText = "YES";
+  this.noText = "NO";
+  this.messageText = textMsg;
+  this.myOpacity = 0.3;
+
+  this.draw = function (engine) {
+    engine.ctx.save();
+    engine.ctx.fillStyle = "rgba(10, 150, 110, " + this.myOpacity + " )";
+    engine.ctx.fillRect(engine.getCanvasWidth(100) / this.shemaX * 1, engine.getCanvasHeight(100) / this.shemaY * 1, engine.getCanvasWidth(100) / this.shemaX * 6, engine.getCanvasHeight(100) / this.shemaY * 2);
+    engine.ctx.fillStyle = "black";
+    engine.ctx.font = "30px sans-serif";
+    engine.ctx.fillText(this.messageText, engine.getCanvasWidth(100) / this.shemaX * 2, engine.getCanvasHeight(100) / this.shemaY * 1.5, engine.getCanvasWidth(35), engine.getCanvasHeight(9));
+    engine.ctx.fillStyle = "rgba(210, 50, 110, " + this.myOpacity + " )";
+    engine.ctx.fillRect(engine.getCanvasWidth(100) / this.shemaX * 1, engine.getCanvasHeight(100) / this.shemaY * 2, engine.getCanvasWidth(100) / this.shemaX * 3, engine.getCanvasHeight(100) / this.shemaY * 1);
+    engine.ctx.fillStyle = "white";
+    engine.ctx.fillText(this.yesText, engine.getCanvasWidth(100) / this.shemaX * 2, engine.getCanvasHeight(100) / this.shemaY * 2.7, engine.getCanvasWidth(15), engine.getCanvasHeight(9));
+    engine.ctx.fillStyle = "rgba(210, 90, 110, " + this.myOpacity + " )";
+    engine.ctx.fillRect(engine.getCanvasWidth(100) / this.shemaX * 4, engine.getCanvasHeight(100) / this.shemaY * 2, engine.getCanvasWidth(100) / this.shemaX * 3, engine.getCanvasHeight(100) / this.shemaY * 1);
+    engine.ctx.fillStyle = "black";
+    engine.ctx.fillText(this.noText, engine.getCanvasWidth(100) / this.shemaX * 5.1, engine.getCanvasHeight(100) / this.shemaY * 2.7, engine.getCanvasWidth(35), engine.getCanvasHeight(9));
+    engine.ctx.restore();
+  };
+
+  this.update = function (engine) {
+    var y1 = engine.interActionController.main[17].status;
+    var y2 = engine.interActionController.main[18].status;
+    var y3 = engine.interActionController.main[19].status;
+    var n1 = engine.interActionController.main[20].status;
+    var n2 = engine.interActionController.main[21].status;
+    var n3 = engine.interActionController.main[22].status;
+
+    if (this.sensitivity === "mid") {
+      if (n1 === true && n2 === true || n2 === true && n3 === true) {
+        console.log("MsgBox answer is no.");
+        this.callback("no");
+      }
+
+      if (y1 === true && y2 === true || y2 === true && y3 === true) {
+        console.log("MsgBox answer is yes.");
+        this.callback("yes");
+      }
+    }
+  };
+}
+
+},{}],62:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DetectBrowser = DetectBrowser;
+exports.getDom = getDom;
+exports.asyncLoad = asyncLoad;
+exports.SCRIPT = void 0;
+
+function DetectBrowser() {
+  var HREFF,
+      HREFTXT = "unknown";
+  this.NAVIGATOR = navigator.userAgent;
+  var NAV = navigator.userAgent;
+  var gecko, navIpad, operatablet, navIphone, navFirefox, navChrome, navOpera, navSafari, navandroid, mobile, navMozilla, navUbuntu, navLinux;
+  navLinux = NAV.match(/Linux/gi);
+  navUbuntu = NAV.match(/Ubuntu/gi);
+  gecko = NAV.match(/gecko/gi);
+  navOpera = NAV.match(/Opera|OPR\//) ? true : false;
+  operatablet = NAV.match(/Tablet/gi);
+  navIpad = NAV.match(/ipad/gi);
+  navIphone = NAV.match(/iphone/gi);
+  navFirefox = NAV.match(/Firefox/gi);
+  navMozilla = NAV.match(/mozilla/gi);
+  navChrome = NAV.match(/Chrome/gi);
+  navSafari = NAV.match(/safari/gi);
+  navandroid = NAV.match(/android/gi);
+  mobile = NAV.match(/mobile/gi);
+  window["TYPEOFANDROID"] = 0;
+  window["NOMOBILE"] = 0;
+  var mobile = /iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase());
+
+  if (mobile) {
+    var userAgent = navigator.userAgent.toLowerCase();
+
+    if (userAgent.search("android") > -1 && userAgent.search("mobile") > -1) {
+      console.log("ANDROID MOBILE");
+    } else if (userAgent.search("android") > -1 && !(userAgent.search("mobile") > -1)) {
+      console.log(" ANDROID TABLET ");
+      TYPEOFANDROID = 1;
+    }
+  } else {
+    NOMOBILE = 1;
+  } //  FIREFOX za android
+
+
+  if (navFirefox && navandroid && TYPEOFANDROID == 0) {
+    HREFF = "#";
+    HREFTXT = "mobile_firefox_android";
+  } //  FIREFOX za android T
+
+
+  if (navFirefox && navandroid && TYPEOFANDROID == 1) {
+    HREFF = "#";
+    HREFTXT = "mobile_firefox_android_tablet";
+  } // OPERA ZA ANDROID
+
+
+  if (navOpera && navandroid) {
+    HREFF = "#";
+    HREFTXT = "opera_mobile_android";
+  } // provera
+  // OPERA ZA ANDROID TABLET
+
+
+  if (navOpera && navandroid && operatablet) {
+    HREFF = "#";
+    HREFTXT = "opera_mobile_android_tablet";
+  } // provera
+  //  safari mobile za IPHONE - i  safari mobile za IPAD i CHROME za IPAD
+
+
+  if (navSafari) {
+    var Iphonesafari = NAV.match(/iphone/gi);
+
+    if (Iphonesafari) {
+      HREFF = "#";
+      HREFTXT = "safari_mobile_iphone";
+    } else if (navIpad) {
+      HREFF = "#";
+      HREFTXT = "mobile_safari_chrome_ipad";
+    } else if (navandroid) {
+      HREFF = "#";
+      HREFTXT = "android_native";
+    }
+  } // TEST CHROME
+
+
+  if (navChrome && navSafari && navMozilla && TYPEOFANDROID == 1) {
+    HREFF = "#";
+    HREFTXT = "mobile_chrome_android_tablet";
+  }
+
+  if (navChrome && navSafari && navMozilla && TYPEOFANDROID == 0) {
+    HREFF = "#";
+    HREFTXT = "mobile_chrome_android";
+  }
+
+  if (navChrome && TYPEOFANDROID == 0) {
+    HREFF = "#";
+    HREFTXT = "chrome_browser";
+  }
+
+  if (navMozilla && NOMOBILE == 1 && gecko && navFirefox) {
+    HREFF = "#";
+    HREFTXT = "firefox_desktop";
+  }
+
+  if (navOpera && TYPEOFANDROID == 0 && !mobile) {
+    HREFF = "#";
+    HREFTXT = "opera_desktop";
+  } //linux
+
+
+  if (navUbuntu && navMozilla && navFirefox && navLinux) {
+    HREFF = "#";
+    HREFTXT = "firefox_desktop_linux";
+  }
+
+  if (navMozilla && navLinux && navChrome && navSafari) {
+    HREFF = "#";
+    HREFTXT = "chrome_desktop_linux";
+  }
+
+  if (navMozilla && navLinux && navChrome && navSafari && navOpera) {
+    HREFF = "#";
+    HREFTXT = "opera_desktop_linux";
+  }
+  /**
+   * @description Template for this view's container...
+   * NOMOBILE = 1 means desktop platform
+   * This is ENUMERATORS for property NAME :
+   * "mobile_firefox_android"
+   * "mobile_firefox_android_tablet"
+   * "opera_mobile_android"
+   * "opera_mobile_android_tablet"
+   * "safari_mobile_iphone"
+   * "mobile_safari_chrome_ipad"
+   * "android_native"
+   * "mobile_chrome_android_tablet"
+   * "mobile_chrome_android"
+   * "chrome_browser"
+   * "firefox_desktop"
+   * "opera_desktop"
+   * "firefox_desktop_linux"
+   * "chrome_desktop_linux"
+   * "opera_desktop_linux" .
+   * @property NAME
+   * @type {String}
+   * @default "unknown"
+   */
+
+
+  this.NAME = HREFTXT;
+  /**
+   * NOMOBILE = 1 Means desktop platform (Any win , mac or linux etc..)
+   * NOMOBILE = 2 Means mobile platform (iOS , android etc.)
+   * @property NOMOBILE
+   * @type Number
+   * @default "unknown"
+   */
+
+  this.NOMOBILE = NOMOBILE;
+}
+
+function getDom(id) {
+  return document.getElementById(id);
+}
+
+var SCRIPT = {
+  SCRIPT_ID: 0,
+  SINHRO_LOAD: {},
+  LOAD: function addScript(src) {
+    var s = document.createElement("script");
+
+    s.onload = function () {
+      SCRIPT.SCRIPT_ID++;
+      console.log("Script id loaded : " + SCRIPT.SCRIPT_ID + " with src : " + this.src);
+    };
+
+    s.setAttribute("src", src);
+    document.body.appendChild(s);
+  }
+};
+exports.SCRIPT = SCRIPT;
+
+function asyncLoad(path, callback) {
+  if (typeof callback === "undefined") {
+    callback = function () {};
+  }
+
+  var nuiScript = document.createElement("script");
+  nuiScript.src = path;
+  document.head.appendChild(nuiScript);
+
+  nuiScript.onload = function () {
+    callback();
+  };
+}
+
+},{}],63:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.BufferLoader = BufferLoader;
+exports.modelBlock = modelBlock;
+
+function BufferLoader(context, urlList, callback) {
+  this.context = context;
+  this.urlList = urlList;
+  this.onload = callback;
+  this.bufferList = new Array();
+  this.loadCount = 0;
+}
+
+BufferLoader.prototype.loadBuffer = function (url, index) {
+  // Load buffer asynchronously
+  var request = new XMLHttpRequest();
+  request.open("GET", url, true);
+  request.responseType = "arraybuffer";
+  var loader = this;
+
+  request.onload = function () {
+    // Asynchronously decode the audio file data in request.response
+    loader.context.decodeAudioData(request.response, function (buffer) {
+      if (!buffer) {
+        alert('error decoding file data: ' + url);
+        return;
+      }
+
+      loader.bufferList[index] = buffer;
+      if (++loader.loadCount == loader.urlList.length) loader.onload(loader.bufferList);
+    });
+  };
+
+  request.onerror = function () {
+    alert('BufferLoader: XHR error');
+  };
+
+  request.send();
+};
+
+BufferLoader.prototype.load = function () {
+  for (var i = 0; i < this.urlList.length; ++i) this.loadBuffer(this.urlList[i], i);
+};
+
+function modelBlock(x) {
+  this.index = x;
+  this.status = false;
+
+  this.action = function () {
+    var localRoot = this;
+    setTimeout(function () {
+      localRoot.status = false;
+    }, 350);
+
+    if (localRoot.status == false) {
+      this.onAction();
+      this.status = true;
+    }
+  }; // For override
+
+
+  this.onAction = function () {};
+}
+
+},{}],64:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -39651,7 +40500,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],58:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39705,7 +40554,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/roulette":61,"matrix-engine":12}],59:[function(require,module,exports){
+},{"./scripts/roulette":69,"matrix-engine":12}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39866,7 +40715,7 @@ class ClientConfig {
 var _default = ClientConfig;
 exports.default = _default;
 
-},{}],60:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39882,6 +40731,8 @@ var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 var _standardFonts = require("../../matrix-slot/scripts/standard-fonts");
 
 var _matrixEnginePlugins = require("matrix-engine-plugins");
+
+var _tableEvents = require("./table-events");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -39939,37 +40790,35 @@ var create2dHUD = ref => {
 
 exports.create2dHUD = create2dHUD;
 
-function balanceDecorations(nidza, playerInfo, ref) {
-  var A1 = 111,
-      f1 = 2,
-      p1 = 1 / 2,
-      d1 = 0.2;
-  var A2 = 22,
-      f2 = 4,
-      p2 = 3 / 2,
-      d2 = 0.0315;
-  var A3 = 31,
-      f3 = 4,
-      p3 = 13 / 15,
-      d3 = 0.0012;
-  var A4 = 50,
-      f4 = 4,
-      p4 = 1,
-      d4 = 0.012;
-  var r = 110,
-      g = 110,
-      b = 110;
-
-  var makeHarmonograph = function (c) {
-    f1 = f1 / 10 % 10;
-    f2 = f2 / 40 % 10;
-    f3 = (f3 + Math.random() / 80) % 10;
-    f4 = (f4 + Math.random() / 411) % 10;
-    p1 += 0.5 % (Math.PI * 2);
-    if (p1 > 500) p1 = 0;
-    drawHarmonograph(c);
-  };
-
+function balanceDecorations(nidza, wwwwwwwwwwwwwwww, ref) {
+  // var A1 = 111,
+  //   f1 = 2,
+  //   p1 = 1 / 2,
+  //   d1 = 0.2;
+  // var A2 = 22,
+  //   f2 = 4,
+  //   p2 = 3 / 2,
+  //   d2 = 0.0315;
+  // var A3 = 31,
+  //   f3 = 4,
+  //   p3 = 13 / 15,
+  //   d3 = 0.0012;
+  // var A4 = 50,
+  //   f4 = 4,
+  //   p4 = 1,
+  //   d4 = 0.012;
+  // var r = 110,
+  //   g = 110,
+  //   b = 110;
+  // var makeHarmonograph = function(c) {
+  //   f1 = (f1 / 10) % 10;
+  //   f2 = (f2 / 40) % 10;
+  //   f3 = (f3 + Math.random() / 80) % 10;
+  //   f4 = (f4 + Math.random() / 411) % 10;
+  //   p1 += 0.5 % (Math.PI * 2);
+  //   if(p1 > 500) p1 = 0;
+  //   drawHarmonograph(c);
+  // }
   var drawHarmonograph = function (ctx) {
     ctx.clearRect(0, 0, 600, 400);
     ctx.save();
@@ -39997,18 +40846,19 @@ function balanceDecorations(nidza, playerInfo, ref) {
       if (e instanceof CanvasRenderingContext2D == false) return; // e.fillStyle = 'red';
       // makeHarmonograph(e)
       // e.clearRect(0, 0, 600, 400);
+      // e.fillStyle = "rgb(" + matrixEngine.utility.randomIntFromTo(0,250) + "," +  matrixEngine.utility.randomIntFromTo(0,250) + "," +  matrixEngine.utility.randomIntFromTo(0,250) + ")";
+      // e.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
 
-      e.fillStyle = "rgb(" + A1 + "," + g + "," + b + ")";
-      e.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
+      e.fillStyle = "rgb(113,145,144)";
       e.fillRect(0, 0, 600, 400);
       e.fillStyle = 'rgba(0,0,0,0.4)';
-      e.fillRect(50, 50, 100 + p1, 100);
-      e.fillRect(50, 20, 500 - p1, 20);
-      e.fillRect(50, 170, 500 - p1, 20);
+      e.fillRect(50, 50, 100, 100);
+      e.fillRect(50, 20, 500, 20);
+      e.fillRect(50, 170, 500, 20);
       e.fillStyle = 'rgba(250,250,250,1)';
       e.font = 'bold 60px stormfaze';
       e.textAlign = 'left';
-      e.fillText(`${ref.playerInfo.balance} ${ref.playerInfo.currency}`, 350, byY_.UPDATE(), 200, 40);
+      e.fillText(`${ref.playerInfo.balance} ${ref.playerInfo.currency}`, 350, 95, 200, 40);
     },
     position: {
       x: 10,
@@ -40040,8 +40890,11 @@ function createStatusBoxHUD(nidza, playerInfo) {
       }
     }; // console.log('Player info 2d draws ', playerInfo)
 
+    let last10 = [];
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBox');
+    var previewR__small = '';
+    var previewR__ = '';
     var previewR = '';
     var previewTitle = 'matrix roulette 1.0 ' + (soundsEnabled() == true ? ' sounds: ON' : ' sounds Off');
     var colorForCOLOR = 'rgba(120,0,0,0.4)';
@@ -40049,7 +40902,6 @@ function createStatusBoxHUD(nidza, playerInfo) {
     var colorForLastMoment = 'rgba(255,15,15,1)';
     var p1 = 0;
     addEventListener('MEDITATE_SERVER', e => {
-      // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       p1 = e.detail * 17;
       colorForCOLOR = colorForOpenGame;
     });
@@ -40059,8 +40911,34 @@ function createStatusBoxHUD(nidza, playerInfo) {
       colorForCOLOR = colorForLastMoment;
     });
     addEventListener('RESULTS_FROM_SERVER', e => {
-      // console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
-      previewR = '🟥' + e.detail;
+      console.log('RESULTS_FROM_SERVER ADD TO LAST 10 ', e.detail);
+      last10.push(e.detail);
+
+      if (_tableEvents.RULES.red.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail;
+        previewR__ = '🔴';
+      } else if (_tableEvents.RULES.black.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail;
+        previewR__ = '⚫';
+      } else if (e.detail == 0) {
+        previewR = 'ZERO ' + e.detail;
+        previewR__ = '';
+      }
+    });
+    addEventListener('RESULTS_FROM_MANUAL', e => {
+      console.log('RESULTS_FROM_MANUAL ADD TO LAST 10 ', e.detail);
+      last10.push(e.detail);
+
+      if (_tableEvents.RULES.red.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail;
+        previewR__ = '🔴';
+      } else if (_tableEvents.RULES.black.indexOf(parseInt(e.detail)) != -1) {
+        previewR = e.detail;
+        previewR__ = '⚫';
+      } else if (e.detail == 0) {
+        previewR = 'ZERO ' + e.detail;
+        previewR__ = '';
+      }
     });
     addEventListener('SET_STATUSBOX_TEXT', e => {
       console.log('previewTitle CONNECT WITH PROGRESS BAR IN 2d HUD', e);
@@ -40081,10 +40959,12 @@ function createStatusBoxHUD(nidza, playerInfo) {
         e.fillStyle = colorForLastMoment;
         e.fillRect(50, 180, 500 - 20 * 17, 3);
         e.fillRect(50, 209, 500 - 20 * 17, 3);
-        e.textAlign = 'left';
-        e.font = 'bold 60px stormfaze';
+        e.textAlign = 'center';
         e.fillStyle = 'rgba(250,250,250,1)'; // if (previewR != -1) 
 
+        e.font = 'bold 60px stormfaze';
+        e.fillText("" + previewR__.toString(), 340, 152, 250);
+        e.font = 'bold 40px stormfaze';
         e.fillText("" + previewR.toString(), 340, 148, 250);
         e.fillRect(170, 66, 250, 43);
         e.textAlign = 'left';
@@ -40102,6 +40982,23 @@ function createStatusBoxHUD(nidza, playerInfo) {
         // myGradient.addColorStop(1, 'orange');
         // e.fillStyle = myGradient;
         // e.fillRect(450 - p1.UPDATE(), 0, 5 , 200)
+        // last10
+
+        e.textAlign = 'center';
+        last10.forEach((winNum, index) => {
+          e.font = 'normal 23px stormfaze';
+
+          if (_tableEvents.RULES.red.indexOf(parseInt(winNum)) != -1) {
+            previewR__small = '🔴';
+          } else if (_tableEvents.RULES.black.indexOf(parseInt(winNum)) != -1) {
+            previewR__small = '⚫';
+          } else if (winNum == 0) {
+            previewR__small = 'ZERO';
+          }
+
+          e.fillText(previewR__small, 20 + index * 30, 230, 250, 25);
+          e.fillText(winNum, 20 + index * 30, 230, 250, 25);
+        });
       },
       position: {
         x: 10,
@@ -40139,11 +41036,11 @@ function create2dHUDStatusLine(nidza, status) {
     nidza.createNidzaIndentity(n);
     let texCanvas = document.getElementById('statusBoxLine');
     addEventListener('SET_STATUS_LINE_TEXT', e => {
-      T.fillText(e.detail); // console.log('STATUS LINE')
+      T.fillText(e.detail);
     }); // matrix effect in bg
+    // const cols = Math.floor(500 / 20) + 1;
+    // const ypos = Array(cols).fill(0);
 
-    const cols = Math.floor(500 / 20) + 1;
-    const ypos = Array(cols).fill(0);
     nidza.access.statusBoxLine.addCustom2dComponent({
       id: "CUSTOM",
       draw: function (e) {
@@ -40152,23 +41049,24 @@ function create2dHUDStatusLine(nidza, status) {
         e.textAlign = 'left';
         e.font = 'normal 45px stormfaze';
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`☞ ${T.text}🐲`, 10, 31, 550, 60);
-        e.fillStyle = '#0001'; // Set color to green and font to 15pt monospace in the drawing context
-
-        e.fillStyle = '#0f0';
-        e.font = '15pt monospace'; // for each column put a random character at the end
-
-        ypos.forEach((y, ind) => {
-          // generate a random character
-          const text = String.fromCharCode(Math.random() * 128); // x coordinate of the column, y coordinate is already given
-
-          const x = ind * 20; // render the character at (x, y)
-
-          e.fillText(text, x, y); // randomly reset the end of the column if it's at least 100px high
-
-          if (y > 100 + Math.random() * 10000) ypos[ind] = 0; // otherwise just move the y coordinate for the column 20px down,
-          else ypos[ind] = y + 20;
-        }); // var myGradient = e.createLinearGradient(0, 0, 650, 250);
+        e.fillText(`☞ ${T.text}🐲`, 10, 31, 550, 60); // e.fillStyle = '#0001';
+        // // Set color to green and font to 15pt monospace in the drawing context
+        // e.fillStyle = '#0f0';
+        // e.font = '15pt monospace';
+        // // for each column put a random character at the end
+        // ypos.forEach((y, ind) => {
+        //   // generate a random character
+        //   const text = String.fromCharCode(Math.random() * 128);
+        //   // x coordinate of the column, y coordinate is already given
+        //   const x = ind * 20;
+        //   // render the character at (x, y)
+        //   e.fillText(text, x, y);
+        //   // randomly reset the end of the column if it's at least 100px high
+        //   if(y > 100 + Math.random() * 10000) ypos[ind] = 0;
+        //   // otherwise just move the y coordinate for the column 20px down,
+        //   else ypos[ind] = y + 20;
+        // });
+        // var myGradient = e.createLinearGradient(0, 0, 650, 250);
         // myGradient.addColorStop(0, 'red');
         // myGradient.addColorStop(1, 'orange');
         // e.fillStyle = myGradient;
@@ -40189,7 +41087,98 @@ function create2dHUDStatusLine(nidza, status) {
   });
 }
 
-},{"../../matrix-slot/scripts/standard-fonts":65,"matrix-engine":12,"matrix-engine-plugins":7}],61:[function(require,module,exports){
+},{"../../matrix-slot/scripts/standard-fonts":73,"./table-events":71,"matrix-engine":12,"matrix-engine-plugins":7}],68:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _utility = require("matrix-engine/lib/utility");
+
+var _nuiCommander = require("nui-commander");
+
+class NUICommander {
+  nuiCommander = {};
+
+  actionSetViewWheel() {
+    dispatchEvent(new CustomEvent('view-wheel', {
+      detail: {}
+    }));
+    console.log('..................view-wheel.........ACr', _nuiCommander.interActionController);
+  }
+
+  actionSetViewTable() {
+    dispatchEvent(new CustomEvent('view-table', {
+      detail: {}
+    }));
+    console.log('...........................ACr', _nuiCommander.interActionController);
+  }
+
+  setTopPosition() {
+    (0, _utility.byId)('nui-commander-container').style.bottom = 'unset';
+    (0, _utility.byId)('nui-commander-container').style.top = '0';
+  }
+
+  setBottomPosition() {
+    (0, _utility.byId)('nui-commander-container').style.top = 'unset';
+    (0, _utility.byId)('nui-commander-container').style.bottom = '0';
+  }
+
+  constructor(isManual) {
+    console.log('.........................is manual.', isManual);
+    this.nuiCommander.drawer = new _nuiCommander.canvasEngine(_nuiCommander.interActionController, {
+      domVisual: true
+    });
+    this.nuiCommander.drawer.draw();
+    this.nuiCommander.indicatorsBlocks = _nuiCommander.indicatorsBlocks;
+    console.log('...........................interActionController', this.nuiCommander.indicatorsBlocks.text);
+
+    if (isManual == true) {
+      this.nuiCommander.indicatorsBlocks.text[0] = 'MR MANUAL'; // this.nuiCommander.indicatorsBlocks.text[1] = 'manual';
+    } else {
+      this.nuiCommander.indicatorsBlocks.text[0] = 'MR SERVER'; // this.nuiCommander.indicatorsBlocks.text[1] = 'server';
+    }
+
+    this.nuiCommander.indicatorsBlocks.text[8] = '';
+    this.nuiCommander.indicatorsBlocks.text[1] = '💠table';
+    _nuiCommander.interActionController.main[8].action = this.actionSetViewTable;
+    this.nuiCommander.indicatorsBlocks.text[8] = '👆👆';
+    _nuiCommander.interActionController.main[1].action = this.setTopPosition;
+    this.nuiCommander.indicatorsBlocks.text[16] = '👇👇';
+    _nuiCommander.interActionController.main[2].action = this.setBottomPosition;
+    this.nuiCommander.indicatorsBlocks.text[3] = '🎡wheel';
+    _nuiCommander.interActionController.main[24].action = this.actionSetViewWheel;
+    this.nuiCommander.drawer.elements.push(this.nuiCommander.indicatorsBlocks);
+    this.nuiCommander.drawer.elements.push(new _nuiCommander.nuiMsgBox("Do you love this project?", answer => {
+      console.log(answer);
+      this.nuiCommander.drawer.removeElementByName("nuiMsgBox");
+
+      if (answer == "yes") {
+        (0, _utility.byId)('nui-commander-container').style.width = '256px';
+        console.log("Good answer is yes.");
+        setTimeout(() => {
+          this.nuiCommander.drawer.elements.push(new _nuiCommander.nuiMsgBox("Do you wanna use NUICommander ?", answer => {
+            this.nuiCommander.drawer.removeElementByName("nuiMsgBox");
+
+            if (answer == "yes") {
+              alert("ok , interest idea.");
+            }
+          }));
+        }, 2000);
+      } else {
+        console.log("Answer is no."); // window.location.href = "https://google.com";
+      }
+    }));
+    console.info("nui-commander controls attached.");
+  }
+
+}
+
+exports.default = NUICommander;
+
+},{"matrix-engine/lib/utility":36,"nui-commander":57}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40213,6 +41202,10 @@ var _matrixEnginePlugins = require("matrix-engine-plugins");
 
 var _clientConfig = _interopRequireDefault(require("../client-config.js"));
 
+var _nui = _interopRequireDefault(require("./nui.js"));
+
+var _utility = require("matrix-engine/lib/utility.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -40220,12 +41213,19 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 class MatrixRoulette {
+  // General physics and ME world
   physics = null;
   world = null; // Gameplay staff
 
   tableBet = null;
   wheelSystem = null;
-  preventDBTrigger = null; // Top level vars
+  preventDBTrigger = null; // Optimal - control switch with url param nui=true or undefined.
+
+  NUI = null; // Top level vars
+  // - Initial line text
+  // - Delay interval on winning number
+  // - camera view bets/wheel
+  // - status of matix roulette server
 
   status = {
     text: new _matrixEnginePlugins.MTM('WELCOME MY FRIEND!', {
@@ -40238,39 +41238,66 @@ class MatrixRoulette {
   };
 
   constructor() {
+    // Player balance var
     this.playerInfo = {
       balance: 1000,
       currency: '$'
     };
-    var App = matrixEngine.App; // dev only
+    var App = matrixEngine.App; // dev only!
 
     window.App = App;
-    window.addEventListener('click', this.firstClick);
+
+    if (this.NUIEnabled() == true) {
+      // top level/custom arg
+      this.NUI = new _nui.default(this.isManual());
+      (0, _utility.byId)('nui-commander-container').style.width = '640px';
+      (0, _utility.byId)('nui-commander-container').style.height = '256px'; // Who to constrol size - best keep it default 640x480
+      // nui-commander must be upgraded.
+      // this.NUI.nuiCommander.drawer.canvasDom.height = '320'
+      // this.NUI.nuiCommander.drawer.canvasDom.width = '480'
+      // byId('canvas-source').width = 320;
+      // byId('canvas-source').height = 240;
+      // byId('webcam').width = 320;
+      // byId('webcam').height = 240;
+      // byId('canvas-blended').width = 320;
+      // byId('canvas-blended').height = 240;
+    } // HTML5 fix audios etc.
+
+
+    window.addEventListener('click', this.firstClick); // Matrix-engine staff
+
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
     App.camera.sceneControllerEdgeCameraYawRate = 0.01;
-    App.camera.speedAmp = 0.01;
-    this.preparePhysics();
-    this.tableBet = new _tableEvents.default(this.physics);
-    this.wheelSystem = new _wheel.default(this.physics);
-    this.attachMatrixRay();
+    App.camera.speedAmp = 0.01; // Add physics - ground and main instance of cannonjs
+
+    this.preparePhysics(); // Betting/Hovering/table screen/view
+
+    this.tableBet = new _tableEvents.default(this.physics); // Whole wheel system
+
+    this.wheelSystem = new _wheel.default(this.physics); // Matrix-engine raycast
+
+    this.attachMatrixRay(); // Game-play Events
+
     this.attachGamePlayEvents(); // nidza.js / 2d canvas small library
     // Text oriented - transformation also 3d context variant of components shader oriented.
 
-    this.nidza = new _nidza.Nidza();
-    this.setupCameraView('initbets'); // nidza.js small 2d canvas lib
+    this.nidza = new _nidza.Nidza(); // First view
 
-    this.addHUD(this.playerInfo);
+    this.setupCameraView('initbets'); // Add canvas2d context to webgl
+
+    this.addHUD(this.playerInfo); // Initial func for Networking general. Based on webRTC/MultiRTC lib.
+
     this.runVideoChat();
     this.cameraInMove = false;
 
     if (this.soundsEnabled() == true) {
       matrixEngine.App.sounds.createAudio('background', 'res/audios/mellow_club_vibe-stargazer_jazz.mp3');
-      matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3');
+      matrixEngine.App.sounds.createAudio('chip', 'res/audios/chip.mp3', 3);
       matrixEngine.App.sounds.createAudio('spining', 'res/audios/spining.mp3');
       matrixEngine.App.sounds.createAudio('spiningEnd', 'res/audios/spining-end.mp3');
       matrixEngine.App.sounds.createAudio('error', 'res/audios/error.mp3');
-      matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3');
+      matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3', 2);
       matrixEngine.App.sounds.audios.background.loop = true;
       matrixEngine.App.sounds.audios.background.play();
     }
@@ -40293,31 +41320,37 @@ class MatrixRoulette {
   };
 
   setupCameraView(type) {
-    // let OSC = matrixEngine.utility.OSCILLATOR;
-    if (type == this.status.cameraView) return; // console.log('current camera status:', this.status.cameraView)
+    var AMP = 0.5;
+
+    if (typeof matrixEngine.utility.QueryString.cameraSpeed == 'undefined' || matrixEngine.utility.QueryString.cameraSpeed == null) {// nothing for now
+    } else {
+      if (isNaN(parseFloat(matrixEngine.utility.QueryString.cameraSpeed)) == false) {
+        AMP = matrixEngine.utility.QueryString.cameraSpeed;
+      }
+    } // let OSC = matrixEngine.utility.OSCILLATOR;
+
+
+    if (type == this.status.cameraView) return;
 
     if (type == 'bets' && this.cameraInMove == false) {
       this.cameraInMove = true; // Disable user access to the camera
       // App.camera.SceneController = false;
 
-      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, 0.2);
-      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, 0.2); // trick OSC when min > max 
+      var c0 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.pitch, 54.970000000000034, AMP);
+      var c1 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.zPos, 11.526822219793473, AMP); // trick OSC when min > max! There exist better OSCILLATOR from nidza lib.
 
-      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, 0.2);
+      var c2 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.yPos, -7.49717201776934, AMP);
       this.internal_flag = 0;
       this.flagc0 = false;
       this.flagc1 = false;
       this.flagc2 = false;
 
       c0.on_maximum_value = () => {
-        // console.log('c0 max')
         this.status.cameraView = 'bets';
         this.internal_flag++;
         this.flagc0 = true;
 
         if (this.internal_flag == 3) {
-          // console.log('c0 stop max')
-          // Enable user access to the camera
           clearInterval(this.c0i);
           this.c0i = null;
           this.cameraInMove = false;
@@ -40328,14 +41361,11 @@ class MatrixRoulette {
       };
 
       c1.on_maximum_value = () => {
-        // console.log('c1 max')
         this.status.cameraView = 'bets';
         this.internal_flag++;
         this.flagc1 = true;
 
         if (this.internal_flag == 3) {
-          // console.log('c1 stop max')
-          // Enable user access to the camera
           clearInterval(this.c0i);
           this.c0i = null;
           this.cameraInMove = false;
@@ -40346,14 +41376,11 @@ class MatrixRoulette {
       };
 
       c2.on_maximum_value = () => {
-        // console.log('c2 max')
         this.status.cameraView = 'bets';
         this.internal_flag++;
         this.flagc2 = true;
 
         if (this.internal_flag == 3) {
-          // console.log('c2 stop max')
-          // Enable user access to the camera
           clearInterval(this.c0i);
           this.c0i = null;
           this.cameraInMove = false;
@@ -40375,15 +41402,15 @@ class MatrixRoulette {
         if (this.flagc2 == false) {
           matrixEngine.Events.camera.yPos = -c2.UPDATE();
         }
-      }, 15);
+      }, 1);
     } else if (type == 'wheel' && this.cameraInMove == false) {
       this.cameraInMove = true; // Disable user access to the camera
       // App.camera.SceneController = false;
       // trick OSC when min > max - OSCILLATOR from matrix engine utility must be upgraded...
 
-      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -52.970000000000034, 0.2);
-      var c1 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.zPos, 4.6962394866880635, 0.2);
-      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos, 19.500000000000007, 0.2);
+      var c0 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.pitch, -52.970000000000034, AMP);
+      var c1 = new matrixEngine.utility.OSCILLATOR(-matrixEngine.Events.camera.zPos, 4.6962394866880635, AMP);
+      var c2 = new matrixEngine.utility.OSCILLATOR(matrixEngine.Events.camera.yPos, 19.500000000000007, AMP);
       this.internal_flag = 0;
       this.flagc0 = false;
       this.flagc1 = false;
@@ -40395,8 +41422,6 @@ class MatrixRoulette {
         this.flagc0 = true;
 
         if (this.internal_flag == 3) {
-          console.log('c0 stop'); // Enable user access to the camera
-
           clearInterval(this.c0i);
           this.c0i = null;
           this.cameraInMove = false;
@@ -40412,8 +41437,6 @@ class MatrixRoulette {
         this.flagc1 = true;
 
         if (this.internal_flag == 3) {
-          console.log('c1 stop', this.c0i); // Enable user access to the camera
-
           clearInterval(this.c0i);
           this.c0i = null;
           this.cameraInMove = false;
@@ -40429,8 +41452,6 @@ class MatrixRoulette {
         this.flagc2 = true;
 
         if (this.internal_flag == 3) {
-          console.log('c2 stop'); // Enable user access to the camera
-
           clearInterval(this.c0i);
           this.c0i = null;
           this.cameraInMove = false;
@@ -40452,7 +41473,7 @@ class MatrixRoulette {
         if (this.flagc2 == false) {
           matrixEngine.Events.camera.yPos = c2.UPDATE();
         }
-      }, 15);
+      }, 1);
     } else {
       // bets default
       if (this.cameraInMove == true) return;
@@ -40463,7 +41484,7 @@ class MatrixRoulette {
   }
 
   runVideoChat() {
-    // Sending class reference
+    // Sending class reference `ClientConfig` not object/instance
     matrixEngine.Engine.activateNet(_clientConfig.default);
     var tex = {
       source: ["res/images/field.png"],
@@ -40552,7 +41573,7 @@ class MatrixRoulette {
           }
         }
       });
-    }); // hide netoworking div
+    }); // hide networking html dom div.
 
     setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200);
   }
@@ -40581,11 +41602,19 @@ class MatrixRoulette {
     }
   }
 
+  NUIEnabled() {
+    if (typeof matrixEngine.utility.QueryString.nui == 'undefined' || matrixEngine.utility.QueryString.nui == 'false' || matrixEngine.utility.QueryString.nui == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   attachMatrixRay() {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', ev => {
-      App.onlyClicksPass = true; // no need maybe ?!
+      App.onlyClicksPass = true; // no need maybe ?!!!?
 
       matrixEngine.raycaster.checkingProcedure(ev);
       setTimeout(() => {
@@ -40634,7 +41663,7 @@ class MatrixRoulette {
           dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
             detail: 'SPINNING'
           }));
-          console.log("SPIN ROULETTE PROCEDURE: ", ev.detail.hitObject.name);
+          console.log("SPIN PROCEDURE:", ev.detail.hitObject.name);
           dispatchEvent(new CustomEvent('SPIN', {
             detail: {
               type: 'manual'
@@ -40650,7 +41679,7 @@ class MatrixRoulette {
         return;
       }
 
-      console.log('VALIDATION BALANCE', this.playerInfo.balance >= 1);
+      console.log('dispatch=>chip-bet');
       if (this.playerInfo.balance >= 1) dispatchEvent(new CustomEvent("chip-bet", {
         detail: ev.detail.hitObject
       }));
@@ -40687,9 +41716,14 @@ class MatrixRoulette {
     if (this.isManual() == true) {
       window.addEventListener('matrix.roulette.win.number', ev => {
         // Final winning number
+        // For now only for manual status
         console.log('Winning number: ' + ev.detail);
+        this.tableBet.chips.removeLostChips(ev.detail);
         setTimeout(() => {
           this.setupCameraView('bets');
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+            detail: 'WIN NUMBER:' + ev.detail
+          }));
         }, this.status.winNumberMomentDelay);
       });
       addEventListener('SPIN', e => {
@@ -40698,6 +41732,12 @@ class MatrixRoulette {
           passive: true
         });
         this.setupCameraView('wheel');
+      });
+      addEventListener('view-wheel', e => {
+        this.setupCameraView('wheel');
+      });
+      addEventListener('view-table', e => {
+        this.setupCameraView('bets');
       });
     } // ONLY SYNTETIC - ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER
     // IT IS THE PHYSICS REALM
@@ -40832,7 +41872,8 @@ class MatrixRoulette {
     App.scene[n].glBlend.blendEnabled = true;
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[6];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-    App.scene.statusBox.rotation.rotx = 122;
+    App.scene.statusBox.rotation.rotx = 122; // Attaching canvas2d tot he webgl surface.
+
     (0, _dDraw.createStatusBoxHUD)(this.nidza, this.playerInfo).then(canvas2d => {
       App.scene.statusBox.streamTextures = {
         videoImage: canvas2d
@@ -40844,7 +41885,7 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"../client-config.js":59,"./2d-draw.js":60,"./table-events.js":63,"./wheel.js":64,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"nidza":39}],62:[function(require,module,exports){
+},{"../client-config.js":66,"./2d-draw.js":67,"./nui.js":68,"./table-events.js":71,"./wheel.js":72,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":36,"nidza":39}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40855,6 +41896,8 @@ exports.default = void 0;
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var CANNON = _interopRequireWildcard(require("cannon"));
+
+var _tableEvents = require("./table-events");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -40966,17 +42009,101 @@ class TableChips {
     });
   }
 
+  removeLostChips(winNumber) {
+    var winNumberColor = '';
+
+    if (_tableEvents.RULES.red.indexOf(parseInt(winNumber)) != -1) {
+      winNumberColor = 'red';
+    } else if (_tableEvents.RULES.black.indexOf(parseInt(winNumber)) != -1) {
+      winNumberColor = 'black';
+    } else if (e.detail == 0) {
+      winNumberColor = 'ZERO';
+    }
+
+    var test = this.register.filter(o => o.betPlace.tableEvents.chips > 0).map(o => {
+      console.log('ONLY PLAYED ', o);
+      return o;
+    });
+    test.forEach((item, index, array) => {
+      if (array[index].betPlace.name.indexOf('single') != -1) {
+        // it is a single number
+        if (winNumber != parseFloat(array[index].betPlace.name.split('gle')[1])) {
+          //
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1);
+        }
+      }
+
+      console.log('WINNER CORNER remove lost chips ');
+      var test = false,
+          passedCorner = false;
+
+      if (array[index].betPlace.name.indexOf('corner') != -1 && array[index].betPlace.name.split('orner').length == 2) {
+        test = array[index].betPlace.name.split('orner')[1].split('_');
+        test.forEach(num => {
+          if (winNumber == parseFloat(num)) {
+            passedCorner = true;
+          }
+        });
+        test.forEach(num => {
+          if (passedCorner == false) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(1);
+            passedCorner = null;
+          }
+        });
+      }
+
+      console.log('WINNER split remove lost chips ');
+      var testSplit = false,
+          passedSplit = false;
+
+      if (array[index].betPlace.name.indexOf('split') != -1 && array[index].betPlace.name.split('plit').length == 2) {
+        testSplit = array[index].betPlace.name.split('plit')[1].split('_');
+        testSplit.forEach(num => {
+          if (winNumber == parseFloat(num)) {
+            passedSplit = true;
+          }
+        });
+        testSplit.forEach(num => {
+          if (passedSplit == false) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(1);
+            passedSplit = null;
+          }
+        });
+      }
+
+      if (winNumberColor == 'red') {
+        // check zero name ???
+        if (array[index].betPlace.name == 'black' || array[index].betPlace.name == 'single0') {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1);
+          console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace);
+        }
+      } else if (winNumberColor == 'black') {
+        console.log('win is balck TEST FILTER2 ');
+
+        if (array[index].betPlace.name == 'red' || array[index].betPlace.name == 'single0') {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy(1);
+          console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace);
+        }
+      }
+    });
+  }
+
 }
 
 exports.default = TableChips;
 
-},{"cannon":5,"matrix-engine":12}],63:[function(require,module,exports){
+},{"./table-events":71,"cannon":5,"matrix-engine":12}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.default = exports.RULES = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
@@ -41005,6 +42132,8 @@ const RULES = {
  * This class used for bet place objects
  * To memory chips data.
  */
+
+exports.RULES = RULES;
 
 class TableEvents {
   chips = {};
@@ -41981,7 +43110,7 @@ class TableEvents {
 
 exports.default = TableEvents;
 
-},{"./table-chips.js":62,"matrix-engine":12}],64:[function(require,module,exports){
+},{"./table-chips.js":70,"matrix-engine":12}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42003,8 +43132,9 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * No collide because i use STATIC bodies
  */
 class Wheel {
-  ballBody = null;
-  speedRollInit = 0.15;
+  ballBody = null; // speedRollInit = 0.15;
+
+  speedRollInit = 0.20;
   rollTimer = null;
   ballCollideFlag = false;
 
@@ -42037,15 +43167,21 @@ class Wheel {
   momentOftouch = e => {
     if (typeof e.body.matrixRouletteId === 'undefined') return;
     console.log("Collided with number:", e.body.matrixRouletteId);
-    matrixEngine.App.sounds.play('spiningEnd');
-    matrixEngine.App.sounds.audios.spining.pause();
-    matrixEngine.App.sounds.audios.spining.currentTime = 0;
     dispatchEvent(new CustomEvent('matrix.roulette.win.number', {
       detail: e.body.matrixRouletteId
     }));
     this.ballBody.removeEventListener("collide", this.momentOftouch);
     this.ballCollideFlag = false;
-    matrixEngine.App.sounds.audios.spining.pause();
+
+    if (matrixEngine.App.sounds.audios.spining) {
+      try {
+        matrixEngine.App.sounds.play('spiningEnd');
+      } catch (err) {// unhandled
+      }
+
+      matrixEngine.App.sounds.audios.spining.pause();
+      matrixEngine.App.sounds.audios.spining.currentTime = 0;
+    }
   };
   fireBall = props => {
     if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
@@ -42234,6 +43370,7 @@ class Wheel {
   }
 
   animateRoll() {
+    console.warn('ONCE CALL!!!!!!!!!');
     this.C = 0;
     this.rollTimer = setInterval(() => {
       for (var i = 0; i < 37; i++) {
@@ -42251,16 +43388,16 @@ class Wheel {
         p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
         App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1.);
         App.scene['centerWheel' + i].physics.currentBody.position.set(p3.x, p3.y - 30, -0.2);
-        if (App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 1000;
+        if (App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 600;
       }
 
       this.C = this.C + this.speedRollInit;
 
       if (this.speedRollInit < 0.008) {// clearInterval(this.rollTimer)
       } else {
-        this.speedRollInit = this.speedRollInit - 0.002;
+        this.speedRollInit = this.speedRollInit - 0.001;
       }
-    }, 30);
+    }, 1);
   }
 
   addFields() {
@@ -42328,7 +43465,7 @@ class Wheel {
 
 exports.default = Wheel;
 
-},{"cannon":5,"matrix-engine":12}],65:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":12}],73:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42349,4 +43486,4 @@ const stdFonts = {
 };
 exports.stdFonts = stdFonts;
 
-},{}]},{},[58]);
+},{}]},{},[65]);
