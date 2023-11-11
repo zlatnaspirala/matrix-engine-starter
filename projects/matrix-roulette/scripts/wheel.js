@@ -96,7 +96,7 @@ export default class Wheel {
     matrixEngine.matrixWorld.world.Add("sphereLightTex", j, "ball", tex);
 
     this.ballBody = new CANNON.Body({
-      mass: 10,
+      mass: 6,
       linearDamping: 0.01,
       angularDamping: 0.01,
       sleepSpeedLimit: 0.1, // Body will feel sleepy if speed<1 (speed == norm of velocity)

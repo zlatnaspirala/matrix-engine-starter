@@ -117,7 +117,7 @@ export class MatrixRoulette {
     var AMP = 0.5;
     if(typeof matrixEngine.utility.QueryString.cameraSpeed == 'undefined' ||
       matrixEngine.utility.QueryString.cameraSpeed == null) {
-        // nothing for now
+      // nothing for now
     } else {
       if(isNaN(parseFloat(matrixEngine.utility.QueryString.cameraSpeed)) == false) {
         AMP = matrixEngine.utility.QueryString.cameraSpeed;
@@ -481,8 +481,10 @@ export class MatrixRoulette {
 
         setTimeout(() => {
           this.setupCameraView('bets')
-          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'WIN NUMBER:' + ev.detail}))
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'WIN NUM:' + ev.detail}))
+          setTimeout(() => {this.tableBet.chips.clearAll()}, this.status.winNumberMomentDelay)
         }, this.status.winNumberMomentDelay)
+
       })
 
       addEventListener('SPIN', (e) => {

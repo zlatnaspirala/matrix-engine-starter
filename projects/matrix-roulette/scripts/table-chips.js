@@ -43,7 +43,12 @@ export default class TableChips {
     addEventListener("clear-chips", (e) => {
       this.clearAll()
       dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {detail: '✫CLEAR BETS✫'}))
-      matrixEngine.App.sounds.play('clear')
+
+      // test this hot fix 
+      try {
+        matrixEngine.App.sounds.play('clear')
+      } catch(e) {}
+
     })
 
   }
@@ -106,6 +111,9 @@ export default class TableChips {
     })
   }
 
+  isOdd(x) {return x & 1;}
+  isEven(x) {return !(x & 1);}
+
   removeLostChips(winNumber) {
 
     var winNumberColor = '';
@@ -124,8 +132,6 @@ export default class TableChips {
       return o;
     })
 
-    var testLOW = false, testHIGH = false;
-
     test.forEach((item, index, array) => {
 
       if(array[index].betPlace.name.indexOf('single') != -1) {
@@ -136,8 +142,9 @@ export default class TableChips {
           array[index].chipObj.selfDestroy(1)
         }
       }
-      
+
       // console.log('  CORNER remove lost chips ')
+      // CORNER 
       var test = false, passedCorner = false;
       if(array[index].betPlace.name.indexOf('corner') != -1 && array[index].betPlace.name.split('orner').length == 2) {
         test = array[index].betPlace.name.split('orner')[1].split('_')
@@ -157,6 +164,7 @@ export default class TableChips {
       }
 
       // console.log('  split remove lost chips ')
+      // SPLIT
       var testSplit = false, passedSplit = false;
       if(array[index].betPlace.name.indexOf('split') != -1 && array[index].betPlace.name.split('plit').length == 2) {
         testSplit = array[index].betPlace.name.split('plit')[1].split('_')
@@ -176,23 +184,99 @@ export default class TableChips {
       }
 
 
-  
-      if(array[index].betPlace.name.indexOf('low') != -1 && winNumber <= 18 && winNumber != 0) {
-        console.log('HIGH remove lost   chips ', array[index].betPlace.tableEvents)
-        testHIGH = true;
-        if (testLOW == true) {
-          array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy(1)
-        }
+      // STREET
+      var testStreet = false, passedStreet = false;
+      if(array[index].betPlace.name.indexOf('street') != -1 && array[index].betPlace.name.split('treet').length == 2) {
+        testStreet = array[index].betPlace.name.split('treet')[1].split('_')
+        testStreet.forEach((num) => {
+          if(winNumber == parseFloat(num)) {
+            passedStreet = true
+          }
+        })
+        testStreet.forEach((num) => {
+          if(passedStreet == false) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(1)
+            passedStreet = null;
+          }
+        })
       }
 
-      if(array[index].betPlace.name.indexOf('high') != -1 && winNumber >= 19 && winNumber != 0) {
-        console.log('  HIGH FIELD1  chips ', ele.tableEvents)
-        testLOW = true;
-        if (testHIGH == true) {
-          array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy(1)
-        }
+      // console.log('  split remove lost chips ')
+      // LINE
+      var testLine = false, passedLine = false;
+      if(array[index].betPlace.name.indexOf('line_') != -1 && array[index].betPlace.name.split('ine_').length == 2) {
+        testLine = array[index].betPlace.name.split('ine_')[1].split('_')
+        testLine.forEach((num) => {
+          if(winNumber == parseFloat(num)) {
+            passedLine = true
+          }
+        })
+        testLine.forEach((num) => {
+          if(passedLine == false) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(1)
+            passedLine = null;
+          }
+        })
+      }
+
+      // no ball
+      if(array[index].betPlace.name == 'column_1' && RULES.column1.indexOf(winNumber) == -1) {
+        console.log('column_1 column FIELD1  chips ')
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+      if(array[index].betPlace.name == 'column_2' && RULES.column2.indexOf(winNumber) == -1) {
+        console.log('column_2 column FIELD1  chips ')
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+      if(array[index].betPlace.name == 'column_3' && RULES.column3.indexOf(winNumber) == -1) {
+        console.log('column_3 column FIELD1  chips ')
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+
+      if(array[index].betPlace.name.indexOf('from1_12') != -1 && winNumber > 12) {
+        console.log('weven remove lost   chips ', array[index].betPlace.tableEvents)
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+      if(array[index].betPlace.name.indexOf('from13_24') != -1 && (winNumber < 12 || winNumber > 24)) {
+        console.log('weven remove lost   chips ', array[index].betPlace.tableEvents)
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+      if(array[index].betPlace.name.indexOf('from25_36') != -1 && winNumber < 25) {
+        console.log('weven remove lost   chips ', array[index].betPlace.tableEvents)
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+
+
+      if(array[index].betPlace.name.indexOf('even') != -1 && this.isOdd(winNumber) == true && winNumber != 0) {
+        console.log('weven remove lost   chips ', array[index].betPlace.tableEvents)
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+
+      if(array[index].betPlace.name.indexOf('odd') != -1 && this.isEven(winNumber) == true && winNumber != 0) {
+        console.log('  odd FIELD1  chips ', array[index].tableEvents)
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+
+      if(array[index].betPlace.name.indexOf('low') != -1 && winNumber >= 19 && winNumber != 0) {
+        console.log('HIGH remove lost   chips ', array[index].betPlace.tableEvents)
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
+      }
+
+      if(array[index].betPlace.name.indexOf('high') != -1 && winNumber <= 18 && winNumber != 0) {
+        console.log('  HIGH FIELD1  chips ', array[index].tableEvents)
+        array[index].betPlace.tableEvents.chips = 0;
+        array[index].chipObj.selfDestroy(1)
       }
 
       if(winNumberColor == 'red') { // check zero name ???

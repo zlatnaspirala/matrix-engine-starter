@@ -223,7 +223,7 @@ export default class TableEvents {
     }
 
     // zero connected
-    var name = 'street_0_1_2';
+    var name = 'street0_1_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -251,7 +251,7 @@ export default class TableEvents {
 
     this.registerBetPlaces.push(App.scene[name])
 
-    name = 'street_0_2_3';
+    name = 'street0_2_3';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
