@@ -13,9 +13,6 @@ import { MatrixRoulette } from "./scripts/roulette";
 // Activate listen operation
 // VoiceCommanderInstance.run();
 
-matrixEngine.App.offScreenCanvas = false;
-
-
 var world;
 var App = matrixEngine.App;
 window.matrixEngine = matrixEngine;
@@ -23,6 +20,8 @@ window.matrixEngine = matrixEngine;
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
     // navigator.serviceWorker.register("worker.js");
+    
+    // navigator.serviceWorker.register("./hacker-timer/hack-timer.js");
   });
 }
 
