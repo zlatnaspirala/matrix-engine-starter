@@ -49,7 +49,7 @@ function webGLStart() {
     textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
     videoTex: false,
     winCoefficient: 100,
-    geo: 'squareTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
 
@@ -59,7 +59,7 @@ function webGLStart() {
     textures: ["res/images/field.png", "res/images/metal-shets.jpg"],
     videoTex: false,
     winCoefficient: 25,
-    geo: 'sphereLightTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
 
@@ -79,7 +79,7 @@ function webGLStart() {
     textures: ["res/images/field3.png", "res/images/html5.png"],
     videoTex: false,
     winCoefficient: 5,
-    geo: 'squareTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
 
@@ -89,7 +89,7 @@ function webGLStart() {
     textures: ["res/images/html5.png", "res/images/field3.png"],
     videoTex: false,
     winCoefficient: 2,
-    geo: 'squareTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
 
@@ -110,7 +110,7 @@ function webGLStart() {
     waitForNextSpin: 2000,
     verticalSize: 3,
     wheels: [
-      [fieldPurple, fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime],
+      [fieldEXTRA, fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime],
       [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime],
       [fieldGreen, fieldPurple,fieldLime,  fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple],
       [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue,  fieldGreen, fieldLime, fieldLime, fieldBlue],

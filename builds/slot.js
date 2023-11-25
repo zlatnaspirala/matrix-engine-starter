@@ -39964,7 +39964,7 @@ function webGLStart() {
     textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
     videoTex: false,
     winCoefficient: 100,
-    geo: 'squareTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
   var fieldBlue = {
@@ -39977,7 +39977,7 @@ function webGLStart() {
     textures: ["res/images/field.png", "res/images/metal-shets.jpg"],
     videoTex: false,
     winCoefficient: 25,
-    geo: 'sphereLightTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
   var fieldGreen = {
@@ -40003,7 +40003,7 @@ function webGLStart() {
     textures: ["res/images/field3.png", "res/images/html5.png"],
     videoTex: false,
     winCoefficient: 5,
-    geo: 'squareTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
   var fieldLime = {
@@ -40016,7 +40016,7 @@ function webGLStart() {
     textures: ["res/images/html5.png", "res/images/field3.png"],
     videoTex: false,
     winCoefficient: 2,
-    geo: 'squareTex',
+    geo: 'cubeLightTex',
     scale: 0.9
   };
   var fieldEXTRA = {
@@ -40038,7 +40038,7 @@ function webGLStart() {
     stopingInterval: 1000,
     waitForNextSpin: 2000,
     verticalSize: 3,
-    wheels: [[fieldPurple, fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]],
+    wheels: [[fieldEXTRA, fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]],
     winnigLines: [[1, 1, 1, 1, 1, 1], // m                     1
     [0, 0, 0, 0, 0, 0], // t                     2
     [2, 2, 2, 2, 2, 2], // b                     3
@@ -41104,7 +41104,7 @@ class Mashines {
           mix_operation: "multiply"
         };
         var name = "wheel" + indexWheel + "field" + indexField;
-        world.Add("squareTex", 1, name, textuteArg);
+        world.Add(field.geo, 1, name, textuteArg);
         localHandler.push(name); // Referent done for default camera position.
 
         var O = window.innerWidth / 1000 * WW;
@@ -41113,8 +41113,8 @@ class Mashines {
 
         if (field.videoTex !== false) {
           //
-          console.log('TEST ETST ');
-          App.scene[name].streamTextures = new VT(field.videoTex, 'cool');
+          console.log('TEST ETST  field.videoTex ', field.videoTex);
+          App.scene[name].streamTextures = new VT(field.videoTex);
         }
 
         App.scene[name].specialId = field.id;
@@ -41134,9 +41134,12 @@ class Mashines {
           _z
         });
         lastY = App.scene[name].position.y;
-        App.scene[name].geometry.setScaleByX(O / 10);
-        App.scene[name].geometry.setScaleByY(2.97 / VW); //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+
+        try {//console.log('______________')
+          // App.scene[name].geometry.setScaleByX(O / 10);
+          // App.scene[name].geometry.setScaleByY(2.97 / VW);
+        } catch (e) {} //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
         // App.scene.spinBtn.geometry.setScaleByY(-0.76)
         //App.scene[name].glBlend.blendEnabled = true;
 
@@ -41147,6 +41150,7 @@ class Mashines {
         App.scene[name].geometry.colorData.color[3].set(1,1,1);
         App.operation.square_buffer_procedure(App.scene[name]);
         */
+
       });
       this.spinHandler.orderPositions.push(localHandlerPos);
       this.spinHandler.lastInitY.push(lastY);

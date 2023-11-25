@@ -529,7 +529,7 @@ export default class Mashines {
         };
 
         var name = "wheel" + indexWheel + "field" + indexField;
-        world.Add("squareTex", 1, name, textuteArg);
+        world.Add(field.geo, 1, name, textuteArg);
         localHandler.push(name);
         // Referent done for default camera position.
         var O = (window.innerWidth / 1000) * WW;
@@ -543,9 +543,9 @@ export default class Mashines {
 
         if(field.videoTex !== false) {
           //
-          console.log('TEST ETST ')
+          console.log('TEST ETST  field.videoTex ', field.videoTex)
           App.scene[name].streamTextures = new VT(
-            field.videoTex, 'cool'
+            field.videoTex
           );
         }
 
@@ -560,12 +560,13 @@ export default class Mashines {
         localHandlerPos.push({_x, _y, _z});
 
         lastY = App.scene[name].position.y;
-        App.scene[name].geometry.setScaleByX(O / 10);
-        App.scene[name].geometry.setScaleByY(2.97 / VW);
-
-        //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-
+        try {
+          //console.log('______________')
+          // App.scene[name].geometry.setScaleByX(O / 10);
+          // App.scene[name].geometry.setScaleByY(2.97 / VW);
+        } catch(e) {}
+        //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
+        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
         // App.scene.spinBtn.geometry.setScaleByY(-0.76)
         //App.scene[name].glBlend.blendEnabled = true;
 
