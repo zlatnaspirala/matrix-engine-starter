@@ -5,10 +5,10 @@
  * @author Nikola Lukic
  * @license GPL-V3
  */
-
 import * as matrixEngine from "matrix-engine";
-
 import WebAnatomy from "./scripts/web-anatomy";
+
+navigator.serviceWorker.register("./hacker-timer/hack-timer.js");
 
 // import { VoiceCommanderInstance } from "./scripts/voice-commander";
 
@@ -28,8 +28,10 @@ App.config = {
 function webGLStart() {
   // from 1.9.12 => simply render draw funct without FBO
   // world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
-  world = matrixEngine.matrixWorld.defineworld(canvas);
+  world = matrixEngine.matrixWorld.defineworld(canvas, "simply");
+
   world.callReDraw();
+
   App.webAnatomy = new WebAnatomy(world, App.config);
   window.App = App;
   window.world = world;

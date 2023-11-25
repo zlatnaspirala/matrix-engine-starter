@@ -711,7 +711,10 @@ export default class Mashines {
 
   spinning = wheelID => {
     this.thread.control["ctrl" + wheelID] = false;
-    this.thread["timer" + wheelID] = setInterval(() => {
+
+
+    // this.thread["timer" + wheelID] = setInterval(() => {
+      this.thread["timer" + wheelID] = () => {
       this.accessKeys.forEach(
         (accessWheelNames, indexWheel, accessKeysArray) => {
           if (wheelID == indexWheel) {
@@ -755,8 +758,6 @@ export default class Mashines {
                       },
                     });
                     dispatchEvent(wheelStoped);
-
- 
                   }
                 }
               }
@@ -767,7 +768,9 @@ export default class Mashines {
 
       // test to disable
       clearInterval(this.preThread);
-    }, 1);
+    } // , 1);
+
+    App.updateBeforeDraw.push(this.thread["timer" + wheelID]);
   };
 
   preSpinning = wheelID => {

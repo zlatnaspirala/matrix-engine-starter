@@ -30,13 +30,15 @@ export let loadSystemSkeletal = (App, world) => {
         App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
     
         App.scene[id].hoverEffect = (me) => {
-          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          // me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          // me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          me.LightsData.ambientLight.set(1,0,0);
         }
     
         App.scene[id].hoverLeaveEffect = (me) => {
-          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+          me.LightsData.ambientLight.set(1,1,1);
         }
 
         h.push(App.scene[id])

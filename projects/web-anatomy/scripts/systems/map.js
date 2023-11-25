@@ -1,6 +1,6 @@
 /** ojsa */
 
-var prefiks = 'mb250/skeletal';
+var prefiks = 'skeletal';
 
 var skeletalMap = {
   atlas: `res/3d-objects/human/${prefiks}/atlas.obj`,

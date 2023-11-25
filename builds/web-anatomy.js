@@ -17119,13 +17119,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* eslint-disable no-undef */
 
 /* eslint-disable no-unused-vars */
+if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
+  console.log('App.offScreenCanvas =>', _manifest.default.offScreenCanvas);
+
+  _utility.scriptManager.LOAD('./hacker-timer/hack-timer.js');
+} else {
+  _manifest.default.offScreenCanvas = false;
+}
+
 var wd = 0,
     ht = 0,
     lastTime = 0,
     totalTime = 0,
     updateTime = 0,
-    updateFrames = 0; // export let EVENTS_INSTANCE = null;
-
+    updateFrames = 0;
 exports.updateFrames = updateFrames;
 exports.updateTime = updateTime;
 exports.totalTime = totalTime;
@@ -24126,7 +24133,7 @@ window.PLEASE = 'CE';
 
 _manifest.default.operation.reDrawGlobal = function (time) {
   (0, _engine.modifyLooper)(0);
-  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.reDrawGlobal);
 
   _matrixWorld.world.renderPerspective();
 
@@ -24182,9 +24189,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   // - non FBO and FBO option draw coroutine
   // hc 512
 
-  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB); // world.FBOS.forEach((fbo) => {
-  // 
-  // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, fbo.fb);
+  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB);
 
   _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
 
@@ -24433,6 +24438,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   secondPass++;
   physicsLooper = 0;
   (0, _engine.updateFPS)(1);
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.reDrawGlobal(), _manifest.default.redrawInterval);
 
   if (_matrixWorld.world.animLine) {
     // animatinLine
@@ -24457,17 +24463,14 @@ _manifest.default.operation.CameraPerspective = function () {
   mat4.perspective(this.pMatrix, (0, _engine.degToRad)(_manifest.default.camera.viewAngle), this.GL.gl.viewportWidth / this.GL.gl.viewportHeight, _manifest.default.camera.nearViewpoint, _manifest.default.camera.farViewpoint);
 };
 
-var callReDraw_ = function () {
-  setTimeout(function () {
-    (0, _matrixWorld.reDraw)();
-  }, 160); // requestAnimationFrame(reDraw);
+var callReDraw_ = function () {// requestAnimationFrame(reDraw);
 };
 
 exports.callReDraw_ = callReDraw_;
 
 _manifest.default.operation.simplyRender = function (time) {
   (0, _engine.modifyLooper)(0);
-  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.simplyRender);
 
   _matrixWorld.world.renderPerspective();
 
@@ -24595,6 +24598,8 @@ _manifest.default.operation.simplyRender = function (time) {
     document.getElementById('globalAnimCounter').innerText = _matrixWorld.world.globalAnimCounter;
     document.getElementById('timeline').value = _matrixWorld.world.globalAnimCounter;
   }
+
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.simplyRender(), _manifest.default.redrawInterval);
 };
 
 },{"../program/manifest":40,"./engine":15,"./matrix-world":28,"./raycast":32,"./utility":38}],24:[function(require,module,exports){
@@ -25975,7 +25980,6 @@ var updateFrames = 0;
 
 var objListToDispose = new Array();
 /* Need to stop the redraw when disposing            */
-// var reDrawID = 0;
 
 exports.objListToDispose = objListToDispose;
 var reDraw;
@@ -27474,7 +27478,7 @@ function defineworld(canvas, renderType) {
     }
   };
 
-  world.callReDraw = _matrixRender.callReDraw_;
+  world.callReDraw = reDraw;
   world.destroy = _manifest.default.operation.destroyWorld;
   return world;
 }
@@ -37187,13 +37191,15 @@ exports.default = void 0;
 /* eslint-disable no-unused-vars */
 var App = {
   name: "Matrix Engine Manifest",
-  version: "1.0.9",
+  version: "1.1.1",
   events: true,
   sounds: true,
   logs: false,
   draw_interval: 10,
   antialias: false,
   openglesShaderVersion: '3',
+  offScreenCanvas: false,
+  redrawInterval: 30,
   camera: {
     viewAngle: 45,
     nearViewpoint: 0.1,
@@ -39780,11 +39786,12 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * @author Nikola Lukic
  * @license GPL-V3
  */
-// import { VoiceCommanderInstance } from "./scripts/voice-commander";
+navigator.serviceWorker.register("./hacker-timer/hack-timer.js"); // import { VoiceCommanderInstance } from "./scripts/voice-commander";
 // // Voice commander
 // VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
 // // Activate listen operation
 // VoiceCommanderInstance.run();
+
 var world;
 var App = matrixEngine.App;
 App.webAnatomy = {};
@@ -39793,7 +39800,7 @@ App.config = {};
 function webGLStart() {
   // from 1.9.12 => simply render draw funct without FBO
   // world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
-  world = matrixEngine.matrixWorld.defineworld(canvas);
+  world = matrixEngine.matrixWorld.defineworld(canvas, "simply");
   world.callReDraw();
   App.webAnatomy = new _webAnatomy.default(world, App.config);
   window.App = App;
@@ -40065,7 +40072,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 
 /** ojsa */
-var prefiks = 'mb250/skeletal';
+var prefiks = 'skeletal';
 var skeletalMap = {
   atlas: `res/3d-objects/human/${prefiks}/atlas.obj`,
   axis: `res/3d-objects/human/${prefiks}/axis.obj`,
@@ -40396,13 +40403,15 @@ let loadSystemSkeletal = (App, world) => {
         App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
 
         App.scene[id].hoverEffect = me => {
-          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          // me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          // me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          me.LightsData.ambientLight.set(1, 0, 0);
         };
 
         App.scene[id].hoverLeaveEffect = me => {
-          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
-          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[0];
+          me.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
+          me.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
+          me.LightsData.ambientLight.set(1, 1, 1);
         };
 
         h.push(App.scene[id]);
