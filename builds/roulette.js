@@ -43516,7 +43516,7 @@ class Wheel {
         if (App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 600;
       }
 
-      this.C = this.C + this.speedRollInit;
+      this.C = this.C - this.speedRollInit;
 
       if (this.speedRollInit < 0.004) {// clearInterval(this.rollTimer)
       } else {

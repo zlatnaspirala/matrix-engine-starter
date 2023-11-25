@@ -739,7 +739,7 @@ export default class Mashines {
                   // moment
                   if(this.thread.control["ctrl" + wheelID] == true) {
                     // clearInterval(this.thread["timer" + wheelID]);
-                    console.log("####" + App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]))
+                    // console.log("####" + App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]))
                     App.updateBeforeDraw.splice(App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]), 1)
 
                     App.scene[fieldname].rotation.rotationSpeed.x = 0;
@@ -760,6 +760,10 @@ export default class Mashines {
                       },
                     });
                     dispatchEvent(wheelStoped);
+
+                    // test line
+                    App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel];
+
                   }
                 }
               }
