@@ -17119,13 +17119,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* eslint-disable no-undef */
 
 /* eslint-disable no-unused-vars */
+if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
+  console.log('App.offScreenCanvas =>', _manifest.default.offScreenCanvas);
+
+  _utility.scriptManager.LOAD('./hacker-timer/hack-timer.js');
+} else {
+  _manifest.default.offScreenCanvas = false;
+}
+
 var wd = 0,
     ht = 0,
     lastTime = 0,
     totalTime = 0,
     updateTime = 0,
-    updateFrames = 0; // export let EVENTS_INSTANCE = null;
-
+    updateFrames = 0;
 exports.updateFrames = updateFrames;
 exports.updateTime = updateTime;
 exports.totalTime = totalTime;
@@ -24126,7 +24133,7 @@ window.PLEASE = 'CE';
 
 _manifest.default.operation.reDrawGlobal = function (time) {
   (0, _engine.modifyLooper)(0);
-  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.reDrawGlobal);
 
   _matrixWorld.world.renderPerspective();
 
@@ -24182,9 +24189,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   // - non FBO and FBO option draw coroutine
   // hc 512
 
-  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB); // world.FBOS.forEach((fbo) => {
-  // 
-  // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, fbo.fb);
+  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB);
 
   _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
 
@@ -24433,6 +24438,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   secondPass++;
   physicsLooper = 0;
   (0, _engine.updateFPS)(1);
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.reDrawGlobal(), _manifest.default.redrawInterval);
 
   if (_matrixWorld.world.animLine) {
     // animatinLine
@@ -24457,17 +24463,14 @@ _manifest.default.operation.CameraPerspective = function () {
   mat4.perspective(this.pMatrix, (0, _engine.degToRad)(_manifest.default.camera.viewAngle), this.GL.gl.viewportWidth / this.GL.gl.viewportHeight, _manifest.default.camera.nearViewpoint, _manifest.default.camera.farViewpoint);
 };
 
-var callReDraw_ = function () {
-  setTimeout(function () {
-    (0, _matrixWorld.reDraw)();
-  }, 160); // requestAnimationFrame(reDraw);
+var callReDraw_ = function () {// requestAnimationFrame(reDraw);
 };
 
 exports.callReDraw_ = callReDraw_;
 
 _manifest.default.operation.simplyRender = function (time) {
   (0, _engine.modifyLooper)(0);
-  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.simplyRender);
 
   _matrixWorld.world.renderPerspective();
 
@@ -24595,6 +24598,8 @@ _manifest.default.operation.simplyRender = function (time) {
     document.getElementById('globalAnimCounter').innerText = _matrixWorld.world.globalAnimCounter;
     document.getElementById('timeline').value = _matrixWorld.world.globalAnimCounter;
   }
+
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.simplyRender(), _manifest.default.redrawInterval);
 };
 
 },{"../program/manifest":40,"./engine":15,"./matrix-world":28,"./raycast":32,"./utility":38}],24:[function(require,module,exports){
@@ -25975,7 +25980,6 @@ var updateFrames = 0;
 
 var objListToDispose = new Array();
 /* Need to stop the redraw when disposing            */
-// var reDrawID = 0;
 
 exports.objListToDispose = objListToDispose;
 var reDraw;
@@ -27474,7 +27478,7 @@ function defineworld(canvas, renderType) {
     }
   };
 
-  world.callReDraw = _matrixRender.callReDraw_;
+  world.callReDraw = reDraw;
   world.destroy = _manifest.default.operation.destroyWorld;
   return world;
 }
@@ -37187,13 +37191,15 @@ exports.default = void 0;
 /* eslint-disable no-unused-vars */
 var App = {
   name: "Matrix Engine Manifest",
-  version: "1.0.9",
+  version: "1.1.1",
   events: true,
   sounds: true,
   logs: false,
   draw_interval: 10,
   antialias: false,
   openglesShaderVersion: '3',
+  offScreenCanvas: false,
+  redrawInterval: 30,
   camera: {
     viewAngle: 45,
     nearViewpoint: 0.1,
@@ -40032,7 +40038,7 @@ function webGLStart() {
     stopingInterval: 1000,
     waitForNextSpin: 2000,
     verticalSize: 3,
-    wheels: [[fieldEXTRA, fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]],
+    wheels: [[fieldPurple, fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]],
     winnigLines: [[1, 1, 1, 1, 1, 1], // m                     1
     [0, 0, 0, 0, 0, 0], // t                     2
     [2, 2, 2, 2, 2, 2], // b                     3
@@ -40667,7 +40673,7 @@ class Mashines {
 
     this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
-    this.speed = 0.08;
+    this.speed = 0.4;
     this.thread = {
       control: {}
     };
@@ -40976,7 +40982,7 @@ class Mashines {
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
     /*
-      setInterval(function () {
+        setInterval(function () {
     App.scene.MySquareTexure1.geometry.texCoordsPoints.right_top.x += 0.001;
     App.scene.MySquareTexure1.geometry.texCoordsPoints.left_bottom.x += 0.001;
     App.scene.MySquareTexure1.geometry.texCoordsPoints.left_top.x += 0.001;
@@ -41272,7 +41278,11 @@ class Mashines {
   };
   spinning = wheelID => {
     this.thread.control["ctrl" + wheelID] = false;
-    this.thread["timer" + wheelID] = setInterval(() => {
+    console.log('TEST ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'); // this.thread["timer" + wheelID] = setInterval(() => {
+
+    this.thread["timer" + wheelID] = {};
+
+    this.thread["timer" + wheelID].UPDATE = () => {
       this.accessKeys.forEach((accessWheelNames, indexWheel, accessKeysArray) => {
         if (wheelID == indexWheel) {
           accessWheelNames.forEach((fieldname, indexField, accessWheelNames) => {
@@ -41287,7 +41297,9 @@ class Mashines {
               App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel]; // moment
 
               if (this.thread.control["ctrl" + wheelID] == true) {
-                clearInterval(this.thread["timer" + wheelID]);
+                // clearInterval(this.thread["timer" + wheelID]);
+                console.log("####" + App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]));
+                App.updateBeforeDraw.splice(App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]), 1);
                 App.scene[fieldname].rotation.rotationSpeed.x = 0;
                 App.scene[fieldname].rotation.rotationSpeed.y = 0;
                 var isLast = false; // wheel0field5 parse 5 + 1 = 0  or
@@ -41312,7 +41324,10 @@ class Mashines {
       }); // test to disable
 
       clearInterval(this.preThread);
-    }, 1);
+    }; // , 1);
+
+
+    App.updateBeforeDraw.push(this.thread["timer" + wheelID]);
   };
   preSpinning = wheelID => {
     return new Promise((resolve, reject) => {

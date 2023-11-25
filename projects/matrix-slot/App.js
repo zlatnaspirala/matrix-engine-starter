@@ -110,7 +110,7 @@ function webGLStart() {
     waitForNextSpin: 2000,
     verticalSize: 3,
     wheels: [
-      [fieldLime, fieldRed, fieldBlue, fieldLime,  fieldLime, http://localhost/PRIVATE_SERVER/matrix-engine-starter/projects/matrix-slot/, fieldGreen, fieldPurple, fieldGreen, fieldLime],
+      [fieldPurple, fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime],
       [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime],
       [fieldGreen, fieldPurple,fieldLime,  fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple],
       [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue,  fieldGreen, fieldLime, fieldLime, fieldBlue],

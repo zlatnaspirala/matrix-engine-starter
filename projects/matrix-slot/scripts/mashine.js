@@ -38,7 +38,7 @@ export default class Mashines {
     // Slot status general
     this.status = "free";
     this.font = new planeUVFont();
-    this.speed = 0.08;
+    this.speed = 0.4;
     this.thread = {
       control: {},
     };
@@ -81,13 +81,13 @@ export default class Mashines {
 
       let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
       var newOrder = App.slot.mashine.arrayRotate(localHolder);
-      while (newOrder[newOrder.length - 1] != event.detail.fieldname) {
+      while(newOrder[newOrder.length - 1] != event.detail.fieldname) {
         newOrder = App.slot.mashine.arrayRotate(localHolder);
       }
       this.winningHandler.order.push(newOrder);
 
       // Only on last stop
-      if (event.detail.isLast == true) {
+      if(event.detail.isLast == true) {
         // It is last activate from here
         this.config.winnigLines.forEach((line, lineIndex) => {
 
@@ -109,22 +109,22 @@ export default class Mashines {
 
             var finalResult = this.findMax(countLineWins);
             this.checkForWinCombination(finalResult, collectWinObjs, lineIndex);
-              // soft hardcode
-              if (lineIndex == 16) {
-                // console.log("LAST +++++++++++++++++++++ ", lineIndex);
-                setTimeout(() => {
-                  this.status = "free";
-                  this.winningHandler.order = [];
-                  this.killWinThreads();
+            // soft hardcode
+            if(lineIndex == 16) {
+              // console.log("LAST +++++++++++++++++++++ ", lineIndex);
+              setTimeout(() => {
+                this.status = "free";
+                this.winningHandler.order = [];
+                this.killWinThreads();
 
-                  let mashineFree = new CustomEvent("mashine.free", {
-                    detail: {
-                      status: this.status,
-                    },
-                  });
-                  dispatchEvent(mashineFree);
-                  this.vc.run();
-                }, this.config.waitForNextSpin);
+                let mashineFree = new CustomEvent("mashine.free", {
+                  detail: {
+                    status: this.status,
+                  },
+                });
+                dispatchEvent(mashineFree);
+                this.vc.run();
+              }, this.config.waitForNextSpin);
             }
           }, 1000 * lineIndex);
         });
@@ -135,18 +135,18 @@ export default class Mashines {
 
     window.addEventListener("wheel.stoped", this.constructWinningObject);
 
-    window.addEventListener("mashine.free", (e)=> {
+    window.addEventListener("mashine.free", (e) => {
 
       // console.info("MASHINE STATUS IS FREE");
       App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
 
     });
-    
 
-    if (isMobile()) {
-      if (window.innerWidth < window.innerHeight) {
+
+    if(isMobile()) {
+      if(window.innerWidth < window.innerHeight) {
         console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
-        
+
       }
     }
 
@@ -155,13 +155,13 @@ export default class Mashines {
   activateWinningVisualEffect(worldObj, comb) {
 
     let oscilltor_variable,
-        oscillator_color = new OSC(0, 2, 0.02);
-    if (comb.repeat == 3) oscilltor_variable = new OSC(0, 45, 1);
-    if (comb.repeat == 4) oscilltor_variable = new OSC(0, 270, 1);
-    if (comb.repeat == 5) oscilltor_variable = new OSC(0, 360, 2);
-    if (comb.repeat == 6) oscilltor_variable = new OSC(0, 180, 5);
+      oscillator_color = new OSC(0, 2, 0.02);
+    if(comb.repeat == 3) oscilltor_variable = new OSC(0, 45, 1);
+    if(comb.repeat == 4) oscilltor_variable = new OSC(0, 270, 1);
+    if(comb.repeat == 5) oscilltor_variable = new OSC(0, 360, 2);
+    if(comb.repeat == 6) oscilltor_variable = new OSC(0, 180, 5);
 
-    if (comb.repeat == 5) {
+    if(comb.repeat == 5) {
       this.winningVisualEffect.threads.push(
         setInterval(() => {
           worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
@@ -172,7 +172,7 @@ export default class Mashines {
       );
 
       this.winningVisualEffect.ids.push(worldObj);
-    } else if (comb.repeat == 4) {
+    } else if(comb.repeat == 4) {
 
       this.winningVisualEffect.threads.push(
         setInterval(() => {
@@ -185,7 +185,7 @@ export default class Mashines {
 
       this.winningVisualEffect.ids.push(worldObj);
 
-    } else if (comb.repeat == 3) {
+    } else if(comb.repeat == 3) {
 
       this.winningVisualEffect.threads.push(
         setInterval(() => {
@@ -198,14 +198,14 @@ export default class Mashines {
       this.winningVisualEffect.ids.push(worldObj);
 
     } else {
-        this.winningVisualEffect.threads.push(
-          setInterval(() => {
-            worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
-            worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
-            worldObj.rotation.roty = oscilltor_variable.UPDATE() ;
-          }, 10)
-        );
-        this.winningVisualEffect.ids.push(worldObj); 
+      this.winningVisualEffect.threads.push(
+        setInterval(() => {
+          worldObj.LightsData.ambientLight.r = oscillator_color.UPDATE();
+          worldObj.LightsData.ambientLight.b = oscillator_color.UPDATE();
+          worldObj.rotation.roty = oscilltor_variable.UPDATE();
+        }, 10)
+      );
+      this.winningVisualEffect.ids.push(worldObj);
     }
   }
 
@@ -216,7 +216,7 @@ export default class Mashines {
     // Becouse all wheels contain at list one of all kindof field types
     this.config.wheels[0].forEach(fieldOriginal => {
       this.winningVisualEffect.ids.forEach(obj => {
-        if (fieldOriginal.id == obj.specialId) {
+        if(fieldOriginal.id == obj.specialId) {
           obj.LightsData.ambientLight.r = fieldOriginal.color.r;
           obj.LightsData.ambientLight.b = fieldOriginal.color.b;
           obj.LightsData.ambientLight.g = fieldOriginal.color.g;
@@ -230,8 +230,8 @@ export default class Mashines {
   }
 
   separateWinLineObjs(lineWinObjCollect, comb) {
-    for (var j = 0; j < lineWinObjCollect.length; j++) {
-      if (lineWinObjCollect[j].specialId == comb.fieldId) {
+    for(var j = 0;j < lineWinObjCollect.length;j++) {
+      if(lineWinObjCollect[j].specialId == comb.fieldId) {
         this.activateWinningVisualEffect(lineWinObjCollect[j], comb);
       }
     }
@@ -240,23 +240,23 @@ export default class Mashines {
   checkForWinCombination(rez, lineWinObjCollect, lineIndex) {
     rez.forEach(comb => {
       // console.log("repeat ->", comb.repeat);
-      if (comb.repeat == 3) {
+      if(comb.repeat == 3) {
         console.info("3 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
         App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
-      } else if (comb.repeat == 4) {
+      } else if(comb.repeat == 4) {
         console.info("4 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
         App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
-      } else if (comb.repeat == 5) {
+      } else if(comb.repeat == 5) {
         console.info("5 in line small win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
         App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
-      } else if (comb.repeat == 6) {
+      } else if(comb.repeat == 6) {
         console.info("6 in line x win with field :", comb.fieldId);
         this.separateWinLineObjs(lineWinObjCollect, comb);
         App.slot.mashine.nidza.access.footerLabel.elements[0].text = comb.repeat + " repeat for field id:" + comb.fieldId + " on line " + (lineIndex).toString();
-      } else if (comb.repeat < 3) {
+      } else if(comb.repeat < 3) {
         App.slot.mashine.nidza.access.footerLabel.elements[0].text = "No wins for line " + (lineIndex).toString();
       }
     });
@@ -270,7 +270,7 @@ export default class Mashines {
    * Add this to untility matrix engine
    */
   arrayRotate(arr, reverse) {
-    if (reverse) arr.unshift(arr.pop());
+    if(reverse) arr.unshift(arr.pop());
     else arr.push(arr.shift());
     return arr;
   }
@@ -279,16 +279,16 @@ export default class Mashines {
     var counts = {},
       max = 0,
       res;
-    for (var v in arr) {
+    for(var v in arr) {
       counts[arr[v]] = (counts[arr[v]] || 0) + 1;
-      if (counts[arr[v]] > max) {
+      if(counts[arr[v]] > max) {
         max = counts[arr[v]];
         res = arr[v];
       }
     }
     var results = [];
-    for (var k in counts) {
-      if (counts[k] == max) {
+    for(var k in counts) {
+      if(counts[k] == max) {
         var localRes = {fieldId: k, repeat: counts[k]};
         results.push(localRes);
       }
@@ -301,14 +301,14 @@ export default class Mashines {
     var map = new Map();
     var max = 1;
     var maxRecurringString = "";
-    for (name of argArray) {
-      if (map.get(name) === undefined) {
+    for(name of argArray) {
+      if(map.get(name) === undefined) {
         map.set(name, 1);
       } else {
         var count = map.get(name);
         count = count + 1;
         map.set(name, count);
-        if (max < count) {
+        if(max < count) {
           max = count;
           maxRecurringString = name;
         }
@@ -318,7 +318,7 @@ export default class Mashines {
     return {maxRecurringString, max};
   }
 
-  addMashine = function (world) {
+  addMashine = function(world) {
     var texTopHeader = {
       source: ["res/images/freespin.png"],
       mix_operation: "multiply",
@@ -328,15 +328,15 @@ export default class Mashines {
       mix_operation: "multiply",
     };
 
-    if (isMobile()) {
+    if(isMobile()) {
 
-    world.Add("squareTex", 1, "overlayout", texOverlayout);
-    App.scene.overlayout.geometry.setScaleByX(1);
-    App.scene.overlayout.geometry.setScaleByY(2.2);
-    App.scene.overlayout.position.y = 0;
-    App.scene.overlayout.position.z = -5;
-    // Adapt active textures because it is inverted by nature.
-    App.scene.overlayout.rotation.rotx = 0; 
+      world.Add("squareTex", 1, "overlayout", texOverlayout);
+      App.scene.overlayout.geometry.setScaleByX(1);
+      App.scene.overlayout.geometry.setScaleByY(2.2);
+      App.scene.overlayout.position.y = 0;
+      App.scene.overlayout.position.z = -5;
+      // Adapt active textures because it is inverted by nature.
+      App.scene.overlayout.rotation.rotx = 0;
     }
 
     world.Add("squareTex", 1, "topHeader", texTopHeader);
@@ -346,7 +346,7 @@ export default class Mashines {
     App.scene.topHeader.position.z = -6.5;
 
 
-    App.scene.topHeader.custom.gl_texture = function (object, t) {
+    App.scene.topHeader.custom.gl_texture = function(object, t) {
       world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
       world.GL.gl.texParameteri(
         world.GL.gl.TEXTURE_2D,
@@ -394,7 +394,7 @@ export default class Mashines {
 
     /*
 
-		  setInterval(function () {
+      setInterval(function () {
     App.scene.MySquareTexure1.geometry.texCoordsPoints.right_top.x += 0.001;
     App.scene.MySquareTexure1.geometry.texCoordsPoints.left_bottom.x += 0.001;
     App.scene.MySquareTexure1.geometry.texCoordsPoints.left_top.x += 0.001;
@@ -416,8 +416,8 @@ export default class Mashines {
 
     var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001);
 
-    App.scene.topHeader.runShake = function () {
-      if (this.shake == false) return;
+    App.scene.topHeader.runShake = function() {
+      if(this.shake == false) return;
       setTimeout(() => {
         this.geometry.texCoordsPoints.right_top.x += osc_var.UPDATE();
         this.geometry.texCoordsPoints.left_bottom.x += osc_var.UPDATE();
@@ -490,7 +490,7 @@ export default class Mashines {
     //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
 
-    if (isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
+    if(isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
 
     App.operation.squareTex_buffer_procedure(App.scene.topHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
@@ -508,7 +508,7 @@ export default class Mashines {
     }, 2500);
   };
 
-  addWheel = function (world) {
+  addWheel = function(world) {
     // console.info("Number of wheels: ", App.slot.config.wheels.length);
     // console.info("Number of vertical visible fields of wheels: ", App.slot.config.verticalSize);
     var WW = App.slot.config.wheels.length;
@@ -541,7 +541,7 @@ export default class Mashines {
           field.color.b
         );
 
-        if (field.videoTex !== false) {
+        if(field.videoTex !== false) {
           //
           console.log('TEST ETST ')
           App.scene[name].streamTextures = new VT(
@@ -584,7 +584,7 @@ export default class Mashines {
     });
   };
 
-  addHeaderText = function () {
+  addHeaderText = function() {
     var c = 0;
     var count = 0;
     this.font.charLoaded = objChar => {
@@ -592,7 +592,7 @@ export default class Mashines {
       // headerTitleS
       objChar.mesh.setScale(0.6);
       objChar.position.SetZ(-6.45);
-      switch (objChar.name) {
+      switch(objChar.name) {
         case "headerTitleS":
           count = 0;
           break;
@@ -610,7 +610,7 @@ export default class Mashines {
       objChar.position.translateByXY(-1 + count * 0.4, 2.2);
       // objChar.glBlend.blendEnabled = true;
       // console.log("Explore objChar ", objChar);
-      if (c == 3) this.addSpinText();
+      if(c == 3) this.addSpinText();
       c++;
     };
     this.font.loadChar(matrixEngine.objLoader, "s", "headerTitle");
@@ -619,7 +619,7 @@ export default class Mashines {
     this.font.loadChar(matrixEngine.objLoader, "t", "headerTitle");
   };
 
-  fieldOnClick = function (hitObject) {
+  fieldOnClick = function(hitObject) {
     var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.05);
     hitObject.rotation.rotationSpeed.y = 200;
 
@@ -634,11 +634,11 @@ export default class Mashines {
     window.addEventListener("ray.hit.event", matrixEngineRaycastEvent => {
       // console.log("details > ", matrixEngineRaycastEvent.detail.hitObject.name);
       var r = matrixEngineRaycastEvent.detail.hitObject.name;
-      if (r == "spinBtn") {
+      if(r == "spinBtn") {
         this.activateSpinning();
-      } else if (r.indexOf("wheel") != -1) {
+      } else if(r.indexOf("wheel") != -1) {
         this.fieldOnClick(matrixEngineRaycastEvent.detail.hitObject);
-      } else if (r == "footerLines") {
+      } else if(r == "footerLines") {
         showActiveLinesByIndex(incActiveLines());
       }
     });
@@ -648,7 +648,7 @@ export default class Mashines {
     });
   };
 
-  addSpinText = function () {
+  addSpinText = function() {
     var textuteImageSamplers = {
       source: ["res/images/spin.jpg"],
       mix_operation: "multiply", // ENUM : multiply , divide ,
@@ -671,7 +671,7 @@ export default class Mashines {
   };
 
   activateSpinning = () => {
-    if (this.status != "free") {
+    if(this.status != "free") {
       beep()
       return;
     }
@@ -701,7 +701,7 @@ export default class Mashines {
     // console.info("All wheels spinning");
     setTimeout(() => {
       var index = 0;
-      for (let key in this.thread.control) {
+      for(let key in this.thread.control) {
         setTimeout(() => {
           this.thread.control[key] = true;
         }, App.slot.config.stopingInterval * index++);
@@ -712,40 +712,41 @@ export default class Mashines {
   spinning = wheelID => {
     this.thread.control["ctrl" + wheelID] = false;
 
+    console.log('TEST ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
     // this.thread["timer" + wheelID] = setInterval(() => {
-      this.thread["timer" + wheelID] = () => {
+    this.thread["timer" + wheelID] = {};
+
+    this.thread["timer" + wheelID].UPDATE = () => {
       this.accessKeys.forEach(
         (accessWheelNames, indexWheel, accessKeysArray) => {
-          if (wheelID == indexWheel) {
+          if(wheelID == indexWheel) {
             accessWheelNames.forEach(
               (fieldname, indexField, accessWheelNames) => {
                 App.scene[fieldname].position.y -= this.speed;
 
-                if (wheelID == 0) {
+                if(wheelID == 0) {
                   //App.scene[fieldname].rotation.rotationSpeed.x = 100;
-                } else if (wheelID == 1) {
+                } else if(wheelID == 1) {
                   //App.scene[fieldname].rotation.rotationSpeed.y = 100;
-                } else if (wheelID == 2) {
+                } else if(wheelID == 2) {
                   //App.scene[fieldname].rotation.rotationSpeed.x = -100;
                 }
 
-                if (
-                  App.scene[fieldname].position.y <
-                  this.spinHandler.bottomLimitY
-                ) {
-                  App.scene[fieldname].position.y =
-                    this.spinHandler.lastInitY[indexWheel];
+                if(App.scene[fieldname].position.y < this.spinHandler.bottomLimitY) {
+                  App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel];
                   // moment
-                  if (this.thread.control["ctrl" + wheelID] == true) {
-                    clearInterval(this.thread["timer" + wheelID]);
+                  if(this.thread.control["ctrl" + wheelID] == true) {
+                    // clearInterval(this.thread["timer" + wheelID]);
+                    console.log("####" + App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]))
+                    App.updateBeforeDraw.splice(App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]), 1)
 
                     App.scene[fieldname].rotation.rotationSpeed.x = 0;
                     App.scene[fieldname].rotation.rotationSpeed.y = 0;
 
                     var isLast = false;
                     // wheel0field5 parse 5 + 1 = 0  or
-                    if (indexWheel == accessKeysArray.length - 1) {
+                    if(indexWheel == accessKeysArray.length - 1) {
                       isLast = true;
                     }
 
@@ -763,8 +764,7 @@ export default class Mashines {
               }
             );
           }
-        }
-      );
+        });
 
       // test to disable
       clearInterval(this.preThread);
@@ -779,7 +779,7 @@ export default class Mashines {
 
       this.preThread = setInterval(() => {
         this.accessKeys.forEach((accessWheelNames, indexWheel) => {
-          if (indexWheel == wheelID) {
+          if(indexWheel == wheelID) {
             accessWheelNames.forEach((fieldname, indexField) => {
               App.scene[fieldname].position.y += 0.002;
             });
