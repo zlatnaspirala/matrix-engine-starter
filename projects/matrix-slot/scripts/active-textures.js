@@ -393,7 +393,7 @@ export function createNidzaHudLine1( nidza ) {
       id: "footerBalance",
       size: {
         width: 400,
-        height: 180
+        height: 150
       }
     };
     footerBalance = nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
@@ -407,21 +407,21 @@ export function createNidzaHudLine1( nidza ) {
         text: item,
         color: "lime",
         position: {
-          x: 15 + 10*index,
-          y: 15
+          x: 15 + 50*index,
+          y: 25
         },
         dimension: {
-          width: 150,
-          height: 150
+          width: 50,
+          height: 120
         },
         font: {
-          fontSize: "55px",
+          fontSize: "40px",
           fontStyle: "normal",
-          fontName: stdFonts.Helvetica
+          fontName: 'stormfaze'
         }
       });
 
-    var oscAng = new matrixEngine.utility.OSCILLATOR( 1, 100, 5 );
+    var oscAng = new matrixEngine.utility.OSCILLATOR( 1, 100, 1 );
     footerBalanceComp.position.translateX(oscAng.UPDATE())
     footerBalanceComp.position.onTargetReached = () => {
       footerBalanceComp.position.translateX(oscAng.UPDATE())

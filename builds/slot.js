@@ -19857,7 +19857,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 _manifest.default.operation.draws = new Object();
 
-_manifest.default.operation.draws.cube = function (object) {
+_manifest.default.operation.draws.cube = function (object, ray) {
   var lighting = true;
   var localLooper = 0;
   mat4.identity(object.mvMatrix);
@@ -19874,7 +19874,7 @@ _manifest.default.operation.draws.cube = function (object) {
     }
 
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
     mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
     mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
     mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
@@ -20001,72 +20001,51 @@ _manifest.default.operation.draws.cube = function (object) {
       // test FBO
       // spot light test light
       // Fbo staff
-      if (!object.FBO.FB) {
-        // console.log('ONLY ONCE ')
-        object.FBO = {
-          name: object.name
-        };
-        object.FBO.FB = (0, _matrixTextures.makeFBO)(_matrixWorld.world.GL.gl, object);
-        object.FBO.settings = {
-          cameraX: 6,
-          cameraY: 5,
-          posX: 2.5,
-          posY: 4.8,
-          posZ: 4.3,
-          targetX: 2.5,
-          targetY: 0,
-          targetZ: 3.5,
-          projWidth: 1,
-          projHeight: 1,
-          perspective: true,
-          fieldOfView: 120,
-          bias: -0.006
-        }; // for now
-
-        _matrixWorld.world.FBOS.push(object.FBO);
-      }
-
       _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
 
       _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
 
-      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // shadow staff dev
-
-
-      var target = [0, 0, 0];
-      var up = [0, 1, 0]; // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
-
-      var lmat = m4.lookAt([0, 2, 0], target, up);
-      const viewMatrix = m4.inverse(lmat); // first draw from the POV of the light
-
-      const lightWorldMatrix = m4.lookAt([object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ], // position
-      [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-      [0, 1, 0] // up
-      );
-      const lightProjectionMatrix = object.FBO.settings.perspective ? m4.perspective(degToRad(object.FBO.settings.fieldOfView), object.FBO.settings.projWidth / object.FBO.settings.projHeight, 0.5, // near
-      10) // far
-      : m4.orthographic(-object.FBO.settings.projWidth / 2, // left
-      object.FBO.settings.projWidth / 2, // right
-      -object.FBO.settings.projHeight / 2, // bottom
-      object.FBO.settings.projHeight / 2, // top
-      0.5, // near
-      10); // far
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // // shadow staff dev
+      // var target = [0, 0, 0];
+      // var up = [0, 1, 0];
+      // // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
+      // var lmat = m4.lookAt([0, 2, 0], target, up);
+      // const viewMatrix = m4.inverse(lmat);
+      // // first draw from the POV of the light
+      // const lightWorldMatrix = m4.lookAt(
+      //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
+      //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
+      //   [0, 1, 0],                                              // up
+      // );
+      // const lightProjectionMatrix = object.FBO.settings.perspective
+      //   ? m4.perspective(
+      //     degToRad(object.FBO.settings.fieldOfView),
+      //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
+      //     0.5,  // near
+      //     10)   // far
+      //   : m4.orthographic(
+      //     -object.FBO.settings.projWidth / 2,   // left
+      //     object.FBO.settings.projWidth / 2,   // right
+      //     -object.FBO.settings.projHeight / 2,  // bottom
+      //     object.FBO.settings.projHeight / 2,  // top
+      //     0.5,                      // near
+      //     10);                      // far
       // // draw to the depth texture
       // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
       // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
       // world.GL.gl.viewport(0, 0, 512, 512);
       // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
       // draw 
+      // let textureMatrix = m4.identity();
+      // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
+      // textureMatrix = m4.multiply(
+      //   textureMatrix,
+      //   m4.inverse(lightWorldMatrix));
+      // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
+      // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
 
-      let textureMatrix = m4.identity();
-      textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-      textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
-
-      _matrixWorld.world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-
-      _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
     } else {
       for (var t = 0; t < object.textures.length; t++) {
         if (object.custom.gl_texture == null) {
@@ -20239,7 +20218,7 @@ _manifest.default.operation.draws.cube = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.piramide = function (object) {
+_manifest.default.operation.draws.piramide = function (object, ray) {
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
@@ -20251,7 +20230,7 @@ _manifest.default.operation.draws.piramide = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+  if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
@@ -20295,7 +20274,7 @@ _manifest.default.operation.draws.piramide = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.square = function (object) {
+_manifest.default.operation.draws.square = function (object, ray) {
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
@@ -20307,7 +20286,7 @@ _manifest.default.operation.draws.square = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+  if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
@@ -20349,7 +20328,7 @@ _manifest.default.operation.draws.square = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.triangle = function (object) {
+_manifest.default.operation.draws.triangle = function (object, ray) {
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
@@ -20361,7 +20340,7 @@ _manifest.default.operation.draws.triangle = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+  if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
@@ -20400,7 +20379,7 @@ _manifest.default.operation.draws.triangle = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.drawObj = function (object) {
+_manifest.default.operation.draws.drawObj = function (object, ray) {
   var lighting = 1;
   var localLooper = 0;
   lighting = true;
@@ -20410,7 +20389,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
   if (object.isHUD === true) {
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalcObj(object);
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
   } else {
     if (_manifest.default.camera.FirstPersonController == true) {
       _events.camera.setCamera(object);
@@ -20419,7 +20398,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
     }
 
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalcObj(object);
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
     mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
     mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
     mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
@@ -20569,70 +20548,72 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
       } else if (object.FBO) {
         // Fbo staff
-        if (!object.FBO.FB) {
-          object.FBO = {
-            name: object.name
-          };
-          object.FBO.FB = (0, _matrixTextures.makeFBO)(_matrixWorld.world.GL.gl, object);
-          object.FBO.settings = {
-            cameraX: 6,
-            cameraY: 5,
-            posX: 2.5,
-            posY: 4.8,
-            posZ: 4.3,
-            targetX: 2.5,
-            targetY: 0,
-            targetZ: 3.5,
-            projWidth: 1,
-            projHeight: 1,
-            perspective: true,
-            fieldOfView: 120,
-            bias: -0.006
-          };
-
-          _matrixWorld.world.FBOS.push(object.FBO);
-        }
-
+        // if(!object.FBO.FB) {
+        //   object.FBO = {
+        //     name: object.name
+        //   };
+        //   object.FBO.FB = makeFBO(world.GL.gl, object);
+        //   object.FBO.settings = {
+        //     cameraX: 6,
+        //     cameraY: 5,
+        //     posX: 2.5,
+        //     posY: 4.8,
+        //     posZ: 4.3,
+        //     targetX: 2.5,
+        //     targetY: 0,
+        //     targetZ: 3.5,
+        //     projWidth: 1,
+        //     projHeight: 1,
+        //     perspective: true,
+        //     fieldOfView: 120,
+        //     bias: -0.006,
+        //   };
+        //   world.FBOS.push(object.FBO);
+        // }
         _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
 
         _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
 
         _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // shadow staff
+        // var target = [0, 0, 0];
+        // var up = [0, 1, 0];
+        // var lmat = m4.lookAt([0, 1, 0], target, up);
+        // const viewMatrix = m4.inverse(lmat);
+        // // first draw from the POV of the light
+        // const lightWorldMatrix = m4.lookAt(
+        //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
+        //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
+        //   [0, 1, 0],                                              // up
+        // );
+        // const lightProjectionMatrix = object.FBO.settings.perspective
+        //   ? m4.perspective(
+        //     degToRad(object.FBO.settings.fieldOfView),
+        //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
+        //     0.5,  // near
+        //     10)   // far
+        //   : m4.orthographic(
+        //     -object.FBO.settings.projWidth / 2,   // left
+        //     object.FBO.settings.projWidth / 2,   // right
+        //     -object.FBO.settings.projHeight / 2,  // bottom
+        //     object.FBO.settings.projHeight / 2,  // top
+        //     0.5,                      // near
+        //     10);                      // far
+        // // // draw to the depth texture
+        // // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
+        // // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
+        // // world.GL.gl.viewport(0, 0, 512, 512);
+        // // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
+        // // draw 
+        // let textureMatrix = m4.identity();
+        // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+        // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+        // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
+        // textureMatrix = m4.multiply(
+        //   textureMatrix,
+        //   m4.inverse(lightWorldMatrix));
+        // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
+        // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
 
-
-        var target = [0, 0, 0];
-        var up = [0, 1, 0];
-        var lmat = m4.lookAt([0, 1, 0], target, up);
-        const viewMatrix = m4.inverse(lmat); // first draw from the POV of the light
-
-        const lightWorldMatrix = m4.lookAt([object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ], // position
-        [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-        [0, 1, 0] // up
-        );
-        const lightProjectionMatrix = object.FBO.settings.perspective ? m4.perspective(degToRad(object.FBO.settings.fieldOfView), object.FBO.settings.projWidth / object.FBO.settings.projHeight, 0.5, // near
-        10) // far
-        : m4.orthographic(-object.FBO.settings.projWidth / 2, // left
-        object.FBO.settings.projWidth / 2, // right
-        -object.FBO.settings.projHeight / 2, // bottom
-        object.FBO.settings.projHeight / 2, // top
-        0.5, // near
-        10); // far
-        // // draw to the depth texture
-        // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
-        // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
-        // world.GL.gl.viewport(0, 0, 512, 512);
-        // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
-        // draw 
-
-        let textureMatrix = m4.identity();
-        textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-        textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-        textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-        textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
-
-        _matrixWorld.world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-
-        _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
       } else {
         for (var t = 0; t < object.textures.length; t++) {
           _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
@@ -20742,7 +20723,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.drawSquareTex = function (object) {
+_manifest.default.operation.draws.drawSquareTex = function (object, ray) {
   var lighting = true; // eslint-disable-next-line no-unused-vars
 
   var localLooper = 0;
@@ -20751,7 +20732,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
   if (object.isHUD === true) {
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
   } else {
     if (_manifest.default.camera.FirstPersonController == true) {
       _events.camera.setCamera(object);
@@ -20881,72 +20862,73 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     } else if (object.FBO) {
       // test FBO
       // Fbo staff
-      if (!object.FBO.FB) {
-        object.FBO = {
-          name: object.name
-        };
-        object.FBO.FB = (0, _matrixTextures.makeFBO)(_matrixWorld.world.GL.gl, object);
-
-        _matrixWorld.world.FBOS.push(object.FBO);
-
-        object.FBO.settings = {
-          cameraX: 6,
-          cameraY: 5,
-          posX: 2.5,
-          posY: 4.8,
-          posZ: 4.3,
-          targetX: 2.5,
-          targetY: 0,
-          targetZ: 3.5,
-          projWidth: 1,
-          projHeight: 1,
-          perspective: true,
-          fieldOfView: 120,
-          bias: -0.006
-        };
-      }
-
+      // if(!object.FBO.FB) {
+      //   object.FBO = {
+      //     name: object.name
+      //   };
+      //   object.FBO.FB = makeFBO(world.GL.gl, object);
+      //   world.FBOS.push(object.FBO);
+      //   object.FBO.settings = {
+      //     cameraX: 6,
+      //     cameraY: 5,
+      //     posX: 2.5,
+      //     posY: 4.8,
+      //     posZ: 4.3,
+      //     targetX: 2.5,
+      //     targetY: 0,
+      //     targetZ: 3.5,
+      //     projWidth: 1,
+      //     projHeight: 1,
+      //     perspective: true,
+      //     fieldOfView: 120,
+      //     bias: -0.006,
+      //   };
+      // }
       _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
 
       _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
 
-      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // shadow staff
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // // shadow staff
+      // var target = [0, 0, 0];
+      // var up = [0, 1, 0];
+      // // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
+      // var lmat = m4.lookAt([0, 1, 0], target, up);
+      // const viewMatrix = m4.inverse(lmat);
+      // // first draw from the POV of the light
+      // const lightWorldMatrix = m4.lookAt(
+      //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
+      //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
+      //   [0, 1, 0],                                              // up
+      // );
+      // const lightProjectionMatrix = object.FBO.settings.perspective
+      //   ? m4.perspective(
+      //     degToRad(object.FBO.settings.fieldOfView),
+      //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
+      //     0.5,  // near
+      //     10)   // far
+      //   : m4.orthographic(
+      //     -object.FBO.settings.projWidth / 2,   // left
+      //     object.FBO.settings.projWidth / 2,   // right
+      //     -object.FBO.settings.projHeight / 2,  // bottom
+      //     object.FBO.settings.projHeight / 2,  // top
+      //     0.5,                      // near
+      //     10);                      // far
+      // // // draw to the depth texture
+      // // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
+      // // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
+      // // world.GL.gl.viewport(0, 0, 512, 512);
+      // // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
+      // // draw 
+      // let textureMatrix = m4.identity();
+      // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
+      // textureMatrix = m4.multiply(
+      //   textureMatrix,
+      //   m4.inverse(lightWorldMatrix));
+      // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
+      // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
 
-
-      var target = [0, 0, 0];
-      var up = [0, 1, 0]; // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
-
-      var lmat = m4.lookAt([0, 1, 0], target, up);
-      const viewMatrix = m4.inverse(lmat); // first draw from the POV of the light
-
-      const lightWorldMatrix = m4.lookAt([object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ], // position
-      [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-      [0, 1, 0] // up
-      );
-      const lightProjectionMatrix = object.FBO.settings.perspective ? m4.perspective(degToRad(object.FBO.settings.fieldOfView), object.FBO.settings.projWidth / object.FBO.settings.projHeight, 0.5, // near
-      10) // far
-      : m4.orthographic(-object.FBO.settings.projWidth / 2, // left
-      object.FBO.settings.projWidth / 2, // right
-      -object.FBO.settings.projHeight / 2, // bottom
-      object.FBO.settings.projHeight / 2, // top
-      0.5, // near
-      10); // far
-      // // draw to the depth texture
-      // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
-      // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
-      // world.GL.gl.viewport(0, 0, 512, 512);
-      // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
-      // draw 
-
-      let textureMatrix = m4.identity();
-      textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-      textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
-
-      _matrixWorld.world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-
-      _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
     } else {
       for (var t = 0; t < object.textures.length; t++) {
         if (object.custom.gl_texture == null) {
@@ -21069,7 +21051,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.sphere = function (object) {
+_manifest.default.operation.draws.sphere = function (object, ray) {
   var lighting = true;
   var localLooper = 0;
   mat4.identity(object.mvMatrix);
@@ -21079,7 +21061,8 @@ _manifest.default.operation.draws.sphere = function (object) {
     _events.camera.setCamera(object);
   } else if (_manifest.default.camera.SceneController == true) {
     _events.camera.setSceneCamera(object);
-  }
+  } // no ray for now !!!
+
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
@@ -24078,7 +24061,7 @@ function getInitVSCubeMap() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.callReDraw_ = exports.reDrawID = exports.animate = void 0;
+exports.reDrawID = exports.animate = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
 
@@ -24096,9 +24079,6 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* eslint-disable no-undef */
-
-/* eslint-disable no-unused-vars */
 var animate = function (sceneObject) {
   var timeNow = new Date().getTime();
 
@@ -24124,12 +24104,7 @@ var reDrawID = 0;
 exports.reDrawID = reDrawID;
 var secondPass = 0;
 var physicsLooper = 0,
-    lt = 0; // HARDCODE 
-
-window.testX = 0;
-window.testY = 0;
-window.testZ = 0;
-window.PLEASE = 'CE';
+    lt = 0;
 
 _manifest.default.operation.reDrawGlobal = function (time) {
   (0, _engine.modifyLooper)(0);
@@ -24139,7 +24114,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
   for (var t = 0; t < _manifest.default.updateBeforeDraw.length; t++) {
     _manifest.default.updateBeforeDraw[t].UPDATE();
-  } // Physics
+  } // Physics [cannonjs-matrix engine implementation]
 
 
   if (_matrixWorld.world.physics !== null) {
@@ -24187,122 +24162,140 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
   physicsLooper = 0; // Must be override for performance 
   // - non FBO and FBO option draw coroutine
-  // hc 512
+  // hc 512x512
+  // Important camera setup must be in the first place in exe order!
+  // Before FB bind
 
-  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB);
-
-  _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
-
-  _matrixWorld.world.GL.gl.clearColor(0.2, 0.2, 0.4, 1.0);
-
-  _matrixWorld.world.GL.gl.clear(_matrixWorld.world.GL.gl.COLOR_BUFFER_BIT | _matrixWorld.world.GL.gl.DEPTH_BUFFER_BIT);
-
-  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-
-  _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
-
-  _matrixWorld.world.GL.gl.depthMask(true); // - draw all `non fbo` and `no blend`
+  if (_matrixWorld.world.FBOS.length > 0) {
+    matrixEngine.Events.camera.pitchMemo = matrixEngine.Events.camera.pitch;
+    matrixEngine.Events.camera.yawMemo = matrixEngine.Events.camera.yaw;
+    matrixEngine.Events.camera.xPosMemo = matrixEngine.Events.camera.xPos;
+    matrixEngine.Events.camera.zPosMemo = matrixEngine.Events.camera.zPos;
+    matrixEngine.Events.camera.yPosMemo = matrixEngine.Events.camera.yPos;
+  } // Multi FB
 
 
-  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
-    if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
-      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+  for (var fbindex = 0; fbindex < _matrixWorld.world.FBOS.length; fbindex++) {
+    // save samera pos
+    // if (typeof world.FBOS[fbindex].settings.xPosMemo === 'undefined') {
+    // setup by custom params
+    matrixEngine.Events.camera.xPos = _matrixWorld.world.FBOS[fbindex].settings.cameraX;
+    matrixEngine.Events.camera.yPos = _matrixWorld.world.FBOS[fbindex].settings.cameraY;
+    matrixEngine.Events.camera.zPos = _matrixWorld.world.FBOS[fbindex].settings.cameraZ;
+    matrixEngine.Events.camera.pitch = _matrixWorld.world.FBOS[fbindex].settings.pitch;
+    matrixEngine.Events.camera.yaw = _matrixWorld.world.FBOS[fbindex].settings.yaw;
 
-        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+    _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[fbindex].FB);
 
-      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+    _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
 
-        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+    _matrixWorld.world.GL.gl.clearColor(0.2, 0.2, 0.4, 1.0);
 
-      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+    _matrixWorld.world.GL.gl.clear(_matrixWorld.world.GL.gl.COLOR_BUFFER_BIT | _matrixWorld.world.GL.gl.DEPTH_BUFFER_BIT);
 
-        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
 
-      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+    _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
-        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+    _matrixWorld.world.GL.gl.depthMask(true); // - draw all `non fbo` and `no blend`
 
-      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+    while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
+      if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
+        if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+          _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+          _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+          _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+          _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
+          _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        }
       }
+
+      (0, _engine.modifyLooper)(_engine.looper + 1);
     }
 
-    (0, _engine.modifyLooper)(_engine.looper + 1);
-  }
+    (0, _engine.modifyLooper)(0); // maybe no need here
 
-  (0, _engine.modifyLooper)(0); // maybe no need here
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
 
-  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
-
-  _matrixWorld.world.GL.gl.depthMask(false); // all non FBO but blended
+    _matrixWorld.world.GL.gl.depthMask(false); // all non FBO but blended
 
 
-  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
-    if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == true) {
-      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+    while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
+      if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == true) {
+        if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+          _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+          _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+          _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+          _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
+          _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+          _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]), 'noray';
+        } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
+          _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        }
       }
+
+      (0, _engine.modifyLooper)(_engine.looper + 1);
     }
 
-    (0, _engine.modifyLooper)(_engine.looper + 1);
+    (0, _engine.modifyLooper)(0);
+
+    _matrixWorld.world.GL.gl.depthMask(true); // Back to drawing on the main color buffer!
+
+
+    _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, null); // Multi FBO camera view works but obj seq speed up - probably becouse OSC !! must be fixed
+    // Reset camera
+
+
+    if (typeof _matrixWorld.world.FBOS[0] !== 'undefined') {
+      matrixEngine.Events.camera.zPos = matrixEngine.Events.camera.zPosMemo;
+      matrixEngine.Events.camera.xPos = matrixEngine.Events.camera.xPosMemo;
+      matrixEngine.Events.camera.yPos = matrixEngine.Events.camera.yPosMemo;
+      matrixEngine.Events.camera.pitch = matrixEngine.Events.camera.pitchMemo;
+      matrixEngine.Events.camera.yaw = matrixEngine.Events.camera.yawMemo;
+    }
   }
-
-  (0, _engine.modifyLooper)(0);
-
-  _matrixWorld.world.GL.gl.depthMask(true); // Back to drawing on the main color buffer!
-
-
-  _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, null);
 
   _matrixWorld.world.GL.gl.viewport(0, 0, _matrixWorld.world.GL.gl.canvas.width, _matrixWorld.world.GL.gl.canvas.height);
 
@@ -24315,7 +24308,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
   _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
-  _matrixWorld.world.GL.gl.depthMask(true); // all but no blend
+  _matrixWorld.world.GL.gl.depthMask(true); // All but no blend
 
 
   while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
@@ -24372,7 +24365,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
   _matrixWorld.world.GL.gl.depthMask(false);
 
-  (0, _engine.modifyLooper)(0); // all but no blend
+  (0, _engine.modifyLooper)(0); // all but blend
 
   while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
     if (_matrixWorld.world.contentList[_engine.looper].visible === true && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == true) {
@@ -24462,11 +24455,6 @@ _manifest.default.operation.CameraPerspective = function () {
   this.GL.gl.clear(this.GL.gl.COLOR_BUFFER_BIT | this.GL.gl.DEPTH_BUFFER_BIT);
   mat4.perspective(this.pMatrix, (0, _engine.degToRad)(_manifest.default.camera.viewAngle), this.GL.gl.viewportWidth / this.GL.gl.viewportHeight, _manifest.default.camera.nearViewpoint, _manifest.default.camera.farViewpoint);
 };
-
-var callReDraw_ = function () {// requestAnimationFrame(reDraw);
-};
-
-exports.callReDraw_ = callReDraw_;
 
 _manifest.default.operation.simplyRender = function (time) {
   (0, _engine.modifyLooper)(0);
@@ -25796,68 +25784,77 @@ const cubeMapTextures = async function (sources, callback) {
  * @description
  * FBO textures
  */
+// test
+// gl.activeTexture(gl.TEXTURE0);
+// const checkerboardTexture = gl.createTexture();
+// gl.bindTexture(gl.TEXTURE_2D, checkerboardTexture);
+// gl.texImage2D(
+//   gl.TEXTURE_2D,
+//   0,                // mip level
+//   gl.LUMINANCE,     // internal format
+//   8,                // width
+//   8,                // height
+//   0,                // border
+//   gl.LUMINANCE,     // format
+//   gl.UNSIGNED_BYTE, // type
+//   new Uint8Array([  // data
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//   ]));
+// gl.generateMipmap(gl.TEXTURE_2D);
+// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+// // test depth
+// const depthTexture = gl.createTexture();
+// const depthTextureSize = 512;
+// gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+// {
+//   // define size and format of level 0
+//   const level = 0;
+//   const internalFormat = gl.RGBA;
+//   const border = 0;
+//   const format = gl.RGBA;
+//   const type = gl.UNSIGNED_BYTE;
+//   const data = null;
+//   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+//                 512, 512, border,
+//                 format, type, data);
+//   // set the filtering so we don't need mips
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+// }
+// const depthFramebuffer = gl.createFramebuffer();
+// gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
+// gl.framebufferTexture2D(
+//     gl.FRAMEBUFFER,       // target
+//     gl.COLOR_ATTACHMENT0, //  gl.DEPTH_ATTACHMENT,  // attachment point
+//     gl.TEXTURE_2D,        // texture target
+//     depthTexture,         // texture
+//     0);                   // mip level
+//////////////////////////////////////////////////////
+// TEST 2 Success for now just fbo
+// gl.getParameter(gl.MAX_DRAW_BUFFERS)
+//////////////////////////////////////////////////////
 
 
 exports.cubeMapTextures = cubeMapTextures;
 
-const makeFBO = (gl, object) => {
-  // test
-  // gl.activeTexture(gl.TEXTURE0);
-  // const checkerboardTexture = gl.createTexture();
-  // gl.bindTexture(gl.TEXTURE_2D, checkerboardTexture);
-  // gl.texImage2D(
-  //   gl.TEXTURE_2D,
-  //   0,                // mip level
-  //   gl.LUMINANCE,     // internal format
-  //   8,                // width
-  //   8,                // height
-  //   0,                // border
-  //   gl.LUMINANCE,     // format
-  //   gl.UNSIGNED_BYTE, // type
-  //   new Uint8Array([  // data
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //   ]));
-  // gl.generateMipmap(gl.TEXTURE_2D);
-  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  // // test depth
-  // const depthTexture = gl.createTexture();
-  // const depthTextureSize = 512;
-  // gl.bindTexture(gl.TEXTURE_2D, depthTexture);
-  // {
-  //   // define size and format of level 0
-  //   const level = 0;
-  //   const internalFormat = gl.RGBA;
-  //   const border = 0;
-  //   const format = gl.RGBA;
-  //   const type = gl.UNSIGNED_BYTE;
-  //   const data = null;
-  //   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-  //                 512, 512, border,
-  //                 format, type, data);
-  //   // set the filtering so we don't need mips
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  // }
-  // const depthFramebuffer = gl.createFramebuffer();
-  // gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
-  // gl.framebufferTexture2D(
-  //     gl.FRAMEBUFFER,       // target
-  //     gl.COLOR_ATTACHMENT0, //  gl.DEPTH_ATTACHMENT,  // attachment point
-  //     gl.TEXTURE_2D,        // texture target
-  //     depthTexture,         // texture
-  //     0);                   // mip level
-  //////////////////////////////////////////////////////
-  // TEST 2 Success for now just fbo
-  //////////////////////////////////////////////////////
+const makeFBO = (gl, o) => {
   var framebuffer, texture, depthBuffer;
+
+  if (typeof o === 'undefined') {
+    var o = {
+      width: 512,
+      height: 512
+    };
+  } // console.log('FBO MAKE FUNC');
+
 
   var error = function () {
     console.log('Error in creating FBO!');
@@ -25879,8 +25876,8 @@ const makeFBO = (gl, object) => {
   } // local
 
 
-  var OFFSCREEN_WIDTH = 512;
-  var OFFSCREEN_HEIGHT = 512;
+  var OFFSCREEN_WIDTH = o.width;
+  var OFFSCREEN_HEIGHT = o.height;
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -25910,7 +25907,7 @@ const makeFBO = (gl, object) => {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.bindTexture(gl.TEXTURE_2D, null);
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-  return framebuffer; //////////////////////////////////////////////////////
+  return framebuffer;
 };
 
 exports.makeFBO = makeFBO;
@@ -25956,7 +25953,9 @@ var _overrideMatrixRender = require("./optimizer/override-matrix-render");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-unused-vars */
-// define shaders from code
+// TEST TEST fbo
+_manifest.default.makeFBO = _matrixTextures.makeFBO; // define shaders from code
+
 if (_manifest.default.openglesShaderVersion == '3') {}
 
 (0, _matrixInitShaders.loadShaders2)();
@@ -26344,7 +26343,23 @@ function defineworld(canvas, renderType) {
       squareObject.glBlend = new _utility._glBlend();
 
       squareObject.setFBO = function () {
-        squareObject.FBO = {};
+        console.log('cubeObject set fbo ... ');
+        squareObject.FBO = {
+          name: squareObject.name,
+          FB: (0, _matrixTextures.makeFBO)(world.GL.gl, {
+            width: 512,
+            height: 512
+          }),
+          settings: {
+            cameraX: typeof arg === 'undefined' || !arg.cameraX ? 6 : arg.cameraX,
+            cameraY: typeof arg === 'undefined' || !arg.cameraY ? 5 : arg.cameraY,
+            cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 5 : arg.cameraZ,
+            pitch: typeof arg === 'undefined' || !arg.pitch ? 2.5 : arg.pitch,
+            yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw
+          }
+        }; // for now
+
+        world.FBOS.push(squareObject.FBO);
       }; // destroy self
 
 
@@ -26966,8 +26981,37 @@ function defineworld(canvas, renderType) {
         lightingDirection: new _matrixGeometry.COLOR((0, _utility.radToDeg)(0.3), (0, _utility.radToDeg)(-0.3), (0, _utility.radToDeg)(-1))
       };
 
-      cubeObject.setFBO = function () {
-        cubeObject.FBO = {};
+      cubeObject.setFBO = function (arg) {
+        // cubeObject.FBO = {};
+        // console.log('cubeObject set fbo ... ')
+        cubeObject.FBO = {
+          name: cubeObject.name,
+          FB: (0, _matrixTextures.makeFBO)(world.GL.gl, {
+            width: 512,
+            height: 512
+          }),
+          settings: {
+            cameraX: typeof arg === 'undefined' || !arg.cameraX ? 0 : arg.cameraX,
+            cameraY: typeof arg === 'undefined' || !arg.cameraY ? 0 : arg.cameraY,
+            cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 0 : arg.cameraZ,
+            pitch: typeof arg === 'undefined' || !arg.pitch ? 2.5 : arg.pitch,
+            yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw // posZ: (typeof arg === 'undefined' || !arg.posZ? 4.3 : arg.posZ),
+            // targetX: (typeof arg === 'undefined' || !arg.targetX? 2.5 : arg.targetX),
+            // targetY: (typeof arg === 'undefined'|| !arg.targetY ? 0 : arg.targetY),
+            // targetZ: (typeof arg === 'undefined' || !arg.targetZ? 3.5 : arg.targetZ),
+            // projWidth: (typeof arg === 'undefined' || !arg.projWidth? 1 : arg.projWidth),
+            // projHeight: (typeof arg === 'undefined'|| !arg.projHeight ? 1 : arg.projHeight),
+            // perspective:  (typeof arg === 'undefined' || !arg.perspective? true : arg.perspective),
+            // fieldOfView:  (typeof arg === 'undefined' || !arg.fieldOfView? 120 : arg.fieldOfView),
+            // bias: (typeof arg === 'undefined' || !arg.bias ? -0.006 : arg.bias),
+            // translate: (typeof arg === 'undefined' || !arg.translate ? [1.5, 1.5, 1.5] : [arg.translate[0], arg.translate[1], arg.translate[2]]),
+            // scale  : (typeof arg === 'undefined' || !arg.scale ? [0.5 ,0.5 ,0.5] : [arg.scale[0],arg.scale[1] ,arg.scale[2] ])
+
+          }
+        }; // for now
+        // world.FBOS[0] = cubeObject.FBO;
+
+        world.FBOS.push(cubeObject.FBO);
       }; // destroy self  MAy need more improve
 
 
@@ -39962,7 +40006,7 @@ function webGLStart() {
       b: 0.6
     },
     textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
-    videoTex: false,
+    myCamera: true,
     winCoefficient: 100,
     geo: 'cubeLightTex',
     scale: 0.9
@@ -40014,7 +40058,6 @@ function webGLStart() {
       b: 0.2
     },
     textures: ["res/images/html5.png", "res/images/field3.png"],
-    videoTex: false,
     winCoefficient: 2,
     geo: 'cubeLightTex',
     scale: 0.9
@@ -40028,7 +40071,19 @@ function webGLStart() {
     },
     textures: ["res/images/html5.png", "res/images/field3.png"],
     videoTex: "res/video-texture/lava1.mkv",
-    winCoefficient: 2,
+    winCoefficient: 0,
+    geo: 'cubeLightTex',
+    scale: 0.9
+  };
+  var field2dSlot = {
+    id: 5,
+    color: {
+      r: 0.2,
+      g: 1,
+      b: 0.2
+    },
+    textures: ["res/images/html5.png"],
+    winCoefficient: 0,
     geo: 'cubeLightTex',
     scale: 0.9
   };
@@ -40038,7 +40093,7 @@ function webGLStart() {
     stopingInterval: 1000,
     waitForNextSpin: 2000,
     verticalSize: 3,
-    wheels: [[fieldEXTRA, fieldRed, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]],
+    wheels: [[fieldEXTRA, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime], [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime], [field2dSlot, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple], [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue], [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime], [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]],
     winnigLines: [[1, 1, 1, 1, 1, 1], // m                     1
     [0, 0, 0, 0, 0, 0], // t                     2
     [2, 2, 2, 2, 2, 2], // b                     3
@@ -40057,7 +40112,7 @@ function webGLStart() {
     [2, 2, 2, 0, 0, 0], // 3 by 2                16
     [0, 0, 0, 2, 2, 2] // 3 by 2                17
     ],
-    matrixMessage: ['MATRIX ', ' ENGINE ', ' SLOT ', ' MASHINE ']
+    matrixMessage: [' MATRIX ', ' ENGINE ']
   };
   mashine = new _mashine.default(world, App.slot.config);
   mashine.vc = _voiceCommander.VoiceCommanderInstance;
@@ -40445,7 +40500,7 @@ function createNidzaHudBalance(nidza) {
       id: "footerBalance",
       size: {
         width: 400,
-        height: 180
+        height: 150
       }
     };
     exports.footerBalance = footerBalance = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
@@ -40456,20 +40511,20 @@ function createNidzaHudBalance(nidza) {
         text: item,
         color: "lime",
         position: {
-          x: 15 + 10 * index,
-          y: 15
+          x: 15 + 50 * index,
+          y: 25
         },
         dimension: {
-          width: 150,
-          height: 150
+          width: 50,
+          height: 120
         },
         font: {
-          fontSize: "55px",
+          fontSize: "40px",
           fontStyle: "normal",
-          fontName: _standardFonts.stdFonts.Helvetica
+          fontName: 'stormfaze'
         }
       });
-      var oscAng = new matrixEngine.utility.OSCILLATOR(1, 100, 5);
+      var oscAng = new matrixEngine.utility.OSCILLATOR(1, 100, 1);
       footerBalanceComp.position.translateX(oscAng.UPDATE());
 
       footerBalanceComp.position.onTargetReached = () => {
@@ -40673,7 +40728,7 @@ class Mashines {
 
     this.status = "free";
     this.font = new _matrixEnginePlugins.planeUVFont();
-    this.speed = 0.4;
+    this.speed = 0.8;
     this.thread = {
       control: {}
     };
@@ -40973,14 +41028,15 @@ class Mashines {
       world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
     };
 
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
+    var coefic = 1;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = coefic;
     /*
         setInterval(function () {
     App.scene.MySquareTexure1.geometry.texCoordsPoints.right_top.x += 0.001;
@@ -41055,7 +41111,7 @@ class Mashines {
     world.Add("squareTex", 1, "footerBalance", texTopHeader);
     App.scene.footerBalance.geometry.setScaleByX(1.15);
     App.scene.footerBalance.geometry.setScaleByY(0.23);
-    App.scene.footerBalance.position.SetY(-2.75);
+    App.scene.footerBalance.position.SetY(-2.55);
     App.scene.footerBalance.position.SetZ(-6.4);
     App.scene.footerBalance.position.SetX(1); // Adapt active textures because it is inverted by nature.
 
@@ -41111,10 +41167,28 @@ class Mashines {
         var O2 = window.innerWidth / 1005 * WW;
         App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
 
-        if (field.videoTex !== false) {
-          //
-          console.log('TEST ETST  field.videoTex ', field.videoTex);
+        if (field.videoTex && field.videoTex !== false) {
           App.scene[name].streamTextures = new VT(field.videoTex);
+        }
+
+        if (field.myFBO && field.myFBO === true) {
+          // console.log('TEST ETST  field.FBO ', field.videoTex)
+          App.scene[name].rotation.rotz = 90;
+          App.scene[name].rotation.rotx = 90;
+          App.scene[name].rotation.roty = 0;
+          App.scene[name].setFBO({
+            cameraX: 0,
+            cameraY: 0,
+            cameraZ: 5,
+            pitch: 12,
+            yaw: 0
+          });
+        }
+
+        if (field.myCamera && field.myCamera === true) {
+          // console.log('TEST ETST  field.FBO ', field.videoTex)
+          App.scene[name].streamTextures = new matrixEngine.Engine.ACCESS_CAMERA('webcam_beta');
+          App.scene[name].rotation.roty = 180;
         }
 
         App.scene[name].specialId = field.id;
@@ -41138,10 +41212,9 @@ class Mashines {
         try {//console.log('______________')
           // App.scene[name].geometry.setScaleByX(O / 10);
           // App.scene[name].geometry.setScaleByY(2.97 / VW);
-        } catch (e) {} //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-        // App.scene.spinBtn.geometry.setScaleByY(-0.76)
-        //App.scene[name].glBlend.blendEnabled = true;
+        } catch (e) {} // App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3,7)];
+        // App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3,7)];
+        // App.scene[name].glBlend.blendEnabled = true;
 
         /*
         App.scene[name].geometry.colorData.color[0].set(field.color.r,field.color.b,field.color.g)
@@ -41201,10 +41274,13 @@ class Mashines {
   fieldOnClick = function (hitObject) {
     var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.05);
     hitObject.rotation.rotationSpeed.y = 200;
+    hitObject.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(4, 6)];
+    hitObject.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3, 5)];
+    hitObject.glBlend.blendEnabled = true;
     setTimeout(() => {
-      // hitObject.geometry.setScale( oscAng.UPDATE() )
       hitObject.rotation.rotationSpeed.y = 0;
       hitObject.rotation.roty = 0;
+      hitObject.glBlend.blendEnabled = false;
     }, 2000);
   };
   addRaycaster = () => {
@@ -41322,7 +41398,9 @@ class Mashines {
                 });
                 dispatchEvent(wheelStoped); // test line
 
+                console.log("#### y ", App.scene[fieldname].position.y);
                 App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel];
+                console.log("##after## y ", App.scene[fieldname].position.y);
               }
             }
           });
@@ -41343,15 +41421,15 @@ class Mashines {
         this.accessKeys.forEach((accessWheelNames, indexWheel) => {
           if (indexWheel == wheelID) {
             accessWheelNames.forEach((fieldname, indexField) => {
-              App.scene[fieldname].position.y += 0.002;
+              App.scene[fieldname].position.y += 0.02;
             });
           }
         });
-      }, 1);
+      }, 100);
       setTimeout(() => {
         clearInterval(this.preThread);
         resolve();
-      }, 150);
+      }, 800);
     });
   };
   deActivateSpiningThread = () => {

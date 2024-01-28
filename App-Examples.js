@@ -33,8 +33,11 @@ import {runThis as physics_sphere } from "./apps/physics_sphere";
 import {runThis as physics_cube } from "./apps/physics_cube";
 import {runThis as active_editor } from "./apps/active_editor";
 import {runThis as basic_fbo } from "./apps/basic_fbo";
+import {runThis as fbo_manipulation } from "./apps/fbo_manipulation";
+
 
 var Examples = {
+  fbo_manipulation: fbo_manipulation,
   active_editor: active_editor,
   basic_fbo: basic_fbo,
   physics_sphere: physics_sphere,

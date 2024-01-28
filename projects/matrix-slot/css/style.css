@@ -1,3 +1,12 @@
+@font-face {
+  font-family: stormfaze;
+  src: url(../res/fonts/stormfaze.ttf);
+}
+
+@font-face {
+  font-family: wargames;
+  src: url(../res/fonts/wargames.ttf);
+}
 
 body {
   color: lime;

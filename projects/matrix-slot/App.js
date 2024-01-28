@@ -7,7 +7,7 @@
  */
 import * as matrixEngine from "matrix-engine";
 import Mashines from "./scripts/mashine";
-import { VoiceCommanderInstance } from "./scripts/voice-commander";
+import {VoiceCommanderInstance} from "./scripts/voice-commander";
 
 // Voice commander
 VoiceCommanderInstance.callback = VoiceCommanderInstance.whatisyourname;
@@ -17,7 +17,7 @@ VoiceCommanderInstance.run();
 var world, mashine;
 var App = matrixEngine.App;
 
-if ("serviceWorker" in navigator) {
+if("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
     // navigator.serviceWorker.register("worker.js");
   });
@@ -47,7 +47,7 @@ function webGLStart() {
     id: 1,
     color: {r: 1, g: 0.6, b: 0.6},
     textures: ["res/images/html5.png", "res/images/metal-shets.jpg"],
-    videoTex: false,
+    myCamera: true,
     winCoefficient: 100,
     geo: 'cubeLightTex',
     scale: 0.9
@@ -87,7 +87,6 @@ function webGLStart() {
     id: 5,
     color: {r: 0.2, g: 1, b: 0.2},
     textures: ["res/images/html5.png", "res/images/field3.png"],
-    videoTex: false,
     winCoefficient: 2,
     geo: 'cubeLightTex',
     scale: 0.9
@@ -98,24 +97,33 @@ function webGLStart() {
     color: {r: 0.2, g: 1, b: 0.2},
     textures: ["res/images/html5.png", "res/images/field3.png"],
     videoTex: "res/video-texture/lava1.mkv",
-    winCoefficient: 2,
+    winCoefficient: 0,
+    geo: 'cubeLightTex',
+    scale: 0.9
+  };
+
+  var field2dSlot = {
+    id: 5,
+    color: {r: 0.2, g: 1, b: 0.2},
+    textures: ["res/images/html5.png"],
+    winCoefficient: 0,
     geo: 'cubeLightTex',
     scale: 0.9
   };
 
   App.slot.config = {
     // Count after all wheels spinning moment
-    spinningInterval : 1000,
+    spinningInterval: 1000,
     stopingInterval: 1000,
     waitForNextSpin: 2000,
     verticalSize: 3,
     wheels: [
-      [fieldEXTRA, fieldRed, fieldBlue, fieldLime,  fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime],
-      [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen , fieldGreen, fieldLime, fieldLime],
-      [fieldGreen, fieldPurple,fieldLime,  fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple],
-      [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue,  fieldGreen, fieldLime, fieldLime, fieldBlue],
-      [fieldGreen, fieldPurple,fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime],
-      [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen,fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]
+      [fieldEXTRA, fieldBlue, fieldLime, fieldLime, fieldPurple, fieldGreen, fieldPurple, fieldGreen, fieldLime],
+      [fieldRed, fieldBlue, fieldPurple, fieldLime, fieldPurple, fieldGreen, fieldGreen, fieldLime, fieldLime],
+      [field2dSlot, fieldPurple, fieldLime, fieldRed, fieldBlue, fieldPurple, fieldGreen, fieldLime, fieldLime, fieldPurple],
+      [fieldGreen, fieldPurple, fieldRed, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime, fieldLime, fieldBlue],
+      [fieldGreen, fieldPurple, fieldLime, fieldRed, fieldPurple, fieldGreen, fieldLime, fieldBlue, fieldLime, fieldLime],
+      [fieldBlue, fieldLime, fieldPurple, fieldRed, fieldGreen, fieldLime, fieldPurple, fieldBlue, fieldGreen, fieldLime]
     ],
     winnigLines: [
       [1, 1, 1, 1, 1, 1], // m                     1
@@ -137,7 +145,7 @@ function webGLStart() {
       [0, 0, 0, 2, 2, 2], // 3 by 2                17
     ],
     matrixMessage: [
-      'MATRIX ', ' ENGINE ', ' SLOT ', ' MASHINE ',
+      ' MATRIX ', ' ENGINE '
     ]
   };
 

@@ -38,7 +38,7 @@ export default class Mashines {
     // Slot status general
     this.status = "free";
     this.font = new planeUVFont();
-    this.speed = 0.4;
+    this.speed = 0.8;
     this.thread = {
       control: {},
     };
@@ -383,15 +383,15 @@ export default class Mashines {
       world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
     };
 
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 1;
-    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = 1;
-
+    var coefic = 1;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.right_top.x = coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = coefic;
+    App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = coefic;
     /*
 
       setInterval(function () {
@@ -469,7 +469,7 @@ export default class Mashines {
     world.Add("squareTex", 1, "footerBalance", texTopHeader);
     App.scene.footerBalance.geometry.setScaleByX(1.15);
     App.scene.footerBalance.geometry.setScaleByY(0.23);
-    App.scene.footerBalance.position.SetY(-2.75);
+    App.scene.footerBalance.position.SetY(-2.55);
     App.scene.footerBalance.position.SetZ(-6.4);
     App.scene.footerBalance.position.SetX(1);
     // Adapt active textures because it is inverted by nature.
@@ -541,12 +541,27 @@ export default class Mashines {
           field.color.b
         );
 
-        if(field.videoTex !== false) {
-          //
-          console.log('TEST ETST  field.videoTex ', field.videoTex)
-          App.scene[name].streamTextures = new VT(
-            field.videoTex
-          );
+        if(field.videoTex && field.videoTex !== false) {
+          App.scene[name].streamTextures = new VT(field.videoTex)
+        }
+        if (field.myFBO && field.myFBO === true) {
+          // console.log('TEST ETST  field.FBO ', field.videoTex)
+          App.scene[name].rotation.rotz = 90;
+          App.scene[name].rotation.rotx = 90;
+          App.scene[name].rotation.roty = 0;
+          App.scene[name].setFBO({
+            cameraX: 0,
+            cameraY: 0,
+            cameraZ: 5,
+            pitch: 12,
+            yaw: 0
+          });
+        }
+
+        if (field.myCamera && field.myCamera === true) {
+          // console.log('TEST ETST  field.FBO ', field.videoTex)
+          App.scene[name].streamTextures = new matrixEngine.Engine.ACCESS_CAMERA('webcam_beta')
+          App.scene[name].rotation.roty = 180;
         }
 
         App.scene[name].specialId = field.id;
@@ -565,10 +580,10 @@ export default class Mashines {
           // App.scene[name].geometry.setScaleByX(O / 10);
           // App.scene[name].geometry.setScaleByY(2.97 / VW);
         } catch(e) {}
-        //App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[5];
-        //App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-        // App.scene.spinBtn.geometry.setScaleByY(-0.76)
-        //App.scene[name].glBlend.blendEnabled = true;
+        
+        // App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3,7)];
+        // App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3,7)];
+        // App.scene[name].glBlend.blendEnabled = true;
 
         /*
         App.scene[name].geometry.colorData.color[0].set(field.color.r,field.color.b,field.color.g)
@@ -624,11 +639,15 @@ export default class Mashines {
     var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.05);
     hitObject.rotation.rotationSpeed.y = 200;
 
+    hitObject.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(4,6)];
+    hitObject.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3,5)];
+    hitObject.glBlend.blendEnabled = true;
+
     setTimeout(() => {
-      // hitObject.geometry.setScale( oscAng.UPDATE() )
       hitObject.rotation.rotationSpeed.y = 0;
       hitObject.rotation.roty = 0;
-    }, 2000);
+      hitObject.glBlend.blendEnabled = false;
+    }, 2000)
   };
 
   addRaycaster = () => {
@@ -762,7 +781,9 @@ export default class Mashines {
                     dispatchEvent(wheelStoped);
 
                     // test line
+                    console.log("#### y ", App.scene[fieldname].position.y)
                     App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel];
+                    console.log("##after## y ", App.scene[fieldname].position.y)
 
                   }
                 }
@@ -786,15 +807,15 @@ export default class Mashines {
         this.accessKeys.forEach((accessWheelNames, indexWheel) => {
           if(indexWheel == wheelID) {
             accessWheelNames.forEach((fieldname, indexField) => {
-              App.scene[fieldname].position.y += 0.002;
+              App.scene[fieldname].position.y += 0.02;
             });
           }
         });
-      }, 1);
+      }, 100);
       setTimeout(() => {
         clearInterval(this.preThread);
         resolve();
-      }, 150);
+      }, 800);
     });
   };
 
