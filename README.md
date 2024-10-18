@@ -1,4 +1,11 @@
 # matrix-engine-starter
+
+```json
+UNDERCONSTRUCT 
+Implementing matrix-engine 2.0.0 with kurento/OpenVidu client.
+
+```
+
 ## Objective
  - Real matrix-engine projects help examples.
  - Test matrix-engine usage with npm service (`npm i matrix-engine`).

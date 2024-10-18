@@ -9,7 +9,9 @@
     "anatomy": "watchify projects/web-anatomy/App.js -p [esmify --noImplicitAny] -o builds/web-anatomy.js",
     "slot": "watchify projects/matrix-slot/App.js -p [esmify --noImplicitAny] -o builds/slot.js",
     "roulette": "watchify projects/matrix-roulette/App.js -p [esmify --noImplicitAny] -o builds/roulette.js",
+    "hang3d": "watchify projects/hang3d/App.js -p [esmify --noImplicitAny] -o builds/hang3d.js",
     "build.roulette": "browserify projects/matrix-roulette/App.js -p esmify > builds/roulette.js",
+    "build.hang3d": "browserify projects/hang3d/App.js -p esmify > builds/hang3d.js",
     "build.examples": "browserify App-Examples.js -p esmify > builds/examples.me.js",
     "build.app": "browserify App.js -p esmify > builds/app.js",
     "build.slot": "browserify projects/matrix-slot/App.js -p esmify > builds/slot.js",
@@ -62,7 +64,7 @@
   "dependencies": {
     "audio-commander": "^1.0.3",
     "fs": "0.0.1-security",
-    "matrix-engine": "^1.9.38",
+    "matrix-engine": "^2.0.4",
     "matrix-engine-plugins": "0.1.0",
     "matrix-network": "^1.0.12",
     "nidza": "^1.2.15",
