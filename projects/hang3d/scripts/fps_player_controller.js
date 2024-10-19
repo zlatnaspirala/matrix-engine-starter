@@ -642,7 +642,7 @@ export var runHang3d = (world) => {
 		console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 
 		// Make relation for net players
-		App.scene.playerCollisonBox.position.nameUniq = e.detail.connection.connectionId;
+		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
 		App.scene.playerCollisonBox.net.enable = true;
 
 		// CAMERA VIEW FOR SELF LOCAL CAM

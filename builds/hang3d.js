@@ -21318,6 +21318,9 @@ class RotationVector {
  * @description Base class
  * Powered for multiplayer feature:
  * - position ref to x,y,z
+ * 
+ * new case if you wanna send for some other object from uniq local
+ * example fo rFPShooter
  */
 
 
@@ -21326,6 +21329,7 @@ exports.RotationVector = RotationVector;
 class Position {
   constructor(x, y, z) {
     this.nameUniq = null;
+    this.netObjId = null;
 
     if (typeof x == 'undefined') {
       x = 0;
@@ -21416,7 +21420,7 @@ class Position {
             y: this.y,
             z: this.z
           },
-          netObjId: this.nameUniq
+          netObjId: this.netObjId
         });
       } else {
         this.x = this.targetX;
@@ -21430,7 +21434,7 @@ class Position {
             y: this.y,
             z: this.z
           },
-          netObjId: this.nameUniq
+          netObjId: this.netObjId
         });
       }
     }
@@ -21452,7 +21456,7 @@ class Position {
           y: this.y,
           z: this.z
         },
-        netObjId: this.nameUniq
+        netObjId: this.netObjId
       });
     }
   }
@@ -21467,7 +21471,7 @@ class Position {
         y: this.y,
         z: this.z
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -21481,7 +21485,7 @@ class Position {
         y: this.y,
         z: this.z
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -21499,7 +21503,7 @@ class Position {
         y: this.y,
         z: this.z
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -27018,6 +27022,7 @@ function defineworld(canvas, renderType) {
       triangleObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       triangleObject.position.nameUniq = nameUniq;
+      triangleObject.position.netObjId = nameUniq;
       triangleObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       triangleObject.rotation.nameUniq = nameUniq;
       triangleObject.color = new _matrixGeometry.GeoOfColor('triangle');
@@ -27090,6 +27095,7 @@ function defineworld(canvas, renderType) {
       squareObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       squareObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       squareObject.position.nameUniq = nameUniq;
+      squareObject.position.netObjId = nameUniq;
       squareObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       squareObject.rotation.nameUniq = nameUniq;
       squareObject.color = true;
@@ -27163,6 +27169,7 @@ function defineworld(canvas, renderType) {
       squareObject.sides = 4;
       squareObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       squareObject.position.nameUniq = nameUniq;
+      squareObject.position.netObjId = nameUniq;
       squareObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       squareObject.rotation.nameUniq = nameUniq;
       squareObject.mvMatrix = mat4.create();
@@ -27333,6 +27340,7 @@ function defineworld(canvas, renderType) {
       cubeObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       cubeObject.position.nameUniq = nameUniq;
+      cubeObject.position.netObjId = nameUniq;
       cubeObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       cubeObject.rotation.nameUniq = nameUniq;
       cubeObject.color = true;
@@ -27402,6 +27410,7 @@ function defineworld(canvas, renderType) {
       sphereObject.type = filler;
       sphereObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       sphereObject.position.nameUniq = nameUniq;
+      sphereObject.position.netObjId = nameUniq;
       sphereObject.size = size;
       sphereObject.sides = 12;
       sphereObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
@@ -27555,6 +27564,7 @@ function defineworld(canvas, renderType) {
       pyramidObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       pyramidObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       pyramidObject.position.nameUniq = nameUniq;
+      pyramidObject.position.netObjId = nameUniq;
       pyramidObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       pyramidObject.rotation.nameUniq = nameUniq;
       pyramidObject.mvMatrix = mat4.create();
@@ -27628,6 +27638,7 @@ function defineworld(canvas, renderType) {
       objObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       objObject.position = new _matrixGeometry.Position(0, -5, -8.0);
       objObject.position.nameUniq = nameUniq;
+      objObject.position.netObjId = nameUniq;
       objObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
       objObject.rotation.nameUniq = nameUniq;
       objObject.color = false; // new GeoOfColor('4x4');
@@ -27813,6 +27824,7 @@ function defineworld(canvas, renderType) {
       cubeObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       cubeObject.position.nameUniq = nameUniq;
+      cubeObject.position.netObjId = nameUniq;
       cubeObject.size = size;
       cubeObject.sides = 12;
       cubeObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
@@ -28018,6 +28030,7 @@ function defineworld(canvas, renderType) {
       cubeObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       cubeObject.position.nameUniq = nameUniq;
+      cubeObject.position.netObjId = nameUniq;
       cubeObject.size = size;
       cubeObject.sides = 12;
       cubeObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
@@ -28258,6 +28271,7 @@ function defineworld(canvas, renderType) {
       customObject.type = filler;
       customObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       customObject.position.nameUniq = nameUniq;
+      customObject.position.netObjId = nameUniq;
       customObject.size = size;
       customObject.sides = 12;
       customObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
@@ -39382,7 +39396,8 @@ class MatrixStream {
           data: JSON.stringify(netArg),
           to: [],
           type: CHANNEL
-        }).then(() => {// console.log('emit all successfully');
+        }).then(() => {
+          console.log('emit all successfully');
         }).catch(error => {
           console.error("Erro signal => ", error);
         });
@@ -39422,7 +39437,7 @@ class MatrixStream {
     root: this,
 
     init(rtcEvent) {
-      console.log("rtcEvent add new net object -> ", rtcEvent.userid);
+      console.log("rtcEvent add new net object -> ", rtcEvent);
       dispatchEvent(new CustomEvent('net-new-user', {
         detail: {
           data: rtcEvent
@@ -40873,7 +40888,7 @@ var runHang3d = world => {
     var name = e.detail.connection.connectionId;
     console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
 
-    App.scene.playerCollisonBox.position.nameUniq = e.detail.connection.connectionId;
+    App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
     App.scene.playerCollisonBox.net.enable = true; // CAMERA VIEW FOR SELF LOCAL CAM
     // world.Add("squareTex", 1, name, tex);
     // App.scene[name].position.x = 0;
