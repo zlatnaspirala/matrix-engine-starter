@@ -172,7 +172,7 @@ span {
 
 #matrix-net {
   position: absolute;
-  display: none;
+  /* display: none; */
   right: 0;
   height: 100%;
   width: 40vh;

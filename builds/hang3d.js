@@ -40310,21 +40310,11 @@ var runHang3d = world => {
     document.title = e.detail;
   });
   let notify = matrixEngine.utility.notify;
-  let byId = matrixEngine.utility.byId;
-  let domManipulation = {
-    hideNetPanel: () => {
-      if (byId('matrix-net').classList.contains('hide-by-vertical')) {
-        byId('matrix-net').classList.remove('hide-by-vertical');
-        byId('matrix-net').classList.add('show-by-vertical');
-        byId('netHeaderTitle').innerText = 'SHOW';
-        byId('matrix-net').style.display = 'block';
-      } else {
-        byId('matrix-net').classList.remove('show-by-vertical');
-        byId('matrix-net').classList.add('hide-by-vertical');
-        byId('netHeaderTitle').innerText = 'maximumroulette.com';
-      }
-    }
-  };
+  let byId = matrixEngine.utility.byId; // let domManipulation = {
+  // 	hideNetPanel: () => {
+  // 	}
+  // }
+
   let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
   let isMobile = matrixEngine.utility.isMobile;
   let randomFloatFromTo = matrixEngine.utility.randomFloatFromTo;
@@ -40347,8 +40337,7 @@ var runHang3d = world => {
   window.addEventListener("contextmenu", e => {
     e.preventDefault();
   });
-  matrixEngine.utility.createDomFPSController(); // wip for mobile controls
-  // net
+  if (isMobile == true) matrixEngine.utility.createDomFPSController(); // net
 
   matrixEngine.Engine.activateNet2(undefined, {
     sessionName: 'hang3d-matrix',
@@ -40435,7 +40424,7 @@ var runHang3d = world => {
             speed: 3
           }
         }
-      }; // Hands - in future will be weapon
+      }; // WEAPON
       // world.Add("obj", 1, objName, textuteImageSamplers2, meshes[objName], animArg);
 
       world.Add("obj", 1, objName, textuteImageSamplers2, meshes['player']);
@@ -40475,7 +40464,9 @@ var runHang3d = world => {
       App.scene.playerCollisonBox.glBlend.blendEnabled = true;
       App.scene.playerCollisonBox.glBlend.blendParamSrc = ENUMERATORS.glBlend.param[0];
       App.scene.playerCollisonBox.glBlend.blendParamDest = ENUMERATORS.glBlend.param[0];
-      App.scene.playerCollisonBox.visible = false; // Test custom flag for collide moment
+      App.scene.playerCollisonBox.visible = false; // test net2
+      // App.scene.playerCollisonBox.net.enable = true;
+      // Test custom flag for collide moment
 
       App.scene.playerCollisonBox.iamInCollideRegime = false; // simple logic but also not perfect
 
@@ -40743,17 +40734,16 @@ var runHang3d = world => {
         }, 1000 * j);
       }));
     }
-  };
+  }; // objGenerator(2);
 
-  objGenerator(2);
+
   createObjSequence('player');
   Promise.all(promiseAllGenerated).then(what => {
     // console.info(`Waiting for runtime generation of scene objects,
     //               then swap scene array index for scene draw-index -> 
     //               must be manual setup for now!`, what);
     // swap(5, 19, matrixEngine.matrixWorld.world.contentList);
-    console.log('TTTTTTTTTTTTTTTTTTT');
-    byId('netHeaderTitle').addEventListener('click', domManipulation.hideNetPanel);
+    console.log('promise all');
   }); // Add ground for physics bodies.
 
   var tex = {
@@ -40869,7 +40859,7 @@ var runHang3d = world => {
   physics.world.addBody(b6);
   App.scene['WALL_BLOCK2'].position.setPosition(30, -10, 19);
   App.scene['WALL_BLOCK2'].physics.currentBody = b6;
-  App.scene['WALL_BLOCK2'].physics.enabled = true; //
+  App.scene['WALL_BLOCK2'].physics.enabled = true; // NEW NET2 kurento
   // TEST
 
   addEventListener(`LOCAL-STREAM-READY`, e => {
@@ -40881,20 +40871,24 @@ var runHang3d = world => {
     }));
     notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`);
     var name = e.detail.connection.connectionId;
-    world.Add("cubeLightTex", 1, name, tex);
-    App.scene[name].position.x = 0;
-    App.scene[name].position.z = -20;
-    App.scene[name].LightsData.ambientLight.set(1, 0, 0);
-    App.scene[name].net.enable = true;
-    App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id)); // objGenerator(App.scene[name])
+    console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
+
+    App.scene.playerCollisonBox.position.nameUniq = e.detail.connection.connectionId;
+    App.scene.playerCollisonBox.net.enable = true; // CAMERA VIEW FOR SELF LOCAL CAM
+    // world.Add("squareTex", 1, name, tex);
+    // App.scene[name].position.x = 0;
+    // App.scene[name].position.z = -20;
+    // App.scene[name].LightsData.ambientLight.set(1, 0, 0);
+    // // App.scene[name].net.enable = true;
+    // App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
   });
   var ONE_TIME = 0;
   addEventListener('streamPlaying', e => {
     if (ONE_TIME == 0) {
-      ONE_TIME = 1;
-      console.log('REMOTE-STREAM- streamPlaying [app level] ', e.detail.target.videos[0]); // DIRECT REMOTE
+      ONE_TIME = 1; // console.log('REMOTE-STREAM- streamPlaying [app level] ', e.detail.target.videos[0]);
+      // DIRECT REMOTE
 
-      var name = e.detail.target.stream.connection.connectionId; // createObjSequence2(name)
+      var name = e.detail.target.stream.connection.connectionId; // createNetworkPlayerCharacter(name)
       // App.scene[name].net.active = true;
       // matrixEngine.Engine.net.multiPlayer.init
       // App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(e.detail.target.videos[0].video)
@@ -40909,7 +40903,7 @@ var runHang3d = world => {
     if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
       console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
       var name = e.detail.event.stream.connection.connectionId;
-      createObjSequence2(name);
+      createNetworkPlayerCharacter(name);
     }
   }); //
   // Damage object test
@@ -41000,7 +40994,7 @@ var runHang3d = world => {
 
 exports.runHang3d = runHang3d;
 
-const createObjSequence2 = objName => {
+const createNetworkPlayerCharacter = objName => {
   function onLoadObj(meshes) {
     App.meshes = meshes;
 
@@ -41038,7 +41032,6 @@ const createObjSequence2 = objName => {
       matrixEngine.matrixWorld.world.Add("obj", 1, objName, textuteImageSamplers2, meshes[objName], animArg);
       App.scene[objName].position.y = 2;
       App.scene[objName].position.z = 2;
-      App.scene[objName].net.enabled = true;
     }, 1);
   }
 
