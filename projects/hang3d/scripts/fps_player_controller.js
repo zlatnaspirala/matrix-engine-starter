@@ -14,6 +14,7 @@
  */
 import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
+import {createPauseScreen} from "./dom";
 
 export var runHang3d = (world) => {
 
@@ -680,6 +681,13 @@ export var runHang3d = (world) => {
 			var name = e.detail.event.stream.connection.connectionId;
 			createNetworkPlayerCharacter(name)
 		}
+	})
+
+	addEventListener('net-ready', (e) => {
+		// Star on load
+		matrixEngine.Engine.net.joinSessionUI.click()
+
+		createPauseScreen()
 	})
 
 	//

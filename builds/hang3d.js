@@ -39381,6 +39381,7 @@ class MatrixStream {
       console.log('[CHANNEL]' + this.sessionName.value);
       this.attachEvents();
       console.log(`%c MatrixStream constructed.`, _matrixStream.BIGLOG);
+      dispatchEvent(new CustomEvent('net-ready', {}));
     });
   }
 
@@ -40291,7 +40292,35 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/fps_player_controller":43,"matrix-engine":8}],43:[function(require,module,exports){
+},{"./scripts/fps_player_controller":44,"matrix-engine":8}],43:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createPauseScreen = createPauseScreen;
+
+var _utility = require("matrix-engine/lib/utility");
+
+function createPauseScreen() {
+  var root = document.createElement('div');
+  root.id = 'pauseScreen';
+  root.style = 'display:flex;position:fixed;left:0;top:0;width:100%;height:100%;';
+
+  function hidePauseScreen() {
+    (0, _utility.byId)('pauseScreen').style.display = 'none';
+  }
+
+  root.innerHTML = `
+	  <h2> <button id="pauseGame" class='btn'>PLAY</button>  </h2>
+	`;
+  document.body.appendChild(root);
+  (0, _utility.byId)('pauseGame').addEventListener('click', hidePauseScreen, {
+    passive: true
+  });
+}
+
+},{"matrix-engine/lib/utility":36}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40302,6 +40331,8 @@ exports.runHang3d = void 0;
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var CANNON = _interopRequireWildcard(require("cannon"));
+
+var _dom = require("./dom");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -40920,6 +40951,11 @@ var runHang3d = world => {
       var name = e.detail.event.stream.connection.connectionId;
       createNetworkPlayerCharacter(name);
     }
+  });
+  addEventListener('net-ready', e => {
+    // Star on load
+    matrixEngine.Engine.net.joinSessionUI.click();
+    (0, _dom.createPauseScreen)();
   }); //
   // Damage object test
 
@@ -41058,4 +41094,4 @@ const createNetworkPlayerCharacter = objName => {
   }), onLoadObj);
 };
 
-},{"cannon":5,"matrix-engine":8}]},{},[42]);
+},{"./dom":43,"cannon":5,"matrix-engine":8}]},{},[42]);
