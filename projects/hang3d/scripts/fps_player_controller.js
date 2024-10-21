@@ -46,6 +46,7 @@ export var runHang3d = (world) => {
 	addEventListener('hit.keyDown', (e) => {
 		if(e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
 			console.log('PAUSE GAME_PLAY - wip')
+			byId('pauseScreen').style.display = 'flex';
 		}
 	})
 

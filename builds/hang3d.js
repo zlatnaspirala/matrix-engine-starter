@@ -40305,14 +40305,17 @@ var _utility = require("matrix-engine/lib/utility");
 function createPauseScreen() {
   var root = document.createElement('div');
   root.id = 'pauseScreen';
-  root.style = 'display:flex;position:fixed;left:0;top:0;width:100%;height:100%;';
+  root.style = 'display:flex;position:fixed;left:0;top:0;width:100%;height:100%;background:black;opacity:0.7;';
 
   function hidePauseScreen() {
     (0, _utility.byId)('pauseScreen').style.display = 'none';
   }
 
   root.innerHTML = `
-	  <h2> <button id="pauseGame" class='btn'>PLAY</button>  </h2>
+	  <h2 style="margin: auto;" > 
+			Hang3d Matrix
+			<button id="pauseGame" class='btn'>PLAY</button>
+		</h2>
 	`;
   document.body.appendChild(root);
   (0, _utility.byId)('pauseGame').addEventListener('click', hidePauseScreen, {
@@ -40375,6 +40378,7 @@ var runHang3d = world => {
   addEventListener('hit.keyDown', e => {
     if (e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
       console.log('PAUSE GAME_PLAY - wip');
+      byId('pauseScreen').style.display = 'flex';
     }
   }); // Audio effects
 
