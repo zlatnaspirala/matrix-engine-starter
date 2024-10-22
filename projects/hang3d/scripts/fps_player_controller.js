@@ -16,6 +16,8 @@ import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
 import {createPauseScreen} from "./dom";
 
+export var REDLOG = "color: lime;font-size:15px;text-shadow: 0px 0px 5px red, -2px -2px 5px orangered";
+
 export var runHang3d = (world) => {
 
 	addEventListener('onTitle', (e) => {
@@ -711,6 +713,13 @@ export var runHang3d = (world) => {
 		createPauseScreen()
 	})
 
+	addEventListener('connectionDestroyed', (e) => {
+		console.log(`%c connectionDestroyed  ${e.detail}`, 'background:black;color:lime;');
+		// connectionId
+		if (App.scene[e.detail.connectionId] !== 'undefined') App.scene[e.detail.connectionId].selfDestroy(1)
+	})
+	// ------------------------------
+
 	// Damage object test
 	world.Add("cubeLightTex", 1, "LAVA", tex);
 	var b4 = new CANNON.Body({
@@ -847,6 +856,9 @@ const createNetworkPlayerCharacter = (objName) => {
 			);
 			App.scene[objName].position.y = 2;
 			App.scene[objName].position.z = 2;
+
+			// ?????????
+			App.scene[objName].mesh.setScale(5)
 		}, 1);
 	}
 

@@ -39403,27 +39403,20 @@ class MatrixStream {
       var CHANNEL = _matrixStream.netConfig.sessionName; // console.log("ONLY ONES CHANNEL =>", CHANNEL);
 
       this.connection.send = netArg => {
-        // to Array of Connection objects (optional. Broadcast to everyone if empty)
         this.session.signal({
           data: JSON.stringify(netArg),
           to: [],
           type: CHANNEL
-        }).then(() => {
-          console.log('emit all successfully');
+        }).then(() => {// console.log('emit all successfully');
         }).catch(error => {
           console.error("Erro signal => ", error);
         });
       };
     });
     addEventListener('setupSessionObject', e => {
-      // this.connection.session = session;
       console.log("setupSessionObject=>", e.detail);
       this.session = e.detail;
       this.session.on(`signal:${_matrixStream.netConfig.sessionName}`, e => {
-        // console.log(" call update from  =>", e.from);
-        // dpont call update for self 
-        console.log(`test conn id `, this.connection.connectionId);
-
         if (this.connection.connectionId == e.from.connectionId) {//
         } else {
           this.multiPlayer.update(e);
@@ -39602,7 +39595,8 @@ function joinSession(options) {
       console.log(`Connection destroyed ${e.connection.connectionId}`);
       dispatchEvent(new CustomEvent('connectionDestroyed', {
         detail: {
-          msg: `[disconnected][${e.connection.connectionId}]`
+          connectionId: e.connection.connectionId,
+          event: e
         }
       })); // byId("pwa-container-2").style.display = "none";
 
@@ -40340,7 +40334,7 @@ function createPauseScreen() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.runHang3d = void 0;
+exports.runHang3d = exports.REDLOG = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
@@ -40365,6 +40359,9 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * 
  * @class First Person Shooter example
  */
+var REDLOG = "color: lime;font-size:15px;text-shadow: 0px 0px 5px red, -2px -2px 5px orangered";
+exports.REDLOG = REDLOG;
+
 var runHang3d = world => {
   addEventListener('onTitle', e => {
     document.title = e.detail;
@@ -40993,7 +40990,13 @@ var runHang3d = world => {
     // Star on load
     matrixEngine.Engine.net.joinSessionUI.click();
     (0, _dom.createPauseScreen)();
-  }); // Damage object test
+  });
+  addEventListener('connectionDestroyed', e => {
+    console.log(`%c connectionDestroyed  ${e.detail}`, 'background:black;color:lime;'); // connectionId
+
+    if (App.scene[e.detail.connectionId] !== 'undefined') App.scene[e.detail.connectionId].selfDestroy(1);
+  }); // ------------------------------
+  // Damage object test
 
   world.Add("cubeLightTex", 1, "LAVA", tex);
   var b4 = new CANNON.Body({
@@ -41123,7 +41126,9 @@ const createNetworkPlayerCharacter = objName => {
       };
       matrixEngine.matrixWorld.world.Add("obj", 1, objName, textuteImageSamplers2, meshes[objName], animArg);
       App.scene[objName].position.y = 2;
-      App.scene[objName].position.z = 2;
+      App.scene[objName].position.z = 2; // ?????????
+
+      App.scene[objName].mesh.setScale(5);
     }, 1);
   }
 
