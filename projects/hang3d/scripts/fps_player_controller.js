@@ -24,12 +24,6 @@ export var runHang3d = (world) => {
 
 	let notify = matrixEngine.utility.notify;
 	let byId = matrixEngine.utility.byId;
-
-	// let domManipulation = {
-	// 	hideNetPanel: () => {
-	// 	}
-	// }
-
 	let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
 	let isMobile = matrixEngine.utility.isMobile;
 	let randomFloatFromTo = matrixEngine.utility.randomFloatFromTo;
@@ -272,9 +266,19 @@ export var runHang3d = (world) => {
 
 			});
 
+
+			// nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
+			// must be fixed and added help func for overriding (mousemove)
+			addEventListener('mousemove', () => {
+
+			})
+
+
 			var handlerTimeout = null, handlerTimeout2 = null;
 
 			var playerUpdater = {
+				sendRotEvery: 5,
+				sendRotValue: 0,
 				UPDATE: () => {
 					var detPitch;
 					var limit = 2;
@@ -299,7 +303,7 @@ export var runHang3d = (world) => {
 						// Cannonjs object set / Switched  Z - Y
 						matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
 						matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
-						matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z + 1;
+						matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
 						// App.scene.playerCollisonBox.physics.currentBody.angularVelocity.set(0, 0, 0);
 						if(handlerTimeout == null) {
 							handlerTimeout = setTimeout(() => {
@@ -318,7 +322,7 @@ export var runHang3d = (world) => {
 						// matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
 						// if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
 						if(App.scene.playerCollisonBox.pingpong == true) {
-							// // Cannonjs object set / Switched  Z - Y
+							// Cannonjs object set / Switched  Z - Y
 							matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
 							matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
 							matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
@@ -333,6 +337,19 @@ export var runHang3d = (world) => {
 									matrixEngine.Events.camera.yPos);
 							App.scene.playerCollisonBox.pingpong = true;
 						}
+
+						// Playe Look
+						if(playerUpdater.sendRotValue > playerUpdater.sendRotEvery &&
+							matrixEngine.Engine.net.connection != null) {
+							matrixEngine.Engine.net.connection.send({
+								netRot: {
+									y: matrixEngine.Events.camera.yaw
+								},
+								netObjId: App.scene.playerCollisonBox.position.netObjId,
+							})
+							playerUpdater.sendRotValue = 0;
+						}
+						playerUpdater.sendRotValue++;
 					}
 				}
 			};
@@ -640,13 +657,10 @@ export var runHang3d = (world) => {
 		dispatchEvent(new CustomEvent(`onTitle`, {detail: `🕸️${e.detail.connection.connectionId}🕸️`}))
 		notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`)
 		var name = e.detail.connection.connectionId;
-
 		console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
-
 		// Make relation for net players
 		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
 		App.scene.playerCollisonBox.net.enable = true;
-
 		// CAMERA VIEW FOR SELF LOCAL CAM
 		// world.Add("squareTex", 1, name, tex);
 		// App.scene[name].position.x = 0;
@@ -654,7 +668,6 @@ export var runHang3d = (world) => {
 		// App.scene[name].LightsData.ambientLight.set(1, 0, 0);
 		// // App.scene[name].net.enable = true;
 		// App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
-
 	})
 
 	var ONE_TIME = 0;
@@ -672,13 +685,21 @@ export var runHang3d = (world) => {
 	})
 
 	addEventListener('onStreamCreated', (e) => {
-
 		if(matrixEngine.Engine.net.connection == null) {
 			// local
+			console.log('MY CONNECTION IS NULL')
+			setTimeout(() => {
+				if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
+					console.log('++posle 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+					var name = e.detail.event.stream.connection.connectionId;
+					createNetworkPlayerCharacter(name)
+				}
+			}, 2000)
+
 			return;
 		}
 		if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
-			console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+			console.log('++++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
 			var name = e.detail.event.stream.connection.connectionId;
 			createNetworkPlayerCharacter(name)
 		}
@@ -687,11 +708,9 @@ export var runHang3d = (world) => {
 	addEventListener('net-ready', (e) => {
 		// Star on load
 		matrixEngine.Engine.net.joinSessionUI.click()
-
 		createPauseScreen()
 	})
 
-	//
 	// Damage object test
 	world.Add("cubeLightTex", 1, "LAVA", tex);
 	var b4 = new CANNON.Body({
@@ -778,6 +797,11 @@ export var runHang3d = (world) => {
 };
 
 const createNetworkPlayerCharacter = (objName) => {
+
+	if (typeof App.scene[objName] !== 'undefined') {
+		console.log('Prevent double net player.')
+		return;
+	}
 
 	function onLoadObj(meshes) {
 		App.meshes = meshes;

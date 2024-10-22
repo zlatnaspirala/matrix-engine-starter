@@ -21135,6 +21135,7 @@ class RotationVector {
     }
 
     this.nameUniq = null;
+    this.netObjId = null;
     this.x = x;
     this.y = y;
     this.z = z;
@@ -21273,31 +21274,31 @@ class RotationVector {
 
   rotateX(x, em) {
     this.rotx = x;
-    if (_manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         x: this.rotx
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
   rotateY(y, em) {
     this.roty = y;
-    if (_manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         y: this.roty
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
   rotateZ(z, em) {
     this.rotz = z;
-    if (_manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         z: this.rotz
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -27025,6 +27026,7 @@ function defineworld(canvas, renderType) {
       triangleObject.position.netObjId = nameUniq;
       triangleObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       triangleObject.rotation.nameUniq = nameUniq;
+      triangleObject.rotation.netObjId = nameUniq;
       triangleObject.color = new _matrixGeometry.GeoOfColor('triangle');
       triangleObject.mvMatrix = mat4.create();
       triangleObject.geometry = new _matrixGeometry.TriangleVertex(triangleObject);
@@ -27098,6 +27100,7 @@ function defineworld(canvas, renderType) {
       squareObject.position.netObjId = nameUniq;
       squareObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       squareObject.rotation.nameUniq = nameUniq;
+      squareObject.rotation.netObjId = nameUniq;
       squareObject.color = true;
       squareObject.mvMatrix = mat4.create();
       squareObject.geometry = new _matrixGeometry.SquareVertex(squareObject);
@@ -27172,6 +27175,7 @@ function defineworld(canvas, renderType) {
       squareObject.position.netObjId = nameUniq;
       squareObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       squareObject.rotation.nameUniq = nameUniq;
+      squareObject.rotation.netObjId = nameUniq;
       squareObject.mvMatrix = mat4.create();
       squareObject.geometry = new _matrixGeometry.SquareVertex(squareObject);
       squareObject.geometry.nameUniq = nameUniq;
@@ -27343,6 +27347,7 @@ function defineworld(canvas, renderType) {
       cubeObject.position.netObjId = nameUniq;
       cubeObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       cubeObject.rotation.nameUniq = nameUniq;
+      cubeObject.rotation.netObjId = nameUniq;
       cubeObject.color = true;
       cubeObject.mvMatrix = mat4.create();
       cubeObject.geometry = new _matrixGeometry.CubeVertex(cubeObject);
@@ -27414,7 +27419,8 @@ function defineworld(canvas, renderType) {
       sphereObject.size = size;
       sphereObject.sides = 12;
       sphereObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      sphereObject.rotation.nameUniq = nameUniq; //lights
+      sphereObject.rotation.nameUniq = nameUniq;
+      sphereObject.rotation.netObjId = nameUniq; //lights
 
       sphereObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -27567,6 +27573,7 @@ function defineworld(canvas, renderType) {
       pyramidObject.position.netObjId = nameUniq;
       pyramidObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       pyramidObject.rotation.nameUniq = nameUniq;
+      pyramidObject.rotation.netObjId = nameUniq;
       pyramidObject.mvMatrix = mat4.create();
       pyramidObject.geometry = new _matrixGeometry.PiramideVertex(pyramidObject);
       pyramidObject.geometry.nameUniq = nameUniq; // destroy self
@@ -27641,6 +27648,7 @@ function defineworld(canvas, renderType) {
       objObject.position.netObjId = nameUniq;
       objObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
       objObject.rotation.nameUniq = nameUniq;
+      objObject.rotation.netObjId = nameUniq;
       objObject.color = false; // new GeoOfColor('4x4');
       // custom textures
 
@@ -27828,7 +27836,8 @@ function defineworld(canvas, renderType) {
       cubeObject.size = size;
       cubeObject.sides = 12;
       cubeObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      cubeObject.rotation.nameUniq = nameUniq; //lights
+      cubeObject.rotation.nameUniq = nameUniq;
+      cubeObject.rotation.netObjId = nameUniq; //lights
 
       cubeObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -28034,7 +28043,8 @@ function defineworld(canvas, renderType) {
       cubeObject.size = size;
       cubeObject.sides = 12;
       cubeObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      cubeObject.rotation.nameUniq = nameUniq; //lights
+      cubeObject.rotation.nameUniq = nameUniq;
+      cubeObject.rotation.netObjId = nameUniq; //lights
 
       cubeObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -28275,7 +28285,8 @@ function defineworld(canvas, renderType) {
       customObject.size = size;
       customObject.sides = 12;
       customObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      customObject.rotation.nameUniq = nameUniq; // destroy self  MAy need more improve
+      customObject.rotation.nameUniq = nameUniq;
+      customObject.rotation.netObjId = nameUniq; // destroy self  MAy need more improve
 
       customObject.selfDestroy = after => {
         if (after) {
@@ -40359,11 +40370,7 @@ var runHang3d = world => {
     document.title = e.detail;
   });
   let notify = matrixEngine.utility.notify;
-  let byId = matrixEngine.utility.byId; // let domManipulation = {
-  // 	hideNetPanel: () => {
-  // 	}
-  // }
-
+  let byId = matrixEngine.utility.byId;
   let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
   let isMobile = matrixEngine.utility.isMobile;
   let randomFloatFromTo = matrixEngine.utility.randomFloatFromTo;
@@ -40576,10 +40583,15 @@ var runHang3d = world => {
             }, 250);
           }
         }
-      });
+      }); // nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
+      // must be fixed and added help func for overriding (mousemove)
+
+      addEventListener('mousemove', () => {});
       var handlerTimeout = null,
           handlerTimeout2 = null;
       var playerUpdater = {
+        sendRotEvery: 5,
+        sendRotValue: 0,
         UPDATE: () => {
           var detPitch;
           var limit = 2;
@@ -40601,7 +40613,7 @@ var runHang3d = world => {
 
             matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
             matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
-            matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z + 1; // App.scene.playerCollisonBox.physics.currentBody.angularVelocity.set(0, 0, 0);
+            matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z; // App.scene.playerCollisonBox.physics.currentBody.angularVelocity.set(0, 0, 0);
 
             if (handlerTimeout == null) {
               handlerTimeout = setTimeout(() => {
@@ -40620,7 +40632,7 @@ var runHang3d = world => {
             // if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
 
             if (App.scene.playerCollisonBox.pingpong == true) {
-              // // Cannonjs object set / Switched  Z - Y
+              // Cannonjs object set / Switched  Z - Y
               matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
               matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
               matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
@@ -40630,7 +40642,20 @@ var runHang3d = world => {
 
               App.scene.playerCollisonBox.physics.currentBody.position.set(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.zPos, matrixEngine.Events.camera.yPos);
               App.scene.playerCollisonBox.pingpong = true;
+            } // Playe Look
+
+
+            if (playerUpdater.sendRotValue > playerUpdater.sendRotEvery && matrixEngine.Engine.net.connection != null) {
+              matrixEngine.Engine.net.connection.send({
+                netRot: {
+                  y: matrixEngine.Events.camera.yaw
+                },
+                netObjId: App.scene.playerCollisonBox.position.netObjId
+              });
+              playerUpdater.sendRotValue = 0;
             }
+
+            playerUpdater.sendRotValue++;
           }
         }
       };
@@ -40947,11 +40972,19 @@ var runHang3d = world => {
   addEventListener('onStreamCreated', e => {
     if (matrixEngine.Engine.net.connection == null) {
       // local
+      console.log('MY CONNECTION IS NULL');
+      setTimeout(() => {
+        if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
+          console.log('++posle 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+          var name = e.detail.event.stream.connection.connectionId;
+          createNetworkPlayerCharacter(name);
+        }
+      }, 2000);
       return;
     }
 
     if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
-      console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+      console.log('++++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
       var name = e.detail.event.stream.connection.connectionId;
       createNetworkPlayerCharacter(name);
     }
@@ -40960,8 +40993,7 @@ var runHang3d = world => {
     // Star on load
     matrixEngine.Engine.net.joinSessionUI.click();
     (0, _dom.createPauseScreen)();
-  }); //
-  // Damage object test
+  }); // Damage object test
 
   world.Add("cubeLightTex", 1, "LAVA", tex);
   var b4 = new CANNON.Body({
@@ -41050,6 +41082,11 @@ var runHang3d = world => {
 exports.runHang3d = runHang3d;
 
 const createNetworkPlayerCharacter = objName => {
+  if (typeof App.scene[objName] !== 'undefined') {
+    console.log('Prevent double net player.');
+    return;
+  }
+
   function onLoadObj(meshes) {
     App.meshes = meshes;
 
