@@ -1,6 +1,6 @@
 
 /**
- * @description Usage of raycaster, ObjectLoader,
+ * @description Usage of raycaster, ObjectLoader Sequence,
  * FirstPersonController.
  * This will be part of new lib file `lib/controllers/fps.js`
  * 
@@ -16,7 +16,7 @@ import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
 import {createPauseScreen} from "./dom";
 
-export var REDLOG = "color: lime;font-size:15px;text-shadow: 0px 0px 5px red, -2px -2px 5px orangered";
+export var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
 
 export var runHang3d = (world) => {
 
@@ -41,7 +41,7 @@ export var runHang3d = (world) => {
 
 	addEventListener('hit.keyDown', (e) => {
 		if(e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
-			console.log('PAUSE GAME_PLAY - wip')
+			console.log(`%cPAUSE SCREEN`, REDLOG)
 			byId('pauseScreen').style.display = 'flex';
 		}
 	})
@@ -181,7 +181,7 @@ export var runHang3d = (world) => {
 				mass: 7,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(0, 0, 0),
-				shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))// new CANNON.Sphere(2)
+				shape: new CANNON.Box(new CANNON.Vec3(1, 0.5, 1))// new CANNON.Sphere(2)
 			});
 
 			// This is custom param added.
@@ -513,13 +513,13 @@ export var runHang3d = (world) => {
 
 	createObjSequence('player');
 
-	Promise.all(promiseAllGenerated).then((what) => {
-		// console.info(`Waiting for runtime generation of scene objects,
-		//               then swap scene array index for scene draw-index -> 
-		//               must be manual setup for now!`, what);
-		// swap(5, 19, matrixEngine.matrixWorld.world.contentList);
-		console.log('promise all')
-	});
+	// Promise.all(promiseAllGenerated).then((what) => {
+	// 	// console.info(`Waiting for runtime generation of scene objects,
+	// 	//               then swap scene array index for scene draw-index -> 
+	// 	//               must be manual setup for now!`, what);
+	// 	// swap(5, 19, matrixEngine.matrixWorld.world.contentList);
+	// 	// console.log('promise all')
+	// });
 
 	// Add ground for physics bodies.
 	var tex = {
@@ -543,7 +543,6 @@ export var runHang3d = (world) => {
 	};
 
 	// Load Physics world.
-	// let gravityVector = [0, 0, -9.82];
 	let gravityVector = [0, 0, -29.82];
 	let physics = world.loadPhysics(gravityVector);
 
@@ -650,16 +649,15 @@ export var runHang3d = (world) => {
 	App.scene['WALL_BLOCK2'].physics.currentBody = b6;
 	App.scene['WALL_BLOCK2'].physics.enabled = true;
 
-	// NEW NET2 kurento
-	// TEST
+	// Networking
 	addEventListener(`LOCAL-STREAM-READY`, (e) => {
-		console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
-		console.log('LOCAL-STREAM-READY [app level] ', e.detail.connection.connectionId)
+		// console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
+		console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, REDLOG)
 		// test first
 		dispatchEvent(new CustomEvent(`onTitle`, {detail: `🕸️${e.detail.connection.connectionId}🕸️`}))
 		notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`)
 		var name = e.detail.connection.connectionId;
-		console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
+		// console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 		// Make relation for net players
 		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
 		App.scene.playerCollisonBox.net.enable = true;
@@ -714,11 +712,10 @@ export var runHang3d = (world) => {
 	})
 
 	addEventListener('connectionDestroyed', (e) => {
-		console.log(`%c connectionDestroyed  ${e.detail}`, 'background:black;color:lime;');
+		console.log(`%c connectionDestroyed  ${e.detail}`, REDLOG);
 		// connectionId
 		if (App.scene[e.detail.connectionId] !== 'undefined') App.scene[e.detail.connectionId].selfDestroy(1)
 	})
-	// ------------------------------
 
 	// Damage object test
 	world.Add("cubeLightTex", 1, "LAVA", tex);
@@ -856,9 +853,8 @@ const createNetworkPlayerCharacter = (objName) => {
 			);
 			App.scene[objName].position.y = 2;
 			App.scene[objName].position.z = 2;
-
-			// ?????????
-			App.scene[objName].mesh.setScale(5)
+			// From 2.0.14 only for obj seq -> scaleAll
+			App.scene[objName].scaleAll(2.4)
 		}, 1);
 	}
 

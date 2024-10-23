@@ -18858,7 +18858,8 @@ exports.makeObjSeqArg = makeObjSeqArg;
 function play(nameAni) {
   this.animation.anims.active = nameAni;
   this.animation.currentAni = this.animation.anims[this.animation.anims.active].from;
-}
+} // TEST 
+// add destroy animation meshs procedure
 
 },{"./matrix-world":24}],12:[function(require,module,exports){
 "use strict";
@@ -27660,7 +27661,7 @@ function defineworld(canvas, renderType) {
         directionLight: new _matrixGeometry.COLOR(5, 5, 5),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
         lightingDirection: new _matrixGeometry.COLOR(0, 1, 0)
-      }; // destroy self  MAy need more improve
+      }; // destroy self  MAy need more improve !!
 
       objObject.selfDestroy = after => {
         if (after) {
@@ -27800,7 +27801,14 @@ function defineworld(canvas, renderType) {
         } // no need for single test it in future
 
 
-        objObject.meshList = animationConstruct_.meshList;
+        objObject.meshList = animationConstruct_.meshList; // scale for all
+
+        objObject.scaleAll = function (s) {
+          for (var k in objObject.meshList) {
+            // console.log(objObject.meshList[k])
+            objObject.meshList[k].setScale(s);
+          }
+        };
       } // Stay like root or t pose data holder
 
 
@@ -39460,7 +39468,7 @@ class MatrixStream {
           if (e.data.netPos.z) App.scene[e.data.netObjId].position.SetZ(e.data.netPos.z, 'noemit');
         }
       } else if (e.data.netRot) {
-        console.log('ROT INFO UPDATE', e);
+        // console.log('ROT INFO UPDATE', e);
         if (e.data.netRot.x) App.scene[e.data.netObjId].rotation.rotx = e.data.netRot.x;
         if (e.data.netRot.y) App.scene[e.data.netObjId].rotation.roty = e.data.netRot.y;
         if (e.data.netRot.z) App.scene[e.data.netObjId].rotation.rotz = e.data.netRot.z;
@@ -40347,7 +40355,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 /**
- * @description Usage of raycaster, ObjectLoader,
+ * @description Usage of raycaster, ObjectLoader Sequence,
  * FirstPersonController.
  * This will be part of new lib file `lib/controllers/fps.js`
  * 
@@ -40359,7 +40367,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * 
  * @class First Person Shooter example
  */
-var REDLOG = "color: lime;font-size:15px;text-shadow: 0px 0px 5px red, -2px -2px 5px orangered";
+var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
 exports.REDLOG = REDLOG;
 
 var runHang3d = world => {
@@ -40381,7 +40389,7 @@ var runHang3d = world => {
   matrixEngine.Events.camera.yPos = 2;
   addEventListener('hit.keyDown', e => {
     if (e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
-      console.log('PAUSE GAME_PLAY - wip');
+      console.log(`%cPAUSE SCREEN`, REDLOG);
       byId('pauseScreen').style.display = 'flex';
     }
   }); // Audio effects
@@ -40505,7 +40513,7 @@ var runHang3d = world => {
         mass: 7,
         linearDamping: 0.01,
         position: new CANNON.Vec3(0, 0, 0),
-        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)) // new CANNON.Sphere(2)
+        shape: new CANNON.Box(new CANNON.Vec3(1, 0.5, 1)) // new CANNON.Sphere(2)
 
       }); // This is custom param added.
 
@@ -40809,14 +40817,14 @@ var runHang3d = world => {
   }; // objGenerator(2);
 
 
-  createObjSequence('player');
-  Promise.all(promiseAllGenerated).then(what => {
-    // console.info(`Waiting for runtime generation of scene objects,
-    //               then swap scene array index for scene draw-index -> 
-    //               must be manual setup for now!`, what);
-    // swap(5, 19, matrixEngine.matrixWorld.world.contentList);
-    console.log('promise all');
-  }); // Add ground for physics bodies.
+  createObjSequence('player'); // Promise.all(promiseAllGenerated).then((what) => {
+  // 	// console.info(`Waiting for runtime generation of scene objects,
+  // 	//               then swap scene array index for scene draw-index -> 
+  // 	//               must be manual setup for now!`, what);
+  // 	// swap(5, 19, matrixEngine.matrixWorld.world.contentList);
+  // 	// console.log('promise all')
+  // });
+  // Add ground for physics bodies.
 
   var tex = {
     source: ["res/images/diffuse.png"],
@@ -40834,7 +40842,6 @@ var runHang3d = world => {
       TEXTURE_MIN_FILTER: world.GL.gl.NEAREST
     }
   }; // Load Physics world.
-  // let gravityVector = [0, 0, -9.82];
 
   let gravityVector = [0, 0, -29.82];
   let physics = world.loadPhysics(gravityVector); // Add ground - mass == 0 makes the body static
@@ -40931,19 +40938,18 @@ var runHang3d = world => {
   physics.world.addBody(b6);
   App.scene['WALL_BLOCK2'].position.setPosition(30, -10, 19);
   App.scene['WALL_BLOCK2'].physics.currentBody = b6;
-  App.scene['WALL_BLOCK2'].physics.enabled = true; // NEW NET2 kurento
-  // TEST
+  App.scene['WALL_BLOCK2'].physics.enabled = true; // Networking
 
   addEventListener(`LOCAL-STREAM-READY`, e => {
-    console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id);
-    console.log('LOCAL-STREAM-READY [app level] ', e.detail.connection.connectionId); // test first
+    // console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
+    console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, REDLOG); // test first
 
     dispatchEvent(new CustomEvent(`onTitle`, {
       detail: `🕸️${e.detail.connection.connectionId}🕸️`
     }));
     notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`);
-    var name = e.detail.connection.connectionId;
-    console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
+    var name = e.detail.connection.connectionId; // console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
+    // Make relation for net players
 
     App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
     App.scene.playerCollisonBox.net.enable = true; // CAMERA VIEW FOR SELF LOCAL CAM
@@ -40992,11 +40998,10 @@ var runHang3d = world => {
     (0, _dom.createPauseScreen)();
   });
   addEventListener('connectionDestroyed', e => {
-    console.log(`%c connectionDestroyed  ${e.detail}`, 'background:black;color:lime;'); // connectionId
+    console.log(`%c connectionDestroyed  ${e.detail}`, REDLOG); // connectionId
 
     if (App.scene[e.detail.connectionId] !== 'undefined') App.scene[e.detail.connectionId].selfDestroy(1);
-  }); // ------------------------------
-  // Damage object test
+  }); // Damage object test
 
   world.Add("cubeLightTex", 1, "LAVA", tex);
   var b4 = new CANNON.Body({
@@ -41126,9 +41131,9 @@ const createNetworkPlayerCharacter = objName => {
       };
       matrixEngine.matrixWorld.world.Add("obj", 1, objName, textuteImageSamplers2, meshes[objName], animArg);
       App.scene[objName].position.y = 2;
-      App.scene[objName].position.z = 2; // ?????????
+      App.scene[objName].position.z = 2; // From 2.0.14 only for obj seq -> scaleAll
 
-      App.scene[objName].mesh.setScale(5);
+      App.scene[objName].scaleAll(2.4);
     }, 1);
   }
 
