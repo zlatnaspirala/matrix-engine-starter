@@ -181,7 +181,7 @@ export var runHang3d = (world) => {
 				mass: 7,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(0, 0, 0),
-				shape: new CANNON.Box(new CANNON.Vec3(1, 0.5, 1))// new CANNON.Sphere(2)
+				shape: new CANNON.Box(new CANNON.Vec3(1, 2.5, 1))
 			});
 
 			// This is custom param added.
@@ -260,7 +260,7 @@ export var runHang3d = (world) => {
 						preventDoubleJump = setTimeout(() => {
 							console.log('JUMP: ', e.detail.keyCode);
 							App.scene.playerCollisonBox.physics.currentBody.mass = 1;
-							App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 40);
+							App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
 							// preventDoubleJump = null; for ever
 						}, 250);
 					}
@@ -268,13 +268,10 @@ export var runHang3d = (world) => {
 
 			});
 
-
 			// nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
 			// must be fixed and added help func for overriding (mousemove)
-			addEventListener('mousemove', () => {
-
-			})
-
+			// addEventListener('mousemove', () => {
+			// })
 
 			var handlerTimeout = null, handlerTimeout2 = null;
 
@@ -343,9 +340,14 @@ export var runHang3d = (world) => {
 						// Playe Look
 						if(playerUpdater.sendRotValue > playerUpdater.sendRotEvery &&
 							matrixEngine.Engine.net.connection != null) {
+
+								if (typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
+									console.log('TEST undefined ')
+									return;
+								}
 							matrixEngine.Engine.net.connection.send({
 								netRot: {
-									y: matrixEngine.Events.camera.yaw
+									y: matrixEngine.Events.camera.yaw + 180
 								},
 								netObjId: App.scene.playerCollisonBox.position.netObjId,
 							})
@@ -657,6 +659,8 @@ export var runHang3d = (world) => {
 		dispatchEvent(new CustomEvent(`onTitle`, {detail: `🕸️${e.detail.connection.connectionId}🕸️`}))
 		notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`)
 		var name = e.detail.connection.connectionId;
+
+		byId('netHeaderTitle').click()
 		// console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 		// Make relation for net players
 		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
@@ -690,7 +694,7 @@ export var runHang3d = (world) => {
 			console.log('MY CONNECTION IS NULL')
 			setTimeout(() => {
 				if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
-					console.log('++posle 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+					console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
 					var name = e.detail.event.stream.connection.connectionId;
 					createNetworkPlayerCharacter(name)
 				}
