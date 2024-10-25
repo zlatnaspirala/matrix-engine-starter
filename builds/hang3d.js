@@ -40386,7 +40386,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false;
   App.camera.speedAmp = 0.02;
-  matrixEngine.Events.camera.yPos = 2;
+  matrixEngine.Events.camera.yPos = 10;
   addEventListener('hit.keyDown', e => {
     if (e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
       console.log(`%cPAUSE SCREEN`, REDLOG);
@@ -40512,8 +40512,8 @@ var runHang3d = world => {
       var collisionBox = new CANNON.Body({
         mass: 7,
         linearDamping: 0.01,
-        position: new CANNON.Vec3(0, 0, 0),
-        shape: new CANNON.Box(new CANNON.Vec3(1, 2.5, 1))
+        position: new CANNON.Vec3(0, 4, 0),
+        shape: new CANNON.Box(new CANNON.Vec3(0.3, .3, 3.3))
       }); // This is custom param added.
 
       collisionBox._name = 'collisionBox';
@@ -40609,64 +40609,45 @@ var runHang3d = world => {
             detPitch = -(limit + 2) * 2;
           }
 
-          if (matrixEngine.Events.camera.virtualJumpActive == "DEPLACED_MAYBE") {
-            // invert logic // Scene object set
-            var detPitchPos = matrixEngine.Events.camera.pitch;
-            if (detPitchPos > 4) detPitchPos = 4;
-            App.scene.playerCollisonBox.physics.currentBody.mass = 0.1;
-            App.scene[objName].position.setPosition(App.scene.playerCollisonBox.physics.currentBody.position.x, App.scene.playerCollisonBox.physics.currentBody.position.z, App.scene.playerCollisonBox.physics.currentBody.position.y + 1); // Cannonjs object set / Switched  Z - Y
+          handlerTimeout = null; // Make more stable situation
 
+          App.scene.playerCollisonBox.physics.currentBody.mass = 10;
+          App.scene.playerCollisonBox.physics.currentBody.quaternion.setFromEuler(0, 0, 0); // Tamo tu iznad duge nebo zri...
+          // Cannonjs object set
+          // Switched  Z - Y
+          // matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
+          // if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
+
+          if (App.scene.playerCollisonBox.pingpong == true) {
+            // Cannonjs object set / Switched  Z - Y
             matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
             matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
-            matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z; // App.scene.playerCollisonBox.physics.currentBody.angularVelocity.set(0, 0, 0);
-
-            if (handlerTimeout == null) {
-              handlerTimeout = setTimeout(() => {
-                matrixEngine.Events.camera.virtualJumpActive = false;
-                App.scene.playerCollisonBox.physics.currentBody.mass = 10;
-              }, 1350);
-            }
+            matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
+            App.scene.playerCollisonBox.pingpong = false;
           } else {
-            handlerTimeout = null; // Make more stable situation
+            handlerTimeout2 = 0; // Cannonjs object set - Switched  Z - Y
 
-            App.scene.playerCollisonBox.physics.currentBody.mass = 10;
-            App.scene.playerCollisonBox.physics.currentBody.quaternion.setFromEuler(0, 0, 0); // Tamo tu iznad duge nebo zri...
-            // Cannonjs object set
-            // Switched  Z - Y
-            // matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
-            // if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
-
-            if (App.scene.playerCollisonBox.pingpong == true) {
-              // Cannonjs object set / Switched  Z - Y
-              matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
-              matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
-              matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
-              App.scene.playerCollisonBox.pingpong = false;
-            } else {
-              handlerTimeout2 = 0; // Cannonjs object set - Switched  Z - Y
-
-              App.scene.playerCollisonBox.physics.currentBody.position.set(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.zPos, matrixEngine.Events.camera.yPos);
-              App.scene.playerCollisonBox.pingpong = true;
-            } // Playe Look
+            App.scene.playerCollisonBox.physics.currentBody.position.set(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.zPos, matrixEngine.Events.camera.yPos);
+            App.scene.playerCollisonBox.pingpong = true;
+          } // Playe Look
 
 
-            if (playerUpdater.sendRotValue > playerUpdater.sendRotEvery && matrixEngine.Engine.net.connection != null) {
-              if (typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
-                console.log('TEST undefined ');
-                return;
-              }
-
-              matrixEngine.Engine.net.connection.send({
-                netRot: {
-                  y: matrixEngine.Events.camera.yaw + 180
-                },
-                netObjId: App.scene.playerCollisonBox.position.netObjId
-              });
-              playerUpdater.sendRotValue = 0;
+          if (playerUpdater.sendRotValue > playerUpdater.sendRotEvery && matrixEngine.Engine.net.connection != null) {
+            if (typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
+              console.log('TEST undefined ');
+              return;
             }
 
-            playerUpdater.sendRotValue++;
+            matrixEngine.Engine.net.connection.send({
+              netRot: {
+                y: matrixEngine.Events.camera.yaw + 180
+              },
+              netObjId: App.scene.playerCollisonBox.position.netObjId
+            });
+            playerUpdater.sendRotValue = 0;
           }
+
+          playerUpdater.sendRotValue++;
         }
       };
       App.updateBeforeDraw.push(playerUpdater); // Player Energy status
@@ -41125,7 +41106,8 @@ const createNetworkPlayerCharacter = objName => {
           active: 'walk',
           walk: {
             from: 0,
-            to: 35,
+            // to: 35,
+            to: 20,
             speed: 3
           },
           walkPistol: {
@@ -41145,9 +41127,11 @@ const createNetworkPlayerCharacter = objName => {
 
   matrixEngine.objLoader.downloadMeshes(matrixEngine.objLoader.makeObjSeqArg({
     id: objName,
-    path: "res/bvh-skeletal-base/swat-guy/anims/swat-multi",
+    // path: "res/bvh-skeletal-base/swat-guy/anims/swat-multi",
+    path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
     from: 1,
-    to: 61
+    // to: 61
+    to: 20
   }), onLoadObj);
 };
 
