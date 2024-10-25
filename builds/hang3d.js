@@ -21064,6 +21064,14 @@ var _engine = require("./engine");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * @description
+ * Networking is deep integrated in me engine.
+ * You can change network driver but this code still works (net interface).
+ * Reccommended Net2 new version based on kurento/openvidu server.
+ * @author Nikola Lukic
+ * @date oct 2024
+ */
 class Scale {
   constructor() {
     this.x = 1;
@@ -21320,9 +21328,11 @@ class RotationVector {
  * @description Base class
  * Powered for multiplayer feature:
  * - position ref to x,y,z
- * 
- * new case if you wanna send for some other object from uniq local
- * example fo rFPShooter
+ * New case if you wanna send for some other object from uniq local
+ * See example from FPShooter. Explanation : In MultiPlayer mode 
+ * local player dont have animation character only gun classic for FPShooters.
+ * We project position values on remote computer for our character by different nameUniq (netObjId).
+ * Setup of `nameUniq` props done in initial/loading stage.
  */
 
 
@@ -21348,6 +21358,9 @@ class Position {
     this.x = x;
     this.y = y;
     this.z = z;
+    this.xNetOffset = 0;
+    this.yNetOffset = 0;
+    this.zNetOffset = 0;
     this.velY = 0;
     this.velX = 0;
     this.velZ = 0;
@@ -21418,9 +21431,9 @@ class Position {
         this.z += this.velZ;
         if (_manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
           netPos: {
-            x: this.x,
-            y: this.y,
-            z: this.z
+            x: this.x + this.xNetOffset,
+            y: this.y + this.yNetOffset,
+            z: this.z + this.zNetOffset
           },
           netObjId: this.netObjId
         });
