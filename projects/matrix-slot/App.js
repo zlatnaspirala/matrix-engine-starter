@@ -4,6 +4,7 @@
  * @name MatrixSlot
  * @author Nikola Lukic
  * @license MIT
+ * @link https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
  */
 import * as matrixEngine from "matrix-engine";
 import Mashines from "./scripts/mashine";
