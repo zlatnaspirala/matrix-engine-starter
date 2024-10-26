@@ -40646,7 +40646,7 @@ var runHang3d = world => {
 
           if (playerUpdater.sendRotValue > playerUpdater.sendRotEvery && matrixEngine.Engine.net.connection != null) {
             if (typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
-              console.log('TEST undefined ');
+              // console.log('undefined')
               return;
             }
 
@@ -40951,7 +40951,8 @@ var runHang3d = world => {
     console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
 
     App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
-    App.scene.playerCollisonBox.position.yNetOffset = -4;
+    App.scene.playerCollisonBox.position.yNetOffset = -2;
+    ;
     App.scene.playerCollisonBox.net.enable = true; // CAMERA VIEW FOR SELF LOCAL CAM
     // world.Add("squareTex", 1, name, tex);
     // App.scene[name].position.x = 0;

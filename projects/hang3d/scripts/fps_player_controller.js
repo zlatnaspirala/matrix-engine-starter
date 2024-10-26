@@ -319,7 +319,7 @@ export var runHang3d = (world) => {
 						matrixEngine.Engine.net.connection != null) {
 
 						if(typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
-							console.log('TEST undefined ')
+							// console.log('undefined')
 							return;
 						}
 						matrixEngine.Engine.net.connection.send({
@@ -638,10 +638,10 @@ export var runHang3d = (world) => {
 		var name = e.detail.connection.connectionId;
 
 		byId('netHeaderTitle').click()
-		 console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
+		console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 		// Make relation for net players
 		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
-		App.scene.playerCollisonBox.position.yNetOffset = -4
+		App.scene.playerCollisonBox.position.yNetOffset = -2;
 		;
 		App.scene.playerCollisonBox.net.enable = true;
 		// CAMERA VIEW FOR SELF LOCAL CAM
