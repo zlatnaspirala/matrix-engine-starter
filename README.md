@@ -32,6 +32,7 @@ npm i
   npm run app
   npm run slot
   npm run roulette
+	npm run hang3d
 ```
 
 ### Build your Application script bundle with:
@@ -46,6 +47,10 @@ npm i
 And navigate to app.html, examples.html etc.
 
 ### Projects
+
+#### NEW PROJECT - Hang3d Matrix
+
+<img src="https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/hang3d-matrix.png" >
 
 #### Matrix Roulette - 3d physics roulette 
 
