@@ -48,11 +48,19 @@ And navigate to app.html, examples.html etc.
 
 ### Projects
 
-#### NEW PROJECT - Hang3d Matrix
+#### NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter
+
+ - Basic for now
 
 <img src="https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/hang3d-matrix.png" >
 
+Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
+
+
 #### Matrix Roulette - 3d physics roulette 
+
+ TODO:
+  - Replace with net2 driver.
 
  In `projects\matrix-roulette` First time is used inject if gameplay logic intro broadcaster(matrix-networks)
  Networking is based for now only on websocket tech.
