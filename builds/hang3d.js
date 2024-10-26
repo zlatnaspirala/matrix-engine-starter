@@ -21467,9 +21467,9 @@ class Position {
     if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) {
       _engine.net.connection.send({
         netPos: {
-          x: this.x,
-          y: this.y,
-          z: this.z
+          x: this.x + this.xNetOffset,
+          y: this.y + this.yNetOffset,
+          z: this.z + this.zNetOffset
         },
         netObjId: this.netObjId
       });
@@ -21482,9 +21482,9 @@ class Position {
     this.inMove = false;
     if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
-        x: this.x,
-        y: this.y,
-        z: this.z
+        x: this.x + this.xNetOffset,
+        y: this.y + this.yNetOffset,
+        z: this.z + this.zNetOffset
       },
       netObjId: this.netObjId
     });
@@ -21496,9 +21496,9 @@ class Position {
     this.inMove = false;
     if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
-        x: this.x,
-        y: this.y,
-        z: this.z
+        x: this.x + this.xNetOffset,
+        y: this.y + this.yNetOffset,
+        z: this.z + this.zNetOffset
       },
       netObjId: this.netObjId
     });
@@ -21514,9 +21514,9 @@ class Position {
     this.inMove = false;
     if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
-        x: this.x,
-        y: this.y,
-        z: this.z
+        x: this.x + this.xNetOffset,
+        y: this.y + this.yNetOffset,
+        z: this.z + this.zNetOffset
       },
       netObjId: this.netObjId
     });
@@ -40526,7 +40526,7 @@ var runHang3d = world => {
         mass: 7,
         linearDamping: 0.01,
         position: new CANNON.Vec3(0, 4, 0),
-        shape: new CANNON.Box(new CANNON.Vec3(0.3, .3, 3.3))
+        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2))
       }); // This is custom param added.
 
       collisionBox._name = 'collisionBox';
@@ -40538,8 +40538,7 @@ var runHang3d = world => {
       App.scene.playerCollisonBox.glBlend.blendEnabled = true;
       App.scene.playerCollisonBox.glBlend.blendParamSrc = ENUMERATORS.glBlend.param[0];
       App.scene.playerCollisonBox.glBlend.blendParamDest = ENUMERATORS.glBlend.param[0];
-      App.scene.playerCollisonBox.visible = false; // test net2
-      // App.scene.playerCollisonBox.net.enable = true;
+      App.scene.playerCollisonBox.visible = false; // App.scene.playerCollisonBox.net.enable = true;
       // Test custom flag for collide moment
 
       App.scene.playerCollisonBox.iamInCollideRegime = false; // simple logic but also not perfect
@@ -40948,10 +40947,11 @@ var runHang3d = world => {
     }));
     notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`);
     var name = e.detail.connection.connectionId;
-    byId('netHeaderTitle').click(); // console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
-    // Make relation for net players
+    byId('netHeaderTitle').click();
+    console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
 
     App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
+    App.scene.playerCollisonBox.position.yNetOffset = -4;
     App.scene.playerCollisonBox.net.enable = true; // CAMERA VIEW FOR SELF LOCAL CAM
     // world.Add("squareTex", 1, name, tex);
     // App.scene[name].position.x = 0;

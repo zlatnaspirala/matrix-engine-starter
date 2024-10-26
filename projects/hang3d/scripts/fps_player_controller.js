@@ -181,7 +181,7 @@ export var runHang3d = (world) => {
 				mass: 7,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(0, 4, 0),
-				shape: new CANNON.Box(new CANNON.Vec3(0.3, .3, 3.3))
+				shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2))
 			});
 
 			// This is custom param added.
@@ -195,9 +195,6 @@ export var runHang3d = (world) => {
 			App.scene.playerCollisonBox.glBlend.blendParamSrc = ENUMERATORS.glBlend.param[0];
 			App.scene.playerCollisonBox.glBlend.blendParamDest = ENUMERATORS.glBlend.param[0];
 			App.scene.playerCollisonBox.visible = false;
-
-
-			// test net2
 			// App.scene.playerCollisonBox.net.enable = true;
 
 			// Test custom flag for collide moment
@@ -641,9 +638,11 @@ export var runHang3d = (world) => {
 		var name = e.detail.connection.connectionId;
 
 		byId('netHeaderTitle').click()
-		// console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
+		 console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 		// Make relation for net players
 		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
+		App.scene.playerCollisonBox.position.yNetOffset = -4
+		;
 		App.scene.playerCollisonBox.net.enable = true;
 		// CAMERA VIEW FOR SELF LOCAL CAM
 		// world.Add("squareTex", 1, name, tex);
