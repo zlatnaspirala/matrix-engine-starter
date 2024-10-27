@@ -108,10 +108,7 @@ export var runHang3d = (world) => {
 		} else {}
 	};
 
-	addEventListener('onDamage', (e) => {
-
-
-	})
+	// addEventListener('onDamage', (e) => {	})
 
 	addEventListener('network-data', (e) => {
 		console.log(" ::: ", e.detail)
@@ -119,33 +116,37 @@ export var runHang3d = (world) => {
 			console.log("damage from ", e.detail.damage.from , " to " , e.detail.damage.to)
 			if (e.detail.damage.to ==  App.scene.playerCollisonBox.position.netObjId) {
 				console.log("<my damage>")
+				notify.error(`${e.detail.damage.from} shot you!`)
+				App.scene.player.energy.value -= (0.25 - (App.scene.player.items.armor ? App.scene.player.items.armor.preventDamage : 0));
+				App.scene.player.updateEnergy(App.scene.player.energy.value);
 			}
 		}
 		// fo rthis no need id
 		// netObjId: App.scene.playerCollisonBox.position.netObjId,
 	})
 
+	var preventFlagDouble = false;
 	addEventListener('ray.hit.event', (ev) => {
 		console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
-		// Physics force apply also change ambienty light.
-		// if(ev.detail.hitObject.physics.enabled == true) {
-		// Shoot the object - apply force
-		// ev.detail.hitObject.physics.currentBody.force.set(2, 2, 50);
+		if (ev.detail.hitObject.name.indexOf('con_') == -1) {
+			return;
+		}
 
-		// Apply random diff color
+		if (preventFlagDouble == false) {
+			preventFlagDouble = true;
+			setTimeout(()=> {
+				preventFlagDouble = false;
+			}, 100)
+		} else {
+			return;
+		}
+
+		notify.error(`Nice shoot`)
+
 		if(ev.detail.hitObject.LightsData) {
 			ev.detail.hitObject.LightsData.ambientLight.set(
 				randomFloatFromTo(0, 2), randomFloatFromTo(0, 2), randomFloatFromTo(0, 2));
 		}
-
-		// not in use
-		dispatchEvent(new CustomEvent('you-make-damage', {
-			detail: {
-				from: matrixEngine.Engine.net.connection.connectionId,
-				to: ev.detail.hitObject.name
-			}
-		}))
-
 		matrixEngine.Engine.net.connection.send({
 			damage: {
 				from: matrixEngine.Engine.net.connection.connectionId,
