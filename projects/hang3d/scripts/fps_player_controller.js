@@ -3,13 +3,10 @@
  * @description Usage of raycaster, ObjectLoader Sequence,
  * FirstPersonController.
  * This will be part of new lib file `lib/controllers/fps.js`
- * 
  * Example API calls Usage:
- * 
  * - Deeply integrated to the top level scene object with name `player`.
- *   App.scene.player.updateEnergy(4);
+ *   `App.scene.player.updateEnergy(4);`
  * Predefined from 0 to the 8 energy value.
- * 
  * @class First Person Shooter example
  */
 import * as matrixEngine from "matrix-engine";
@@ -24,6 +21,7 @@ export var runHang3d = (world) => {
 		document.title = e.detail
 	})
 
+	// You can use import also.
 	let notify = matrixEngine.utility.notify;
 	let byId = matrixEngine.utility.byId;
 	let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
@@ -39,6 +37,7 @@ export var runHang3d = (world) => {
 	App.camera.speedAmp = 0.02;
 	matrixEngine.Events.camera.yPos = 10;
 
+	// Keyboard event
 	addEventListener('hit.keyDown', (e) => {
 		if(e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
 			console.log(`%cPAUSE SCREEN`, REDLOG)
@@ -52,9 +51,10 @@ export var runHang3d = (world) => {
 	// Prevent right click context menu
 	window.addEventListener("contextmenu", (e) => {e.preventDefault()});
 
+	// Only for mobile - Mobile player controller UI
 	if(isMobile == true) matrixEngine.utility.createDomFPSController();
 
-	// net
+	// Activate networking
 	matrixEngine.Engine.activateNet2(undefined,
 		{
 			sessionName: 'hang3d-matrix',
@@ -63,7 +63,6 @@ export var runHang3d = (world) => {
 
 	// Override mouse up - example how to use
 	App.events.CALCULATE_TOUCH_UP_OR_MOUSE_UP = () => {
-		// console.log('TEST APP CLICK')
 		App.scene.FPSTarget.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
 		App.scene.FPSTarget.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
 		App.scene.FPSTarget.geometry.setScale(0.1);
@@ -95,7 +94,7 @@ export var runHang3d = (world) => {
 
 		if(isMobile() == false) {
 			// `checkingProcedure` gets secound optimal argument
-			// for custom ray origin target.
+			// For custom ray origin target.
 			if(mouse.BUTTON_PRESSED == 'RIGHT') {
 				// Zoom
 			} else {
@@ -106,23 +105,54 @@ export var runHang3d = (world) => {
 				});
 				App.sounds.play('shoot');
 			}
-		} else {
-
-		}
-
+		} else {}
 	};
 
-	window.addEventListener('ray.hit.event', (ev) => {
-		console.log("You shoot the object! Nice!", ev);
+	addEventListener('onDamage', (e) => {
+
+
+	})
+
+	addEventListener('network-data', (e) => {
+		console.log(" ::: ", e.detail)
+		if (e.detail.damage) {
+			console.log("damage from ", e.detail.damage.from , " to " , e.detail.damage.to)
+			if (e.detail.damage.to ==  App.scene.playerCollisonBox.position.netObjId) {
+				console.log("<my damage>")
+			}
+		}
+		// fo rthis no need id
+		// netObjId: App.scene.playerCollisonBox.position.netObjId,
+	})
+
+	addEventListener('ray.hit.event', (ev) => {
+		console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
 		// Physics force apply also change ambienty light.
-		if(ev.detail.hitObject.physics.enabled == true) {
-			// Shoot the object - apply force
-			ev.detail.hitObject.physics.currentBody.force.set(2, 2, 50);
-			// Apply random diff color
-			if(ev.detail.hitObject.LightsData) ev.detail.hitObject.LightsData.ambientLight.set(
+		// if(ev.detail.hitObject.physics.enabled == true) {
+		// Shoot the object - apply force
+		// ev.detail.hitObject.physics.currentBody.force.set(2, 2, 50);
+
+		// Apply random diff color
+		if(ev.detail.hitObject.LightsData) {
+			ev.detail.hitObject.LightsData.ambientLight.set(
 				randomFloatFromTo(0, 2), randomFloatFromTo(0, 2), randomFloatFromTo(0, 2));
 		}
-	});
+
+		// not in use
+		dispatchEvent(new CustomEvent('you-make-damage', {
+			detail: {
+				from: matrixEngine.Engine.net.connection.connectionId,
+				to: ev.detail.hitObject.name
+			}
+		}))
+
+		matrixEngine.Engine.net.connection.send({
+			damage: {
+				from: matrixEngine.Engine.net.connection.connectionId,
+				to: ev.detail.hitObject.name
+			}
+		});
+	})
 
 	// Load obj seq animation
 	const createObjSequence = (objName) => {
@@ -156,7 +186,6 @@ export var runHang3d = (world) => {
 			};
 
 			// WEAPON
-			// world.Add("obj", 1, objName, textuteImageSamplers2, meshes[objName], animArg);
 			world.Add("obj", 1, objName, textuteImageSamplers2, meshes['player']);
 			App.scene.player.position.setPosition(0.5, -0.7, -3);
 			App.scene.player.isHUD = true;
@@ -195,11 +224,8 @@ export var runHang3d = (world) => {
 			App.scene.playerCollisonBox.glBlend.blendParamSrc = ENUMERATORS.glBlend.param[0];
 			App.scene.playerCollisonBox.glBlend.blendParamDest = ENUMERATORS.glBlend.param[0];
 			App.scene.playerCollisonBox.visible = false;
-			// App.scene.playerCollisonBox.net.enable = true;
-
 			// Test custom flag for collide moment
 			App.scene.playerCollisonBox.iamInCollideRegime = false;
-
 			// simple logic but also not perfect
 			App.scene.playerCollisonBox.pingpong = true;
 
@@ -295,7 +321,6 @@ export var runHang3d = (world) => {
 					// Tamo tu iznad duge nebo zri...
 					// Cannonjs object set
 					// Switched  Z - Y
-					// matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
 					// if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
 					if(App.scene.playerCollisonBox.pingpong == true) {
 						// Cannonjs object set / Switched  Z - Y

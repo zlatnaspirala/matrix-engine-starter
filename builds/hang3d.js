@@ -39472,7 +39472,10 @@ class MatrixStream {
     },
 
     update(e) {
-      e.data = JSON.parse(e.data); // console.log('INFO UPDATE', e);
+      e.data = JSON.parse(e.data);
+      dispatchEvent(new CustomEvent('network-data', {
+        detail: e.data
+      })); // console.log('INFO UPDATE', e);
 
       if (e.data.netPos) {
         if (App.scene[e.data.netObjId]) {
@@ -40373,13 +40376,10 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * @description Usage of raycaster, ObjectLoader Sequence,
  * FirstPersonController.
  * This will be part of new lib file `lib/controllers/fps.js`
- * 
  * Example API calls Usage:
- * 
  * - Deeply integrated to the top level scene object with name `player`.
- *   App.scene.player.updateEnergy(4);
+ *   `App.scene.player.updateEnergy(4);`
  * Predefined from 0 to the 8 energy value.
- * 
  * @class First Person Shooter example
  */
 var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
@@ -40388,7 +40388,8 @@ exports.REDLOG = REDLOG;
 var runHang3d = world => {
   addEventListener('onTitle', e => {
     document.title = e.detail;
-  });
+  }); // You can use import also.
+
   let notify = matrixEngine.utility.notify;
   let byId = matrixEngine.utility.byId;
   let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
@@ -40401,7 +40402,8 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false;
   App.camera.speedAmp = 0.02;
-  matrixEngine.Events.camera.yPos = 10;
+  matrixEngine.Events.camera.yPos = 10; // Keyboard event
+
   addEventListener('hit.keyDown', e => {
     if (e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
       console.log(`%cPAUSE SCREEN`, REDLOG);
@@ -40413,8 +40415,9 @@ var runHang3d = world => {
 
   window.addEventListener("contextmenu", e => {
     e.preventDefault();
-  });
-  if (isMobile == true) matrixEngine.utility.createDomFPSController(); // net
+  }); // Only for mobile - Mobile player controller UI
+
+  if (isMobile == true) matrixEngine.utility.createDomFPSController(); // Activate networking
 
   matrixEngine.Engine.activateNet2(undefined, {
     sessionName: 'hang3d-matrix',
@@ -40422,7 +40425,6 @@ var runHang3d = world => {
   }); // Override mouse up - example how to use
 
   App.events.CALCULATE_TOUCH_UP_OR_MOUSE_UP = () => {
-    // console.log('TEST APP CLICK')
     App.scene.FPSTarget.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene.FPSTarget.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
     App.scene.FPSTarget.geometry.setScale(0.1);
@@ -40453,7 +40455,7 @@ var runHang3d = world => {
   App.events.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = (ev, mouse) => {
     if (isMobile() == false) {
       // `checkingProcedure` gets secound optimal argument
-      // for custom ray origin target.
+      // For custom ray origin target.
       if (mouse.BUTTON_PRESSED == 'RIGHT') {// Zoom
       } else {
         // This call represent `SHOOT` Action. And it is center of screen!
@@ -40466,15 +40468,44 @@ var runHang3d = world => {
     } else {}
   };
 
-  window.addEventListener('ray.hit.event', ev => {
-    console.log("You shoot the object! Nice!", ev); // Physics force apply also change ambienty light.
+  addEventListener('onDamage', e => {});
+  addEventListener('network-data', e => {
+    console.log(" ::: ", e.detail);
 
-    if (ev.detail.hitObject.physics.enabled == true) {
-      // Shoot the object - apply force
-      ev.detail.hitObject.physics.currentBody.force.set(2, 2, 50); // Apply random diff color
+    if (e.detail.damage) {
+      console.log("damage from ", e.detail.damage.from, " to ", e.detail.damage.to);
 
-      if (ev.detail.hitObject.LightsData) ev.detail.hitObject.LightsData.ambientLight.set(randomFloatFromTo(0, 2), randomFloatFromTo(0, 2), randomFloatFromTo(0, 2));
-    }
+      if (e.detail.damage.to == App.scene.playerCollisonBox.position.netObjId) {
+        console.log("<my damage>");
+      }
+    } // fo rthis no need id
+    // netObjId: App.scene.playerCollisonBox.position.netObjId,
+
+  });
+  addEventListener('ray.hit.event', ev => {
+    console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG); // Physics force apply also change ambienty light.
+    // if(ev.detail.hitObject.physics.enabled == true) {
+    // Shoot the object - apply force
+    // ev.detail.hitObject.physics.currentBody.force.set(2, 2, 50);
+    // Apply random diff color
+
+    if (ev.detail.hitObject.LightsData) {
+      ev.detail.hitObject.LightsData.ambientLight.set(randomFloatFromTo(0, 2), randomFloatFromTo(0, 2), randomFloatFromTo(0, 2));
+    } // not in use
+
+
+    dispatchEvent(new CustomEvent('you-make-damage', {
+      detail: {
+        from: matrixEngine.Engine.net.connection.connectionId,
+        to: ev.detail.hitObject.name
+      }
+    }));
+    matrixEngine.Engine.net.connection.send({
+      damage: {
+        from: matrixEngine.Engine.net.connection.connectionId,
+        to: ev.detail.hitObject.name
+      }
+    });
   }); // Load obj seq animation
 
   const createObjSequence = objName => {
@@ -40502,7 +40533,6 @@ var runHang3d = world => {
           }
         }
       }; // WEAPON
-      // world.Add("obj", 1, objName, textuteImageSamplers2, meshes[objName], animArg);
 
       world.Add("obj", 1, objName, textuteImageSamplers2, meshes['player']);
       App.scene.player.position.setPosition(0.5, -0.7, -3);
@@ -40540,8 +40570,7 @@ var runHang3d = world => {
       App.scene.playerCollisonBox.glBlend.blendEnabled = true;
       App.scene.playerCollisonBox.glBlend.blendParamSrc = ENUMERATORS.glBlend.param[0];
       App.scene.playerCollisonBox.glBlend.blendParamDest = ENUMERATORS.glBlend.param[0];
-      App.scene.playerCollisonBox.visible = false; // App.scene.playerCollisonBox.net.enable = true;
-      // Test custom flag for collide moment
+      App.scene.playerCollisonBox.visible = false; // Test custom flag for collide moment
 
       App.scene.playerCollisonBox.iamInCollideRegime = false; // simple logic but also not perfect
 
@@ -40629,7 +40658,6 @@ var runHang3d = world => {
           App.scene.playerCollisonBox.physics.currentBody.quaternion.setFromEuler(0, 0, 0); // Tamo tu iznad duge nebo zri...
           // Cannonjs object set
           // Switched  Z - Y
-          // matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
           // if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
 
           if (App.scene.playerCollisonBox.pingpong == true) {
