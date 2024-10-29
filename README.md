@@ -53,7 +53,7 @@ And navigate to app.html, examples.html etc.
  - Basic for now
 
 <img src="https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/hang3d-matrix.png" >
-
+Run:  `npm run hang3d`
 Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 
 

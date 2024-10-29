@@ -39139,10 +39139,18 @@ let notify = {
   copy: function () {
     navigator.clipboard.writeText(notify.root().children[0].innerText);
   },
+  singleDom: true,
+  showTime: 3000,
+  hideTime: 1000,
   c: 0,
   ic: 0,
   t: {},
   setContent: function (content, t) {
+    if (byId(`msgbox-loc-${notify.c}`) != null) {
+      byId(`msgbox-loc-${notify.c}`).innerHTML = content;
+      return;
+    }
+
     var iMsg = document.createElement('div');
     iMsg.innerHTML = content;
     iMsg.id = `msgbox-loc-${notify.c}`;
@@ -39166,17 +39174,23 @@ let notify = {
       byId(`msgbox-loc-${loc2}`).classList.remove("fadeInDown");
       byId(`msgbox-loc-${loc2}`).classList.add("fadeOut");
       setTimeout(function () {
-        byId(`msgbox-loc-${loc2}`).style.display = "none";
         byId(`msgbox-loc-${loc2}`).classList.remove("fadeOut");
-        byId(`msgbox-loc-${loc2}`).remove();
-        notify.ic++;
+
+        if (this.singleDom == false) {
+          byId(`msgbox-loc-${loc2}`).style.display = "none";
+          byId(`msgbox-loc-${loc2}`).remove();
+          notify.ic++;
+        }
 
         if (notify.c == notify.ic) {
           notify.root().style.display = 'none';
         }
-      }, 1000);
-    }, 3000);
-    notify.c++;
+      }, this.hideTime);
+    }, this.showTime);
+
+    if (this.singleDom == true) {} else {
+      notify.c++;
+    }
   },
   error: function (content) {
     notify.root().classList.remove("success");
@@ -40333,15 +40347,14 @@ var _utility = require("matrix-engine/lib/utility");
 
 function createPauseScreen() {
   var root = document.createElement('div');
-  root.id = 'pauseScreen';
-  root.style = 'display:flex;position:fixed;left:0;top:0;width:100%;height:100%;background:black;opacity:0.7;';
+  root.id = 'pauseScreen'; // root.style = '';
 
   function hidePauseScreen() {
     (0, _utility.byId)('pauseScreen').style.display = 'none';
   }
 
   root.innerHTML = `
-	  <h2 style="display: grid;margin: auto;font-size:100px;" > 
+	  <h2 class="pauseScreenText">
 			Hang3d Matrix
 			<button id="pauseGame" class='btn'>PLAY</button>
 			<div style="font-size:15px;">Powered by matrix-engine</div>
@@ -40390,6 +40403,8 @@ var runHang3d = world => {
     document.title = e.detail;
   }); // You can use import also.
 
+  matrixEngine.utility.notify.hideTime = 100;
+  matrixEngine.utility.notify.showTime = 1200;
   let notify = matrixEngine.utility.notify;
   let byId = matrixEngine.utility.byId;
   let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
@@ -40417,7 +40432,10 @@ var runHang3d = world => {
     e.preventDefault();
   }); // Only for mobile - Mobile player controller UI
 
-  if (isMobile == true) matrixEngine.utility.createDomFPSController(); // Activate networking
+  if (isMobile() == true) {
+    matrixEngine.utility.createDomFPSController();
+  } // Activate networking
+
 
   matrixEngine.Engine.activateNet2(undefined, {
     sessionName: 'hang3d-matrix',
@@ -40470,20 +40488,42 @@ var runHang3d = world => {
 
 
   addEventListener('network-data', e => {
-    console.log(" ::: ", e.detail);
+    console.log("receive:", e.detail);
 
     if (e.detail.damage) {
       console.log("damage from ", e.detail.damage.from, " to ", e.detail.damage.to);
 
       if (e.detail.damage.to == App.scene.playerCollisonBox.position.netObjId) {
-        console.log("<my damage>");
+        console.log("<my damage - here is catch who kills on both net sides>");
         notify.error(`${e.detail.damage.from} shot you!`);
-        App.scene.player.energy.value -= 0.25 - (App.scene.player.items.armor ? App.scene.player.items.armor.preventDamage : 0);
+        App.scene.player.energy.value -= 0.25 - (App.scene.player.items.armor ? App.scene.player.items.armor.preventDamage : 0); // pre check for 0
+
+        if (App.scene.player.energy.value <= 0) {
+          // killed by 
+          matrixEngine.Engine.net.connection.send({
+            kills: {
+              killer: e.detail.damage.from,
+              killed: e.detail.damage.to
+            }
+          }); // send it to spawn from space 
+
+          matrixEngine.Events.camera.xPos = 0;
+          matrixEngine.Events.camera.zPos = 0;
+          matrixEngine.Events.camera.yPos = 300;
+          App.scene.playerCollisonBox.physics.currentBody.position.set(0, 0, 300);
+        }
+
         App.scene.player.updateEnergy(App.scene.player.energy.value);
       }
-    } // fo rthis no need id
-    // netObjId: App.scene.playerCollisonBox.position.netObjId,
+    } else if (e.detail.kills) {
+      console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed);
 
+      if (e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
+        notify.show('You kill ' + e.detail.kills.killed);
+      } else if (e.detail.kills.killed != App.scene.playerCollisonBox.position.netObjId) {
+        notify.show(`${e.detail.kills.killer} kills  ${e.detail.kills.killed}`);
+      }
+    }
   });
   var preventFlagDouble = false;
   addEventListener('ray.hit.event', ev => {
@@ -40737,6 +40777,10 @@ var runHang3d = world => {
         var t = App.scene.energyBar.preparePixelsTex(App.scene.energyBar.specialValue);
         App.scene.energyBar.textures.pop();
         App.scene.energyBar.textures.push(App.scene.energyBar.createPixelsTex(t));
+
+        if (this.energy.value <= 0) {
+          notify.error("YOU DIE");
+        }
       };
 
       function preparePixelsTex(options) {

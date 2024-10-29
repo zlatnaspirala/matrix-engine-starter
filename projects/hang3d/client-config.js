@@ -26,77 +26,10 @@ class ClientConfig {
 	// domain = "localhost";
 
 	/**
-	 * @description Important note for this property: if you
-	 * disable (false) you can't use Account system or any other
-	 * network. Use 'false' if you wanna make single player game.
-	 * In other way keep it 'true'.
-	 * 
-	 * @note [OLD]
-	 */
-	showBroadcasterOnInt = false;
-
-	/**
-	 * networkDeepLogs control of dev logs for webRTC context only.
-	 *  @note [OLD]
-	 */
-	networkDeepLogs = false;
-
-	/**
 	 * masterServerKey is channel access id used to connect
 	 * multimedia server channel/multiRTC3
 	 */
-	masterServerKey = "maximumroulette.matrix-engine";
-
-	/**
-	 * @description
-	 * runBroadcasterOnInt load broadcaster
-	 * 
-	 * 	 * @note [OLD]
-	 * 
-	 */
-	runBroadcasterOnInt = false;
-	broadcastAutoConnect = false;
-
-	/**
-	 * @description
-	 * broadcasterPort Port used to connect multimedia server MultiRTC3.
-	 * I will use it for explicit video chat multiplatform support.
-	 * Default value is 999
-	 * 
-	 * @note [OLD]
-	 * 
-	 */
-	broadcasterPort = 999;
-
-	/**
-	 * @description
-	 * broadcaster rtc session init values.
-	 * Change it for production regime
-	 * 
-	 * @note [OLD]
-	 */
-	broadcasterSessionDefaults = {
-		sessionAudio: true,
-		sessionVideo: false,
-		sessionData: true,
-		enableFileSharing: true,
-	};
-
-	/**
-	 * @description
-	 * Optimal for dev stage.
-	 * read more about webRtc protocols.
-	 * Recommended: coturn open source project.
-	 * 
-	 * @note [OLD]
-	 * When you run your OV there is coturn already fixed.
-	 */
-	stunList = [
-		"stun:stun.l.google.com:19302",
-		"stun:stun1.l.google.com:19302",
-		"stun:stun.l.google.com:19302?transport=udp",
-	];
-
+	masterServerKey = "maximumroulette.hang3d-matrix";
 
 	/**
 	 * New networking platform
@@ -119,22 +52,6 @@ class ClientConfig {
 
 	getRecordCanvasOptions() {
 		return this.recordCanvasOption;
-	}
-
-	getRunBroadcasterOnInt() {
-		return this.runBroadcasterOnInt;
-	}
-
-	didAppUseBroadcast() {
-		return this.appUseBroadcaster;
-	}
-
-	getStunList() {
-		return this.stunList;
-	}
-
-	getBroadcastSockRoute() {
-		return this.getProtocolFromAddressBar() + this.getDomain() + ":" + this.broadcasterPort + "/";
 	}
 
 	getDomain() {

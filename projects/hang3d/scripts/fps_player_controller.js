@@ -22,7 +22,10 @@ export var runHang3d = (world) => {
 	})
 
 	// You can use import also.
+	matrixEngine.utility.notify.hideTime = 100;
+	matrixEngine.utility.notify.showTime = 1200;
 	let notify = matrixEngine.utility.notify;
+
 	let byId = matrixEngine.utility.byId;
 	let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
 	let isMobile = matrixEngine.utility.isMobile;
@@ -52,7 +55,10 @@ export var runHang3d = (world) => {
 	window.addEventListener("contextmenu", (e) => {e.preventDefault()});
 
 	// Only for mobile - Mobile player controller UI
-	if(isMobile == true) matrixEngine.utility.createDomFPSController();
+	if(isMobile() == true) {
+
+		matrixEngine.utility.createDomFPSController();
+	}
 
 	// Activate networking
 	matrixEngine.Engine.activateNet2(undefined,
@@ -111,30 +117,53 @@ export var runHang3d = (world) => {
 	// addEventListener('onDamage', (e) => {	})
 
 	addEventListener('network-data', (e) => {
-		console.log(" ::: ", e.detail)
-		if (e.detail.damage) {
-			console.log("damage from ", e.detail.damage.from , " to " , e.detail.damage.to)
-			if (e.detail.damage.to ==  App.scene.playerCollisonBox.position.netObjId) {
-				console.log("<my damage>")
+		console.log("receive:", e.detail)
+		if(e.detail.damage) {
+			console.log("damage from ", e.detail.damage.from, " to ", e.detail.damage.to)
+			if(e.detail.damage.to == App.scene.playerCollisonBox.position.netObjId) {
+				console.log("<my damage - here is catch who kills on both net sides>")
 				notify.error(`${e.detail.damage.from} shot you!`)
 				App.scene.player.energy.value -= (0.25 - (App.scene.player.items.armor ? App.scene.player.items.armor.preventDamage : 0));
+				// pre check for 0
+				if(App.scene.player.energy.value <= 0) {
+					// killed by 
+					matrixEngine.Engine.net.connection.send({
+						kills: {
+							killer: e.detail.damage.from,
+							killed: e.detail.damage.to
+						}
+					})
+					// send it to spawn from space 
+					matrixEngine.Events.camera.xPos = 0;
+					matrixEngine.Events.camera.zPos = 0;
+					matrixEngine.Events.camera.yPos = 300;
+					App.scene.playerCollisonBox.
+					physics.currentBody.position.set(
+						0,
+						0,
+						300);
+				}
 				App.scene.player.updateEnergy(App.scene.player.energy.value);
 			}
+		} else if(e.detail.kills) {
+			console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed)
+			if(e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
+				notify.show('You kill ' + e.detail.kills.killed)
+			} else if(e.detail.kills.killed != App.scene.playerCollisonBox.position.netObjId) {
+				notify.show(`${e.detail.kills.killer} kills  ${e.detail.kills.killed}`)
+			}
 		}
-		// fo rthis no need id
-		// netObjId: App.scene.playerCollisonBox.position.netObjId,
 	})
 
 	var preventFlagDouble = false;
 	addEventListener('ray.hit.event', (ev) => {
 		console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
-		if (ev.detail.hitObject.name.indexOf('con_') == -1) {
+		if(ev.detail.hitObject.name.indexOf('con_') == -1) {
 			return;
 		}
-
-		if (preventFlagDouble == false) {
+		if(preventFlagDouble == false) {
 			preventFlagDouble = true;
-			setTimeout(()=> {
+			setTimeout(() => {
 				preventFlagDouble = false;
 			}, 100)
 		} else {
@@ -142,7 +171,6 @@ export var runHang3d = (world) => {
 		}
 
 		notify.error(`Nice shoot`)
-
 		if(ev.detail.hitObject.LightsData) {
 			ev.detail.hitObject.LightsData.ambientLight.set(
 				randomFloatFromTo(0, 2), randomFloatFromTo(0, 2), randomFloatFromTo(0, 2));
@@ -159,7 +187,6 @@ export var runHang3d = (world) => {
 	const createObjSequence = (objName) => {
 
 		let preventDoubleJump = null;
-
 		function onLoadObj(meshes) {
 			for(let key in meshes) {
 				matrixEngine.objLoader.initMeshBuffers(world.GL.gl, meshes[key]);
@@ -403,6 +430,9 @@ export var runHang3d = (world) => {
 				var t = App.scene.energyBar.preparePixelsTex(App.scene.energyBar.specialValue);
 				App.scene.energyBar.textures.pop()
 				App.scene.energyBar.textures.push(App.scene.energyBar.createPixelsTex(t));
+				if(this.energy.value <= 0) {
+					notify.error("YOU DIE")
+				}
 			};
 
 			function preparePixelsTex(options) {
