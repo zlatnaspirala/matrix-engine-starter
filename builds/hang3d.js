@@ -18182,22 +18182,28 @@ camera.speed = 0;
 camera.yawAmp = 0.077;
 camera.pitchAmp = 0.017;
 camera.virtualJumpY = 2;
-camera.virtualJumpActive = false; // eslint-disable-next-line no-global-assign
+camera.virtualJumpActive = false;
+camera.preventSpeedZero = false; // eslint-disable-next-line no-global-assign
 
 var keyboardPress = defineKeyBoardObject(); // For FirstPersonController
 
 exports.keyboardPress = keyboardPress;
 
 camera.setCamera = function (object) {
-  /* Left Key  or A */
   if (keyboardPress.getKeyStatus(37) || keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
+    /* Left Key  or A */
     camera.yawRate = _manifest.default.camera.yawRate;
-    if (_manifest.default.camera.leftEdge == true) camera.yawRate = _manifest.default.camera.yawRate;
-  } else if (
-  /* Right Key or D */
-  keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+
+    if (_manifest.default.camera.leftEdge == true) {
+      camera.yawRate = _manifest.default.camera.yawRateOnEdge;
+    }
+  } else if (keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+    /* Right Key or D */
     camera.yawRate = -_manifest.default.camera.yawRate;
-    if (_manifest.default.camera.rightEdge == true) camera.yawRate = -_manifest.default.camera.yawRate;
+
+    if (_manifest.default.camera.rightEdge == true) {
+      camera.yawRate = -_manifest.default.camera.yawRateOnEdge;
+    }
   } else if (keyboardPress.getKeyStatus(32)) {
     /* Right Key or SPACE */
     if (this.virtualJumpActive != true) {
@@ -18213,7 +18219,7 @@ camera.setCamera = function (object) {
     /* Down Key or S */
     camera.speed = -_manifest.default.camera.speedAmp;
   } else {
-    camera.speed = 0;
+    if (camera.preventSpeedZero == false) camera.speed = 0;
   }
   /* Calculate yaw, pitch and roll(x,y,z) */
 
@@ -18248,9 +18254,7 @@ camera.setSceneCamera = function (object) {
   if (keyboardPress.getKeyStatus(37) || keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
     camera.yawRate = _manifest.default.camera.sceneControllerWASDKeysAmp;
     if (_manifest.default.camera.leftEdge == true) camera.yawRate = _manifest.default.camera.sceneControllerEdgeCameraYawRate;
-  } else if (
-  /* Right Key or D */
-  keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+  } else if (keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
     camera.yawRate = -_manifest.default.camera.sceneControllerWASDKeysAmp;
     if (_manifest.default.camera.rightEdge == true) camera.yawRate = -_manifest.default.camera.sceneControllerEdgeCameraYawRate;
   } else {// camera.yawRate = 0;
@@ -30220,6 +30224,7 @@ function checkingProcedure(ev, customArg) {
   touchCoordinate.w = ev.target.width;
   touchCoordinate.h = ev.target.height;
   touchCoordinate.enabled = true;
+  console.log('TEST');
 }
 
 function checkingProcedureCalc(object) {
@@ -39089,10 +39094,10 @@ function createDomFPSController() {
   domFire.classList.add('noselect');
   domFire.setAttribute('style', `
       text-align: center;
-      display: none;
+      display: grid;
       position:absolute;
-      left: 65%;
-      top: 86%;
+      left: 64%;
+      top: 80%;
       width: 14%;
       height: 4%;
       background: rgba(255,255,255,0.2);
@@ -39131,11 +39136,11 @@ function createDomFPSController() {
       text-align: center;
       display: none;
       position:absolute;
-      left: 9%;
-      top: 82%;
-      width: 28%;
+      left: 5%;
+      top: 69%;
+      width: 45%;
       height: 28%;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.2);
       margin: auto;
       align-items: center;
       cursor: default;
@@ -39554,11 +39559,11 @@ class MatrixStream {
       if ((0, _matrixStream.byId)('matrix-net').classList.contains('hide-by-vertical')) {
         (0, _matrixStream.byId)('matrix-net').classList.remove('hide-by-vertical');
         (0, _matrixStream.byId)('matrix-net').classList.add('show-by-vertical');
-        (0, _matrixStream.byId)('netHeaderTitle').innerText = 'SHOW';
+        (0, _matrixStream.byId)('netHeaderTitle').innerText = 'HIDE';
       } else {
         (0, _matrixStream.byId)('matrix-net').classList.remove('show-by-vertical');
         (0, _matrixStream.byId)('matrix-net').classList.add('hide-by-vertical');
-        (0, _matrixStream.byId)('netHeaderTitle').innerText = 'HIDE';
+        (0, _matrixStream.byId)('netHeaderTitle').innerText = 'SHOW';
       }
     }
   };
@@ -40071,10 +40076,11 @@ var App = {
     SceneController: false,
     sceneControllerDragAmp: 0.1,
     sceneControllerDragAmp: 0.1,
+    sceneControllerEdgeCameraYawRate: 3,
+    sceneControllerWASDKeysAmp: 0.1,
     speedAmp: 0.5,
     yawRate: 1,
-    sceneControllerEdgeCameraYawRate: 3,
-    sceneControllerWASDKeysAmp: 0.1
+    yawRateOnEdge: 0.2
   },
   raycast: true,
   net: true,
@@ -40483,14 +40489,70 @@ var runHang3d = world => {
       });
       App.sounds.play('shoot');
     }
-  }; // Mobile
+  }; // Attach for mobile contrller also for desktop default
+  // Mobile
+  // For mobile i need to make interval calls on 10 ms 
+  // and incrase App.camera.yawRate from 1 to 6.
 
+
+  App.camera.yawRate = 6;
+  var MY_TIMERS = {
+    TIMERLEFT: null,
+    TIMERRIGHT: null,
+    TIMERUP: null,
+    TIMERDOWN: null
+  };
 
   if (isMobile() == true) {
-    byId('mobFire').addEventListener('touchstart', () => {
+    matrixEngine.Events.camera.preventSpeedZero = true;
+    byId('mobLeft').addEventListener('touchstart', () => {
+      MY_TIMERS.TIMERLEFT = setInterval(() => {
+        matrixEngine.Events.camera.yawRate = App.camera.yawRate;
+      }, 10); // App.sounds.play('shoot');
+    });
+    byId('mobLeft').addEventListener('touchend', () => {
+      clearInterval(MY_TIMERS.TIMERLEFT);
+      MY_TIMERS.TIMERLEFT = null; // App.sounds.play('shoot');
+    });
+    byId('mobRight').addEventListener('touchstart', () => {
+      MY_TIMERS.TIMERRIGHT = setInterval(() => {
+        matrixEngine.Events.camera.yawRate = -App.camera.yawRate;
+      }, 10); // App.sounds.play('shoot');
+    });
+    byId('mobRight').addEventListener('touchend', () => {
+      clearInterval(MY_TIMERS.TIMERRIGHT);
+      MY_TIMERS.TIMERRIGHT = null; // App.sounds.play('shoot');
+    });
+    byId('mobUp').addEventListener('touchstart', () => {
+      MY_TIMERS.TIMERUP = setInterval(() => {
+        matrixEngine.Events.camera.speed = App.camera.speedAmp;
+      }, 10); // App.sounds.play('shoot');
+    });
+    byId('mobUp').addEventListener('touchend', () => {
+      matrixEngine.Events.camera.speed = 0;
+      clearInterval(MY_TIMERS.TIMERUP);
+      MY_TIMERS.TIMERUP = null; // App.sounds.play('shoot');
+    });
+    byId('mobDown').addEventListener('touchstart', () => {
+      MY_TIMERS.TIMERDOWN = setInterval(() => {
+        matrixEngine.Events.camera.speed = -App.camera.speedAmp;
+      }, 10); // App.sounds.play('shoot');
+    });
+    byId('mobDown').addEventListener('touchend', () => {
+      matrixEngine.Events.camera.speed = 0;
+      clearInterval(MY_TIMERS.TIMERDOWN);
+      MY_TIMERS.TIMERDOWN = null; // App.sounds.play('shoot');
+    });
+    byId('mobFire').addEventListener('touchstart', ev => {
+      console.log("test ev ", ev.touches[0].clientX); // fake it 
+
+      ev.target.width = window.innerWidth;
+      ev.target.height = window.innerHeight;
       matrixEngine.raycaster.checkingProcedure(ev, {
-        clientX: ev.target.width / 2,
-        clientY: ev.target.height / 2
+        clientX: window.innerWidth / 2,
+        //ev.touches[0].clientX/2,
+        clientY: window.innerHeight / 2 //ev.touches[0].clientY/2
+
       });
       App.sounds.play('shoot');
     });

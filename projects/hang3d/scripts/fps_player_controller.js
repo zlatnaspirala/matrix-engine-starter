@@ -97,13 +97,78 @@ export var runHang3d = (world) => {
 	}
 
 
+	// Attach for mobile contrller also for desktop default
 	// Mobile
+	// For mobile i need to make interval calls on 10 ms 
+	// and incrase App.camera.yawRate from 1 to 6.
+	App.camera.yawRate = 6;
+
+	var MY_TIMERS = {
+		TIMERLEFT: null,
+		TIMERRIGHT: null,
+		TIMERUP: null,
+		TIMERDOWN: null,
+	};
 	if(isMobile() == true) {
 
-		byId('mobFire').addEventListener('touchstart', () => {
+		matrixEngine.Events.camera.preventSpeedZero = true;
+
+		byId('mobLeft').addEventListener('touchstart', () => {
+			MY_TIMERS.TIMERLEFT = setInterval(() => {matrixEngine.Events.camera.yawRate = App.camera.yawRate;}, 10)
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobLeft').addEventListener('touchend', () => {
+			clearInterval(MY_TIMERS.TIMERLEFT)
+			MY_TIMERS.TIMERLEFT = null;
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobRight').addEventListener('touchstart', () => {
+			MY_TIMERS.TIMERRIGHT = setInterval(() => {matrixEngine.Events.camera.yawRate = -App.camera.yawRate;}, 10)
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobRight').addEventListener('touchend', () => {
+			clearInterval(MY_TIMERS.TIMERRIGHT)
+			MY_TIMERS.TIMERRIGHT = null;
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobUp').addEventListener('touchstart', () => {
+			MY_TIMERS.TIMERUP = setInterval(() => {matrixEngine.Events.camera.speed = App.camera.speedAmp;}, 10)
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobUp').addEventListener('touchend', () => {
+			matrixEngine.Events.camera.speed = 0
+			clearInterval(MY_TIMERS.TIMERUP)
+			MY_TIMERS.TIMERUP = null;
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobDown').addEventListener('touchstart', () => {
+			MY_TIMERS.TIMERDOWN = setInterval(() => {matrixEngine.Events.camera.speed = -App.camera.speedAmp;}, 10)
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobDown').addEventListener('touchend', () => {
+			matrixEngine.Events.camera.speed = 0
+			clearInterval(MY_TIMERS.TIMERDOWN)
+			MY_TIMERS.TIMERDOWN = null;
+			// App.sounds.play('shoot');
+		})
+
+		byId('mobFire').addEventListener('touchstart', (ev) => {
+			console.log("test ev ", ev.touches[0].clientX )
+
+			// fake it 
+			ev.target.width = window.innerWidth;
+			ev.target.height = window.innerHeight;
+
 			matrixEngine.raycaster.checkingProcedure(ev, {
-				clientX: ev.target.width / 2,
-				clientY: ev.target.height / 2
+				clientX: window.innerWidth/2, //ev.touches[0].clientX/2,
+				clientY: window.innerHeight/2  //ev.touches[0].clientY/2
 			});
 			App.sounds.play('shoot');
 		})
