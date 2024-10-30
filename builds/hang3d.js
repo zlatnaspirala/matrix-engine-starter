@@ -38990,7 +38990,8 @@ function gen2DTextFace(ctx, faceColor, textColor, text) {
   ctx.textBaseline = 'middle';
   ctx.fillStyle = textColor;
   ctx.fillText(text, width / 2, height / 2);
-}
+} // Create DOM elements for FPS template.
+
 
 function showDomFPSController() {
   byId('mobSpace').style.display = 'grid';
@@ -39019,8 +39020,8 @@ function createDomFPSController() {
       align-items: center;
       cursor: default;
     `);
-  domSpace.innerText = `JUMP`;
-  domSpace.addEventListener('touchstart', e => {});
+  domSpace.innerText = `JUMP`; // domSpace.addEventListener('touchstart', (e) => {})
+
   document.body.append(domSpace);
   var domRight = document.createElement('div');
   domRight.id = 'mobRight';
@@ -39038,11 +39039,9 @@ function createDomFPSController() {
       align-items: center;
       cursor: default;
     `);
-  domRight.innerText = `RIGHT`;
-  domRight.addEventListener('touchstart', e => {
-    console.log('TEST RIGHT');
-  });
-  domRight.addEventListener('touchend', e => {});
+  domRight.innerText = `RIGHT`; // domRight.addEventListener('touchstart', (e) => {console.log('TEST RIGHT')})
+  // domRight.addEventListener('touchend', (e) => {	})
+
   document.body.append(domRight);
   var domLeft = document.createElement('div');
   domLeft.id = 'mobLeft';
@@ -39060,11 +39059,9 @@ function createDomFPSController() {
       align-items: center;
       cursor: default;
     `);
-  domLeft.innerText = `LEFT`;
-  domLeft.addEventListener('touchstart', e => {
-    console.log('TEST domLeft');
-  });
-  domLeft.addEventListener('touchend', e => {});
+  domLeft.innerText = `LEFT`; // domLeft.addEventListener('touchstart', (e) => {})
+  // domLeft.addEventListener('touchend', (e) => {})
+
   document.body.append(domLeft);
   var domUp = document.createElement('div');
   domUp.id = 'mobUp';
@@ -39082,14 +39079,30 @@ function createDomFPSController() {
       align-items: center;
       cursor: default;
     `);
-  domUp.innerText = `UP`;
-  domUp.addEventListener('touchstart', e => {
-    console.log('TEST domUp');
-  });
-  domUp.addEventListener('touchend', e => {
-    this.moveForward = false;
-  });
+  domUp.innerText = `UP`; // domUp.addEventListener('touchstart', (e) => {})
+  // domUp.addEventListener('touchend', (e) => {})
+
   document.body.append(domUp);
+  var domFire = document.createElement('div');
+  domFire.id = 'mobFire';
+  domFire.classList.add('noselect');
+  domFire.setAttribute('style', `
+      text-align: center;
+      display: none;
+      position:absolute;
+      left: 65%;
+      top: 86%;
+      width: 14%;
+      height: 4%;
+      background: rgba(255,255,255,0.2);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domFire.innerText = `FIRE`; // domFire.addEventListener('touchstart', (e) => {})
+  // domFire.addEventListener('touchend', (e) => {})
+
+  document.body.append(domFire);
   var domDown = document.createElement('div');
   domDown.id = 'mobDown';
   domDown.classList.add('noselect');
@@ -39106,9 +39119,9 @@ function createDomFPSController() {
       align-items: center;
       cursor: default;
     `);
-  domDown.innerText = `DOWN`;
-  domDown.addEventListener('touchstart', e => {});
-  domDown.addEventListener('touchend', e => {});
+  domDown.innerText = `DOWN`; // domDown.addEventListener('touchstart', (e) => {})
+  // domDown.addEventListener('touchend', (e) => {})
+
   document.body.append(domDown);
   var domAngleAxis = document.createElement('div');
   domAngleAxis.id = 'domAngleAxis';
@@ -39126,8 +39139,8 @@ function createDomFPSController() {
       align-items: center;
       cursor: default;
     `);
-  domAngleAxis.innerHTML = `    `;
-  domAngleAxis.addEventListener('touchstart', e => {});
+  domAngleAxis.innerHTML = `    `; // domAngleAxis.addEventListener('touchstart', (e) => {})
+
   document.body.append(domAngleAxis);
   showDomFPSController();
 } // DOM Notifi msg
@@ -40433,6 +40446,8 @@ var runHang3d = world => {
   }); // Only for mobile - Mobile player controller UI
 
   if (isMobile() == true) {
+    byId('fps').style.display = 'none';
+    byId('debugBox').style.display = 'none';
     matrixEngine.utility.createDomFPSController();
   } // Activate networking
 
@@ -40467,25 +40482,42 @@ var runHang3d = world => {
       });
       App.sounds.play('shoot');
     }
-  }; // Override mouse down
+  }; // Mobile
 
 
-  App.events.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = (ev, mouse) => {
-    if (isMobile() == false) {
-      // `checkingProcedure` gets secound optimal argument
-      // For custom ray origin target.
-      if (mouse.BUTTON_PRESSED == 'RIGHT') {// Zoom
-      } else {
+  if (isMobile() == true) {
+    byId('mobFire').addEventListener('touchstart', () => {
+      matrixEngine.raycaster.checkingProcedure(ev, {
+        clientX: ev.target.width / 2,
+        clientY: ev.target.height / 2
+      });
+      App.sounds.play('shoot');
+    });
+  } else {
+    // Override mouse down
+    App.events.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = (ev, mouse) => {
+      if (isMobile() == false) {
+        // `checkingProcedure` gets secound optimal argument
+        // For custom ray origin target.
+        if (mouse.BUTTON_PRESSED == 'RIGHT') {// Zoom
+        } else {
+          // This call represent `SHOOT` Action. And it is center of screen!
+          matrixEngine.raycaster.checkingProcedure(ev, {
+            clientX: ev.target.width / 2,
+            clientY: ev.target.height / 2
+          });
+          App.sounds.play('shoot');
+        }
+      } else {// Mobile IF WE WANT SHOT FROM ANY WHERE
         // This call represent `SHOOT` Action. And it is center of screen!
-        matrixEngine.raycaster.checkingProcedure(ev, {
-          clientX: ev.target.width / 2,
-          clientY: ev.target.height / 2
-        });
-        App.sounds.play('shoot');
+        // matrixEngine.raycaster.checkingProcedure(ev, {
+        // 	clientX: ev.target.width / 2,
+        // 	clientY: ev.target.height / 2
+        // });
+        // App.sounds.play('shoot');
       }
-    } else {}
-  }; // addEventListener('onDamage', (e) => {	})
-
+    };
+  }
 
   addEventListener('network-data', e => {
     console.log("receive:", e.detail);
@@ -40665,23 +40697,38 @@ var runHang3d = world => {
             physics.world.removeBody(e.body);
           }
         }
-      }); // Matrix-engine key event
+      }); // + Mobile support
 
-      addEventListener('hit.keyDown', e => {
-        // Jump
-        if (e.detail.keyCode == 32) {
+      if (isMobile() == true) {
+        byId('mobSpace').addEventListener('touchstart', e => {
+          // Jump
           if (preventDoubleJump == null) {
             preventDoubleJump = setTimeout(() => {
-              console.log('JUMP: ', e.detail.keyCode);
+              console.log('[mob]JUMP: ', e.detail.keyCode);
               App.scene.playerCollisonBox.physics.currentBody.mass = 1;
               App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25); // preventDoubleJump = null; for ever
             }, 250);
           }
-        }
-      }); // nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
+        });
+      } else {
+        // Matrix-engine key event DESKTOP
+        addEventListener('hit.keyDown', e => {
+          // Jump
+          if (e.detail.keyCode == 32) {
+            if (preventDoubleJump == null) {
+              preventDoubleJump = setTimeout(() => {
+                console.log('JUMP: ', e.detail.keyCode);
+                App.scene.playerCollisonBox.physics.currentBody.mass = 1;
+                App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25); // preventDoubleJump = null; for ever
+              }, 250);
+            }
+          }
+        });
+      } // nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
       // must be fixed and added help func for overriding (mousemove)
       // addEventListener('mousemove', () => {
       // })
+
 
       var handlerTimeout = null,
           handlerTimeout2 = null;

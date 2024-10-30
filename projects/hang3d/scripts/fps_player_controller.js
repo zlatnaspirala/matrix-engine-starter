@@ -56,7 +56,8 @@ export var runHang3d = (world) => {
 
 	// Only for mobile - Mobile player controller UI
 	if(isMobile() == true) {
-
+		byId('fps').style.display = 'none';
+		byId('debugBox').style.display = 'none';
 		matrixEngine.utility.createDomFPSController();
 	}
 
@@ -95,26 +96,47 @@ export var runHang3d = (world) => {
 		}
 	}
 
-	// Override mouse down
-	App.events.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = (ev, mouse) => {
 
-		if(isMobile() == false) {
-			// `checkingProcedure` gets secound optimal argument
-			// For custom ray origin target.
-			if(mouse.BUTTON_PRESSED == 'RIGHT') {
-				// Zoom
+	// Mobile
+	if(isMobile() == true) {
+
+		byId('mobFire').addEventListener('touchstart', () => {
+			matrixEngine.raycaster.checkingProcedure(ev, {
+				clientX: ev.target.width / 2,
+				clientY: ev.target.height / 2
+			});
+			App.sounds.play('shoot');
+		})
+	} else {
+
+		// Override mouse down
+		App.events.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = (ev, mouse) => {
+
+			if(isMobile() == false) {
+				// `checkingProcedure` gets secound optimal argument
+				// For custom ray origin target.
+				if(mouse.BUTTON_PRESSED == 'RIGHT') {
+					// Zoom
+				} else {
+					// This call represent `SHOOT` Action. And it is center of screen!
+					matrixEngine.raycaster.checkingProcedure(ev, {
+						clientX: ev.target.width / 2,
+						clientY: ev.target.height / 2
+					});
+					App.sounds.play('shoot');
+				}
 			} else {
+				// Mobile IF WE WANT SHOT FROM ANY WHERE
 				// This call represent `SHOOT` Action. And it is center of screen!
-				matrixEngine.raycaster.checkingProcedure(ev, {
-					clientX: ev.target.width / 2,
-					clientY: ev.target.height / 2
-				});
-				App.sounds.play('shoot');
+				// matrixEngine.raycaster.checkingProcedure(ev, {
+				// 	clientX: ev.target.width / 2,
+				// 	clientY: ev.target.height / 2
+				// });
+				// App.sounds.play('shoot');
 			}
-		} else {}
-	};
+		};
 
-	// addEventListener('onDamage', (e) => {	})
+	}
 
 	addEventListener('network-data', (e) => {
 		console.log("receive:", e.detail)
@@ -138,10 +160,10 @@ export var runHang3d = (world) => {
 					matrixEngine.Events.camera.zPos = 0;
 					matrixEngine.Events.camera.yPos = 300;
 					App.scene.playerCollisonBox.
-					physics.currentBody.position.set(
-						0,
-						0,
-						300);
+						physics.currentBody.position.set(
+							0,
+							0,
+							300);
 				}
 				App.scene.player.updateEnergy(App.scene.player.energy.value);
 			}
@@ -185,7 +207,6 @@ export var runHang3d = (world) => {
 
 	// Load obj seq animation
 	const createObjSequence = (objName) => {
-
 		let preventDoubleJump = null;
 		function onLoadObj(meshes) {
 			for(let key in meshes) {
@@ -303,21 +324,35 @@ export var runHang3d = (world) => {
 			});
 
 
-			// Matrix-engine key event
-			addEventListener('hit.keyDown', (e) => {
-				// Jump
-				if(e.detail.keyCode == 32) {
+			// + Mobile support
+			if(isMobile() == true) {
+				byId('mobSpace').addEventListener('touchstart', (e) => {
+					// Jump
 					if(preventDoubleJump == null) {
 						preventDoubleJump = setTimeout(() => {
-							console.log('JUMP: ', e.detail.keyCode);
+							console.log('[mob]JUMP: ', e.detail.keyCode);
 							App.scene.playerCollisonBox.physics.currentBody.mass = 1;
 							App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
 							// preventDoubleJump = null; for ever
 						}, 250);
 					}
-				}
-
-			});
+				})
+			} else {
+				// Matrix-engine key event DESKTOP
+				addEventListener('hit.keyDown', (e) => {
+					// Jump
+					if(e.detail.keyCode == 32) {
+						if(preventDoubleJump == null) {
+							preventDoubleJump = setTimeout(() => {
+								console.log('JUMP: ', e.detail.keyCode);
+								App.scene.playerCollisonBox.physics.currentBody.mass = 1;
+								App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
+								// preventDoubleJump = null; for ever
+							}, 250);
+						}
+					}
+				})
+			}
 
 			// nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
 			// must be fixed and added help func for overriding (mousemove)

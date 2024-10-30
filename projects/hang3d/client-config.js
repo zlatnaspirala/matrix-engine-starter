@@ -62,34 +62,6 @@ class ClientConfig {
 		return this.domain;
 	}
 
-	getBroadcastAutoConnect() {
-		return this.broadcastAutoConnect;
-	}
-
-	getShowBroadcasterOnInt() {
-		return this.showBroadcasterOnInt;
-	}
-
-	getBroadcasterPort() {
-		return this.broadcasterPort;
-	}
-
-	getBroadcasterSessionDefaults() {
-		return this.broadcasterSessionDefaults;
-	}
-
-	getProtocolFromAddressBar() {
-		return (location.protocol === "https:" ? "https://" : "http://");
-	}
-
-	setNetworkDeepLog(newState) {
-		this.networkDeepLogs = newState;
-	}
-
-	getNetworkDeepLog() {
-		return this.networkDeepLogs;
-	}
-
 	// Used for both net variant
 	getMasterServerKey() {
 		return this.masterServerKey;
