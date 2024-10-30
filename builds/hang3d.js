@@ -39000,6 +39000,7 @@ function showDomFPSController() {
   byId('mobUp').style.display = 'grid';
   byId('mobDown').style.display = 'grid';
   byId('domAngleAxis').style.display = 'grid';
+  byId('mobFire').style.display = 'grid';
 } // Create DOM elements for FPS template.
 
 
