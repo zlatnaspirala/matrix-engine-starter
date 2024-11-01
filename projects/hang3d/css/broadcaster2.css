@@ -57,6 +57,8 @@ input:required {
 }
 
 input {
+	height: 40px;
+	border-style: none;
 	border-radius: 4px;
 	-webkit-appearance: none;
 	background: var(--thermePrimary);

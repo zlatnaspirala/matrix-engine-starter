@@ -18,6 +18,11 @@ body {
 	padding: 0;
 	overflow: hidden;
 	text-align: center;
+	-webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+
+	margin: 0; height: 100%; overflow: hidden
 }
 
 textarea:focus,
@@ -39,6 +44,10 @@ iframe {
 	left: 0;
 	top: 0;
 	width: 400px;
+}
+
+.btnMargin {
+	margin: 2px 2px 2px 2px;
 }
 
 .btnShadow {
@@ -173,12 +182,35 @@ span {
 #matrix-net {
 	position: absolute;
 	overflow: hidden;
+	z-index: 2;
 	/* display: none; */
 	right: 0;
 	height: 100%;
 	width: 40vh;
 	font-family: stormfaze;
 	background-color: crimson;
+
+	@media screen and (max-width: 500px) {
+		width: 100vw;
+	}
+}
+
+#myAccountLoginForm{
+	width: unset;
+	position: absolute;
+	width: 30vw;
+	left:35%;
+	padding: 10px;
+	margin: 0;
+	top: 20%;
+	height: 57%;
+	background: darkslategrey;
+
+	@media screen and (max-width: 500px) {
+		width: 95%;
+		left:0;
+	}
+
 }
 
 .timeLine {

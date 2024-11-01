@@ -11,28 +11,27 @@
  */
 import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
-import {createPauseScreen} from "./dom";
+import {createPauseScreen, REDLOG} from "./dom";
+import {RCSAccount} from "./rocket-crafting-account";
+import {SYS} from "matrix-engine/lib/events";
 
-export var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
+const useRCSAccount = true;
+const RCSAccountDomain = 'https://maximumroulette.com';
 
 export var runHang3d = (world) => {
-
 	addEventListener('onTitle', (e) => {
 		document.title = e.detail
 	})
-
 	// You can use import also.
 	matrixEngine.utility.notify.hideTime = 100;
 	matrixEngine.utility.notify.showTime = 1200;
 	let notify = matrixEngine.utility.notify;
-
 	let byId = matrixEngine.utility.byId;
 	let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
 	let isMobile = matrixEngine.utility.isMobile;
 	let randomFloatFromTo = matrixEngine.utility.randomFloatFromTo;
 	let App = matrixEngine.App;
 	setTimeout(() => document.querySelector('.button2').click(), 2000)
-
 	// Camera
 	canvas.style.cursor = 'none';
 	App.camera.FirstPersonController = true;
@@ -50,10 +49,8 @@ export var runHang3d = (world) => {
 
 	// Audio effects
 	App.sounds.createAudio('shoot', 'res/music/single-gunshot.mp3', 5);
-
 	// Prevent right click context menu
 	window.addEventListener("contextmenu", (e) => {e.preventDefault()});
-
 	// Only for mobile - Mobile player controller UI
 	if(isMobile() == true) {
 		byId('fps').style.display = 'none';
@@ -102,7 +99,6 @@ export var runHang3d = (world) => {
 	// For mobile i need to make interval calls on 10 ms 
 	// and incrase App.camera.yawRate from 1 to 6.
 	App.camera.yawRate = 6;
-
 	var MY_TIMERS = {
 		TIMERLEFT: null,
 		TIMERRIGHT: null,
@@ -112,71 +108,114 @@ export var runHang3d = (world) => {
 	if(isMobile() == true) {
 
 		matrixEngine.Events.camera.preventSpeedZero = true;
-
+		byId('mobLeft').addEventListener('touchmove', () => {e.preventDefault()})
 		byId('mobLeft').addEventListener('touchstart', () => {
+			e.preventDefault()
 			MY_TIMERS.TIMERLEFT = setInterval(() => {matrixEngine.Events.camera.yawRate = App.camera.yawRate;}, 10)
-			// App.sounds.play('shoot');
 		})
 
 		byId('mobLeft').addEventListener('touchend', () => {
 			clearInterval(MY_TIMERS.TIMERLEFT)
 			MY_TIMERS.TIMERLEFT = null;
-			// App.sounds.play('shoot');
 		})
-
+		byId('mobRight').addEventListener('touchmove', () => {e.preventDefault()})
 		byId('mobRight').addEventListener('touchstart', () => {
+			e.preventDefault()
 			MY_TIMERS.TIMERRIGHT = setInterval(() => {matrixEngine.Events.camera.yawRate = -App.camera.yawRate;}, 10)
-			// App.sounds.play('shoot');
 		})
 
 		byId('mobRight').addEventListener('touchend', () => {
 			clearInterval(MY_TIMERS.TIMERRIGHT)
 			MY_TIMERS.TIMERRIGHT = null;
-			// App.sounds.play('shoot');
 		})
-
+		byId('mobUp').addEventListener('touchmove', () => {e.preventDefault()})
 		byId('mobUp').addEventListener('touchstart', () => {
+			e.preventDefault()
 			MY_TIMERS.TIMERUP = setInterval(() => {matrixEngine.Events.camera.speed = App.camera.speedAmp;}, 10)
-			// App.sounds.play('shoot');
 		})
 
 		byId('mobUp').addEventListener('touchend', () => {
 			matrixEngine.Events.camera.speed = 0
 			clearInterval(MY_TIMERS.TIMERUP)
 			MY_TIMERS.TIMERUP = null;
-			// App.sounds.play('shoot');
 		})
 
+		byId('mobDown').addEventListener('touchmove', () => {e.preventDefault()})
 		byId('mobDown').addEventListener('touchstart', () => {
+			e.preventDefault()
 			MY_TIMERS.TIMERDOWN = setInterval(() => {matrixEngine.Events.camera.speed = -App.camera.speedAmp;}, 10)
-			// App.sounds.play('shoot');
 		})
 
 		byId('mobDown').addEventListener('touchend', () => {
 			matrixEngine.Events.camera.speed = 0
 			clearInterval(MY_TIMERS.TIMERDOWN)
 			MY_TIMERS.TIMERDOWN = null;
-			// App.sounds.play('shoot');
+		})
+
+		// For any case
+		byId('mobDown').addEventListener('touchcancel', () => {
+			matrixEngine.Events.camera.speed = 0
+			clearInterval(MY_TIMERS.TIMERDOWN)
+			MY_TIMERS.TIMERDOWN = null;
+			clearInterval(MY_TIMERS.TIMERUP)
+			MY_TIMERS.TIMERUP = null;
+			clearInterval(MY_TIMERS.TIMERRIGHT)
+			MY_TIMERS.TIMERRIGHT = null;
+		})
+
+		// Disable default
+		App.events.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE = () => {}
+		byId('domAngleAxis').style.width = innerWidth / 100 * 30 + "px";
+		byId('domAngleAxis').style.height = innerHeight / 100 * 30 + "px";
+		byId('domAngleAxis').addEventListener('touchmove', (e) => {
+			e.preventDefault()
+			var center_x = window.innerWidth / 2;
+			var center_y = window.innerHeight / 2;
+			// Formula for adapting Axis controller
+			var t = innerWidth / 2 - (e.target.offsetLeft + e.target.offsetWidth) + e.target.offsetWidth / 2;
+			var t1 = innerHeight / 2 - (e.target.offsetTop + e.target.offsetHeight) + e.target.offsetHeight / 2;
+			SYS.MOUSE.x = (e.changedTouches[0].clientX - center_x) + t;
+			SYS.MOUSE.y = (e.changedTouches[0].clientY - center_y) + t1;
+			//check to make sure there is data to compare against
+			if(typeof SYS.MOUSE.LAST_POSITION.x != 'undefined') {
+				//get the change from last position to this position
+				var deltaX = SYS.MOUSE.LAST_POSITION.x - SYS.MOUSE.x,
+					deltaY = SYS.MOUSE.LAST_POSITION.y - SYS.MOUSE.y;
+			}
+
+			if(App.camera.SceneController === true && keyboardPress.getKeyStatus(16) ||
+				App.camera.FirstPersonController === true) {
+				// console.log('works for both now deltaX', deltaX)
+				matrixEngine.Events.camera.pitchRate += deltaY * 10;
+				matrixEngine.Events.camera.yawRate += deltaX * 2;
+				if(SYS.MOUSE.x < App.camera.edgeMarginValue - center_x) {
+					App.camera.leftEdge = true;
+				} else {
+					App.camera.leftEdge = false;
+				}
+				if(SYS.MOUSE.x > center_x - App.camera.edgeMarginValue) {
+					App.camera.rightEdge = true;
+				} else {
+					App.camera.rightEdge = false;
+				}
+			}
+			(SYS.MOUSE.LAST_POSITION.x = SYS.MOUSE.x), (SYS.MOUSE.LAST_POSITION.y = SYS.MOUSE.y);
 		})
 
 		byId('mobFire').addEventListener('touchstart', (ev) => {
-			console.log("test ev ", ev.touches[0].clientX )
-
-			// fake it 
+			ev.preventDefault()
+			// fake it
 			ev.target.width = window.innerWidth;
 			ev.target.height = window.innerHeight;
-
 			matrixEngine.raycaster.checkingProcedure(ev, {
-				clientX: window.innerWidth/2, //ev.touches[0].clientX/2,
-				clientY: window.innerHeight/2  //ev.touches[0].clientY/2
+				clientX: window.innerWidth / 2,
+				clientY: window.innerHeight / 2
 			});
 			App.sounds.play('shoot');
 		})
 	} else {
-
 		// Override mouse down
 		App.events.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = (ev, mouse) => {
-
 			if(isMobile() == false) {
 				// `checkingProcedure` gets secound optimal argument
 				// For custom ray origin target.
@@ -193,16 +232,11 @@ export var runHang3d = (world) => {
 			} else {
 				// Mobile IF WE WANT SHOT FROM ANY WHERE
 				// This call represent `SHOOT` Action. And it is center of screen!
-				// matrixEngine.raycaster.checkingProcedure(ev, {
-				// 	clientX: ev.target.width / 2,
-				// 	clientY: ev.target.height / 2
-				// });
-				// App.sounds.play('shoot');
 			}
 		};
-
 	}
 
+	// Receive data from network
 	addEventListener('network-data', (e) => {
 		console.log("receive:", e.detail)
 		if(e.detail.damage) {
@@ -277,14 +311,10 @@ export var runHang3d = (world) => {
 			for(let key in meshes) {
 				matrixEngine.objLoader.initMeshBuffers(world.GL.gl, meshes[key]);
 			}
-
 			var textuteImageSamplers2 = {
-				source: [
-					"res/bvh-skeletal-base/swat-guy/gun2.png"
-				],
+				source: ["res/bvh-skeletal-base/swat-guy/gun2.png"],
 				mix_operation: "multiply"
 			};
-
 			var animArg = {
 				id: objName,
 				meshList: meshes,
@@ -298,15 +328,12 @@ export var runHang3d = (world) => {
 					}
 				}
 			};
-
 			// WEAPON
 			world.Add("obj", 1, objName, textuteImageSamplers2, meshes['player']);
 			App.scene.player.position.setPosition(0.5, -0.7, -3);
 			App.scene.player.isHUD = true;
-
 			// Fix object orientation - this can be fixed also in blender.
 			matrixEngine.Events.camera.yaw = 0;
-
 			// Not in use but can be used
 			function bodiesAreInContact(bodyA, bodyB) {
 				for(var i = 0;i < world.contacts.length;i++) {
@@ -317,7 +344,6 @@ export var runHang3d = (world) => {
 				}
 				return false;
 			}
-
 			// Add collision cube to the local player.
 			world.Add("cube", 0.2, "playerCollisonBox");
 			var collisionBox = new CANNON.Body({
@@ -326,7 +352,6 @@ export var runHang3d = (world) => {
 				position: new CANNON.Vec3(0, 4, 0),
 				shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2))
 			});
-
 			// This is custom param added.
 			collisionBox._name = 'collisionBox';
 			physics.world.addBody(collisionBox);
@@ -342,21 +367,15 @@ export var runHang3d = (world) => {
 			App.scene.playerCollisonBox.iamInCollideRegime = false;
 			// simple logic but also not perfect
 			App.scene.playerCollisonBox.pingpong = true;
-
 			collisionBox.addEventListener("collide", function(e) {
 				// const contactNormal = new CANNON.Vec3();
 				// var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
 				// console.log("playerCollisonBox collide with", e);
 				preventDoubleJump = null;
-
 				if(e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
 					preventDoubleJump = null;
 					return;
 				}
-
-				// ?maybe
-				// App.scene.playerCollisonBox.physics.currentBody.mass = 10;
-
 				if(e.contact.bi._name == 'damage') {
 					console.log("Trigger damage!");
 					//. 4x fix
@@ -378,8 +397,7 @@ export var runHang3d = (world) => {
 						App.scene['armor'].isHUD = true;
 						App.scene.armor.position.setPosition(1.2, 1.1, -3);
 						App.scene.armor.mesh.setScale(0.1)
-						// Can be destroyed also 
-						// App.scene['armor'].selfDestroy(1)
+						// Can be destroyed also App.scene['armor'].selfDestroy(1)
 					}
 					if(e.body._name == 'item-armor') {
 						console.log("Trigger armor collect!");
@@ -388,14 +406,12 @@ export var runHang3d = (world) => {
 				}
 			});
 
-
-			// + Mobile support
+			// Mobile support
 			if(isMobile() == true) {
 				byId('mobSpace').addEventListener('touchstart', (e) => {
 					// Jump
 					if(preventDoubleJump == null) {
 						preventDoubleJump = setTimeout(() => {
-							console.log('[mob]JUMP: ', e.detail.keyCode);
 							App.scene.playerCollisonBox.physics.currentBody.mass = 1;
 							App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
 							// preventDoubleJump = null; for ever
@@ -419,13 +435,7 @@ export var runHang3d = (world) => {
 				})
 			}
 
-			// nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
-			// must be fixed and added help func for overriding (mousemove)
-			// addEventListener('mousemove', () => {
-			// })
-
 			var handlerTimeout = null, handlerTimeout2 = null;
-
 			var playerUpdater = {
 				sendRotEvery: 5,
 				sendRotValue: 0,
@@ -441,24 +451,18 @@ export var runHang3d = (world) => {
 						detPitch = -(limit + 2) * 2;
 					}
 
-
 					handlerTimeout = null;
 					// Make more stable situation
 					App.scene.playerCollisonBox.physics.currentBody.mass = 10;
 					App.scene.playerCollisonBox.physics.currentBody.quaternion.setFromEuler(0, 0, 0);
-					// Tamo tu iznad duge nebo zri...
-					// Cannonjs object set
-					// Switched  Z - Y
-					// if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
+					// Cannonjs object set Switched  Z - Y
 					if(App.scene.playerCollisonBox.pingpong == true) {
-						// Cannonjs object set / Switched  Z - Y
 						matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
 						matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
 						matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
 						App.scene.playerCollisonBox.pingpong = false;
 					} else {
 						handlerTimeout2 = 0;
-						// Cannonjs object set - Switched  Z - Y
 						App.scene.playerCollisonBox.
 							physics.currentBody.position.set(
 								matrixEngine.Events.camera.xPos,
@@ -466,39 +470,27 @@ export var runHang3d = (world) => {
 								matrixEngine.Events.camera.yPos);
 						App.scene.playerCollisonBox.pingpong = true;
 					}
-
-					// Playe Look
+					// Player Look
 					if(playerUpdater.sendRotValue > playerUpdater.sendRotEvery &&
 						matrixEngine.Engine.net.connection != null) {
-
-						if(typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
-							// console.log('undefined')
-							return;
-						}
+						if(typeof App.scene.playerCollisonBox.position.netObjId === undefined) {return;}
 						matrixEngine.Engine.net.connection.send({
-							netRot: {
-								y: matrixEngine.Events.camera.yaw + 180
-							},
+							netRot: {y: matrixEngine.Events.camera.yaw + 180},
 							netObjId: App.scene.playerCollisonBox.position.netObjId,
 						})
 						playerUpdater.sendRotValue = 0;
 					}
 					playerUpdater.sendRotValue++;
-
 				}
 			};
 			App.updateBeforeDraw.push(playerUpdater);
-
 			// Player Energy status
 			App.scene.player.energy = {};
-
 			// Collector for items
 			App.scene.player.items = {};
-
 			for(let key in App.scene.player.meshList) {
 				App.scene.player.meshList[key].setScale(1.85);
 			}
-
 			// Target scene object
 			var texTarget = {
 				source: [
@@ -516,8 +508,7 @@ export var runHang3d = (world) => {
 			App.scene.FPSTarget.isHUD = true;
 			App.scene.FPSTarget.geometry.setScale(0.1);
 
-			// Energy active bar
-			// Custom generic textures. Micro Drawing.
+			// Energy active bar - Custom generic textures. Micro Drawing.
 			// Example for arg shema square for now only.
 			var options = {
 				squareShema: [8, 8],
@@ -531,7 +522,7 @@ export var runHang3d = (world) => {
 				App.scene.energyBar.textures.pop()
 				App.scene.energyBar.textures.push(App.scene.energyBar.createPixelsTex(t));
 				if(this.energy.value <= 0) {
-					notify.error("YOU DIE")
+					notify.error("YOU DIE...")
 				}
 			};
 
@@ -595,24 +586,6 @@ export var runHang3d = (world) => {
 		matrixEngine.objLoader.downloadMeshes({player: "res/bvh-skeletal-base/swat-guy/gun2.obj"},
 			onLoadObj
 		);
-
-		// 		// Must be activate - Use client default config file
-		// matrixEngine.Engine.activateNet2(undefined,
-		// 	{
-		// 		sessionName: 'matrix-engine-shared-object',
-		// 		resolution: '240x160'
-		// 	});
-		// App.scene.MyColoredSquare1.net.enable = true;
-		// matrixEngine.objLoader.downloadMeshes(
-		//   matrixEngine.objLoader.makeObjSeqArg(
-		//     {
-		//       id: objName,
-		//       path: "res/bvh-skeletal-base/swat-guy/FPShooter-hands/FPShooter-hands",
-		//       from: 1,
-		//       to: 20
-		//     }),
-		//   onLoadObj
-		// );
 	};
 
 	let promiseAllGenerated = [];
@@ -643,11 +616,8 @@ export var runHang3d = (world) => {
 			}));
 		}
 	}
-
 	// objGenerator(2);
-
 	createObjSequence('player');
-
 	// Promise.all(promiseAllGenerated).then((what) => {
 	// 	// console.info(`Waiting for runtime generation of scene objects,
 	// 	//               then swap scene array index for scene draw-index -> 
@@ -655,7 +625,6 @@ export var runHang3d = (world) => {
 	// 	// swap(5, 19, matrixEngine.matrixWorld.world.contentList);
 	// 	// console.log('promise all')
 	// });
-
 	// Add ground for physics bodies.
 	var tex = {
 		source: ["res/images/diffuse.png"],
@@ -680,7 +649,6 @@ export var runHang3d = (world) => {
 	// Load Physics world.
 	let gravityVector = [0, 0, -29.82];
 	let physics = world.loadPhysics(gravityVector);
-
 	// Add ground - mass == 0 makes the body static
 	var groundBody = new CANNON.Body({
 		mass: 0,
@@ -714,12 +682,9 @@ export var runHang3d = (world) => {
 	App.scene.xrayTarget.isHUD = true;
 	App.scene.xrayTarget.visible = false;
 	App.scene.xrayTarget.position.setPosition(-0.3, 0.27, -4);
-
 	// Energy
 	var tex1 = {
-		source: [
-			"res/images/hud/energy.png"
-		],
+		source: ["res/images/hud/energy.png"],
 		mix_operation: "multiply",
 	};
 	world.Add("squareTex", 0.5, 'energy', tex1);
@@ -731,7 +696,6 @@ export var runHang3d = (world) => {
 	App.scene.energy.position.setPosition(-1, 1.15, -3);
 	App.scene.energy.geometry.setScaleByX(0.35)
 	App.scene.energy.geometry.setScaleByY(0.1)
-
 	// good for fix rotation in future
 	world.Add("cubeLightTex", 2, "FLOOR2", texNoMipmap);
 	var b2 = new CANNON.Body({
@@ -792,20 +756,18 @@ export var runHang3d = (world) => {
 		dispatchEvent(new CustomEvent(`onTitle`, {detail: `🕸️${e.detail.connection.connectionId}🕸️`}))
 		notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`)
 		var name = e.detail.connection.connectionId;
-
-		byId('netHeaderTitle').click()
+		// byId('netHeaderTitle').click()
 		console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 		// Make relation for net players
 		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
 		App.scene.playerCollisonBox.position.yNetOffset = -2;
-		;
 		App.scene.playerCollisonBox.net.enable = true;
 		// CAMERA VIEW FOR SELF LOCAL CAM
 		// world.Add("squareTex", 1, name, tex);
 		// App.scene[name].position.x = 0;
 		// App.scene[name].position.z = -20;
 		// App.scene[name].LightsData.ambientLight.set(1, 0, 0);
-		// // App.scene[name].net.enable = true;
+		// App.scene[name].net.enable = true;
 		// App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
 	})
 
@@ -828,17 +790,18 @@ export var runHang3d = (world) => {
 			// local
 			console.log('MY CONNECTION IS NULL')
 			setTimeout(() => {
+				// test
+				if(typeof matrixEngine.Engine.net.connection === 'undefined') return;
 				if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
 					console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
 					var name = e.detail.event.stream.connection.connectionId;
 					createNetworkPlayerCharacter(name)
 				}
-			}, 2000)
-
+			}, 2500)
 			return;
 		}
 		if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
-			console.log('++++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+			console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
 			var name = e.detail.event.stream.connection.connectionId;
 			createNetworkPlayerCharacter(name)
 		}
@@ -846,17 +809,44 @@ export var runHang3d = (world) => {
 
 	addEventListener('net-ready', (e) => {
 		// Star on load
+		byId('buttonCloseSession').remove();
 		matrixEngine.Engine.net.joinSessionUI.click()
 		createPauseScreen()
+		// Next implementation RocketCrafringServer calls.
+		let profile = document.createElement('div')
+		profile.id = 'profile';
+		profile.innerHTML = `
+		  Status: free for all
+		`;
+		byId('session').appendChild(profile)
+
+		let leaderboardBtn = document.createElement('div')
+		leaderboardBtn.id = 'Leaderboard';
+		leaderboardBtn.innerHTML = `
+		  <button id="leaderboardBtn" class="btn">Leaderboard</button>
+		`;
+		byId('session').appendChild(leaderboardBtn)
+		if(useRCSAccount == true) {
+			let myAccounts = new RCSAccount(RCSAccountDomain);
+			myAccounts.createDOM();
+			notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
+			console.log(`%c<RocketCraftingServer [Account]> ${myAccounts}`, REDLOG);
+		}
 	})
 
 	addEventListener('connectionDestroyed', (e) => {
 		console.log(`%c connectionDestroyed  ${e.detail}`, REDLOG);
-		// connectionId
-		if(App.scene[e.detail.connectionId] !== 'undefined') App.scene[e.detail.connectionId].selfDestroy(1)
+		if(App.scene[e.detail.connectionId] !== 'undefined' &&
+			typeof e.detail.connectionId !== 'undefined') {
+			try {
+				App.scene[e.detail.connectionId].selfDestroy(1)
+			} catch(err) {
+				console.log('Old session user...')
+			}
+		}
 	})
 
-	// Damage object test
+	// Graphics - Damage object test
 	world.Add("cubeLightTex", 1, "LAVA", tex);
 	var b4 = new CANNON.Body({
 		mass: 0,
@@ -938,28 +928,22 @@ export var runHang3d = (world) => {
 		arg[n.name] = n.path;
 		matrixEngine.objLoader.downloadMeshes(arg, onLoadObj)
 	}
-
 };
 
 const createNetworkPlayerCharacter = (objName) => {
-
 	if(typeof App.scene[objName] !== 'undefined') {
 		console.log('Prevent double net player.')
 		return;
 	}
-
 	function onLoadObj(meshes) {
 		App.meshes = meshes;
-
 		for(let key in meshes) {
 			matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[key]);
 		}
 
 		var textuteImageSamplers2 = {
-			source: [
-				"res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png",
-				"res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png"
-			],
+			source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png",
+				"res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png"],
 			mix_operation: "multiply", // ENUM : multiply , divide
 		};
 
@@ -970,7 +954,6 @@ const createNetworkPlayerCharacter = (objName) => {
 				// sumOfAniFrames: 61, No need if `animations` exist!
 				currentAni: 0,
 				// speed: 3, No need if `animations` exist!
-				// upgrade - optimal
 				animations: {
 					active: 'walk',
 					walk: {
@@ -999,16 +982,12 @@ const createNetworkPlayerCharacter = (objName) => {
 	}
 
 	matrixEngine.objLoader.downloadMeshes(
-		matrixEngine.objLoader.makeObjSeqArg(
-			{
-				id: objName,
-				// path: "res/bvh-skeletal-base/swat-guy/anims/swat-multi",
-				path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
-				from: 1,
-				// to: 61
-				to: 20
-			}),
+		matrixEngine.objLoader.makeObjSeqArg({
+			id: objName,
+			path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
+			from: 1,
+			to: 20
+		}),
 		onLoadObj
 	);
-
 };

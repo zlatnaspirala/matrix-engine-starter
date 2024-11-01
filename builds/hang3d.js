@@ -30224,7 +30224,6 @@ function checkingProcedure(ev, customArg) {
   touchCoordinate.w = ev.target.width;
   touchCoordinate.h = ev.target.height;
   touchCoordinate.enabled = true;
-  console.log('TEST');
 }
 
 function checkingProcedureCalc(object) {
@@ -40362,8 +40361,12 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createPauseScreen = createPauseScreen;
+exports.ROCK_RANK = exports.REDLOG = void 0;
 
 var _utility = require("matrix-engine/lib/utility");
+
+var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
+exports.REDLOG = REDLOG;
 
 function createPauseScreen() {
   var root = document.createElement('div');
@@ -40386,6 +40389,44 @@ function createPauseScreen() {
     passive: true
   });
 }
+/**
+ * @description Hang3d reborn
+ * @author Nikola Lukic
+ * @email zlatnaspirala@gmail.com
+ */
+
+
+var ROCK_RANK = {
+  getRank: points => {
+    points = parseInt(points);
+
+    if (points < 1001) {
+      return "junior";
+    } else if (points < 2000) {
+      return "senior";
+    } else if (points < 3000) {
+      return "captain";
+    } else if (points < 5000) {
+      return "general";
+    } else {
+      return "ultimate-killer";
+    }
+  },
+  getRankMedalImg: rank => {
+    if (rank == 'junior') {
+      return `<img style="height: 60px" src="./res/icons/medals/1.png" />`;
+    } else if (points == 'senior') {
+      return `<img style="height: 60px" src="./res/icons/medals/2.png" />`;
+    } else if (points == 'captain') {
+      return `<img style="height: 60px" src="./res/icons/medals/3.png" />`;
+    } else if (points == 'general') {
+      return `<img style="height: 60px" src="./res/icons/medals/4.png" />`;
+    } else {
+      return `<img style="height: 60px" src="./res/icons/medals/5.png" />`;
+    }
+  }
+};
+exports.ROCK_RANK = ROCK_RANK;
 
 },{"matrix-engine/lib/utility":36}],44:[function(require,module,exports){
 "use strict";
@@ -40393,13 +40434,17 @@ function createPauseScreen() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.runHang3d = exports.REDLOG = void 0;
+exports.runHang3d = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var CANNON = _interopRequireWildcard(require("cannon"));
 
 var _dom = require("./dom");
+
+var _rocketCraftingAccount = require("./rocket-crafting-account");
+
+var _events = require("matrix-engine/lib/events");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -40415,8 +40460,8 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * Predefined from 0 to the 8 energy value.
  * @class First Person Shooter example
  */
-var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
-exports.REDLOG = REDLOG;
+const useRCSAccount = true;
+const RCSAccountDomain = 'https://maximumroulette.com';
 
 var runHang3d = world => {
   addEventListener('onTitle', e => {
@@ -40441,7 +40486,7 @@ var runHang3d = world => {
 
   addEventListener('hit.keyDown', e => {
     if (e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
-      console.log(`%cPAUSE SCREEN`, REDLOG);
+      console.log(`%cPAUSE SCREEN`, _dom.REDLOG);
       byId('pauseScreen').style.display = 'flex';
     }
   }); // Audio effects
@@ -40505,54 +40550,119 @@ var runHang3d = world => {
 
   if (isMobile() == true) {
     matrixEngine.Events.camera.preventSpeedZero = true;
+    byId('mobLeft').addEventListener('touchmove', () => {
+      e.preventDefault();
+    });
     byId('mobLeft').addEventListener('touchstart', () => {
+      e.preventDefault();
       MY_TIMERS.TIMERLEFT = setInterval(() => {
         matrixEngine.Events.camera.yawRate = App.camera.yawRate;
-      }, 10); // App.sounds.play('shoot');
+      }, 10);
     });
     byId('mobLeft').addEventListener('touchend', () => {
       clearInterval(MY_TIMERS.TIMERLEFT);
-      MY_TIMERS.TIMERLEFT = null; // App.sounds.play('shoot');
+      MY_TIMERS.TIMERLEFT = null;
+    });
+    byId('mobRight').addEventListener('touchmove', () => {
+      e.preventDefault();
     });
     byId('mobRight').addEventListener('touchstart', () => {
+      e.preventDefault();
       MY_TIMERS.TIMERRIGHT = setInterval(() => {
         matrixEngine.Events.camera.yawRate = -App.camera.yawRate;
-      }, 10); // App.sounds.play('shoot');
+      }, 10);
     });
     byId('mobRight').addEventListener('touchend', () => {
       clearInterval(MY_TIMERS.TIMERRIGHT);
-      MY_TIMERS.TIMERRIGHT = null; // App.sounds.play('shoot');
+      MY_TIMERS.TIMERRIGHT = null;
+    });
+    byId('mobUp').addEventListener('touchmove', () => {
+      e.preventDefault();
     });
     byId('mobUp').addEventListener('touchstart', () => {
+      e.preventDefault();
       MY_TIMERS.TIMERUP = setInterval(() => {
         matrixEngine.Events.camera.speed = App.camera.speedAmp;
-      }, 10); // App.sounds.play('shoot');
+      }, 10);
     });
     byId('mobUp').addEventListener('touchend', () => {
       matrixEngine.Events.camera.speed = 0;
       clearInterval(MY_TIMERS.TIMERUP);
-      MY_TIMERS.TIMERUP = null; // App.sounds.play('shoot');
+      MY_TIMERS.TIMERUP = null;
+    });
+    byId('mobDown').addEventListener('touchmove', () => {
+      e.preventDefault();
     });
     byId('mobDown').addEventListener('touchstart', () => {
+      e.preventDefault();
       MY_TIMERS.TIMERDOWN = setInterval(() => {
         matrixEngine.Events.camera.speed = -App.camera.speedAmp;
-      }, 10); // App.sounds.play('shoot');
+      }, 10);
     });
     byId('mobDown').addEventListener('touchend', () => {
       matrixEngine.Events.camera.speed = 0;
       clearInterval(MY_TIMERS.TIMERDOWN);
-      MY_TIMERS.TIMERDOWN = null; // App.sounds.play('shoot');
+      MY_TIMERS.TIMERDOWN = null;
+    }); // For any case
+
+    byId('mobDown').addEventListener('touchcancel', () => {
+      matrixEngine.Events.camera.speed = 0;
+      clearInterval(MY_TIMERS.TIMERDOWN);
+      MY_TIMERS.TIMERDOWN = null;
+      clearInterval(MY_TIMERS.TIMERUP);
+      MY_TIMERS.TIMERUP = null;
+      clearInterval(MY_TIMERS.TIMERRIGHT);
+      MY_TIMERS.TIMERRIGHT = null;
+    }); // Disable default
+
+    App.events.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE = () => {};
+
+    byId('domAngleAxis').style.width = innerWidth / 100 * 30 + "px";
+    byId('domAngleAxis').style.height = innerHeight / 100 * 30 + "px";
+    byId('domAngleAxis').addEventListener('touchmove', e => {
+      e.preventDefault();
+      var center_x = window.innerWidth / 2;
+      var center_y = window.innerHeight / 2; // Formula for adapting Axis controller
+
+      var t = innerWidth / 2 - (e.target.offsetLeft + e.target.offsetWidth) + e.target.offsetWidth / 2;
+      var t1 = innerHeight / 2 - (e.target.offsetTop + e.target.offsetHeight) + e.target.offsetHeight / 2;
+      _events.SYS.MOUSE.x = e.changedTouches[0].clientX - center_x + t;
+      _events.SYS.MOUSE.y = e.changedTouches[0].clientY - center_y + t1; //check to make sure there is data to compare against
+
+      if (typeof _events.SYS.MOUSE.LAST_POSITION.x != 'undefined') {
+        //get the change from last position to this position
+        var deltaX = _events.SYS.MOUSE.LAST_POSITION.x - _events.SYS.MOUSE.x,
+            deltaY = _events.SYS.MOUSE.LAST_POSITION.y - _events.SYS.MOUSE.y;
+      }
+
+      if (App.camera.SceneController === true && keyboardPress.getKeyStatus(16) || App.camera.FirstPersonController === true) {
+        // console.log('works for both now deltaX', deltaX)
+        matrixEngine.Events.camera.pitchRate += deltaY * 10;
+        matrixEngine.Events.camera.yawRate += deltaX * 2;
+
+        if (_events.SYS.MOUSE.x < App.camera.edgeMarginValue - center_x) {
+          App.camera.leftEdge = true;
+        } else {
+          App.camera.leftEdge = false;
+        }
+
+        if (_events.SYS.MOUSE.x > center_x - App.camera.edgeMarginValue) {
+          App.camera.rightEdge = true;
+        } else {
+          App.camera.rightEdge = false;
+        }
+      }
+
+      _events.SYS.MOUSE.LAST_POSITION.x = _events.SYS.MOUSE.x, _events.SYS.MOUSE.LAST_POSITION.y = _events.SYS.MOUSE.y;
     });
     byId('mobFire').addEventListener('touchstart', ev => {
-      console.log("test ev ", ev.touches[0].clientX); // fake it 
+      ev.preventDefault(); // fake it
 
       ev.target.width = window.innerWidth;
       ev.target.height = window.innerHeight;
       matrixEngine.raycaster.checkingProcedure(ev, {
         clientX: window.innerWidth / 2,
-        //ev.touches[0].clientX/2,
-        clientY: window.innerHeight / 2 //ev.touches[0].clientY/2
-
+        clientY: window.innerHeight / 2
       });
       App.sounds.play('shoot');
     });
@@ -40573,14 +40683,10 @@ var runHang3d = world => {
         }
       } else {// Mobile IF WE WANT SHOT FROM ANY WHERE
         // This call represent `SHOOT` Action. And it is center of screen!
-        // matrixEngine.raycaster.checkingProcedure(ev, {
-        // 	clientX: ev.target.width / 2,
-        // 	clientY: ev.target.height / 2
-        // });
-        // App.sounds.play('shoot');
       }
     };
-  }
+  } // Receive data from network
+
 
   addEventListener('network-data', e => {
     console.log("receive:", e.detail);
@@ -40622,7 +40728,7 @@ var runHang3d = world => {
   });
   var preventFlagDouble = false;
   addEventListener('ray.hit.event', ev => {
-    console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
+    console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, _dom.REDLOG);
 
     if (ev.detail.hitObject.name.indexOf('con_') == -1) {
       return;
@@ -40727,9 +40833,7 @@ var runHang3d = world => {
         if (e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
           preventDoubleJump = null;
           return;
-        } // ?maybe
-        // App.scene.playerCollisonBox.physics.currentBody.mass = 10;
-
+        }
 
         if (e.contact.bi._name == 'damage') {
           console.log("Trigger damage!"); //. 4x fix
@@ -40751,8 +40855,7 @@ var runHang3d = world => {
             App.scene['armor'].physics.enabled = false;
             App.scene['armor'].isHUD = true;
             App.scene.armor.position.setPosition(1.2, 1.1, -3);
-            App.scene.armor.mesh.setScale(0.1); // Can be destroyed also 
-            // App.scene['armor'].selfDestroy(1)
+            App.scene.armor.mesh.setScale(0.1); // Can be destroyed also App.scene['armor'].selfDestroy(1)
           }
 
           if (e.body._name == 'item-armor') {
@@ -40760,14 +40863,13 @@ var runHang3d = world => {
             physics.world.removeBody(e.body);
           }
         }
-      }); // + Mobile support
+      }); // Mobile support
 
       if (isMobile() == true) {
         byId('mobSpace').addEventListener('touchstart', e => {
           // Jump
           if (preventDoubleJump == null) {
             preventDoubleJump = setTimeout(() => {
-              console.log('[mob]JUMP: ', e.detail.keyCode);
               App.scene.playerCollisonBox.physics.currentBody.mass = 1;
               App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25); // preventDoubleJump = null; for ever
             }, 250);
@@ -40787,11 +40889,7 @@ var runHang3d = world => {
             }
           }
         });
-      } // nature of CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE is not for overriding. This is not uniform for matrix-engine
-      // must be fixed and added help func for overriding (mousemove)
-      // addEventListener('mousemove', () => {
-      // })
-
+      }
 
       var handlerTimeout = null,
           handlerTimeout2 = null;
@@ -40813,28 +40911,22 @@ var runHang3d = world => {
           handlerTimeout = null; // Make more stable situation
 
           App.scene.playerCollisonBox.physics.currentBody.mass = 10;
-          App.scene.playerCollisonBox.physics.currentBody.quaternion.setFromEuler(0, 0, 0); // Tamo tu iznad duge nebo zri...
-          // Cannonjs object set
-          // Switched  Z - Y
-          // if(App.scene.playerCollisonBox.iamInCollideRegime === true) {
+          App.scene.playerCollisonBox.physics.currentBody.quaternion.setFromEuler(0, 0, 0); // Cannonjs object set Switched  Z - Y
 
           if (App.scene.playerCollisonBox.pingpong == true) {
-            // Cannonjs object set / Switched  Z - Y
             matrixEngine.Events.camera.xPos = App.scene.playerCollisonBox.physics.currentBody.position.x;
             matrixEngine.Events.camera.zPos = App.scene.playerCollisonBox.physics.currentBody.position.y;
             matrixEngine.Events.camera.yPos = App.scene.playerCollisonBox.physics.currentBody.position.z;
             App.scene.playerCollisonBox.pingpong = false;
           } else {
-            handlerTimeout2 = 0; // Cannonjs object set - Switched  Z - Y
-
+            handlerTimeout2 = 0;
             App.scene.playerCollisonBox.physics.currentBody.position.set(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.zPos, matrixEngine.Events.camera.yPos);
             App.scene.playerCollisonBox.pingpong = true;
-          } // Playe Look
+          } // Player Look
 
 
           if (playerUpdater.sendRotValue > playerUpdater.sendRotEvery && matrixEngine.Engine.net.connection != null) {
             if (typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
-              // console.log('undefined')
               return;
             }
 
@@ -40871,8 +40963,7 @@ var runHang3d = world => {
       App.scene.FPSTarget.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
       App.scene.FPSTarget.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
       App.scene.FPSTarget.isHUD = true;
-      App.scene.FPSTarget.geometry.setScale(0.1); // Energy active bar
-      // Custom generic textures. Micro Drawing.
+      App.scene.FPSTarget.geometry.setScale(0.1); // Energy active bar - Custom generic textures. Micro Drawing.
       // Example for arg shema square for now only.
 
       var options = {
@@ -40889,7 +40980,7 @@ var runHang3d = world => {
         App.scene.energyBar.textures.push(App.scene.energyBar.createPixelsTex(t));
 
         if (this.energy.value <= 0) {
-          notify.error("YOU DIE");
+          notify.error("YOU DIE...");
         }
       };
 
@@ -40960,23 +41051,7 @@ var runHang3d = world => {
 
     matrixEngine.objLoader.downloadMeshes({
       player: "res/bvh-skeletal-base/swat-guy/gun2.obj"
-    }, onLoadObj); // 		// Must be activate - Use client default config file
-    // matrixEngine.Engine.activateNet2(undefined,
-    // 	{
-    // 		sessionName: 'matrix-engine-shared-object',
-    // 		resolution: '240x160'
-    // 	});
-    // App.scene.MyColoredSquare1.net.enable = true;
-    // matrixEngine.objLoader.downloadMeshes(
-    //   matrixEngine.objLoader.makeObjSeqArg(
-    //     {
-    //       id: objName,
-    //       path: "res/bvh-skeletal-base/swat-guy/FPShooter-hands/FPShooter-hands",
-    //       from: 1,
-    //       to: 20
-    //     }),
-    //   onLoadObj
-    // );
+    }, onLoadObj);
   };
 
   let promiseAllGenerated = [];
@@ -41132,25 +41207,24 @@ var runHang3d = world => {
 
   addEventListener(`LOCAL-STREAM-READY`, e => {
     // console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
-    console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, REDLOG); // test first
+    console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, _dom.REDLOG); // test first
 
     dispatchEvent(new CustomEvent(`onTitle`, {
       detail: `🕸️${e.detail.connection.connectionId}🕸️`
     }));
     notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`);
-    var name = e.detail.connection.connectionId;
-    byId('netHeaderTitle').click();
+    var name = e.detail.connection.connectionId; // byId('netHeaderTitle').click()
+
     console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
 
     App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
     App.scene.playerCollisonBox.position.yNetOffset = -2;
-    ;
     App.scene.playerCollisonBox.net.enable = true; // CAMERA VIEW FOR SELF LOCAL CAM
     // world.Add("squareTex", 1, name, tex);
     // App.scene[name].position.x = 0;
     // App.scene[name].position.z = -20;
     // App.scene[name].LightsData.ambientLight.set(1, 0, 0);
-    // // App.scene[name].net.enable = true;
+    // App.scene[name].net.enable = true;
     // App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
   });
   var ONE_TIME = 0;
@@ -41170,31 +41244,61 @@ var runHang3d = world => {
       // local
       console.log('MY CONNECTION IS NULL');
       setTimeout(() => {
+        // test
+        if (typeof matrixEngine.Engine.net.connection === 'undefined') return;
+
         if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
           console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
           var name = e.detail.event.stream.connection.connectionId;
           createNetworkPlayerCharacter(name);
         }
-      }, 2000);
+      }, 2500);
       return;
     }
 
     if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
-      console.log('++++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+      console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
       var name = e.detail.event.stream.connection.connectionId;
       createNetworkPlayerCharacter(name);
     }
   });
   addEventListener('net-ready', e => {
     // Star on load
+    byId('buttonCloseSession').remove();
     matrixEngine.Engine.net.joinSessionUI.click();
-    (0, _dom.createPauseScreen)();
+    (0, _dom.createPauseScreen)(); // Next implementation RocketCrafringServer calls.
+
+    let profile = document.createElement('div');
+    profile.id = 'profile';
+    profile.innerHTML = `
+		  Status: free for all
+		`;
+    byId('session').appendChild(profile);
+    let leaderboardBtn = document.createElement('div');
+    leaderboardBtn.id = 'Leaderboard';
+    leaderboardBtn.innerHTML = `
+		  <button id="leaderboardBtn" class="btn">Leaderboard</button>
+		`;
+    byId('session').appendChild(leaderboardBtn);
+
+    if (useRCSAccount == true) {
+      let myAccounts = new _rocketCraftingAccount.RCSAccount(RCSAccountDomain);
+      myAccounts.createDOM();
+      notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.");
+      console.log(`%c<RocketCraftingServer [Account]> ${myAccounts}`, _dom.REDLOG);
+    }
   });
   addEventListener('connectionDestroyed', e => {
-    console.log(`%c connectionDestroyed  ${e.detail}`, REDLOG); // connectionId
+    console.log(`%c connectionDestroyed  ${e.detail}`, _dom.REDLOG);
 
-    if (App.scene[e.detail.connectionId] !== 'undefined') App.scene[e.detail.connectionId].selfDestroy(1);
-  }); // Damage object test
+    if (App.scene[e.detail.connectionId] !== 'undefined' && typeof e.detail.connectionId !== 'undefined') {
+      try {
+        App.scene[e.detail.connectionId].selfDestroy(1);
+      } catch (err) {
+        console.log('Old session user...');
+      }
+    }
+  }); // Graphics - Damage object test
 
   world.Add("cubeLightTex", 1, "LAVA", tex);
   var b4 = new CANNON.Body({
@@ -41307,7 +41411,6 @@ const createNetworkPlayerCharacter = objName => {
         // sumOfAniFrames: 61, No need if `animations` exist!
         currentAni: 0,
         // speed: 3, No need if `animations` exist!
-        // upgrade - optimal
         animations: {
           active: 'walk',
           walk: {
@@ -41333,12 +41436,385 @@ const createNetworkPlayerCharacter = objName => {
 
   matrixEngine.objLoader.downloadMeshes(matrixEngine.objLoader.makeObjSeqArg({
     id: objName,
-    // path: "res/bvh-skeletal-base/swat-guy/anims/swat-multi",
     path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
     from: 1,
-    // to: 61
     to: 20
   }), onLoadObj);
 };
 
-},{"./dom":43,"cannon":5,"matrix-engine":8}]},{},[42]);
+},{"./dom":43,"./rocket-crafting-account":45,"cannon":5,"matrix-engine":8,"matrix-engine/lib/events":10}],45:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RCSAccount = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+var _dom = require("./dom.js");
+
+var _utility = require("matrix-engine/lib/utility.js");
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+// import {byId, isMobile, jsonHeaders, notify, REDLOG} from "../utility.js";
+const isMobile = matrixEngine.utility.isMobile;
+const byId = matrixEngine.utility.byId;
+const notify = matrixEngine.utility.notify;
+
+class RCSAccount {
+  email = null;
+  token = null;
+
+  constructor(apiDomain) {
+    this.apiDomain = apiDomain;
+    this.visitor();
+    addEventListener('F12', e => {
+      console.log(`%c[Debbuger] ${e.detail}`, REDLOG);
+      localStorage.removeItem("visitor");
+      this.visitor(e.detail);
+    });
+    this.leaderboardBtn = document.getElementById('leaderboardBtn');
+    this.leaderboardBtn.addEventListener("click", this.getLeaderboard);
+  }
+
+  createDOM = () => {
+    var parent = document.createElement('div');
+    this.parent = parent; //parent.classList.add('')
+
+    parent.id = 'myAccountLoginForm';
+    var logo = document.createElement('img');
+    logo.id = 'logologin';
+    logo.setAttribute('alt', 'Login');
+    logo.style = 'width: 100px;border-radius: 10px;padding: 6px;';
+    logo.src = './res/icons/512.png';
+    var title = document.createElement('div');
+    title.style.display = 'flex';
+    title.innerHTML = `
+		
+		<div style='width:100%; margin: 5px 5px;'> <h2 style='margin: 5px 5px;'>Rocket GamePlay Login Form</h2>
+		 Maximumroulette.com</div>
+		`;
+    title.appendChild(logo);
+    var content = document.createElement('div');
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.background = 'transparent';
+    var emailLabel = document.createElement('label');
+    emailLabel.id = 'emailLabel';
+    emailLabel.innerHTML = `Email:`;
+    emailLabel.setAttribute('for', 'arg-email');
+    var email = document.createElement('input'); // email.classList.add('myInput')
+
+    email.id = 'arg-email';
+    var passLabel = document.createElement('label');
+    passLabel.id = 'passLabel';
+    passLabel.innerHTML = `Passw:`;
+    passLabel.setAttribute('for', 'arg-pass');
+    var pass = document.createElement('input');
+    pass.id = 'arg-pass'; // pass.classList.add('myInput')
+
+    var loginBtn = document.createElement('button');
+    loginBtn.id = 'loginRCSBtn';
+    loginBtn.innerHTML = `LOGIN`;
+    loginBtn.classList.add('btn');
+    loginBtn.classList.add('btnMargin');
+    loginBtn.addEventListener('click', this.login);
+    var gotoRegisterMyAccount = document.createElement('button');
+    gotoRegisterMyAccount.id = 'registerBtn';
+    gotoRegisterMyAccount.classList.add(`btn`);
+    gotoRegisterMyAccount.classList.add(`btnMargin`);
+    gotoRegisterMyAccount.innerHTML = `REGISTER`;
+    gotoRegisterMyAccount.addEventListener('click', this.register);
+    var hideLoginMyAccount = document.createElement('button');
+    hideLoginMyAccount.classList.add(`btn`);
+    hideLoginMyAccount.classList.add(`btnMargin`);
+    hideLoginMyAccount.innerHTML = `NO LOGIN -> FREE PLAY`;
+    hideLoginMyAccount.addEventListener('click', () => {
+      byId('myAccountLoginForm').remove();
+    });
+
+    if (isMobile() == false) {
+      var descText = document.createElement('div');
+      descText.id = 'descText'; // logo.style = 'width: max-content;'
+
+      descText.innerHTML = `<span style="width:45%" >Hang3d use webcam for video chat and streaming data</span>
+		<span style="width:45%" >Add Url params '?video=false&audio=false' to disable streaming</span>
+		`;
+    }
+
+    parent.appendChild(title);
+    parent.appendChild(content);
+    content.appendChild(emailLabel);
+    content.appendChild(email);
+    content.appendChild(passLabel);
+    content.appendChild(pass);
+    content.appendChild(loginBtn);
+    content.appendChild(gotoRegisterMyAccount);
+    content.appendChild(hideLoginMyAccount); // content.appendChild(logo)
+
+    if (isMobile() == false) content.appendChild(descText);
+    document.body.appendChild(parent);
+  };
+  createLeaderboardDOM = data => {
+    if (byId('leaderboard') != null) {
+      byId('leaderboard').style.display = 'block';
+      return;
+    }
+
+    console.log('TEST MOBILE +++');
+    var parent = document.createElement('div');
+    parent.style = `
+			position: absolute;
+			border-radius: 4px;
+			top: 10%;
+			left: 15%;
+			width: 60%;
+			padding: 10px 10px 10px 10px;
+			box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+		`;
+
+    if (isMobile() == true) {
+      parent.style = `
+			position: absolute;
+			border-radius: 4px;
+			top: 10%;
+			left: 0%;
+			width: 95%;
+			padding: 10px;`;
+    }
+
+    parent.id = 'leaderboard';
+    var title = document.createElement('div');
+    title.innerHTML = `<h3>Top 10 leaderboard [RocketCraftingServer]</h3>`;
+    parent.appendChild(title);
+    var tableLabel = document.createElement('div');
+    tableLabel.style.display = 'flex';
+    tableLabel.style.flexDirection = 'row';
+    var nicklabel = document.createElement('div');
+    nicklabel.innerText = 'Nickname';
+    nicklabel.style.width = '100%';
+    var pointslabel = document.createElement('div');
+    pointslabel.innerText = 'Points';
+    pointslabel.style.width = '100%';
+    tableLabel.appendChild(nicklabel);
+    tableLabel.appendChild(pointslabel);
+    parent.appendChild(tableLabel);
+    var parentForTable = document.createElement('div');
+    parentForTable.style.height = '70vh';
+    parentForTable.style.overflow = 'scroll';
+    data.forEach(element => {
+      var table = document.createElement('div');
+      table.style.display = 'flex';
+      table.style.flexDirection = 'row';
+      table.style.justifyContent = 'center';
+      table.style.alignItems = 'center';
+      var nick = document.createElement('div');
+      nick.innerText = element.nickname;
+      nick.style.width = '100%';
+      nick.style.boxShadow = 'none';
+      var points = document.createElement('div');
+      points.innerText = element.points;
+      points.style.width = '100%';
+      points.style.boxShadow = 'none'; // var medal = document.createElement('img');
+      // medal.id = 'medal';
+      // logo.src = './assets/icons/icon96.png';
+
+      table.appendChild(nick);
+      table.appendChild(points);
+      table.innerHTML += _dom.ROCK_RANK.getRankMedalImg(_dom.ROCK_RANK.getRank(element.points));
+      parentForTable.appendChild(table);
+    });
+    parent.appendChild(parentForTable);
+    var hideBtn = document.createElement('button');
+    hideBtn.classList = 'btn';
+    hideBtn.innerText = 'HIDE';
+    hideBtn.addEventListener('click', () => {
+      parent.style.display = 'none';
+    });
+    parent.appendChild(hideBtn);
+    document.body.appendChild(parent);
+  };
+  register = () => {
+    this.register_procedure(this);
+  };
+
+  async register_procedure() {
+    let route = this.apiDomain || location.origin;
+    byId('loginRCSBtn').disabled = true;
+    byId('registerBtn').disabled = true;
+    let args = {
+      emailField: byId('arg-email') != null ? byId('arg-email').value : null,
+      passwordField: byId('arg-pass') != null ? byId('arg-pass').value : null
+    };
+
+    if (args.emailField == null || args.passwordField == null) {
+      notify.show('Please fill up email and passw for login or register.');
+    }
+
+    fetch(route + '/rocket/register', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      notify.error(`${r.message}`);
+
+      if (r.message == "Check email for conmfirmation key.") {
+        this.email = byId('arg-email').value;
+        sessionStorage.setItem('email', byId('arg-email').value);
+        byId('emailLabel').remove();
+        byId('loginRCSBtn').remove();
+        byId('arg-email').remove();
+        byId("passLabel").innerHTML = 'ENTER CONFIRMATION CODE';
+        byId('arg-pass').value = "";
+        byId('registerBtn').removeEventListener('click', this.register);
+        byId('registerBtn').disabled = false;
+        byId('registerBtn').innerHTML = 'CONFIRM CODE FROM EMAIL';
+        byId('registerBtn').id = 'CC';
+        byId('CC').addEventListener('click', () => {
+          this.confirmation();
+        });
+        sessionStorage.setItem('RocketAcountRegister', 'Check email for conmfirmation key.');
+      } else {
+        setTimeout(() => {
+          notify.show("Next Register/Login call try in 5 secounds...");
+          this.preventDBLOG = false;
+          this.preventDBREG = false;
+          byId('loginRCSBtn').disabled = false;
+          byId('registerBtn').disabled = false;
+        }, 5000);
+      }
+    }).catch(err => {
+      console.log('[My Account Error]', err);
+      notify.show("Next Register call try in 5 secounds...");
+      setTimeout(() => {
+        this.preventDBLOG = false;
+        this.preventDBREG = false;
+        byId('loginRCSBtn').disabled = false;
+        byId('registerBtn').disabled = false;
+      }, 5000);
+      return;
+    });
+  }
+
+  confirmation = async () => {
+    let route = this.apiDomain;
+    const args = {
+      emailField: this.email,
+      tokenField: byId('arg-pass').value
+    };
+    fetch(route + '/rocket/confirmation', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      if (r.message == "Wrong confirmation code.") {} else if (r.message == "Confirmation done.") {
+        alert(r.message);
+        this.parent.innerHTML = ''; // ----
+
+        this.createDOM();
+      }
+
+      notify.error(`${r.message}`);
+    });
+  };
+  login = async () => {
+    let route = this.apiDomain || location.origin;
+    byId('loginRCSBtn').disabled = true;
+    byId('registerBtn').disabled = true;
+    let args = {
+      emailField: byId('arg-email') != null ? byId('arg-email').value : null,
+      passwordField: byId('arg-pass') != null ? byId('arg-pass').value : null
+    };
+    fetch(route + '/rocket/login', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      console.log(r.message);
+      notify.show(`${r.message}`);
+
+      if (r.message == "User logged") {
+        this.email = byId('arg-email').value;
+        byId('myAccountLoginForm').style.display = 'none';
+        sessionStorage.setItem('RocketAcount', JSON.stringify(r.flag));
+      }
+    }).catch(err => {
+      console.log('[My Account Error]', err);
+      notify.show("Next Login call try in 5 secounds...");
+      setTimeout(() => {
+        this.preventDBLOG = false;
+        this.preventDBREG = false;
+        byId('registerBtn').disabled = false;
+        byId('loginRCSBtn').disabled = false;
+      }, 5000);
+      return;
+    });
+  };
+
+  async visitor(isRegular) {
+    if (typeof isRegular === 'undefined') isRegular = 'Yes';
+    if (localStorage.getItem("visitor") == 'welcome') return;
+    let route = this.apiDomain;
+    let args = {
+      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
+      userAgent: navigator.userAgent.toString(),
+      fromUrl: location.href.toString(),
+      isRegular: isRegular
+    };
+    fetch(route + '/rocket/visitors', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(() => {
+      localStorage.setItem("visitor", "welcome");
+    }).catch(err => {
+      console.log('ERR', err);
+    });
+  }
+
+  getLeaderboard = async e => {
+    e.preventDefault();
+    this.leaderboardBtn.disabled = true;
+    fetch(this.apiDomain + '/rocket/public-leaderboard', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify({})
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      notify.error(`${r.message}`);
+
+      if (r.message == "You got leaderboard data.") {
+        this.leaderboardData = r.leaderboard;
+        this.createLeaderboardDOM(r.leaderboard);
+      }
+
+      setTimeout(() => {
+        this.leaderboardBtn.disabled = false;
+      }, 5000);
+    }).catch(err => {
+      console.log('[Leaderboard Error]', err);
+      notify.show("Next call try in 5 secounds...");
+      setTimeout(() => {
+        this.leaderboardBtn.disabled = false;
+      }, 5000);
+      return;
+    });
+  };
+}
+
+exports.RCSAccount = RCSAccount;
+
+},{"./dom.js":43,"matrix-engine":8,"matrix-engine/lib/utility.js":36}]},{},[42]);
