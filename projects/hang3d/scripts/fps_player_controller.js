@@ -695,7 +695,7 @@ export var runHang3d = (world) => {
 	App.scene.energy.geometry.setScaleByX(0.35)
 	App.scene.energy.geometry.setScaleByY(0.1)
 	// good for fix rotation in future
-	world.Add("cubeLightTex", 2, "FLOOR2", texNoMipmap);
+	world.Add("cubeLightTex", 2, "FLOOR2", tex);
 	var b2 = new CANNON.Body({
 		mass: 0,
 		linearDamping: 0.01,
@@ -707,8 +707,9 @@ export var runHang3d = (world) => {
 	// App.scene['FLOOR2'].geometry.setScaleByX(3);
 	App.scene['FLOOR2'].physics.currentBody = b2;
 	App.scene['FLOOR2'].physics.enabled = true;
+	App.scene.FLOOR2.LightsData.ambientLight.set(0,0,0)
 
-	world.Add("cubeLightTex", 2, "FLOOR3", texNoMipmap);
+	world.Add("cubeLightTex", 2, "FLOOR3", tex);
 	var b3 = new CANNON.Body({
 		mass: 0,
 		linearDamping: 0.01,
@@ -721,7 +722,7 @@ export var runHang3d = (world) => {
 	App.scene['FLOOR3'].physics.enabled = true;
 
 	// Big wall
-	world.Add("cubeLightTex", 5, "WALL_BLOCK", texNoMipmap);
+	world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
 	var b5 = new CANNON.Body({
 		mass: 0,
 		linearDamping: 0.01,

@@ -190,7 +190,7 @@ export class RCSAccount {
 
 		var hideBtn = document.createElement('button');
 		hideBtn.classList = 'btn';
-		hideBtn.innerText = 'HIDE';
+		hideBtn.innerText = 'SHOW';
 		hideBtn.addEventListener('click', () => {
 			parent.style.display = 'none';
 		})
