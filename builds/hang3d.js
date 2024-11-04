@@ -40534,21 +40534,20 @@ var runHang3d = world => {
       });
       App.sounds.play('shoot');
     }
-  }; // Attach for mobile contrller also for desktop default
-  // Mobile
-  // For mobile i need to make interval calls on 10 ms 
-  // and incrase App.camera.yawRate from 1 to 6.
-
-
-  App.camera.yawRate = 6;
-  var MY_TIMERS = {
-    TIMERLEFT: null,
-    TIMERRIGHT: null,
-    TIMERUP: null,
-    TIMERDOWN: null
   };
 
   if (isMobile() == true) {
+    // Attach for mobile contrller also for desktop default
+    // Mobile
+    // For mobile i need to make interval calls on 10 ms 
+    // and incrase App.camera.yawRate from 1 to 6.
+    App.camera.yawRate = 6;
+    var MY_TIMERS = {
+      TIMERLEFT: null,
+      TIMERRIGHT: null,
+      TIMERUP: null,
+      TIMERDOWN: null
+    };
     matrixEngine.Events.camera.preventSpeedZero = true;
     byId('mobLeft').addEventListener('touchmove', () => {
       e.preventDefault();

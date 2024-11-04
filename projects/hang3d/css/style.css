@@ -18,11 +18,16 @@ body {
 	padding: 0;
 	overflow: hidden;
 	text-align: center;
-	-webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
+	-webkit-user-select: none;
+	/* Safari */
+	-ms-user-select: none;
+	/* IE 10 and IE 11 */
+	user-select: none;
+	/* Standard syntax */
 
-	margin: 0; height: 100%; overflow: hidden
+	margin: 0;
+	height: 100%;
+	overflow: hidden
 }
 
 textarea:focus,
@@ -195,22 +200,26 @@ span {
 	}
 }
 
-#myAccountLoginForm{
+#myAccountLoginForm {
 	width: unset;
 	position: absolute;
 	width: 30vw;
-	left:35%;
+	left: 35%;
 	padding: 10px;
 	margin: 0;
 	top: 20%;
-	height: 57%;
+	/* height: 57%; */
 	background: darkslategrey;
 
-	@media screen and (max-width: 500px) {
-		width: 95%;
-		left:0;
+	@media screen and (max-width: 1000px) {
+		width: 45%;
+		left: 28%;
 	}
 
+	@media screen and (max-width: 600px) {
+		width: 95%;
+		left: 0;
+	}
 }
 
 .timeLine {
@@ -332,12 +341,14 @@ p {
 }
 
 .pauseScreenText {
-display: grid;margin: auto;font-size:100px;
+	display: grid;
+	margin: auto;
+	font-size: 100px;
 }
 
 @media screen and (max-width: 500px) {
 	.pauseScreenText {
-		font-size:26px;
+		font-size: 26px;
 	}
 
 }
