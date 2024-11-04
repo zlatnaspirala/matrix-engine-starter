@@ -40549,10 +40549,10 @@ var runHang3d = world => {
       TIMERDOWN: null
     };
     matrixEngine.Events.camera.preventSpeedZero = true;
-    byId('mobLeft').addEventListener('touchmove', () => {
+    byId('mobLeft').addEventListener('touchmove', e => {
       e.preventDefault();
     });
-    byId('mobLeft').addEventListener('touchstart', () => {
+    byId('mobLeft').addEventListener('touchstart', e => {
       e.preventDefault();
       MY_TIMERS.TIMERLEFT = setInterval(() => {
         matrixEngine.Events.camera.yawRate = App.camera.yawRate;
@@ -40562,49 +40562,49 @@ var runHang3d = world => {
       clearInterval(MY_TIMERS.TIMERLEFT);
       MY_TIMERS.TIMERLEFT = null;
     });
-    byId('mobRight').addEventListener('touchmove', () => {
+    byId('mobRight').addEventListener('touchmove', e => {
       e.preventDefault();
     });
-    byId('mobRight').addEventListener('touchstart', () => {
+    byId('mobRight').addEventListener('touchstart', e => {
       e.preventDefault();
       MY_TIMERS.TIMERRIGHT = setInterval(() => {
         matrixEngine.Events.camera.yawRate = -App.camera.yawRate;
       }, 10);
     });
-    byId('mobRight').addEventListener('touchend', () => {
+    byId('mobRight').addEventListener('touchend', e => {
       clearInterval(MY_TIMERS.TIMERRIGHT);
       MY_TIMERS.TIMERRIGHT = null;
     });
-    byId('mobUp').addEventListener('touchmove', () => {
+    byId('mobUp').addEventListener('touchmove', e => {
       e.preventDefault();
     });
-    byId('mobUp').addEventListener('touchstart', () => {
+    byId('mobUp').addEventListener('touchstart', e => {
       e.preventDefault();
       MY_TIMERS.TIMERUP = setInterval(() => {
         matrixEngine.Events.camera.speed = App.camera.speedAmp;
       }, 10);
     });
-    byId('mobUp').addEventListener('touchend', () => {
+    byId('mobUp').addEventListener('touchend', e => {
       matrixEngine.Events.camera.speed = 0;
       clearInterval(MY_TIMERS.TIMERUP);
       MY_TIMERS.TIMERUP = null;
     });
-    byId('mobDown').addEventListener('touchmove', () => {
+    byId('mobDown').addEventListener('touchmove', e => {
       e.preventDefault();
     });
-    byId('mobDown').addEventListener('touchstart', () => {
+    byId('mobDown').addEventListener('touchstart', e => {
       e.preventDefault();
       MY_TIMERS.TIMERDOWN = setInterval(() => {
         matrixEngine.Events.camera.speed = -App.camera.speedAmp;
       }, 10);
     });
-    byId('mobDown').addEventListener('touchend', () => {
+    byId('mobDown').addEventListener('touchend', e => {
       matrixEngine.Events.camera.speed = 0;
       clearInterval(MY_TIMERS.TIMERDOWN);
       MY_TIMERS.TIMERDOWN = null;
     }); // For any case
 
-    byId('mobDown').addEventListener('touchcancel', () => {
+    byId('mobDown').addEventListener('touchcancel', e => {
       matrixEngine.Events.camera.speed = 0;
       clearInterval(MY_TIMERS.TIMERDOWN);
       MY_TIMERS.TIMERDOWN = null;
