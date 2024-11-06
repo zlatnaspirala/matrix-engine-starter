@@ -19993,9 +19993,11 @@ _manifest.default.operation.draws.cube = function (object, ray) {
     mat3.transpose(normalMatrix, normalMatrix);
 
     _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
-  }
+  } // world.disableUnusedAttr(world.GL.gl, localLooper);
+  // FIX FOR MOBILE - from white cube to normal texture view , good
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper);
+
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -21022,9 +21024,10 @@ _manifest.default.operation.draws.sphere = function (object, ray) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.uniformTime, 0.1);
   } catch (e) {
     console.warn('WTF - ERROR10001');
-  }
+  } // world.disableUnusedAttr(world.GL.gl, localLooper);
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper);
+
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
