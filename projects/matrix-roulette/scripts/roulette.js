@@ -490,11 +490,11 @@ export class MatrixRoulette {
 			mix_operation: "multiply",
 		});
 		this.physics.broadphase = new CANNON.NaiveBroadphase();
-		this.physics.world.solver.iterations = 1;
+		this.physics.world.solver.iterations = 10;
 
 		// ori in comment
-		this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
-		this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
+		// this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
+		// this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
 
 		App.scene.FLOOR_STATIC.geometry.setScale(3)
 		App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5)

@@ -27959,13 +27959,13 @@ function defineworld(canvas, renderType) {
             var TEST = world.contentList[world.contentList.indexOf(objObject)];
 
             if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
-              let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
-              _manifest.default.scene[objForDelete.name] = null;
+              world.contentList.splice(world.contentList.indexOf(objObject), 1);
+              _manifest.default.scene[objObject.name] = undefined;
             }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
-          _manifest.default.scene[objForDelete.name] = null;
+          delete _manifest.default.scene[objForDelete.name];
         }
       };
 
@@ -43997,10 +43997,10 @@ class MatrixRoulette {
       mix_operation: "multiply"
     });
     this.physics.broadphase = new CANNON.NaiveBroadphase();
-    this.physics.world.solver.iterations = 1; // ori in comment
+    this.physics.world.solver.iterations = 10; // ori in comment
+    // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
+    // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
 
-    this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
-    this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
     App.scene.FLOOR_STATIC.geometry.setScale(3);
     App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5);
   }
@@ -44314,14 +44314,14 @@ class TableChips {
 
   clearAll() {
     for (var x = this.register.length - 1; x >= 0; x--) {
-      this.register[x].chipObj.selfDestroy(1);
-      this.register[x].betPlace.tableEvents.chips--;
-      this.register.splice(x, 1);
-    } // setTimeout(() => {
-    // 	// this.register = [];
-    // 	// console.log('reg', this.register)
-    // }, 100)
+      this.register[x].chipObj.selfDestroy();
+      this.register[x].betPlace.tableEvents.chips = 0;
+    }
 
+    setTimeout(() => {
+      this.register = [];
+      console.log('reg', this.register);
+    }, 200);
   }
 
   isOdd(x) {

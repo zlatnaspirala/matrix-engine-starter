@@ -100,14 +100,13 @@ export default class TableChips {
 
 	clearAll() {
 		for (var x = this.register.length-1 ; x >= 0;x--) {
-			this.register[x].chipObj.selfDestroy(1)
-			this.register[x].betPlace.tableEvents.chips--;
-			this.register.splice(x,1)
+			this.register[x].chipObj.selfDestroy()
+			this.register[x].betPlace.tableEvents.chips = 0;
 		}
-		// setTimeout(() => {
-		// 	// this.register = [];
-		// 	// console.log('reg', this.register)
-		// }, 100)
+		setTimeout(() => {
+			this.register = [];
+		  console.log('reg', this.register)
+		}, 200)
 	}
 
 	isOdd(x) {return x & 1;}
