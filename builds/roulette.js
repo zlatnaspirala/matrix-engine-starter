@@ -21578,7 +21578,7 @@ class RotationVector {
 
   rotateX(x, em) {
     this.rotx = x;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         x: this.rotx
       },
@@ -21588,7 +21588,7 @@ class RotationVector {
 
   rotateY(y, em) {
     this.roty = y;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         y: this.roty
       },
@@ -21598,7 +21598,7 @@ class RotationVector {
 
   rotateZ(z, em) {
     this.rotz = z;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         z: this.rotz
       },
@@ -21759,7 +21759,7 @@ class Position {
     this.targetX = newx;
     this.inMove = false; // console.log('test setX net.connection ', net)
 
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) {
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) {
       _engine.net.connection.send({
         netPos: {
           x: this.x + this.xNetOffset,
@@ -21775,7 +21775,7 @@ class Position {
     this.y = newy;
     this.targetY = newy;
     this.inMove = false;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x + this.xNetOffset,
         y: this.y + this.yNetOffset,
@@ -21789,7 +21789,7 @@ class Position {
     this.z = newz;
     this.targetZ = newz;
     this.inMove = false;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x + this.xNetOffset,
         y: this.y + this.yNetOffset,
@@ -21807,7 +21807,7 @@ class Position {
     this.targetY = newy;
     this.targetZ = newz;
     this.inMove = false;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x + this.xNetOffset,
         y: this.y + this.yNetOffset,
@@ -21841,7 +21841,7 @@ class TriangleVertex {
 
   setScale(scale) {
     this.size = scale;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -21905,7 +21905,7 @@ class SquareVertex {
     this.texCoordsPoints.left_top.y = 1 + newScaleFactror;
     this.texCoordsPoints.right_bottom.x = 1 + newScaleFactror;
     this.texCoordsPoints.right_bottom.y = 0 - newScaleFactror;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       texScaleFactor: {
         newScaleFactror: newScaleFactror
       },
@@ -21971,7 +21971,7 @@ class SquareVertex {
 
   setScale(scale, em) {
     this.size = scale;
-    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -22434,7 +22434,7 @@ class CubeVertex {
     this.Back.pointB.x = -scale;
     this.Back.pointC.x = scale;
     this.Back.pointD.x = scale;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         x: scale
       },
@@ -22473,7 +22473,7 @@ class CubeVertex {
     this.Back.pointB.y = scale;
     this.Back.pointC.y = scale;
     this.Back.pointD.y = -scale;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         y: scale
       },
@@ -22511,7 +22511,7 @@ class CubeVertex {
     this.Back.pointB.z = -scale;
     this.Back.pointC.z = -scale;
     this.Back.pointD.z = -scale;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         z: scale
       },
@@ -22528,7 +22528,7 @@ class CubeVertex {
     this.size = scale;
     this.basePoint = 1.0 * this.size;
     this.basePointNeg = -1.0 * this.size;
-    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -22561,7 +22561,7 @@ class CubeVertex {
       this.texCoordsPoints[key].right_bottom.y = this.texCoordsPoints[key].right_bottom.y + newScaleFactror * calculate(this.texCoordsPoints[key].right_bottom.y);
     }
 
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       texScaleFactor: {
         newScaleFactror: newScaleFactror
       },
@@ -22799,7 +22799,7 @@ class PiramideVertex {
     this.size = scale;
     this.basePoint = 1.0 * this.size;
     this.basePointNeg = -1.0 * this.size;
-    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -22814,7 +22814,7 @@ class PiramideVertex {
 
   setSpitz(newValueFloat, em) {
     this.spitz = newValueFloat;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       spitz: {
         newValueFloat: newValueFloat
       },
@@ -27367,11 +27367,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       triangleObject.net = {
-        enabled: false,
-        // Old net
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       triangleObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27441,10 +27437,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       squareObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       squareObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27537,10 +27530,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       squareObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       squareObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -27693,10 +27683,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
 
       if (cubeObject.shaderProgram && cubeObject.geometry) {
@@ -27762,10 +27749,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       sphereObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       sphereObject.custom = new Object();
       sphereObject.custom.gl_texture = null;
@@ -27912,10 +27896,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       pyramidObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       pyramidObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27996,10 +27977,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       objObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
 
       objObject.setFBO = function () {
@@ -28220,10 +28198,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       }; // Update others start
 
       cubeObject.useShadows = false;
@@ -28393,10 +28368,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       }; // Update others start NOT ACTIVE NOW
       // Calling with no error
 
@@ -28632,7 +28604,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       customObject.net = {
-        enabled: false
+        enable: false
       };
       customObject.instancedDraws = {
         numberOfInstance: 10,
@@ -42972,7 +42944,7 @@ function webGLStart() {
 }
 
 window.addEventListener("load", () => {
-  setTimeout(() => matrixEngine.Engine.initApp(webGLStart), 1000);
+  setTimeout(() => matrixEngine.Engine.initApp(webGLStart), 100);
 }, false);
 var _default = App;
 exports.default = _default;
@@ -43293,7 +43265,7 @@ function createStatusBoxHUD(nidza, playerInfo) {
       p1 = e.detail * 17;
       colorForCOLOR = colorForOpenGame;
     });
-    addEventListener('WAIT_FOR_RESULT', e => {
+    addEventListener('RESULT', e => {
       // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       p1 = e.detail * 17;
       colorForCOLOR = colorForLastMoment;
@@ -43534,23 +43506,40 @@ class MatrixRoulette {
   };
 
   constructor() {
-    // console.log('ServerEvent[maximumroulette.com/matrix-roulette]')
-    // const events = new EventSource('https://maximumroulette.com/matrix-roulette');
-    // events.onmessage = (event) => {
-    // 	const parsedData = JSON.parse(event.data);
-    // 	if (typeof parsedData.matrixRoulette === 'undefined') {return}
-    // 	console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status)
-    // 	if(parsedData.matrixRoulette.status == "MEDITATE") {
-    // 		// 
-    // 	} else if(parsedData.matrixRoulette.status == "RESULT") {
-    // 		// 
-    // 		console.log('[serverEvent:matrix-roulette[win number]]', parsedData.matrixRoulette.winNumber)
-    // 	}
-    // };
-    // events.onerror = (event) => {
-    // 	console.log('ServerEvent Error:', event)
-    // };
-    // Player balance var
+    if (this.isManual() == false) {
+      console.log('ServerEvent[maximumroulette.com/matrix-roulette]');
+      const events = new EventSource('https://maximumroulette.com/matrix-roulette');
+
+      events.onmessage = event => {
+        const parsedData = JSON.parse(event.data);
+
+        if (typeof parsedData.matrixRoulette === 'undefined') {
+          return;
+        }
+
+        console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status);
+
+        if (parsedData.matrixRoulette.status == "MEDITATE") {
+          // 
+          this.status.game = 'MEDITATE';
+          dispatchEvent(new CustomEvent('MEDITATE_SERVER', {
+            detail: parsedData.matrixRoulette.counter
+          }));
+        } else if (parsedData.matrixRoulette.status == "RESULT") {
+          // 
+          this.status.game = 'RESULT';
+          console.log('[serverEvent:matrix-roulette[win number]]', parsedData.matrixRoulette.winNumber);
+        } else {
+          alert();
+        }
+      };
+
+      events.onerror = event => {
+        console.log('ServerEvent Error:', event);
+      };
+    } // Player balance var
+
+
     this.playerInfo = {
       balance: 1000,
       currency: '$'
@@ -43812,91 +43801,82 @@ class MatrixRoulette {
     var tex = {
       source: ["res/images/field.png"],
       mix_operation: "multiply"
-    };
-    addEventListener('stream-loaded', e => {
-      // Safe place for access socket io
-      // 'STATUS_MR' Event is only used for Matrix Roulette
-      // It is symbolic for now - results must fake physics to preview right number.
-      App.network.connection.socket.on('STATUS_MR', e => {
-        if (e.message == 'RESULTS') {
-          console.log('tick-> ', e.message);
-          console.log('winNumber-> ', e.winNumber);
-          dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {
-            detail: e.winNumber
-          }));
-        } else {
-          // console.log('tick-> ', e.counter)
-          if (e.message == 'MEDITATE') dispatchEvent(new CustomEvent('MEDITATE_SERVER', {
-            detail: e.counter
-          }));
-          if (e.message == 'WAIT_FOR_RESULT') dispatchEvent(new CustomEvent('WAIT_FOR_RESULT', {
-            detail: e.counter
-          }));
-        }
-      });
-
-      var _ = document.querySelectorAll('.media-box');
-
-      var name = "videochat_" + e.detail.data.userId;
-
-      _.forEach(i => {
-        var name = "videochat_" + e.detail.data.userId;
-
-        if (e.detail.data.userId != App.network.connection.userid && App.scene[name] !== 'undefined' && sessionStorage.getItem('a_' + name) == null) {
-          sessionStorage.setItem('a_' + name, name); // This is video element!
-
-          console.log("stream-loaded => ", name);
-          matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-          console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length);
-          App.scene[name].position.x = 10;
-          App.scene[name].position.z = -20;
-          App.scene[name].position.y = 7;
-          App.scene[name].geometry.setScale(-1); // invert tex coords
-
-          App.scene[name].geometry.setScaleByX(-2);
-          App.scene[name].LightsData.ambientLight.set(1, 1, 1); // App.scene[name].net.enable = false;
-
-          console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length); //  App.scene[name].net.activate();
-
-          App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1]);
-          addEventListener('net.remove-user', event => {
-            var n = "videochat_" + event.detail.data.userid;
-
-            if (typeof App.scene[n] !== 'undefined' && typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
-              App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
-              App.scene[n].selfDestroy(1);
-            }
-          });
-        } else {
-          // own stream 
-          if (App.network.connection.isInitiator == true) {
-            console.log('isInitiator is TRUE!');
-          }
-
-          if (sessionStorage.getItem('alocal_' + name) == null) {
-            var name = 'LOCAL_STREAM';
-            matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-            App.scene[name].position.x = 0;
-            App.scene[name].position.z = -30;
-            App.scene[name].position.y = 7;
-            App.scene[name].geometry.setScale(-1);
-            App.scene[name].geometry.setScaleByX(-2);
-            App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]); // TV OBJ
-            // function onLoadObj(meshes) {
-            //   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
-            //   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
-            //   App.scene.TV.position.setPosition(-20, 2, -25)
-            //   App.scene.TV.mesh.setScale(7)
-            //   // App.scene.TV.rotation.rotateY(90);
-            //   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
-            //   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-            // }
-            // sessionStorage.setItem('alocal_' + name, name)
-            // matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
-          }
-        }
-      });
-    }); // hide networking html dom div.
+    }; // addEventListener('stream-loaded', (e) => {
+    // 	// Safe place for access socket io
+    // 	// 'STATUS_MR' Event is only used for Matrix Roulette
+    // 	// It is symbolic for now - results must fake physics to preview right number.
+    // 	App.network.connection.socket.on('STATUS_MR', (e) => {
+    // 		if(e.message == 'RESULTS') {
+    // 			console.log('tick-> ', e.message)
+    // 			console.log('winNumber-> ', e.winNumber)
+    // 			dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {detail: e.winNumber}))
+    // 		} else {
+    // 			// console.log('tick-> ', e.counter)
+    // 			if(e.message == 'MEDITATE') dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: e.counter}))
+    // 			if(e.message == 'RESULT') dispatchEvent(new CustomEvent('RESULT', {detail: e.counter}))
+    // 		}
+    // 	})
+    // 	var _ = document.querySelectorAll('.media-box')
+    // 	var name = "videochat_" + e.detail.data.userId;
+    // 	_.forEach((i) => {
+    // 		var name = "videochat_" + e.detail.data.userId;
+    // 		if(e.detail.data.userId != App.network.connection.userid &&
+    // 			App.scene[name] !== 'undefined' &&
+    // 			sessionStorage.getItem('a_' + name) == null) {
+    // 			sessionStorage.setItem('a_' + name, name)
+    // 			// This is video element!
+    // 			console.log("stream-loaded => ", name)
+    // 			matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+    // 			console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length)
+    // 			App.scene[name].position.x = 10;
+    // 			App.scene[name].position.z = -20;
+    // 			App.scene[name].position.y = 7;
+    // 			App.scene[name].geometry.setScale(-1) // invert tex coords
+    // 			App.scene[name].geometry.setScaleByX(-2)
+    // 			App.scene[name].LightsData.ambientLight.set(1, 1, 1);
+    // 			// App.scene[name].net.enable = false;
+    // 			console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length)
+    // 			//  App.scene[name].net.activate();
+    // 			App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1])
+    // 			addEventListener('net.remove-user', (event) => {
+    // 				var n = "videochat_" + event.detail.data.userid;
+    // 				if(typeof App.scene[n] !== 'undefined' &&
+    // 					typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
+    // 					App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
+    // 					App.scene[n].selfDestroy(1)
+    // 				}
+    // 			})
+    // 		} else {
+    // 			// own stream 
+    // 			if(App.network.connection.isInitiator == true) {
+    // 				console.log('isInitiator is TRUE!')
+    // 			}
+    // 			if(sessionStorage.getItem('alocal_' + name) == null) {
+    // 				var name = 'LOCAL_STREAM';
+    // 				matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+    // 				App.scene[name].position.x = 0;
+    // 				App.scene[name].position.z = -30;
+    // 				App.scene[name].position.y = 7;
+    // 				App.scene[name].geometry.setScale(-1)
+    // 				App.scene[name].geometry.setScaleByX(-2)
+    // 				App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+    // 				// TV OBJ
+    // 				// function onLoadObj(meshes) {
+    // 				//   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
+    // 				//   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
+    // 				//   App.scene.TV.position.setPosition(-20, 2, -25)
+    // 				//   App.scene.TV.mesh.setScale(7)
+    // 				//   // App.scene.TV.rotation.rotateY(90);
+    // 				//   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
+    // 				//   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+    // 				// }
+    // 				// sessionStorage.setItem('alocal_' + name, name)
+    // 				// matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
+    // 			}
+    // 		}
+    // 	})
+    // })
+    // hide networking html dom div.
 
     setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200);
   }
@@ -44017,9 +43997,10 @@ class MatrixRoulette {
       mix_operation: "multiply"
     });
     this.physics.broadphase = new CANNON.NaiveBroadphase();
-    this.physics.world.solver.iterations = 5; // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
-    // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
+    this.physics.world.solver.iterations = 1; // ori in comment
 
+    this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
+    this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
     App.scene.FLOOR_STATIC.geometry.setScale(3);
     App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5);
   }
@@ -44029,7 +44010,7 @@ class MatrixRoulette {
       // clear double call
       // roulette.wheelSystem.fireBall()
       dispatchEvent(new CustomEvent('fire-ball', {
-        detail: [0.3, [4., -11.4, 3], [-13000, 220, 11]]
+        detail: [0.3, [4., -11.4, 3], [-2000, 220, 11]]
       }));
       removeEventListener('camera-view-wheel', this.prepareFire);
     }, this.status.winNumberMomentDelay);
@@ -44072,7 +44053,7 @@ class MatrixRoulette {
     addEventListener('MEDITATE_SERVER', e => {
       this.status.game = 'MEDITATE';
     });
-    addEventListener('WAIT_FOR_RESULT', e => {
+    addEventListener('RESULT', e => {
       this.status.game = 'RESULTS';
     });
   }
@@ -44259,7 +44240,7 @@ class TableChips {
 
             console.log('Add chip game status =>', roulette.status.game);
           } else {
-            console.log('Add chip PREVENT MODE WAIT_FOR_RESULTS');
+            console.log('Add chip PREVENT MODE RESULTS');
           }
         }
       }
@@ -44278,25 +44259,27 @@ class TableChips {
 
   addChip(o) {
     // o is matrix engine scene obj
-    var size = 0.15; // is not to mush interest but need be uniq
+    var size = 0.25; // is not to mush interest but need be uniq
 
-    var name = "chips_" + o.name;
+    var name = "chips_" + o.name + "_" + this.register.length;
     this.addObjChip(name).then(d => {
       var b2 = new CANNON.Body({
-        mass: 1,
-        linearDamping: 0.01,
-        position: new CANNON.Vec3(o.position.x, o.position.z, o.position.y + 0.5 + o.tableEvents.chips * 0.16),
-        shape: new CANNON.Box(new CANNON.Vec3(size, size, 0.042))
+        type: CANNON.Body.STATIC,
+        // pragmatic but very nice solution
+        mass: 10,
+        linearDamping: 0.1,
+        position: new CANNON.Vec3(o.position.x, o.position.z, o.position.y + 0 + o.tableEvents.chips * 0.05),
+        shape: new CANNON.Box(new CANNON.Vec3(0.27, 0.02, 0.27))
       });
       this.physics.world.addBody(b2);
       d.physics.currentBody = b2;
-      d.physics.enabled = true; // memo bet
+      d.physics.enabled = true;
+      d.physics.currentBody.allowSleep = false; // memo bet
 
       o.tableEvents.chips++;
       dispatchEvent(new CustomEvent('update-balance', {
         detail: 1
-      })); // dispatchEvent(new CustomEvent('add-chip', { details : 1}))
-
+      }));
       this.register.push({
         chipObj: d,
         betPlace: o
@@ -44313,10 +44296,10 @@ class TableChips {
             source: ["res/images/chip1.png"],
             mix_operation: "multiply"
           };
-          matrixEngine.matrixWorld.world.Add("obj", 0.00001, name, tex, meshes[name]);
+          matrixEngine.matrixWorld.world.Add("obj", 1, name, tex, meshes[name]);
           App.scene[name].raycast.enabled = false;
           App.scene[name].position.y = 1;
-          App.scene[name].mesh.setScale(0.009);
+          App.scene[name].mesh.setScale(0.01);
           resolve(App.scene[name]);
         } catch (err) {
           reject('Loading obj chip error: ' + err);
@@ -44330,12 +44313,15 @@ class TableChips {
   }
 
   clearAll() {
-    this.register.forEach((i, index, array) => {
-      array[index].chipObj.selfDestroy(1);
-      console.log(' TEST CLEAR ', array[index].betPlace.tableEvents.chips);
-      array[index].betPlace.tableEvents.chips = 0;
-      delete array[index];
-    });
+    for (var x = this.register.length - 1; x >= 0; x--) {
+      this.register[x].chipObj.selfDestroy(1);
+      this.register[x].betPlace.tableEvents.chips--;
+      this.register.splice(x, 1);
+    } // setTimeout(() => {
+    // 	// this.register = [];
+    // 	// console.log('reg', this.register)
+    // }, 100)
+
   }
 
   isOdd(x) {
@@ -45699,11 +45685,12 @@ class Wheel {
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, 0.05, -21)
+      position: new CANNON.Vec3(0, -21, 0.05)
     });
     this.pWorld.world.addBody(bigWheel);
-    App.scene.bigWheel.physics.currentBody = bigWheel; // App.scene.bigWheel.physics.enabled = true;
-    // App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22)
+    App.scene.bigWheel.physics.currentBody = bigWheel;
+    App.scene.bigWheel.physics.enabled = true;
+    App.scene.bigWheel.position.z = -21; // App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22)
 
     App.scene.bigWheel.LightsData.lightingDirection.set(1, -0.2, 0);
     App.scene.bigWheel.LightsData.directionLight.g = 0;
@@ -45726,12 +45713,13 @@ class Wheel {
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, 3.05, -21)
+      position: new CANNON.Vec3(0, 0.05, -21)
     });
     this.pWorld.world.addBody(bigWheelTop);
     App.scene.bigWheelTop.physics.currentBody = bigWheelTop;
     App.scene.bigWheelTop.physics.enabled = true;
-    App.scene.bigWheelTop.position.y = 6;
+    App.scene.bigWheelTop.position.y = 3;
+    App.scene.bigWheelTop.position.z = -21;
     App.scene.bigWheelTop.LightsData.directionLight.g = 0;
     App.scene.bigWheelTop.LightsData.directionLight.r = 0; // add simple square down from fields to eliminate empty space
 

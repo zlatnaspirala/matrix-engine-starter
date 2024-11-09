@@ -187,7 +187,7 @@ export function createStatusBoxHUD(nidza, playerInfo) {
       colorForCOLOR = colorForOpenGame
     })
 
-    addEventListener('WAIT_FOR_RESULT', (e) => {
+    addEventListener('RESULT', (e) => {
       // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       p1 = e.detail * 17
       colorForCOLOR = colorForLastMoment

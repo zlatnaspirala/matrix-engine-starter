@@ -148,11 +148,12 @@ export default class Wheel {
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, 0.05, -21)
+      position: new CANNON.Vec3(0, -21,0.05)
     })
     this.pWorld.world.addBody(bigWheel);
     App.scene.bigWheel.physics.currentBody = bigWheel;
-    // App.scene.bigWheel.physics.enabled = true;
+    App.scene.bigWheel.physics.enabled = true;
+		App.scene.bigWheel.position.z = -21;
     // App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22)
     App.scene.bigWheel.LightsData.lightingDirection.set(1, -0.2, 0)
 
@@ -179,14 +180,14 @@ export default class Wheel {
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, 3.05, -21)
+      position: new CANNON.Vec3(0, 0.05, -21)
     })
 
     this.pWorld.world.addBody(bigWheelTop);
     App.scene.bigWheelTop.physics.currentBody = bigWheelTop;
     App.scene.bigWheelTop.physics.enabled = true;
-    App.scene.bigWheelTop.position.y = 6;
-
+    App.scene.bigWheelTop.position.y = 3;
+		App.scene.bigWheelTop.position.z = -21
     App.scene.bigWheelTop.LightsData.directionLight.g = 0
     App.scene.bigWheelTop.LightsData.directionLight.r = 0
 

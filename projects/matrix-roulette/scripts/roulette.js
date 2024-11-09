@@ -32,23 +32,30 @@ export class MatrixRoulette {
 	}
 
 	constructor() {
-		// console.log('ServerEvent[maximumroulette.com/matrix-roulette]')
-		// const events = new EventSource('https://maximumroulette.com/matrix-roulette');
-		// events.onmessage = (event) => {
-		// 	const parsedData = JSON.parse(event.data);
-		// 	if (typeof parsedData.matrixRoulette === 'undefined') {return}
-		// 	console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status)
-		// 	if(parsedData.matrixRoulette.status == "MEDITATE") {
-		// 		// 
-		// 	} else if(parsedData.matrixRoulette.status == "RESULT") {
-		// 		// 
-		// 		console.log('[serverEvent:matrix-roulette[win number]]', parsedData.matrixRoulette.winNumber)
-		// 	}
-		// };
 
-		// events.onerror = (event) => {
-		// 	console.log('ServerEvent Error:', event)
-		// };
+		if(this.isManual() == false) {
+			console.log('ServerEvent[maximumroulette.com/matrix-roulette]')
+			const events = new EventSource('https://maximumroulette.com/matrix-roulette');
+			events.onmessage = (event) => {
+				const parsedData = JSON.parse(event.data);
+				if(typeof parsedData.matrixRoulette === 'undefined') {return }
+				console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status)
+				if(parsedData.matrixRoulette.status == "MEDITATE") {
+					// 
+					this.status.game = 'MEDITATE';
+					dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: parsedData.matrixRoulette.counter}))
+				} else if(parsedData.matrixRoulette.status == "RESULT") {
+					// 
+					this.status.game = 'RESULT';
+					console.log('[serverEvent:matrix-roulette[win number]]', parsedData.matrixRoulette.winNumber)
+				} else {
+					alert()
+				}
+			};
+			events.onerror = (event) => {
+				console.log('ServerEvent Error:', event)
+			};
+		}
 
 		// Player balance var
 		this.playerInfo = {
@@ -76,7 +83,7 @@ export class MatrixRoulette {
 			// byId('canvas-blended').width = 320;
 			// byId('canvas-blended').height = 240;
 		} else {
-			if (byId('nui-commander-container')) byId('nui-commander-container').style.display = 'none';
+			if(byId('nui-commander-container')) byId('nui-commander-container').style.display = 'none';
 		}
 
 		// HTML5 fix audios etc.
@@ -289,84 +296,84 @@ export class MatrixRoulette {
 			mix_operation: "multiply"
 		}
 
-		addEventListener('stream-loaded', (e) => {
-			// Safe place for access socket io
-			// 'STATUS_MR' Event is only used for Matrix Roulette
-			// It is symbolic for now - results must fake physics to preview right number.
-			App.network.connection.socket.on('STATUS_MR', (e) => {
-				if(e.message == 'RESULTS') {
-					console.log('tick-> ', e.message)
-					console.log('winNumber-> ', e.winNumber)
-					dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {detail: e.winNumber}))
-				} else {
-					// console.log('tick-> ', e.counter)
-					if(e.message == 'MEDITATE') dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: e.counter}))
-					if(e.message == 'WAIT_FOR_RESULT') dispatchEvent(new CustomEvent('WAIT_FOR_RESULT', {detail: e.counter}))
-				}
-			})
+		// addEventListener('stream-loaded', (e) => {
+		// 	// Safe place for access socket io
+		// 	// 'STATUS_MR' Event is only used for Matrix Roulette
+		// 	// It is symbolic for now - results must fake physics to preview right number.
+		// 	App.network.connection.socket.on('STATUS_MR', (e) => {
+		// 		if(e.message == 'RESULTS') {
+		// 			console.log('tick-> ', e.message)
+		// 			console.log('winNumber-> ', e.winNumber)
+		// 			dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {detail: e.winNumber}))
+		// 		} else {
+		// 			// console.log('tick-> ', e.counter)
+		// 			if(e.message == 'MEDITATE') dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: e.counter}))
+		// 			if(e.message == 'RESULT') dispatchEvent(new CustomEvent('RESULT', {detail: e.counter}))
+		// 		}
+		// 	})
 
-			var _ = document.querySelectorAll('.media-box')
-			var name = "videochat_" + e.detail.data.userId;
-			_.forEach((i) => {
-				var name = "videochat_" + e.detail.data.userId;
-				if(e.detail.data.userId != App.network.connection.userid &&
-					App.scene[name] !== 'undefined' &&
-					sessionStorage.getItem('a_' + name) == null) {
-					sessionStorage.setItem('a_' + name, name)
-					// This is video element!
-					console.log("stream-loaded => ", name)
-					matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-					console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length)
-					App.scene[name].position.x = 10;
-					App.scene[name].position.z = -20;
-					App.scene[name].position.y = 7;
-					App.scene[name].geometry.setScale(-1) // invert tex coords
-					App.scene[name].geometry.setScaleByX(-2)
-					App.scene[name].LightsData.ambientLight.set(1, 1, 1);
-					// App.scene[name].net.enable = false;
-					console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length)
-					//  App.scene[name].net.activate();
-					App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1])
-					addEventListener('net.remove-user', (event) => {
-						var n = "videochat_" + event.detail.data.userid;
-						if(typeof App.scene[n] !== 'undefined' &&
-							typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
-							App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
-							App.scene[n].selfDestroy(1)
-						}
-					})
-				} else {
-					// own stream 
+		// 	var _ = document.querySelectorAll('.media-box')
+		// 	var name = "videochat_" + e.detail.data.userId;
+		// 	_.forEach((i) => {
+		// 		var name = "videochat_" + e.detail.data.userId;
+		// 		if(e.detail.data.userId != App.network.connection.userid &&
+		// 			App.scene[name] !== 'undefined' &&
+		// 			sessionStorage.getItem('a_' + name) == null) {
+		// 			sessionStorage.setItem('a_' + name, name)
+		// 			// This is video element!
+		// 			console.log("stream-loaded => ", name)
+		// 			matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+		// 			console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length)
+		// 			App.scene[name].position.x = 10;
+		// 			App.scene[name].position.z = -20;
+		// 			App.scene[name].position.y = 7;
+		// 			App.scene[name].geometry.setScale(-1) // invert tex coords
+		// 			App.scene[name].geometry.setScaleByX(-2)
+		// 			App.scene[name].LightsData.ambientLight.set(1, 1, 1);
+		// 			// App.scene[name].net.enable = false;
+		// 			console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length)
+		// 			//  App.scene[name].net.activate();
+		// 			App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1])
+		// 			addEventListener('net.remove-user', (event) => {
+		// 				var n = "videochat_" + event.detail.data.userid;
+		// 				if(typeof App.scene[n] !== 'undefined' &&
+		// 					typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
+		// 					App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
+		// 					App.scene[n].selfDestroy(1)
+		// 				}
+		// 			})
+		// 		} else {
+		// 			// own stream 
 
-					if(App.network.connection.isInitiator == true) {
-						console.log('isInitiator is TRUE!')
-					}
+		// 			if(App.network.connection.isInitiator == true) {
+		// 				console.log('isInitiator is TRUE!')
+		// 			}
 
-					if(sessionStorage.getItem('alocal_' + name) == null) {
-						var name = 'LOCAL_STREAM';
-						matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-						App.scene[name].position.x = 0;
-						App.scene[name].position.z = -30;
-						App.scene[name].position.y = 7;
-						App.scene[name].geometry.setScale(-1)
-						App.scene[name].geometry.setScaleByX(-2)
-						App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-						// TV OBJ
-						// function onLoadObj(meshes) {
-						//   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
-						//   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
-						//   App.scene.TV.position.setPosition(-20, 2, -25)
-						//   App.scene.TV.mesh.setScale(7)
-						//   // App.scene.TV.rotation.rotateY(90);
-						//   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
-						//   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-						// }
-						// sessionStorage.setItem('alocal_' + name, name)
-						// matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
-					}
-				}
-			})
-		})
+		// 			if(sessionStorage.getItem('alocal_' + name) == null) {
+		// 				var name = 'LOCAL_STREAM';
+		// 				matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
+		// 				App.scene[name].position.x = 0;
+		// 				App.scene[name].position.z = -30;
+		// 				App.scene[name].position.y = 7;
+		// 				App.scene[name].geometry.setScale(-1)
+		// 				App.scene[name].geometry.setScaleByX(-2)
+		// 				App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+		// 				// TV OBJ
+		// 				// function onLoadObj(meshes) {
+		// 				//   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
+		// 				//   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
+		// 				//   App.scene.TV.position.setPosition(-20, 2, -25)
+		// 				//   App.scene.TV.mesh.setScale(7)
+		// 				//   // App.scene.TV.rotation.rotateY(90);
+		// 				//   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
+		// 				//   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
+		// 				// }
+		// 				// sessionStorage.setItem('alocal_' + name, name)
+		// 				// matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
+		// 			}
+		// 		}
+		// 	})
+		// })
 
 		// hide networking html dom div.
 		setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200)
@@ -483,9 +490,12 @@ export class MatrixRoulette {
 			mix_operation: "multiply",
 		});
 		this.physics.broadphase = new CANNON.NaiveBroadphase();
-		this.physics.world.solver.iterations = 5;
-		// this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
-		// this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
+		this.physics.world.solver.iterations = 1;
+
+		// ori in comment
+		this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
+		this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
+
 		App.scene.FLOOR_STATIC.geometry.setScale(3)
 		App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5)
 	}
@@ -494,7 +504,7 @@ export class MatrixRoulette {
 		setTimeout(() => {
 			// clear double call
 			// roulette.wheelSystem.fireBall()
-			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.3, [4., -11.4, 3], [-13000, 220, 11]]}))
+			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.3, [4., -11.4, 3], [-2000, 220, 11]]}))
 			removeEventListener('camera-view-wheel', this.prepareFire)
 		}, this.status.winNumberMomentDelay)
 	}
@@ -539,7 +549,7 @@ export class MatrixRoulette {
 			this.status.game = 'MEDITATE';
 		})
 
-		addEventListener('WAIT_FOR_RESULT', (e) => {
+		addEventListener('RESULT', (e) => {
 			this.status.game = 'RESULTS';
 		})
 	}

@@ -37,7 +37,7 @@ function webGLStart() {
 }
 
 window.addEventListener("load", () => {
-	setTimeout(() => matrixEngine.Engine.initApp(webGLStart) , 1000)
+	setTimeout(() => matrixEngine.Engine.initApp(webGLStart) , 100)
 }, false);
 
 export default App;
