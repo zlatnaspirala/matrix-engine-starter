@@ -31,7 +31,7 @@ class ClientConfig {
    * network. Use 'false' if you wanna make single player game.
    * In other way keep it 'true'.
    */
-  showBroadcasterOnInt = true;
+  showBroadcasterOnInt = false;
 
   /**
    * networkDeepLogs control of dev logs for webRTC context only.
@@ -43,45 +43,6 @@ class ClientConfig {
    * multimedia server channel/multiRTC3
    */
   masterServerKey = "maximumroulette.matrix-engine.roulette";
-
-  /**
-   * @description
-   * runBroadcasterOnInt load broadcaster
-   */
-  runBroadcasterOnInt = true;
-  broadcastAutoConnect = true;
-
-  /**
-   * @description
-   * broadcasterPort Port used to connect multimedia server MultiRTC3.
-   * I will use it for explicit video chat multiplatform support.
-   * Default value is 999
-   */
-  broadcasterPort = 999;
-
-  /**
-   * @description
-   * broadcaster rtc session init values.
-   * Change it for production regime
-   */
-  broadcasterSessionDefaults = {
-    sessionAudio: true,
-    sessionVideo: false,
-    sessionData: true,
-    enableFileSharing: true,
-  };
-
-  /**
-   * @description
-   * Optimal for dev stage.
-   * read more about webRtc protocols.
-   * Recommended: coturn open source project.
-   */
-  stunList = [
-    "stun:stun.l.google.com:19302",
-    "stun:stun1.l.google.com:19302",
-    "stun:stun.l.google.com:19302?transport=udp",
-  ];
 
   /**
    * @description

@@ -141,17 +141,18 @@ export default class Wheel {
       inner_rad: inner_rad,
       outerRad: outerRad
     })
+
     // App.scene.bigWheel.glDrawElements.mode = 'LINES'
     // cannon
     var bigWheel = new CANNON.Body({
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, -21, 0.05)
+      position: new CANNON.Vec3(0, 0.05, -21)
     })
     this.pWorld.world.addBody(bigWheel);
     App.scene.bigWheel.physics.currentBody = bigWheel;
-    App.scene.bigWheel.physics.enabled = true;
+    // App.scene.bigWheel.physics.enabled = true;
     // App.scene.bigWheel.LightsData.lightingDirection.set(5, 5, -22)
     App.scene.bigWheel.LightsData.lightingDirection.set(1, -0.2, 0)
 
@@ -178,7 +179,7 @@ export default class Wheel {
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, -21, 3.05)
+      position: new CANNON.Vec3(0, 3.05, -21)
     })
 
     this.pWorld.world.addBody(bigWheelTop);
@@ -362,7 +363,7 @@ export default class Wheel {
         mass: 0,
         type: CANNON.Body.STATIC,
         shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-        // position: new CANNON.Vec3(0, -21, 0.05)
+        position: new CANNON.Vec3(0, -21, 0.05)
       });
       // dev
       window.centerWheel = centerWheel;

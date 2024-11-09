@@ -1,15 +1,16 @@
 # matrix-engine-starter
 
 ```json
-UNDERCONSTRUCT 
+UNDERCONSTRUCT
 Implementing matrix-engine 2.0.0 with kurento/OpenVidu client.
 
 ```
 
 ## Objective
- - Real matrix-engine projects help examples.
- - Test matrix-engine usage with npm service (`npm i matrix-engine`).
- 
+
+- Real matrix-engine projects help examples.
+- Test matrix-engine usage with npm service (`npm i matrix-engine`).
+
 I have single package.json file for client and server staff.
 Compiled lib destionation is folder `./builds`.
 
@@ -50,41 +51,41 @@ And navigate to app.html, examples.html etc.
 
 #### NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter
 
- - Basic for now
+- Basic for now
 
 <img src="https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/hang3d-matrix.png" >
 Run:  `npm run hang3d`
 Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 
+#### Matrix Roulette - 3d physics roulette
 
-#### Matrix Roulette - 3d physics roulette 
+TODO:
 
- TODO:
-  - Replace with net2 driver.
+- Replace with net2 driver. WIP
 
- In `projects\matrix-roulette` First time is used inject if gameplay logic intro broadcaster(matrix-networks)
- Networking is based for now only on websocket tech.
- - Video chat P2P/webRTC
- - Data channels - matrix-roulette server part
+In `projects\matrix-roulette` First time is used ServerEvents tech from rocketcraftingserver project.
 
-If you wanna run server part best way is to navigate to the folder `projects\matrix-roulette\scripts\server`
-And then from server folder run Node.js file:
+I separated server gameplay code to the BE project rocketcraftingserver.
 
-```bash
-node roulette
+Communication is so simple:
+```js
+matrixEngine.Engine.activateNet2(undefined, {
+  sessionName: "matrix-roulette",
+  resolution: "240x160",
+});
 ```
 
-For windows users:
-```bash
-matrix-network.bat
-```
-
-For Linux/Mac users:
-```bash
-matrix-network.sh
+New feature is ServerEvent tech.
+On client side only we need to do:
+```js
+const events = new EventSource("https://maximumroulette.com/matrix-roulette");
+events.onmessage = event => {
+  console.log("MatrixRoulette:", event);
+};
 ```
 
 ### Url parameters:
+
 <pre>
  +-----------------------------------------------------------------------------------+
  |-----------------------------------------------------------------------------------+
@@ -116,15 +117,18 @@ matrix-network.sh
 </pre>
 
 ##### Notes
- - Used cannon.js integration for matrix-engine.
- - It is important to run in `https` protocol for production also for localhost!
- - Video presentation
+
+- Used cannon.js integration for matrix-engine.
+- It is important to run in `https` protocol for production also for localhost!
+- Video presentation
   https://www.youtube.com/watch?v=2N_vgMu5QoI&ab_channel=javascriptfanatic
 
 ### table bet view
+
 ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette-1.png)
 
 ### Wheel view
+
 ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette-2.png)
 
 #### Web-Anatomy underconstructing
@@ -154,6 +158,7 @@ Implemented skeletal system ~ 20mb data
 - https://maximumroulette.com/apps/matrix-engine-starter/projects/web-anatomy/ WIP
 
 Standard Matrix engine apps/examples:
+
 - https://maximumroulette.com/apps/matrix-engine-starter/examples.html
 - https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-slot/
 - https://maximumroulette.com/apps/matrix-engine-starter/app-build.html [anatomy]
@@ -177,11 +182,14 @@ https://github.com/zlatnaspirala/matrix-engine
   CCAttribution-Share Alike 2.1 Japan ©
   Nikola Lukic maximumroulette.com
 
-  
   https://www.freesoundtrackmusic.com/guest/demolib
 
 ### Licence
 
- Projects folder `projects/` under licence:
+Projects folder `projects/` under licence:
 `GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007`
 All other folders are under `Mit licence`.
+
+### Join chat on slack
+
+(GamePlay platform Rock)[https://join.slack.com/t/gameplay-rock/shared_invite/zt-ffcgl80x-CYu4s~YC0bD9Od9_bkqmzw]
