@@ -27959,13 +27959,13 @@ function defineworld(canvas, renderType) {
             var TEST = world.contentList[world.contentList.indexOf(objObject)];
 
             if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
-              world.contentList.splice(world.contentList.indexOf(objObject), 1);
-              _manifest.default.scene[objObject.name] = undefined;
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
             }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
-          delete _manifest.default.scene[objForDelete.name];
+          _manifest.default.scene[objForDelete.name] = null;
         }
       };
 
