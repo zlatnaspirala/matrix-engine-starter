@@ -1,7 +1,7 @@
 
 # WEB ANATOMY
 
-## Based on matrix-engine [sync with 1.9.6]
+## Based on matrix-engine [sync with 2.0.xx]
 
 
 ## 3d objects LICENCE

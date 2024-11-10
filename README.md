@@ -1,15 +1,14 @@
-# matrix-engine-starter
-
-```json
-UNDERCONSTRUCT
-Implementing matrix-engine 2.0.0 with kurento/OpenVidu client.
-
-```
+# matrix-engine-starter 1.0.0
 
 ## Objective
 
 - Real matrix-engine projects help examples.
 - Test matrix-engine usage with npm service (`npm i matrix-engine`).
+- Very interest apps (all done with matrixEngine):
+  - Web Anatomy
+  - FPShooter
+  - Roulette
+  - Slot
 
 I have single package.json file for client and server staff.
 Compiled lib destionation is folder `./builds`.
@@ -33,6 +32,7 @@ npm i
   npm run app
   npm run slot
   npm run roulette
+	npm run anatomy
 	npm run hang3d
 ```
 
@@ -68,6 +68,7 @@ In `projects\matrix-roulette` First time is used ServerEvents tech from rocketcr
 I separated server gameplay code to the BE project rocketcraftingserver.
 
 Communication is so simple:
+
 ```js
 matrixEngine.Engine.activateNet2(undefined, {
   sessionName: "matrix-roulette",
@@ -77,6 +78,7 @@ matrixEngine.Engine.activateNet2(undefined, {
 
 New feature is ServerEvent tech.
 On client side only we need to do:
+
 ```js
 const events = new EventSource("https://maximumroulette.com/matrix-roulette");
 events.onmessage = event => {
@@ -92,20 +94,12 @@ events.onmessage = event => {
  ||       URLParameter          value          Description                           |
  +-----------------------------------------------------------------------------------+
  |                                                                                   |
- |        ?server=              giveResults    You need to run server:               |
- |                                             ./scripts/server/node roulette.js     |
- |                                             Win will be calculated by server      |
- |                                             return value.No wheel view for now.   |
- |                                                                                   |
- |                              manual         Server is used for video chat etc not |
+ |        ?server=              manual         Server is used for video chat etc not |
  |                                             gameplay results.Wheel view is called |
  |                                                              on SPIN procedure.   |
  |                                                                                   |
- |                              initator       Only initator play rela physics other |
- |                                             playes get results from initator.     |
- |                                             UNDERCOSTRUCT                         |
  |                                                                                   |
- |        &sounds=              true           Sounds are active only if url param   |
+ |        &sounds=              Boolean        Sounds are active only if url param   |
  |                                             is true.                              |
  |                                                                                   |
  |        &cameraSpeed=         Number         Best range values from 0.5 to 1       |
@@ -136,7 +130,7 @@ events.onmessage = event => {
 ![matrix-anatomy](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-anatomy.png)
 Implemented skeletal system ~ 20mb data
 
-#### Slot-Mashine underconstructing
+#### Slot-Mashine
 
 - Slot mashine config constructor.
 - Voice commander [Say `spin` or `play` for spining.].
@@ -146,25 +140,14 @@ Implemented skeletal system ~ 20mb data
 
   ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/slot.png)
 
-### Demo links for engine:
-
-- https://maximumroulette.com/apps/matrix-engine/examples-build.html
-- https://maximumroulette.com/apps/matrix-engine/app-build.html
-
 ### Demo from this repo [matrix-engine-starter]
 
 - https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-roulette/
 - https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-slot/
-- https://maximumroulette.com/apps/matrix-engine-starter/projects/web-anatomy/ WIP
-
-Standard Matrix engine apps/examples:
-
-- https://maximumroulette.com/apps/matrix-engine-starter/examples.html
-- https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-slot/
-- https://maximumroulette.com/apps/matrix-engine-starter/app-build.html [anatomy]
+- https://maximumroulette.com/apps/matrix-engine-starter/projects/web-anatomy/
+- https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 
 ### Engine source link:
-
 https://github.com/zlatnaspirala/matrix-engine
 
 ### Credits
