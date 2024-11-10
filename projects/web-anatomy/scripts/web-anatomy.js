@@ -17,7 +17,7 @@ export default class WebAnatomy {
     this.world = world;
 
     this.skeletalSystem = null;
-
+		let App = matrixEngine.App;
     App.camera.SceneController = true;
     // Make it adaptive for blender exported data.
     App.camera.speedAmp = 0.1;

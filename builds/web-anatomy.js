@@ -43001,11 +43001,6 @@ process.umask = function() { return 0; };
 },{}],66:[function(require,module,exports){
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
 var _webAnatomy = _interopRequireDefault(require("./scripts/web-anatomy"));
@@ -43030,19 +43025,19 @@ navigator.serviceWorker.register("./hacker-timer/hack-timer.js"); // import { Vo
 // VoiceCommanderInstance.run();
 
 var world;
-var App = matrixEngine.App;
-App.webAnatomy = {};
-App.config = {};
+window.world = world;
+window.matrixEngine = matrixEngine;
 
 function webGLStart() {
-  // from 1.9.12 => simply render draw funct without FBO
+  window.App = matrixEngine.App;
+  window.matrixEngine = matrixEngine;
+  App.webAnatomy = {};
+  App.config = {}; // from 1.9.12 => simply render draw funct without FBO
   // world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
-  world = matrixEngine.matrixWorld.defineworld(canvas, "simply");
+
+  world = matrixEngine.matrixWorld.defineworld(canvas);
   world.callReDraw();
   App.webAnatomy = new _webAnatomy.default(world, App.config);
-  window.App = App;
-  window.world = world;
-  window.matrixEngine = matrixEngine;
 }
 
 window.addEventListener("load", () => {
@@ -43053,9 +43048,7 @@ window.addEventListener("load", () => {
     matrixEngine.Engine.initApp(webGLStart);
   }, 200);
 }, false); // Not in use
-
-var _default = App;
-exports.default = _default;
+// export default App;
 
 },{"./scripts/web-anatomy":73,"matrix-engine":14}],67:[function(require,module,exports){
 "use strict";
@@ -43306,293 +43299,11 @@ exports.stdFonts = stdFonts;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
-
-/** ojsa */
-var prefiks = 'skeletal';
+exports.skeletalMap = void 0;
 var skeletalMap = {
-  atlas: `res/3d-objects/human/${prefiks}/atlas.obj`,
-  axis: `res/3d-objects/human/${prefiks}/axis.obj`,
-  body_of_sternum: `res/3d-objects/human/${prefiks}/body of sternum.obj`,
-  distal_phalanx_of_left_big_toe: `res/3d-objects/human/${prefiks}/distal phalanx of left big toe.obj`,
-  distal_phalanx_of_left_fourth_toe: `res/3d-objects/human/${prefiks}/distal phalanx of left fourth toe.obj`,
-  distal_phalanx_of_left_index_finger: `res/3d-objects/human/${prefiks}/distal phalanx of left index finger.obj`,
-  distal_phalanx_of_left_little_finger: `res/3d-objects/human/${prefiks}/distal phalanx of left little finger.obj`,
-  distal_phalanx_of_left_little_toe: `res/3d-objects/human/${prefiks}/distal phalanx of left little toe.obj`,
-  distal_phalanx_of_left_middle_finger: `res/3d-objects/human/${prefiks}/distal phalanx of left middle finger.obj`,
-  distal_phalanx_of_left_ring_finger: `res/3d-objects/human/${prefiks}/distal phalanx of left ring finger.obj`,
-  distal_phalanx_of_left_second_toe: `res/3d-objects/human/${prefiks}/distal phalanx of left second toe.obj`,
-  distal_phalanx_of_left_third_toe: `res/3d-objects/human/${prefiks}/distal phalanx of left third toe.obj`,
-  distal_phalanx_of_left_thumb: `res/3d-objects/human/${prefiks}/distal phalanx of left thumb.obj`,
-  distal_phalanx_of_right_big_toe: `res/3d-objects/human/${prefiks}/distal phalanx of right big toe.obj`,
-  distal_phalanx_of_right_fourth_toe: `res/3d-objects/human/${prefiks}/distal phalanx of right fourth toe.obj`,
-  distal_phalanx_of_right_index_finger: `res/3d-objects/human/${prefiks}/distal phalanx of right index finger.obj`,
-  distal_phalanx_of_right_little_finger: `res/3d-objects/human/${prefiks}/distal phalanx of right little finger.obj`,
-  distal_phalanx_of_right_little_toe: `res/3d-objects/human/${prefiks}/distal phalanx of right little toe.obj`,
-  distal_phalanx_of_right_middle_finger: `res/3d-objects/human/${prefiks}/distal phalanx of right middle finger.obj`,
-  distal_phalanx_of_right_ring_finger: `res/3d-objects/human/${prefiks}/distal phalanx of right ring finger.obj`,
-  distal_phalanx_of_right_second_toe: `res/3d-objects/human/${prefiks}/distal phalanx of right second toe.obj`,
-  distal_phalanx_of_right_third_toe: `res/3d-objects/human/${prefiks}/distal phalanx of right third toe.obj`,
-  distal_phalanx_of_right_thumb: `res/3d-objects/human/${prefiks}/distal phalanx of right thumb.obj`,
-  eighth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/eighth thoracic vertebra.obj`,
-  eleventh_thoracic_vertebra: `res/3d-objects/human/${prefiks}/eleventh thoracic vertebra.obj`,
-  ethmoid: `res/3d-objects/human/${prefiks}/ethmoid.obj`,
-  fifth_cervical_vertebra: `res/3d-objects/human/${prefiks}/fifth cervical vertebra.obj`,
-  fifth_lumbar_vertebra: `res/3d-objects/human/${prefiks}/fifth lumbar vertebra.obj`,
-  fifth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/fifth thoracic vertebra.obj`,
-  first_lumbar_vertebra: `res/3d-objects/human/${prefiks}/first lumbar vertebra.obj`,
-  first_thoracic_vertebra: `res/3d-objects/human/${prefiks}/first thoracic vertebra.obj`,
-  flexor_retinaculum_of_left_wrist: `res/3d-objects/human/${prefiks}/flexor retinaculum of left wrist.obj`,
-  flexor_retinaculum_of_right_wrist: `res/3d-objects/human/${prefiks}/flexor retinaculum of right wrist.obj`,
-  fourth_cervical_vertebra: `res/3d-objects/human/${prefiks}/fourth cervical vertebra.obj`,
-  fourth_lumbar_vertebra: `res/3d-objects/human/${prefiks}/fourth lumbar vertebra.obj`,
-  fourth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/fourth thoracic vertebra.obj`,
-  frontal_bone: `res/3d-objects/human/${prefiks}/frontal bone.obj`,
-  hyoid_bone: `res/3d-objects/human/${prefiks}/hyoid bone.obj`,
-  hyoid_bone2: `res/3d-objects/human/${prefiks}/hyoid bone2.obj`,
-  intervertebral_disk_of_axis: `res/3d-objects/human/${prefiks}/intervertebral disk of axis.obj`,
-  intervertebral_disk_of_eighth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of eighth thoracic vertebra.obj`,
-  intervertebral_disk_of_eleventh_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of eleventh thoracic vertebra.obj`,
-  intervertebral_disk_of_fifth_cervical_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of fifth cervical vertebra.obj`,
-  intervertebral_disk_of_fifth_lumbar_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of fifth lumbar vertebra.obj`,
-  intervertebral_disk_of_fifth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of fifth thoracic vertebra.obj`,
-  intervertebral_disk_of_first_lumbar_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of first lumbar vertebra.obj`,
-  intervertebral_disk_of_first_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of first thoracic vertebra.obj`,
-  intervertebral_disk_of_fourth_cervical_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of fourth cervical vertebra.obj`,
-  intervertebral_disk_of_fourth_lumbar_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of fourth lumbar vertebra.obj`,
-  intervertebral_disk_of_fourth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of fourth thoracic vertebra.obj`,
-  intervertebral_disk_of_ninth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of ninth thoracic vertebra.obj`,
-  intervertebral_disk_of_second_lumbar_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of second lumbar vertebra.obj`,
-  intervertebral_disk_of_second_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of second thoracic vertebra.obj`,
-  intervertebral_disk_of_seventh_cervical_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of seventh cervical vertebra.obj`,
-  intervertebral_disk_of_seventh_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of seventh thoracic vertebra.obj`,
-  intervertebral_disk_of_sixth_cervical_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of sixth cervical vertebra.obj`,
-  intervertebral_disk_of_sixth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of sixth thoracic vertebra.obj`,
-  intervertebral_disk_of_tenth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of tenth thoracic vertebra.obj`,
-  intervertebral_disk_of_third_cervical_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of third cervical vertebra.obj`,
-  intervertebral_disk_of_third_lumbar_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of third lumbar vertebra.obj`,
-  intervertebral_disk_of_third_thoracic_vertebra: `res/3d-objects/human/${prefiks}/intervertebral disk of third thoracic vertebra.obj`,
-  intervertebral_disk: `res/3d-objects/human/${prefiks}/intervertebral disk.obj`,
-  left_calcaneus: `res/3d-objects/human/${prefiks}/left calcaneus.obj`,
-  left_capitate: `res/3d-objects/human/${prefiks}/left capitate.obj`,
-  left_clavicle: `res/3d-objects/human/${prefiks}/left clavicle.obj`,
-  left_cuboid_bone: `res/3d-objects/human/${prefiks}/left cuboid bone.obj`,
-  left_eighth_rib: `res/3d-objects/human/${prefiks}/left eighth rib.obj`,
-  left_eleventh_rib: `res/3d-objects/human/${prefiks}/left eleventh rib.obj`,
-  left_femur: `res/3d-objects/human/${prefiks}/left femur.obj`,
-  left_fibula: `res/3d-objects/human/${prefiks}/left fibula.obj`,
-  left_fifth_costal_cartilage: `res/3d-objects/human/${prefiks}/left fifth costal cartilage.obj`,
-  left_fifth_metacarpal_bone: `res/3d-objects/human/${prefiks}/left fifth metacarpal bone.obj`,
-  left_fifth_metatarsal_bone: `res/3d-objects/human/${prefiks}/left fifth metatarsal bone.obj`,
-  left_fifth_rib: `res/3d-objects/human/${prefiks}/left fifth rib.obj`,
-  left_first_costal_cartilage: `res/3d-objects/human/${prefiks}/left first costal cartilage.obj`,
-  left_first_metacarpal_bone: `res/3d-objects/human/${prefiks}/left first metacarpal bone.obj`,
-  left_first_metatarsal_bone: `res/3d-objects/human/${prefiks}/left first metatarsal bone.obj`,
-  left_first_rib: `res/3d-objects/human/${prefiks}/left first rib.obj`,
-  left_fourth_costal_cartilage: `res/3d-objects/human/${prefiks}/left fourth costal cartilage.obj`,
-  left_fourth_metacarpal_bone: `res/3d-objects/human/${prefiks}/left fourth metacarpal bone.obj`,
-  left_fourth_metatarsal_bone: `res/3d-objects/human/${prefiks}/left fourth metatarsal bone.obj`,
-  left_fourth_rib: `res/3d-objects/human/${prefiks}/left fourth rib.obj`,
-  left_hamate: `res/3d-objects/human/${prefiks}/left hamate.obj`,
-  left_hip_bone: `res/3d-objects/human/${prefiks}/left hip bone.obj`,
-  left_humerus: `res/3d-objects/human/${prefiks}/left humerus.obj`,
-  left_inferior_nasal_concha: `res/3d-objects/human/${prefiks}/left inferior nasal concha.obj`,
-  left_intermediate_cuneiform_bone: `res/3d-objects/human/${prefiks}/left intermediate cuneiform bone.obj`,
-  left_lacrimal_bone: `res/3d-objects/human/${prefiks}/left lacrimal bone.obj`,
-  left_lateral_cuneiform_bone: `res/3d-objects/human/${prefiks}/left lateral cuneiform bone.obj`,
-  left_lateral_nasal_cartilage: `res/3d-objects/human/${prefiks}/left lateral nasal cartilage.obj`,
-  left_lunate: `res/3d-objects/human/${prefiks}/left lunate.obj`,
-  left_major_alar_cartilage: `res/3d-objects/human/${prefiks}/left major alar cartilage.obj`,
-  left_maxilla: `res/3d-objects/human/${prefiks}/left maxilla.obj`,
-  left_medial_cuneiform_bone: `res/3d-objects/human/${prefiks}/left medial cuneiform bone.obj`,
-  left_nasal_bone: `res/3d-objects/human/${prefiks}/left nasal bone.obj`,
-  left_ninth_rib: `res/3d-objects/human/${prefiks}/left ninth rib.obj`,
-  left_palatine_bone: `res/3d-objects/human/${prefiks}/left palatine bone.obj`,
-  left_parietal_bone: `res/3d-objects/human/${prefiks}/left parietal bone.obj`,
-  left_patella: `res/3d-objects/human/${prefiks}/left patella.obj`,
-  left_pisiform: `res/3d-objects/human/${prefiks}/left pisiform.obj`,
-  left_radius: `res/3d-objects/human/${prefiks}/left radius.obj`,
-  left_scaphoid: `res/3d-objects/human/${prefiks}/left scaphoid.obj`,
-  left_scapula: `res/3d-objects/human/${prefiks}/left scapula.obj`,
-  left_second_costal_cartilage: `res/3d-objects/human/${prefiks}/left second costal cartilage.obj`,
-  left_second_metacarpal_bone: `res/3d-objects/human/${prefiks}/left second metacarpal bone.obj`,
-  left_second_metatarsal_bone: `res/3d-objects/human/${prefiks}/left second metatarsal bone.obj`,
-  left_second_rib: `res/3d-objects/human/${prefiks}/left second rib.obj`,
-  left_seventh_costal_cartilage: `res/3d-objects/human/${prefiks}/left seventh costal cartilage.obj`,
-  left_seventh_rib: `res/3d-objects/human/${prefiks}/left seventh rib.obj`,
-  left_sixth_costal_cartilage: `res/3d-objects/human/${prefiks}/left sixth costal cartilage.obj`,
-  left_sixth_rib: `res/3d-objects/human/${prefiks}/left sixth rib.obj`,
-  left_talus: `res/3d-objects/human/${prefiks}/left talus.obj`,
-  left_temporal_bone: `res/3d-objects/human/${prefiks}/left temporal bone.obj`,
-  left_tenth_rib: `res/3d-objects/human/${prefiks}/left tenth rib.obj`,
-  left_third_costal_cartilage: `res/3d-objects/human/${prefiks}/left third costal cartilage.obj`,
-  left_third_metacarpal_bone: `res/3d-objects/human/${prefiks}/left third metacarpal bone.obj`,
-  left_third_metatarsal_bone: `res/3d-objects/human/${prefiks}/left third metatarsal bone.obj`,
-  left_third_rib: `res/3d-objects/human/${prefiks}/left third rib.obj`,
-  left_tibia: `res/3d-objects/human/${prefiks}/left tibia.obj`,
-  left_trapezium: `res/3d-objects/human/${prefiks}/left trapezium.obj`,
-  left_trapezoid: `res/3d-objects/human/${prefiks}/left trapezoid.obj`,
-  left_triquetral: `res/3d-objects/human/${prefiks}/left triquetral.obj`,
-  left_twelfth_rib: `res/3d-objects/human/${prefiks}/left twelfth rib.obj`,
-  left_ulna: `res/3d-objects/human/${prefiks}/left ulna.obj`,
-  left_zygomatic_bone: `res/3d-objects/human/${prefiks}/left zygomatic bone.obj`,
-  mandible: `res/3d-objects/human/${prefiks}/mandible.obj`,
-  manubrium: `res/3d-objects/human/${prefiks}/manubrium.obj`,
-  middle_phalanx_of_left_fourth_toe: `res/3d-objects/human/${prefiks}/middle phalanx of left fourth toe.obj`,
-  middle_phalanx_of_left_index_finger: `res/3d-objects/human/${prefiks}/middle phalanx of left index finger.obj`,
-  middle_phalanx_of_left_little_finger: `res/3d-objects/human/${prefiks}/middle phalanx of left little finger.obj`,
-  middle_phalanx_of_left_little_toe: `res/3d-objects/human/${prefiks}/middle phalanx of left little toe.obj`,
-  middle_phalanx_of_left_middle_finger: `res/3d-objects/human/${prefiks}/middle phalanx of left middle finger.obj`,
-  middle_phalanx_of_left_ring_finger: `res/3d-objects/human/${prefiks}/middle phalanx of left ring finger.obj`,
-  middle_phalanx_of_left_second_toe: `res/3d-objects/human/${prefiks}/middle phalanx of left second toe.obj`,
-  middle_phalanx_of_left_third_toe: `res/3d-objects/human/${prefiks}/middle phalanx of left third toe.obj`,
-  middle_phalanx_of_right_fourth_toe: `res/3d-objects/human/${prefiks}/middle phalanx of right fourth toe.obj`,
-  middle_phalanx_of_right_index_finger: `res/3d-objects/human/${prefiks}/middle phalanx of right index finger.obj`,
-  middle_phalanx_of_right_little_finger: `res/3d-objects/human/${prefiks}/middle phalanx of right little finger.obj`,
-  middle_phalanx_of_right_little_toe: `res/3d-objects/human/${prefiks}/middle phalanx of right little toe.obj`,
-  middle_phalanx_of_right_middle_finger: `res/3d-objects/human/${prefiks}/middle phalanx of right middle finger.obj`,
-  middle_phalanx_of_right_ring_finger: `res/3d-objects/human/${prefiks}/middle phalanx of right ring finger.obj`,
-  middle_phalanx_of_right_second_toe: `res/3d-objects/human/${prefiks}/middle phalanx of right second toe.obj`,
-  middle_phalanx_of_right_third_toe: `res/3d-objects/human/${prefiks}/middle phalanx of right third toe.obj`,
-  navicular_bone_of_left_foot: `res/3d-objects/human/${prefiks}/navicular bone of left foot.obj`,
-  navicular_bone_of_right_foot: `res/3d-objects/human/${prefiks}/navicular bone of right foot.obj`,
-  ninth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/ninth thoracic vertebra.obj`,
-  occipital_bone: `res/3d-objects/human/${prefiks}/occipital bone.obj`,
-  parietal_bone: `res/3d-objects/human/${prefiks}/parietal bone.obj`,
-  proximal_phalanx_of_index_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of index finger.obj`,
-  proximal_phalanx_of_left_big_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of left big toe.obj`,
-  proximal_phalanx_of_left_fourth_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of left fourth toe.obj`,
-  proximal_phalanx_of_left_little_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of left little toe.obj`,
-  proximal_phalanx_of_left_middle_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of left middle finger.obj`,
-  proximal_phalanx_of_left_second_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of left second toe.obj`,
-  proximal_phalanx_of_left_third_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of left third toe.obj`,
-  proximal_phalanx_of_little_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of little finger.obj`,
-  proximal_phalanx_of_right_big_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of right big toe.obj`,
-  proximal_phalanx_of_right_fourth_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of right fourth toe.obj`,
-  proximal_phalanx_of_right_index_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of right index finger.obj`,
-  proximal_phalanx_of_right_little_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of right little finger.obj`,
-  proximal_phalanx_of_right_little_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of right little toe.obj`,
-  proximal_phalanx_of_right_middle_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of right middle finger.obj`,
-  proximal_phalanx_of_right_ring_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of right ring finger.obj`,
-  proximal_phalanx_of_right_second_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of right second toe.obj`,
-  proximal_phalanx_of_right_third_toe: `res/3d-objects/human/${prefiks}/proximal phalanx of right third toe.obj`,
-  proximal_phalanx_of_right_thumb: `res/3d-objects/human/${prefiks}/proximal phalanx of right thumb.obj`,
-  proximal_phalanx_of_ring_finger: `res/3d-objects/human/${prefiks}/proximal phalanx of ring finger.obj`,
-  proximal_phalanx_of_thumb: `res/3d-objects/human/${prefiks}/proximal phalanx of thumb.obj`,
-  right_calcaneus: `res/3d-objects/human/${prefiks}/right calcaneus.obj`,
-  right_capitate: `res/3d-objects/human/${prefiks}/right capitate.obj`,
-  right_clavicle: `res/3d-objects/human/${prefiks}/right clavicle.obj`,
-  right_cuboid_bone: `res/3d-objects/human/${prefiks}/right cuboid bone.obj`,
-  right_eighth_rib: `res/3d-objects/human/${prefiks}/right eighth rib.obj`,
-  right_eleventh_rib: `res/3d-objects/human/${prefiks}/right eleventh rib.obj`,
-  right_femur: `res/3d-objects/human/${prefiks}/right femur.obj`,
-  right_fibula: `res/3d-objects/human/${prefiks}/right fibula.obj`,
-  right_fifth_costal_cartilage: `res/3d-objects/human/${prefiks}/right fifth costal cartilage.obj`,
-  right_fifth_metacarpal_bone: `res/3d-objects/human/${prefiks}/right fifth metacarpal bone.obj`,
-  right_fifth_metatarsal_bone: `res/3d-objects/human/${prefiks}/right fifth metatarsal bone.obj`,
-  right_fifth_rib: `res/3d-objects/human/${prefiks}/right fifth rib.obj`,
-  right_first_costal_cartilage: `res/3d-objects/human/${prefiks}/right first costal cartilage.obj`,
-  right_first_metacarpal_bone: `res/3d-objects/human/${prefiks}/right first metacarpal bone.obj`,
-  right_first_metatarsal_bone: `res/3d-objects/human/${prefiks}/right first metatarsal bone.obj`,
-  right_first_rib: `res/3d-objects/human/${prefiks}/right first rib.obj`,
-  right_fourth_costal_cartilage: `res/3d-objects/human/${prefiks}/right fourth costal cartilage.obj`,
-  right_fourth_metacarpal_bone: `res/3d-objects/human/${prefiks}/right fourth metacarpal bone.obj`,
-  right_fourth_metatarsal_bone: `res/3d-objects/human/${prefiks}/right fourth metatarsal bone.obj`,
-  right_fourth_rib: `res/3d-objects/human/${prefiks}/right fourth rib.obj`,
-  right_hamate: `res/3d-objects/human/${prefiks}/right hamate.obj`,
-  right_hip_bone: `res/3d-objects/human/${prefiks}/right hip bone.obj`,
-  right_humerus: `res/3d-objects/human/${prefiks}/right humerus.obj`,
-  right_inferior_nasal_concha: `res/3d-objects/human/${prefiks}/right inferior nasal concha.obj`,
-  right_intermediate_cuneiform_bone: `res/3d-objects/human/${prefiks}/right intermediate cuneiform bone.obj`,
-  right_lacrimal_bone: `res/3d-objects/human/${prefiks}/right lacrimal bone.obj`,
-  right_lateral_cuneiform_bone: `res/3d-objects/human/${prefiks}/right lateral cuneiform bone.obj`,
-  right_lateral_nasal_cartilage: `res/3d-objects/human/${prefiks}/right lateral nasal cartilage.obj`,
-  right_lunate: `res/3d-objects/human/${prefiks}/right lunate.obj`,
-  right_major_alar_cartilage: `res/3d-objects/human/${prefiks}/right major alar cartilage.obj`,
-  right_maxilla: `res/3d-objects/human/${prefiks}/right maxilla.obj`,
-  right_medial_cuneiform_bone: `res/3d-objects/human/${prefiks}/right medial cuneiform bone.obj`,
-  right_nasal_bone: `res/3d-objects/human/${prefiks}/right nasal bone.obj`,
-  right_ninth_rib: `res/3d-objects/human/${prefiks}/right ninth rib.obj`,
-  right_palatine_bone: `res/3d-objects/human/${prefiks}/right palatine bone.obj`,
-  right_parietal_bone: `res/3d-objects/human/${prefiks}/right parietal bone.obj`,
-  right_patella: `res/3d-objects/human/${prefiks}/right patella.obj`,
-  right_pisiform: `res/3d-objects/human/${prefiks}/right pisiform.obj`,
-  right_radius: `res/3d-objects/human/${prefiks}/right radius.obj`,
-  right_scaphoid: `res/3d-objects/human/${prefiks}/right scaphoid.obj`,
-  right_scapula: `res/3d-objects/human/${prefiks}/right scapula.obj`,
-  right_second_costal_cartilage: `res/3d-objects/human/${prefiks}/right second costal cartilage.obj`,
-  right_second_metacarpal_bone: `res/3d-objects/human/${prefiks}/right second metacarpal bone.obj`,
-  right_second_metatarsal_bone: `res/3d-objects/human/${prefiks}/right second metatarsal bone.obj`,
-  right_second_rib: `res/3d-objects/human/${prefiks}/right second rib.obj`,
-  right_seventh_costal_cartilage: `res/3d-objects/human/${prefiks}/right seventh costal cartilage.obj`,
-  right_seventh_rib: `res/3d-objects/human/${prefiks}/right seventh rib.obj`,
-  right_sixth_costal_cartilage: `res/3d-objects/human/${prefiks}/right sixth costal cartilage.obj`,
-  right_sixth_rib: `res/3d-objects/human/${prefiks}/right sixth rib.obj`,
-  right_talus: `res/3d-objects/human/${prefiks}/right talus.obj`,
-  right_temporal_bone: `res/3d-objects/human/${prefiks}/right temporal bone.obj`,
-  right_tenth_rib: `res/3d-objects/human/${prefiks}/right tenth rib.obj`,
-  right_third_costal_cartilage: `res/3d-objects/human/${prefiks}/right third costal cartilage.obj`,
-  right_third_metacarpal_bone: `res/3d-objects/human/${prefiks}/right third metacarpal bone.obj`,
-  right_third_metatarsal_bone: `res/3d-objects/human/${prefiks}/right third metatarsal bone.obj`,
-  right_third_rib: `res/3d-objects/human/${prefiks}/right third rib.obj`,
-  right_tibia: `res/3d-objects/human/${prefiks}/right tibia.obj`,
-  right_trapezium: `res/3d-objects/human/${prefiks}/right trapezium.obj`,
-  right_trapezoid: `res/3d-objects/human/${prefiks}/right trapezoid.obj`,
-  right_triquetral: `res/3d-objects/human/${prefiks}/right triquetral.obj`,
-  right_twelfth_rib: `res/3d-objects/human/${prefiks}/right twelfth rib.obj`,
-  right_ulna: `res/3d-objects/human/${prefiks}/right ulna.obj`,
-  right_zygomatic_bone: `res/3d-objects/human/${prefiks}/right zygomatic bone.obj`,
-  sacrum: `res/3d-objects/human/${prefiks}/sacrum.obj`,
-  second_lumbar_vertebra: `res/3d-objects/human/${prefiks}/second lumbar vertebra.obj`,
-  second_thoracic_vertebra: `res/3d-objects/human/${prefiks}/second thoracic vertebra.obj`,
-  septal_nasal_cartilage: `res/3d-objects/human/${prefiks}/septal nasal cartilage.obj`,
-  sesamoid_bone_of_foot_1: `res/3d-objects/human/${prefiks}/sesamoid bone of foot 1.obj`,
-  sesamoid_bone_of_foot_2: `res/3d-objects/human/${prefiks}/sesamoid bone of foot 2.obj`,
-  sesamoid_bone_of_foot_3: `res/3d-objects/human/${prefiks}/sesamoid bone of foot 3.obj`,
-  sesamoid_bone_of_foot: `res/3d-objects/human/${prefiks}/sesamoid bone of foot.obj`,
-  seventh_cervical_vertebra: `res/3d-objects/human/${prefiks}/seventh cervical vertebra.obj`,
-  seventh_thoracic_vertebra: `res/3d-objects/human/${prefiks}/seventh thoracic vertebra.obj`,
-  sixth_cervical_vertebra: `res/3d-objects/human/${prefiks}/sixth cervical vertebra.obj`,
-  sixth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/sixth thoracic vertebra.obj`,
-  sphenoid_bone: `res/3d-objects/human/${prefiks}/sphenoid bone.obj`,
-  tenth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/tenth thoracic vertebra.obj`,
-  third_cervical_vertebra: `res/3d-objects/human/${prefiks}/third cervical vertebra.obj`,
-  third_lumbar_vertebra: `res/3d-objects/human/${prefiks}/third lumbar vertebra.obj`,
-  third_thoracic_vertebra: `res/3d-objects/human/${prefiks}/third thoracic vertebra.obj`,
-  tooth: `res/3d-objects/human/${prefiks}/tooth.obj`,
-  tooth_1: `res/3d-objects/human/${prefiks}/tooth_1.obj`,
-  tooth_10: `res/3d-objects/human/${prefiks}/tooth_10.obj`,
-  tooth_11: `res/3d-objects/human/${prefiks}/tooth_11.obj`,
-  tooth_12: `res/3d-objects/human/${prefiks}/tooth_12.obj`,
-  tooth_13: `res/3d-objects/human/${prefiks}/tooth_13.obj`,
-  tooth_14: `res/3d-objects/human/${prefiks}/tooth_14.obj`,
-  tooth_15: `res/3d-objects/human/${prefiks}/tooth_15.obj`,
-  tooth_16: `res/3d-objects/human/${prefiks}/tooth_16.obj`,
-  tooth_17: `res/3d-objects/human/${prefiks}/tooth_17.obj`,
-  tooth_18: `res/3d-objects/human/${prefiks}/tooth_18.obj`,
-  tooth_19: `res/3d-objects/human/${prefiks}/tooth_19.obj`,
-  tooth_2: `res/3d-objects/human/${prefiks}/tooth_2.obj`,
-  tooth_20: `res/3d-objects/human/${prefiks}/tooth_20.obj`,
-  tooth_21: `res/3d-objects/human/${prefiks}/tooth_21.obj`,
-  tooth_22: `res/3d-objects/human/${prefiks}/tooth_22.obj`,
-  tooth_23: `res/3d-objects/human/${prefiks}/tooth_23.obj`,
-  tooth_24: `res/3d-objects/human/${prefiks}/tooth_24.obj`,
-  tooth_25: `res/3d-objects/human/${prefiks}/tooth_25.obj`,
-  tooth_26: `res/3d-objects/human/${prefiks}/tooth_26.obj`,
-  tooth_27: `res/3d-objects/human/${prefiks}/tooth_27.obj`,
-  tooth_3: `res/3d-objects/human/${prefiks}/tooth_3.obj`,
-  tooth_4: `res/3d-objects/human/${prefiks}/tooth_4.obj`,
-  tooth_5: `res/3d-objects/human/${prefiks}/tooth_5.obj`,
-  tooth_6: `res/3d-objects/human/${prefiks}/tooth_6.obj`,
-  tooth_7: `res/3d-objects/human/${prefiks}/tooth_7.obj`,
-  tooth_8: `res/3d-objects/human/${prefiks}/tooth_8.obj`,
-  tooth_9: `res/3d-objects/human/${prefiks}/tooth_9.obj`,
-  twelfth_thoracic_vertebra: `res/3d-objects/human/${prefiks}/twelfth thoracic vertebra.obj`,
-  vomer: `res/3d-objects/human/${prefiks}/vomer.obj`,
-  xiphoid_process: `res/3d-objects/human/${prefiks}/xiphoid process.obj`
+  "source": ['FJ101_BP4024_FMA23725_Right trapezoid.obj', 'FJ102_BP4046_FMA24450_Proximal phalanx of right thumb.obj', 'FJ103_BP4368_FMA24481_Left fibula.obj', 'FJ104_BP4095_FMA32644_Middle phalanx of right third toe.obj', 'FJ119_BP4151_FMA52736_Sphenoid bone.obj', 'FJ120_BP4149_FMA53647_Right nasal bone.obj', 'FJ127_BP4400_FMA32657_Distal phalanx of left fourth toe.obj', 'FJ135_BP4166_FMA13072_First lumbar vertebra.obj', 'FJ144_BP4038_FMA24461_Distal phalanx of right middle finger.obj', 'FJ153_BP4278_FMA7957_Right fourth rib.obj', 'FJ154_BP4258_FMA7987_Left first rib.obj', 'FJ162_BP4023_FMA24439_Right triquetral.obj', 'FJ163_BP4407_FMA24498_Left calcaneus.obj', 'FJ172_BP4153_FMA53656_Left palatine bone.obj', 'FJ182_BP4340_FMA23959_Distal phalanx of left little finger.obj', 'FJ183_BP4105_FMA24521_Right medial cuneiform bone.obj', 'FJ19_BP4136_FMA52788_Right parietal bone.obj', 'FJ1_BP4164_FMA13075_Fourth lumbar vertebra.obj', 'FJ202_BP4351_FMA23953_Distal phalanx of left index finger.obj', 'FJ203_BP4388_FMA24514_Left fourth metatarsal bone.obj', 'FJ204_BP4090_FMA32640_Proximal phalanx of right little toe.obj', 'FJ20_BP4140_FMA53649_Right maxilla.obj', 'FJ214_BP4158_FMA52893_Left zygomatic bone.obj', 'FJ221_BP4283_FMA8445_Right tenth rib.obj', 'FJ222_BP4201_FMA9209_Third thoracic vertebra.obj', 'FJ231_BP4354_FMA23957_Distal phalanx of left ring finger.obj', 'FJ232_BP4345_FMA24465_Left first metacarpal bone.obj', 'FJ233_BP4076_FMA24480_Right fibula.obj', 'FJ234_BP4086_FMA24500_Navicular bone of right foot.obj', 'FJ235_BP4387_FMA24510_Left second metatarsal bone.obj', 'FJ248_BP4279_FMA8175_Right sixth rib.obj', 'FJ249_BP4264_FMA8391_Left ninth rib.obj', 'FJ250_BP4200_FMA10037_Tenth thoracic vertebra.obj', 'FJ258_BP4328_FMA24440_Left triquetral.obj', 'FJ259_BP4025_FMA24443_Right trapezium.obj', 'FJ25_BP4189_FMA12524_Sixth cervical vertebra.obj', 'FJ260_BP4334_FMA24447_Left capitate.obj', 'FJ261_BP4389_FMA24516_Left fifth metatarsal bone.obj', 'FJ273_BP4204_FMA9165_First thoracic vertebra.obj', 'FJ278_BP4089_FMA230986_Middle phalanx of right little toe.obj', 'FJ279_BP4080_FMA32646_Middle phalanx of right fourth toe.obj', 'FJ27_BP4248_FMA13396_Left scapula.obj', 'FJ291_BP4367_FMA24478_Left tibia.obj', 'FJ303_BP4350_FMA23938_Middle phalanx of left index finger.obj', 'FJ304_BP4061_FMA24468_Right third metacarpal bone.obj', 'FJ30_BP4181_FMA16587_Left hip bone.obj', 'FJ311_BP4092_FMA43253_Proximal phalanx of right big toe.obj', 'FJ320_BP4157_FMA53645_Right lacrimal bone.obj', 'FJ324_BP4265_FMA8472_Left tenth rib.obj', 'FJ325_BP4206_FMA9187_Second thoracic vertebra.obj', 'FJ331_BP4034_FMA23467_Right ulna.obj', 'FJ332_BP4347_FMA24471_Left fourth metacarpal bone.obj', 'FJ333_BP4109_FMA24497_Right calcaneus.obj', 'FJ334_BP4103_FMA24515_Right fifth metatarsal bone.obj', 'FJ335_BP4108_FMA24528_Right cuboid bone.obj', 'FJ337_BP4382_FMA32635_Proximal phalanx of left second toe.obj', 'FJ346_BP4160_FMA52749_Hyoid bone.obj', 'FJ348_BP4339_FMA66791_Proximal phalanx of left little finger.obj', 'FJ353_BP4257_FMA8202_Left sixth rib.obj', 'FJ355_BP4205_FMA9991_Eighth thoracic vertebra.obj', 'FJ356_BP4165_FMA13073_Second lumbar vertebra.obj', 'FJ35_BP4035_FMA23464_Right radius.obj', 'FJ362_BP4322_FMA23131_Left humerus.obj', 'FJ365_BP4195_FMA9945_Sixth thoracic vertebra.obj', 'FJ368_BP4059_FMA24466_Right second metacarpal bone.obj', 'FJ369_BP4399_FMA32639_Proximal phalanx of left fourth toe.obj', 'FJ36_BP4316_FMA23465_Left radius.obj', 'FJ370_BP4377_FMA32659_Distal phalanx of left little toe.obj', 'FJ376_BP4138_FMA52789_Left parietal bone.obj', 'FJ37_BP4337_FMA23944_Middle phalanx of left little finger.obj', 'FJ381_BP4084_FMA32652_Distal phalanx of right second toe.obj', 'FJ38_BP4039_FMA24452_Proximal phalanx of right middle finger.obj', 'FJ392_BP4202_FMA10014_Ninth thoracic vertebra.obj', 'FJ395_BP4357_FMA65470_Proximal phalanx of left thumb.obj', 'FJ39_BP4053_FMA24454_Proximal phalanx of right little finger.obj', 'FJ3_BP4100_FMA24511_Right third metatarsal bone.obj', 'FJ403_BP4402_FMA24483_Left talus.obj', 'FJ40_BP4069_FMA24474_Right femur.obj', 'FJ410_BP4353_FMA23942_Middle phalanx of left ring finger.obj', 'FJ411_BP4043_FMA24453_Proximal phalanx of right ring finger.obj', 'FJ412_BP4106_FMA24525_Right lateral cuneiform bone.obj', 'FJ419_BP4148_FMA53648_Left nasal bone.obj', 'FJ41_BP4374_FMA24487_Left patella.obj', 'FJ424_BP4281_FMA8066_Right fifth rib.obj', 'FJ42_BP4404_FMA24526_Left lateral cuneiform bone.obj', 'FJ437_BP4331_FMA24436_Left scaphoid.obj', 'FJ438_BP4050_FMA24455_Middle phalanx of right index finger.obj', 'FJ439_BP4342_FMA24469_Left third metacarpal bone.obj', 'FJ43_BP4406_FMA24529_Left cuboid bone.obj', 'FJ440_BP4386_FMA24512_Left third metatarsal bone.obj', 'FJ44_BP4392_FMA32645_Middle phalanx of left third toe.obj', 'FJ457_BP4277_FMA7857_Right first rib.obj', 'FJ459_BP4261_FMA8039_Left third rib.obj', 'FJ461_BP4260_FMA8148_Left fourth rib.obj', 'FJ462_BP4203_FMA9248_Fourth thoracic vertebra.obj', 'FJ463_BP4188_FMA12522_Fourth cervical vertebra.obj', 'FJ469_BP4329_FMA24445_Left trapezoid.obj', 'FJ472_BP4396_FMA32651_Distal phalanx of left big toe.obj', 'FJ485_BP4066_FMA16586_Right hip bone.obj', 'FJ487_BP4042_FMA24462_Distal phalanx of right ring finger.obj', 'FJ488_BP4058_FMA24472_Right fifth metacarpal bone.obj', 'FJ492_BP4288_FMA8364_Right ninth rib.obj', 'FJ495_BP4006_FMA13395_Right scapula.obj', 'FJ4_BP4083_FMA32642_Middle phalanx of right second toe.obj', 'FJ501_BP4356_FMA23951_Distal phalanx of left thumb.obj', 'FJ502_BP4028_FMA24437_Right lunate.obj', 'FJ516_BP4360_FMA71908_Proximal phalanx of left middle finger.obj', 'FJ525_BP4051_FMA24460_Distal phalanx of right index finger.obj', 'FJ526_BP4385_FMA24508_Left first metatarsal bone.obj', 'FJ531_BP4144_FMA54738_Left inferior nasal concha.obj', 'FJ535_BP4027_FMA24441_Right pisiform.obj', 'FJ539_BP4397_FMA43254_Proximal phalanx of left big toe.obj', 'FJ544_BP4104_FMA24482_Right talus.obj', 'FJ545_BP4192_FMA12523_Fifth cervical vertebra.obj', 'FJ553_BP4381_FMA32643_Middle phalanx of left second toe.obj', 'FJ567_BP4073_FMA24486_Right patella.obj', 'FJ569_BP4378_FMA32641_Proximal phalanx of left little toe.obj', 'FJ56_BP4156_FMA53655_Right palatine bone.obj', 'FJ570_BP4097_FMA32654_Distal phalanx of right third toe.obj', 'FJ571_BP4088_FMA32658_Distal phalanx of right little toe.obj', 'FJ580_BP4137_FMA52739_Left temporal bone.obj', 'FJ585_BP4252_FMA7909_Right third rib.obj', 'FJ586_BP4196_FMA10059_Eleventh thoracic vertebra.obj', 'FJ587_BP4167_FMA13074_Third lumbar vertebra.obj', 'FJ593_BP4359_FMA23955_Distal phalanx of left middle finger.obj', 'FJ594_BP4029_FMA24448_Right hamate.obj', 'FJ595_BP4049_FMA24451_Proximal phalanx of right index finger.obj', 'FJ596_BP4101_FMA24509_Right second metatarsal bone.obj', 'FJ607_BP4134_FMA52734_Frontal bone.obj', 'FJ613_BP4256_FMA8310_Left eighth rib.obj', 'FJ61_BP4198_FMA9922_Fifth thoracic vertebra.obj', 'FJ621_BP4040_FMA24456_Middle phalanx of right middle finger.obj', 'FJ626_BP4383_FMA32653_Distal phalanx of left second toe.obj', 'FJ62_BP4249_FMA13323_Left clavicle.obj', 'FJ640_BP4133_FMA52740_Ethmoid.obj', 'FJ654_BP4333_FMA24438_Left lunate.obj', 'FJ655_BP4330_FMA24444_Left trapezium.obj', 'FJ656_BP4327_FMA24449_Left hamate.obj', 'FJ657_BP4044_FMA24457_Middle phalanx of right ring finger.obj', 'FJ658_BP4344_FMA24473_Left fifth metacarpal bone.obj', 'FJ659_BP4107_FMA24523_Right intermediate cuneiform bone.obj', 'FJ660_BP4401_FMA32647_Middle phalanx of left fourth toe.obj', 'FJ661_BP4394_FMA32655_Distal phalanx of left third toe.obj', 'FJ662_BP4079_FMA32656_Distal phalanx of right fourth toe.obj', 'FJ66_BP4182_FMA16202_Sacrum.obj', 'FJ682_BP4282_FMA8283_Right eighth rib.obj', 'FJ688_BP4012_FMA13322_Right clavicle.obj', 'FJ693_BP4075_FMA24477_Right tibia.obj', 'FJ694_BP4390_FMA24501_Navicular bone of left foot.obj', 'FJ699_BP4152_FMA52748_Mandible.obj', 'FJ703_BP4197_FMA10081_Twelfth thoracic vertebra.obj', 'FJ705_BP4187_FMA12521_Third cervical vertebra.obj', 'FJ713_BP4315_FMA23468_Left ulna.obj', 'FJ714_BP4332_FMA24442_Left pisiform.obj', 'FJ715_BP4047_FMA24459_Distal phalanx of right thumb.obj', 'FJ716_BP4102_FMA24507_Right first metatarsal bone.obj', 'FJ71_BP4026_FMA24435_Right scaphoid.obj', 'FJ721_BP4155_FMA52892_Right zygomatic bone.obj', 'FJ72_BP4403_FMA24522_Left medial cuneiform bone.obj', 'FJ730_BP4262_FMA8012_Left second rib.obj', 'FJ731_BP4280_FMA8531_Right eleventh rib.obj', 'FJ735_BP4346_FMA24467_Left second metacarpal bone.obj', 'FJ738_BP4275_FMA7882_Right second rib.obj', 'FJ739_BP4168_FMA13076_Fifth lumbar vertebra.obj', 'FJ73_BP4096_FMA32636_Proximal phalanx of right third toe.obj', 'FJ741_BP4199_FMA9968_Seventh thoracic vertebra.obj', 'FJ742_BP4186_FMA12525_Seventh cervical vertebra.obj', 'FJ756_BP4379_FMA230988_Middle phalanx of left little toe.obj', 'FJ757_BP4031_FMA23130_Right humerus.obj', 'FJ758_BP4361_FMA23940_Middle phalanx of left middle finger.obj', 'FJ759_BP4022_FMA24446_Right capitate.obj', 'FJ760_BP4099_FMA24513_Right fourth metatarsal bone.obj', 'FJ761_BP4085_FMA32634_Proximal phalanx of right second toe.obj', 'FJ790_BP4062_FMA24464_Right first metacarpal bone.obj', 'FJ791_BP4060_FMA24470_Right fourth metacarpal bone.obj', 'FJ794_BP4081_FMA32638_Proximal phalanx of right fourth toe.obj', 'FJ7_BP4349_FMA71915_Proximal phalanx of left index finger.obj', 'FJ803_BP4135_FMA52735_Occipital bone.obj', 'FJ804_BP4159_FMA53646_Left lacrimal bone.obj', 'FJ806_BP4146_FMA9710_Vomer.obj', 'FJ814_BP4054_FMA24458_Middle phalanx of right little finger.obj', 'FJ818_BP4143_FMA54737_Right inferior nasal concha.obj', 'FJ825_BP4259_FMA8093_Left fifth rib.obj', 'FJ826_BP4254_FMA8229_Right seventh rib.obj', 'FJ827_BP4253_FMA8256_Left seventh rib.obj', 'FJ828_BP4276_FMA8533_Right twelfth rib.obj', 'FJ837_BP4055_FMA24463_Distal phalanx of right little finger.obj', 'FJ838_BP4370_FMA24475_Left femur.obj', 'FJ839_BP4405_FMA24524_Left intermediate cuneiform bone.obj', 'FJ841_BP4393_FMA32637_Proximal phalanx of left third toe.obj', 'FJ842_BP4093_FMA32650_Distal phalanx of right big toe.obj', 'FJ850_BP4150_FMA53650_Left maxilla.obj', 'FJ855_BP4338_FMA71916_Proximal phalanx of left ring finger.obj', 'FJ858_BP4266_FMA8532_Left eleventh rib.obj', 'FJ859_BP4191_FMA12519_Atlas.obj', 'FJ86_BP4131_FMA52738_Right temporal bone.obj', 'FJ929_BP2872_FMA45097_Sesamoid bone of right foot.obj', 'FJ92_BP4263_FMA8534_Left twelfth rib.obj', 'FJ930_BP2873_FMA45098_Sesamoid bone of left foot.obj', 'FJ93_BP4190_FMA12520_Axis.obj']
 };
-var _default = skeletalMap;
-exports.default = _default;
+exports.skeletalMap = skeletalMap;
 
 },{}],72:[function(require,module,exports){
 "use strict";
@@ -43604,9 +43315,7 @@ exports.loadSystemSkeletal = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
-var _map = _interopRequireDefault(require("./map"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _map = require("./map1");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -43661,7 +43370,13 @@ let loadSystemSkeletal = (App, world) => {
     } // Load mesh data
 
 
-    matrixEngine.objLoader.downloadMeshes(_map.default, onLoadObj
+    var skeletalMapOBJ = {};
+
+    _map.skeletalMap.source.forEach(element => {
+      skeletalMapOBJ[element] = 'res/3d-objects/human2/skeletal/' + element; //`res/3d-objects/human/
+    });
+
+    matrixEngine.objLoader.downloadMeshes(skeletalMapOBJ, onLoadObj
     /*{ swap: [0, 1]}*/
     );
   });
@@ -43669,7 +43384,7 @@ let loadSystemSkeletal = (App, world) => {
 
 exports.loadSystemSkeletal = loadSystemSkeletal;
 
-},{"./map":71,"matrix-engine":14}],73:[function(require,module,exports){
+},{"./map1":71,"matrix-engine":14}],73:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -43704,6 +43419,7 @@ class WebAnatomy {
     this.config = config;
     this.world = world;
     this.skeletalSystem = null;
+    let App = matrixEngine.App;
     App.camera.SceneController = true; // Make it adaptive for blender exported data.
 
     App.camera.speedAmp = 0.1;

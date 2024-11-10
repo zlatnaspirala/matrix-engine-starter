@@ -1,5 +1,5 @@
 import * as matrixEngine from "matrix-engine";
-import skeletalMap from "./map";
+import {skeletalMap} from "./map1";
 
 export let loadSystemSkeletal = (App, world) => {
   return new Promise((resolve) => {
@@ -52,6 +52,11 @@ export let loadSystemSkeletal = (App, world) => {
     }
 
     // Load mesh data
-    matrixEngine.objLoader.downloadMeshes(skeletalMap, onLoadObj /*{ swap: [0, 1]}*/);
+		var skeletalMapOBJ = {};
+		skeletalMap.source.forEach(element => {
+			skeletalMapOBJ[element] = 'res/3d-objects/human2/skeletal/' +element;
+			//`res/3d-objects/human/
+		});
+    matrixEngine.objLoader.downloadMeshes(skeletalMapOBJ, onLoadObj /*{ swap: [0, 1]}*/);
   })
 };

@@ -18,34 +18,38 @@ navigator.serviceWorker.register("./hacker-timer/hack-timer.js");
 // VoiceCommanderInstance.run();
 
 var world;
-var App = matrixEngine.App;
-
-App.webAnatomy = {};
-
-App.config = {
-};
+window.world = world;
+window.matrixEngine = matrixEngine;
 
 function webGLStart() {
-  // from 1.9.12 => simply render draw funct without FBO
-  // world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
-  world = matrixEngine.matrixWorld.defineworld(canvas, "simply");
 
-  world.callReDraw();
+	window.App = matrixEngine.App;
+	window.matrixEngine = matrixEngine;
 
-  App.webAnatomy = new WebAnatomy(world, App.config);
-  window.App = App;
-  window.world = world;
-  window.matrixEngine = matrixEngine;
+	App.webAnatomy = {};
+
+	App.config = {
+	};
+
+
+	// from 1.9.12 => simply render draw funct without FBO
+	// world = matrixEngine.matrixWorld.defineworld(canvas, 'simply');
+	world = matrixEngine.matrixWorld.defineworld(canvas);
+
+	world.callReDraw();
+
+	App.webAnatomy = new WebAnatomy(world, App.config);
+
 }
 
 window.addEventListener("load", () => {
-  if ("serviceWorker" in navigator) {
-    // navigator.serviceWorker.register("worker.js");
-  }
-  setTimeout(() => {
-    matrixEngine.Engine.initApp(webGLStart);
-  }, 200);
+	if("serviceWorker" in navigator) {
+		// navigator.serviceWorker.register("worker.js");
+	}
+	setTimeout(() => {
+		matrixEngine.Engine.initApp(webGLStart);
+	}, 200);
 }, false);
 
 // Not in use
-export default App;
+// export default App;
