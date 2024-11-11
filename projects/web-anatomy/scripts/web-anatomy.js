@@ -1,9 +1,9 @@
 import * as matrixEngine from "matrix-engine";
-import {planeFont, planeUVFont} from "matrix-engine-plugins";
-import {startSpin, stopSpin} from "./matrix-audio";
+// import {planeFont, planeUVFont} from "matrix-engine-plugins";
+// import {startSpin, stopSpin} from "./matrix-audio";
 import {createNidzaHudBalance, createHudBtnRotZ} from "./active-textures";
 import {Nidza} from "nidza";
-import {beep} from "./audio-gen";
+// import {beep} from "./audio-gen";
 import {loadSystemMuscular, loadSystemSkeletal} from "./systems/anatomy-loader";
 import {MTM} from 'matrix-engine-plugins';
 
@@ -36,7 +36,7 @@ export default class WebAnatomy {
 		this.statusText3 = {text: ' - 💀 Skeletal System []'}
 		this.statusText4 = {text: ''}
 		this.statusText5 = {text: 'Based on matrix-engine'}
-		this.statusText6 = {text: '@zlatnaspirala'}
+		this.statusText6 = {text: 'Created by Nikola Lukic'}
 		this.statusText7 = {text: 'maximumroulette.com'}
 
 		var TESTARRAY = [this.statusText1]
@@ -48,7 +48,7 @@ export default class WebAnatomy {
 		};
 
 		world.Add("squareTex", 1, "topHeader", texTopHeader);
-		App.scene.topHeader.geometry.setScaleByX(30);
+		App.scene.topHeader.geometry.setScaleByX(55);
 		App.scene.topHeader.geometry.setScaleByY(-20);
 		App.scene.topHeader.position.z = 21;
 		App.scene.topHeader.position.x = 10;
@@ -66,17 +66,16 @@ export default class WebAnatomy {
 		})
 
 		world.Add("squareTex", 1, "cmdRotZ", texTopHeader);
-		App.scene.cmdRotZ.geometry.setScaleByX(4);
-		App.scene.cmdRotZ.geometry.setScaleByY(-3);
+		App.scene.cmdRotZ.geometry.setScaleByX(3);
+		App.scene.cmdRotZ.geometry.setScaleByY(-2);
 		App.scene.cmdRotZ.position.z = 21;
-		App.scene.cmdRotZ.position.x = -20;
+		App.scene.cmdRotZ.position.x = -30;
 		App.scene.cmdRotZ.position.y = 40;
 		createHudBtnRotZ(this.nidza, this.statusText, TESTARRAY, TESTARRAYHOVER).then((canvas2d) => {
 			App.scene.cmdRotZ.streamTextures = {
 				videoImage: canvas2d
 			}
 		})
-
 
 		this.addAnatomySystems(world);
 		this.addRaycaster();
@@ -146,33 +145,31 @@ export default class WebAnatomy {
 	}
 
 	addAnatomySystems = function(world) {
-		// loadSystemSkeletal(App, world).then((skeletal) => {
+		loadSystemSkeletal(App, world).then((skeletal) => {
+			this.skeletalSystem = skeletal;
+			setTimeout(() => {
+				App.scene.topHeader.position.translateByXY(69, 76)
+				setTimeout(() => {
+					this.statusText1.blocker = false;
+					this.statusText1.text = '[Skeletal parts]'
+					console.info("Skeletal loaded.");
+				}, 1000)
+			}, 3000)
+		});
+
+		// loadSystemMuscular(App, world).then((skeletal) => {
 		// 	this.skeletalSystem = skeletal;
+		// 	console.info("Anatomy is constructed.");
 		// 	setTimeout(() => {
 		// 		App.scene.topHeader.position.translateByXY(48, 75)
 		// 		setTimeout(() => {
 		// 			console.log('TEST this.statusText1 ', this.statusText1.fillText)
 		// 			this.statusText1.blocker = false;
 		// 			// this.statusText1.fillText('Skeletal parts:')
-		// 			this.statusText1.text = 'Skeletal parts:'
-		// 			console.info("Skeletal loaded.");
+		// 			this.statusText1.text = 'Muscular parts:'
 		// 		}, 1000)
 		// 	}, 3000)
 		// });
-
-		loadSystemMuscular(App, world).then((skeletal) => {
-			this.skeletalSystem = skeletal;
-			console.info("Anatomy is constructed.");
-			setTimeout(() => {
-				App.scene.topHeader.position.translateByXY(48, 75)
-				setTimeout(() => {
-					console.log('TEST this.statusText1 ', this.statusText1.fillText)
-					this.statusText1.blocker = false;
-					// this.statusText1.fillText('Skeletal parts:')
-					this.statusText1.text = 'Muscular parts:'
-				}, 1000)
-			}, 3000)
-		});
 
 	};
 
@@ -205,39 +202,18 @@ export default class WebAnatomy {
 		for(let key in App.scene) {
 			if(App.scene[key].name.indexOf("s_") !== -1) {
 				App.scene[key].glBlend.blendEnabled = true;
-				// App.scene[id].position.y =  2;
 				App.scene[key].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[src];
 				App.scene[key].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[dest];
 			}
 		}
-
-		// setInterval(function() {
-		//   for(let key in App.scene) {
-		//     if(App.scene[key].name.indexOf("skeletal_") !== -1) {
-		//       App.scene.MyCubeTex.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
-		//       App.scene.MyCubeTex.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
-		//     }
-		//   }
-
-		// }, 100);
-
 	}
 
 	changeScale = (src) => {
 		for(let key in App.scene) {
 			if(App.scene[key].name.indexOf("s_") !== -1) {
-				// App.scene[id].position.y =  2;
 				App.scene[key].mesh.setScale(src)
 			}
 		}
-		// setInterval(function() {
-		//   for(let key in App.scene) {
-		//     if(App.scene[key].name.indexOf("skeletal_") !== -1) {
-		//       App.scene.MyCubeTex.LightsData.ambientLight.r = oscilltor_variable.UPDATE();
-		//       App.scene.MyCubeTex.LightsData.ambientLight.b = oscilltor_variable.UPDATE();
-		//     }
-		//   }
-		// }, 100);
 	}
 
 	changeRotY = (a) => {
