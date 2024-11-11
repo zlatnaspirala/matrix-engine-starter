@@ -11,7 +11,7 @@ var FILE_STRING = "";
 var SUM_OF_AUDIOS = 0;
 console.log('\x1b[36m%s\x1b[0m', "......................................");
 console.log('\x1b[36m%s\x1b[0m', ".                                    .");
-console.log('\x1b[36m%s\x1b[0m', ". Visual-js Resource audio builder   .");
+console.log('\x1b[36m%s\x1b[0m', ". File names reader builder          .");
 console.log('\x1b[36m%s\x1b[0m', ". Version 3.0.0                      .");
 console.log('\x1b[36m%s\x1b[0m', ". Thanks for using my software! 😘   .");
 console.log('\x1b[36m%s\x1b[0m', "......................................");
@@ -43,7 +43,7 @@ function GET_FILES_NAME(path) {
 	});
 }
 
-GET_FILES_NAME("./skeletal/");
+GET_FILES_NAME("./muscular/");
 
 function CreateFile(path_, CONTENT) {
 	var Reset = "\x1b[0m";

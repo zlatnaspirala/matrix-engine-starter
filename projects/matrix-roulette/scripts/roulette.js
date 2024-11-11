@@ -26,7 +26,7 @@ export class MatrixRoulette {
 	// - status of matix roulette server
 	status = {
 		text: new MTM('WELCOME MY FRIEND!', {deltaRemove: 1, deltaFill: 40}),
-		winNumberMomentDelay: 5000,
+		winNumberMomentDelay: 2000,
 		cameraView: 'bets',
 		game: 'MEDITATE'
 	}
@@ -501,10 +501,14 @@ export class MatrixRoulette {
 	}
 
 	prepareFire() {
+
+		// add later validator for  no bets  status
+		dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {detail: 'Lets go'}))
+
 		setTimeout(() => {
 			// clear double call
 			// roulette.wheelSystem.fireBall()
-			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.3, [4., -11.4, 3], [-2000, 220, 11]]}))
+			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.3, [4., -11.4, 3], [-4000, 250, 10]]}))
 			removeEventListener('camera-view-wheel', this.prepareFire)
 		}, this.status.winNumberMomentDelay)
 	}
@@ -522,7 +526,7 @@ export class MatrixRoulette {
 				setTimeout(() => {
 					this.setupCameraView('bets')
 					dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'WIN NUM:' + ev.detail}))
-					setTimeout(() => {this.tableBet.chips.clearAll()}, this.status.winNumberMomentDelay)
+					setTimeout(() => {this.tableBet.chips.clearAll()}, this.status.winNumberMomentDelay*3)
 				}, this.status.winNumberMomentDelay)
 
 			})

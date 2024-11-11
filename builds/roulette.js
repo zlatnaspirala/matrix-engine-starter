@@ -27964,8 +27964,9 @@ function defineworld(canvas, renderType) {
             }
           }, after);
         } else {
-          let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
-          _manifest.default.scene[objForDelete.name] = null;
+          world.contentList.splice(world.contentList.indexOf(objObject), 1)[0]; // App.scene[objForDelete.name] = null;
+
+          console.log("DESTROYED objObject.name ", objObject.name);
         }
       };
 
@@ -43500,7 +43501,7 @@ class MatrixRoulette {
       deltaRemove: 1,
       deltaFill: 40
     }),
-    winNumberMomentDelay: 5000,
+    winNumberMomentDelay: 2000,
     cameraView: 'bets',
     game: 'MEDITATE'
   };
@@ -44006,11 +44007,15 @@ class MatrixRoulette {
   }
 
   prepareFire() {
+    // add later validator for  no bets  status
+    dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {
+      detail: 'Lets go'
+    }));
     setTimeout(() => {
       // clear double call
       // roulette.wheelSystem.fireBall()
       dispatchEvent(new CustomEvent('fire-ball', {
-        detail: [0.3, [4., -11.4, 3], [-2000, 220, 11]]
+        detail: [0.3, [4., -11.4, 3], [-4000, 250, 10]]
       }));
       removeEventListener('camera-view-wheel', this.prepareFire);
     }, this.status.winNumberMomentDelay);
@@ -44030,7 +44035,7 @@ class MatrixRoulette {
           }));
           setTimeout(() => {
             this.tableBet.chips.clearAll();
-          }, this.status.winNumberMomentDelay);
+          }, this.status.winNumberMomentDelay * 3);
         }, this.status.winNumberMomentDelay);
       });
       addEventListener('SPIN', e => {
@@ -44320,7 +44325,7 @@ class TableChips {
 
     setTimeout(() => {
       this.register = [];
-      console.log('reg', this.register);
+      console.log('clearAll ', this.register);
     }, 200);
   }
 
@@ -44353,7 +44358,7 @@ class TableChips {
         if (winNumber != parseFloat(array[index].betPlace.name.split('gle')[1])) {
           //
           array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy(1);
+          array[index].chipObj.selfDestroy();
         }
       } // console.log('  CORNER remove lost chips ')
       // CORNER 
@@ -44372,7 +44377,7 @@ class TableChips {
         test.forEach(num => {
           if (passedCorner == false) {
             array[index].betPlace.tableEvents.chips = 0;
-            array[index].chipObj.selfDestroy(1);
+            array[index].chipObj.selfDestroy();
             passedCorner = null;
           }
         });
@@ -44393,7 +44398,7 @@ class TableChips {
         testSplit.forEach(num => {
           if (passedSplit == false) {
             array[index].betPlace.tableEvents.chips = 0;
-            array[index].chipObj.selfDestroy(1);
+            array[index].chipObj.selfDestroy();
             passedSplit = null;
           }
         });
@@ -44413,7 +44418,7 @@ class TableChips {
         testStreet.forEach(num => {
           if (passedStreet == false) {
             array[index].betPlace.tableEvents.chips = 0;
-            array[index].chipObj.selfDestroy(1);
+            array[index].chipObj.selfDestroy();
             passedStreet = null;
           }
         });
@@ -44434,7 +44439,7 @@ class TableChips {
         testLine.forEach(num => {
           if (passedLine == false) {
             array[index].betPlace.tableEvents.chips = 0;
-            array[index].chipObj.selfDestroy(1);
+            array[index].chipObj.selfDestroy();
             passedLine = null;
           }
         });
@@ -44444,68 +44449,68 @@ class TableChips {
       if (array[index].betPlace.name == 'column_1' && _tableEvents.RULES.column1.indexOf(winNumber) == -1) {
         console.log('column_1 column FIELD1  chips ');
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name == 'column_2' && _tableEvents.RULES.column2.indexOf(winNumber) == -1) {
         console.log('column_2 column FIELD1  chips ');
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name == 'column_3' && _tableEvents.RULES.column3.indexOf(winNumber) == -1) {
         console.log('column_3 column FIELD1  chips ');
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name.indexOf('from1_12') != -1 && winNumber > 12) {
         console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name.indexOf('from13_24') != -1 && (winNumber < 12 || winNumber > 24)) {
         console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name.indexOf('from25_36') != -1 && winNumber < 25) {
         console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name.indexOf('even') != -1 && this.isOdd(winNumber) == true && winNumber != 0) {
         console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name.indexOf('odd') != -1 && this.isEven(winNumber) == true && winNumber != 0) {
         console.log('  odd FIELD1  chips ', array[index].tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name.indexOf('low') != -1 && winNumber >= 19 && winNumber != 0) {
         console.log('HIGH remove lost   chips ', array[index].betPlace.tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (array[index].betPlace.name.indexOf('high') != -1 && winNumber <= 18 && winNumber != 0) {
         console.log('  HIGH FIELD1  chips ', array[index].tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy(1);
+        array[index].chipObj.selfDestroy();
       }
 
       if (winNumberColor == 'red') {
         // check zero name ???
         if (array[index].betPlace.name == 'black' || array[index].betPlace.name == 'single0') {
           array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy(1);
+          array[index].chipObj.selfDestroy();
           console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace);
         }
       } else if (winNumberColor == 'black') {
@@ -44513,7 +44518,7 @@ class TableChips {
 
         if (array[index].betPlace.name == 'red' || array[index].betPlace.name == 'single0') {
           array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy(1);
+          array[index].chipObj.selfDestroy();
           console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace);
         }
       }
@@ -45603,8 +45608,7 @@ class Wheel {
     if (matrixEngine.App.sounds.audios.spining) {
       try {
         matrixEngine.App.sounds.play('spiningEnd');
-      } catch (err) {// unhandled
-      }
+      } catch (err) {}
 
       matrixEngine.App.sounds.audios.spining.pause();
       matrixEngine.App.sounds.audios.spining.currentTime = 0;
@@ -45627,6 +45631,7 @@ class Wheel {
       this.ballBody.angularVelocity.setZero();
       this.ballBody.quaternion.set(0, 0, 0, 0);
       this.ballBody.force.set(force[0], force[1], force[2]);
+      this.ballBody.addEventListener("collide", this.momentOftouch);
       return;
     }
 
@@ -45798,7 +45803,7 @@ class Wheel {
   }
 
   animateRoll() {
-    console.warn('ONCE CALL!!!!!!!!!');
+    console.warn('ONCE');
     this.C = 0;
     this.rollTimer = {};
 
@@ -45818,12 +45823,15 @@ class Wheel {
         p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
         App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1.);
         App.scene['centerWheel' + i].physics.currentBody.position.set(p3.x, p3.y - 30, -0.2);
-        if (App.scene.centerRollDecoration) App.scene.centerRollDecoration.rotation.rotationSpeed.y = -this.speedRollInit * 600;
+
+        if (App.scene.centerRollDecoration) {
+          App.scene.centerRollDecoration.rotation.rotationSpeed.y = this.speedRollInit * 1000;
+        }
       }
 
       this.C = this.C - this.speedRollInit;
 
-      if (this.speedRollInit < 0.004) {// clearInterval(this.rollTimer)
+      if (this.speedRollInit < 0.002) {// clearInterval(this.rollTimer)
       } else {
         this.speedRollInit = this.speedRollInit - 0.001;
       }
