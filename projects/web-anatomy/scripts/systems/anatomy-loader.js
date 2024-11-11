@@ -16,7 +16,9 @@ export let loadSystemSkeletal = (App, world) => {
 
 			var h = [];
 			for(let key in meshes) {
-				var id = "s_" + key;
+				var replaced = key.split(' ').join('_');
+				replaced = replaced.split('.')[0]
+				var id = "s_" + replaced;
 				world.Add("obj", 1, id, textuteImageSamplers2, meshes[key]);
 				// still must be called with method - SCALE for OBJ Mesh
 				App.scene[id].mesh.setScale(-0.055)
@@ -70,13 +72,15 @@ export let loadSystemMuscular = (App, world) => {
 			}
 
 			var textuteImageSamplers2 = {
-				source: ["res/images/metal.png"],
+				source: ["res/images/muscular.png"],
 				mix_operation: "multiply",
 			};
 
 			var h = [];
 			for(let key in meshes) {
-				var id = "s_" + key;
+				var replaced = key.split(' ').join('_');
+				replaced = replaced.split('.')[0]
+				var id = "s_" + replaced;
 				world.Add("obj", 1, id, textuteImageSamplers2, meshes[key]);
 				// still must be called with method - SCALE for OBJ Mesh
 				App.scene[id].mesh.setScale(-0.055)
@@ -86,7 +90,7 @@ export let loadSystemMuscular = (App, world) => {
 				App.scene[id].rotation.rotx = 90;
 				App.scene[id].rotation.roty = 0;
 
-				App.scene[id].glBlend.blendEnabled = true;
+				App.scene[id].glBlend.blendEnabled = false;
 				App.scene[id].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
 				App.scene[id].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[2];
 

@@ -146,19 +146,19 @@ export default class WebAnatomy {
 	}
 
 	addAnatomySystems = function(world) {
-		loadSystemSkeletal(App, world).then((skeletal) => {
-			this.skeletalSystem = skeletal;
-			setTimeout(() => {
-				App.scene.topHeader.position.translateByXY(48, 75)
-				setTimeout(() => {
-					console.log('TEST this.statusText1 ', this.statusText1.fillText)
-					this.statusText1.blocker = false;
-					// this.statusText1.fillText('Skeletal parts:')
-					this.statusText1.text = 'Skeletal parts:'
-					console.info("Skeletal loaded.");
-				}, 1000)
-			}, 3000)
-		});
+		// loadSystemSkeletal(App, world).then((skeletal) => {
+		// 	this.skeletalSystem = skeletal;
+		// 	setTimeout(() => {
+		// 		App.scene.topHeader.position.translateByXY(48, 75)
+		// 		setTimeout(() => {
+		// 			console.log('TEST this.statusText1 ', this.statusText1.fillText)
+		// 			this.statusText1.blocker = false;
+		// 			// this.statusText1.fillText('Skeletal parts:')
+		// 			this.statusText1.text = 'Skeletal parts:'
+		// 			console.info("Skeletal loaded.");
+		// 		}, 1000)
+		// 	}, 3000)
+		// });
 
 		loadSystemMuscular(App, world).then((skeletal) => {
 			this.skeletalSystem = skeletal;
@@ -169,7 +169,7 @@ export default class WebAnatomy {
 					console.log('TEST this.statusText1 ', this.statusText1.fillText)
 					this.statusText1.blocker = false;
 					// this.statusText1.fillText('Skeletal parts:')
-					this.statusText1.text = 'Skeletal parts:'
+					this.statusText1.text = 'Muscular parts:'
 				}, 1000)
 			}, 3000)
 		});
@@ -196,9 +196,9 @@ export default class WebAnatomy {
 			this['statusText2'].text = r;
 		});
 
-		// canvas.addEventListener("mousemove", ev => {
-		// 	matrixEngine.raycaster.checkingProcedure(ev);
-		// });
+		canvas.addEventListener("mousemove", ev => {
+			matrixEngine.raycaster.checkingProcedure(ev);
+		});
 	};
 
 	changeGlBlend = (src, dest, rot) => {
