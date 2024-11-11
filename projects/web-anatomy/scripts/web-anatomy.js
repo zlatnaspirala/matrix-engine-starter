@@ -196,9 +196,9 @@ export default class WebAnatomy {
 			this['statusText2'].text = r;
 		});
 
-		canvas.addEventListener("mousemove", ev => {
-			matrixEngine.raycaster.checkingProcedure(ev);
-		});
+		// canvas.addEventListener("mousemove", ev => {
+		// 	matrixEngine.raycaster.checkingProcedure(ev);
+		// });
 	};
 
 	changeGlBlend = (src, dest, rot) => {

@@ -43692,10 +43692,9 @@ class WebAnatomy {
       this['statusText4'].text = this['statusText3'].text;
       this['statusText3'].text = this['statusText2'].text;
       this['statusText2'].text = r;
-    });
-    canvas.addEventListener("mousemove", ev => {
-      matrixEngine.raycaster.checkingProcedure(ev);
-    });
+    }); // canvas.addEventListener("mousemove", ev => {
+    // 	matrixEngine.raycaster.checkingProcedure(ev);
+    // });
   };
   changeGlBlend = (src, dest, rot) => {
     for (let key in App.scene) {
