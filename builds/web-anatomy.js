@@ -43435,29 +43435,44 @@ class WebAnatomy {
   }
 
   addAnatomySystems = function (world) {
-    (0, _anatomyLoader.loadSystemSkeletal)(App, world).then(skeletal => {
-      this.skeletalSystem = skeletal;
-      setTimeout(() => {
-        App.scene.topHeader.position.translateByXY(69, 76);
+    if (matrixEngine.utility.QueryString.skeletal && matrixEngine.utility.QueryString.skeletal == 'true') {
+      (0, _anatomyLoader.loadSystemSkeletal)(App, world).then(skeletal => {
+        this.skeletalSystem = skeletal;
         setTimeout(() => {
-          this.statusText1.blocker = false;
-          this.statusText1.text = '[Skeletal parts]';
-          console.info("Skeletal loaded.");
-        }, 1000);
-      }, 3000);
-    }); // loadSystemMuscular(App, world).then((skeletal) => {
-    // 	this.skeletalSystem = skeletal;
-    // 	console.info("Anatomy is constructed.");
-    // 	setTimeout(() => {
-    // 		App.scene.topHeader.position.translateByXY(48, 75)
-    // 		setTimeout(() => {
-    // 			console.log('TEST this.statusText1 ', this.statusText1.fillText)
-    // 			this.statusText1.blocker = false;
-    // 			// this.statusText1.fillText('Skeletal parts:')
-    // 			this.statusText1.text = 'Muscular parts:'
-    // 		}, 1000)
-    // 	}, 3000)
-    // });
+          App.scene.topHeader.position.translateByXY(69, 76);
+          setTimeout(() => {
+            this.statusText1.blocker = false;
+            this.statusText1.text = '[Skeletal parts]';
+            console.info("Skeletal loaded.");
+          }, 1000);
+        }, 3000);
+      });
+    } else if (matrixEngine.utility.QueryString.muscular && matrixEngine.utility.QueryString.muscular == 'true') {
+      (0, _anatomyLoader.loadSystemMuscular)(App, world).then(skeletal => {
+        this.skeletalSystem = skeletal;
+        setTimeout(() => {
+          App.scene.topHeader.position.translateByXY(48, 75);
+          setTimeout(() => {
+            this.statusText1.blocker = false;
+            this.statusText1.text = 'Muscular parts:';
+            console.info("Anatomy is constructed.");
+          }, 1000);
+        }, 3000);
+      });
+    } else {
+      // default skeletal
+      (0, _anatomyLoader.loadSystemSkeletal)(App, world).then(skeletal => {
+        this.skeletalSystem = skeletal;
+        setTimeout(() => {
+          App.scene.topHeader.position.translateByXY(69, 76);
+          setTimeout(() => {
+            this.statusText1.blocker = false;
+            this.statusText1.text = '[Skeletal parts]';
+            console.info("Skeletal loaded.");
+          }, 1000);
+        }, 3000);
+      });
+    }
   };
   addRaycaster = () => {
     var LAST_HOVER = null;
