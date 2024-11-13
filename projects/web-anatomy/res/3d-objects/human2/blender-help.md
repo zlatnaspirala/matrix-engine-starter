@@ -1,14 +1,14 @@
+# Blender help
 
-## Database:
+## Database origin objs:
 https://lifesciencedb.jp/bp3d/
 
-## for old Blender
+## For old Blender
 https://github.com/mcvnh/blender-batch-export-obj
 
 
-## for last 4
+## for last 4.1 Blender
 https://docs.blender.org/api/4.1/bpy.ops.wm.html#bpy.ops.wm.obj_export
-
 
 
 ## EXPORT FOR 4.1 Blender
