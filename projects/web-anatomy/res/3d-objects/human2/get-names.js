@@ -43,7 +43,7 @@ function GET_FILES_NAME(path) {
 	});
 }
 
-GET_FILES_NAME("./muscular/");
+GET_FILES_NAME("./muscular-decimate/");
 
 function CreateFile(path_, CONTENT) {
 	var Reset = "\x1b[0m";
