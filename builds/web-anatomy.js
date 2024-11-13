@@ -42938,7 +42938,8 @@ function webGLStart() {
 }
 
 window.addEventListener("load", () => {
-  if ("serviceWorker" in navigator) {// navigator.serviceWorker.register("worker.js");
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("worker.js");
   }
 
   setTimeout(() => {
@@ -43303,7 +43304,7 @@ class WebAnatomy {
       deltaRemove: 1,
       deltaFill: 40
     });
-    this.statusText1 = new _matrixEnginePlugins.MTM('-L-O-A-D-I-N-G--S-K-E-L-E-T-A-L-', {
+    this.statusText1 = new _matrixEnginePlugins.MTM('-L-O-A-D-I-N-G-', {
       deltaRemove: 1,
       deltaFill: 1
     });
@@ -43311,7 +43312,7 @@ class WebAnatomy {
       text: 'Supported:'
     };
     this.statusText3 = {
-      text: ' - 💀 Skeletal System []'
+      text: ' - 💀 Skeletal, Muscular Systems'
     };
     this.statusText4 = {
       text: ''
@@ -43347,8 +43348,10 @@ class WebAnatomy {
       };
     });
     world.Add("squareTex", 1, "cmdRotZ", texTopHeader);
-    App.scene.cmdRotZ.geometry.setScaleByX(3);
-    App.scene.cmdRotZ.geometry.setScaleByY(-2);
+    App.scene.cmdRotZ.geometry.setScaleByX(4); // ray caster not work for - scale
+
+    App.scene.cmdRotZ.geometry.setScaleByY(3);
+    App.scene.cmdRotZ.rotation.rotx = 180;
     App.scene.cmdRotZ.position.z = 21;
     App.scene.cmdRotZ.position.x = -30;
     App.scene.cmdRotZ.position.y = 40;
@@ -43478,7 +43481,13 @@ class WebAnatomy {
     var LAST_HOVER = null;
     window.addEventListener("ray.hit.event", ev => {
       var r = ev.detail.hitObject.name;
+      console.log("RAY", r);
       this['statusText7'].text = this['statusText6'].text;
+
+      if (ev.detail.hitObject.name == "cmdRotZ") {
+        App.webAnatomy.changeRotZ(ev.detail.hitObject.rotation.rotz + 5);
+        return;
+      }
 
       if (ev.detail.hitObject.hoverEffect) {
         if (LAST_HOVER != null && LAST_HOVER.name != ev.detail.hitObject.name) {
