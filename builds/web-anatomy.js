@@ -43295,7 +43295,8 @@ class WebAnatomy {
     App.camera.speedAmp = 0.1;
     App.camera.sceneControllerDragAmp = 3.3;
     matrixEngine.Events.camera.zPos = 140;
-    matrixEngine.Events.camera.yPos = 40; // inject voice commander
+    matrixEngine.Events.camera.yPos = 40;
+    this.globalRotZ = 0; // inject voice commander
 
     this.vc = {};
     this.nidza = new _nidza.Nidza();
@@ -43347,19 +43348,23 @@ class WebAnatomy {
         videoImage: canvas2d
       };
     });
-    world.Add("squareTex", 1, "cmdRotZ", texTopHeader);
-    App.scene.cmdRotZ.geometry.setScaleByX(4); // ray caster not work for - scale
+    var rotZImg = {
+      source: ["res/images/r.png"],
+      mix_operation: "multiply"
+    };
+    world.Add("squareTex", 1, "cmdRotZ", rotZImg);
+    App.scene.cmdRotZ.geometry.setScaleByX(5); // ray caster not work for - scale
 
-    App.scene.cmdRotZ.geometry.setScaleByY(3);
-    App.scene.cmdRotZ.rotation.rotx = 180;
+    App.scene.cmdRotZ.geometry.setScaleByY(5);
+    App.scene.cmdRotZ.rotation.rotx = 0;
     App.scene.cmdRotZ.position.z = 21;
     App.scene.cmdRotZ.position.x = -30;
-    App.scene.cmdRotZ.position.y = 40;
-    (0, _activeTextures.createHudBtnRotZ)(this.nidza, this.statusText, TESTARRAY, TESTARRAYHOVER).then(canvas2d => {
-      App.scene.cmdRotZ.streamTextures = {
-        videoImage: canvas2d
-      };
-    });
+    App.scene.cmdRotZ.position.y = 40; // createHudBtnRotZ(this.nidza, this.statusText, TESTARRAY, TESTARRAYHOVER).then((canvas2d) => {
+    // 	App.scene.cmdRotZ.streamTextures = {
+    // 		videoImage: canvas2d
+    // 	}
+    // })
+
     this.addAnatomySystems(world);
     this.addRaycaster();
 
@@ -43480,12 +43485,13 @@ class WebAnatomy {
   addRaycaster = () => {
     var LAST_HOVER = null;
     window.addEventListener("ray.hit.event", ev => {
-      var r = ev.detail.hitObject.name;
-      console.log("RAY", r);
+      var r = ev.detail.hitObject.name; // console.log("RAY", r)
+
       this['statusText7'].text = this['statusText6'].text;
 
       if (ev.detail.hitObject.name == "cmdRotZ") {
-        App.webAnatomy.changeRotZ(ev.detail.hitObject.rotation.rotz + 5);
+        this.globalRotZ += 5;
+        App.webAnatomy.changeRotZ(this.globalRotZ);
         return;
       }
 
