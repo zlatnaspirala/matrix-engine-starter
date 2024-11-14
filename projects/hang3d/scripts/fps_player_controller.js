@@ -24,7 +24,7 @@ export var runHang3d = (world) => {
 	})
 	// You can use import also.
 	matrixEngine.utility.notify.hideTime = 100;
-	matrixEngine.utility.notify.showTime = 1200;
+	matrixEngine.utility.notify.showTime = 2100;
 	let notify = matrixEngine.utility.notify;
 	let byId = matrixEngine.utility.byId;
 	let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
@@ -38,6 +38,9 @@ export var runHang3d = (world) => {
 	matrixEngine.Events.camera.fly = false;
 	App.camera.speedAmp = 0.02;
 	matrixEngine.Events.camera.yPos = 10;
+	App.camera.yawRateOnEdge = 3;
+
+	App.myAccounts = {};
 
 	// Keyboard event
 	addEventListener('hit.keyDown', (e) => {
@@ -53,6 +56,7 @@ export var runHang3d = (world) => {
 	window.addEventListener("contextmenu", (e) => {e.preventDefault()});
 	// Only for mobile - Mobile player controller UI
 	if(isMobile() == true) {
+		App.camera.yawRateOnEdge = 4;
 		byId('fps').style.display = 'none';
 		byId('debugBox').style.display = 'none';
 		matrixEngine.utility.createDomFPSController();
@@ -163,8 +167,9 @@ export var runHang3d = (world) => {
 
 		// Disable default
 		App.events.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE = () => {}
-		byId('domAngleAxis').style.width = innerWidth / 100 * 30 + "px";
-		byId('domAngleAxis').style.height = innerHeight / 100 * 30 + "px";
+		byId('domAngleAxis').style.left = "25px";
+		// byId('domAngleAxis').style.width = innerWidth / 100 * 30 + "px";
+		// byId('domAngleAxis').style.height = innerHeight / 100 * 30 + "px";
 		byId('domAngleAxis').addEventListener('touchmove', (e) => {
 			e.preventDefault()
 			var center_x = window.innerWidth / 2;
@@ -268,6 +273,8 @@ export var runHang3d = (world) => {
 			console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed)
 			if(e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
 				notify.show('You kill ' + e.detail.kills.killed)
+				// ROCK
+				App.myAccounts.points10();
 			} else if(e.detail.kills.killed != App.scene.playerCollisonBox.position.netObjId) {
 				notify.show(`${e.detail.kills.killer} kills  ${e.detail.kills.killed}`)
 			}
@@ -471,11 +478,19 @@ export var runHang3d = (world) => {
 					// Player Look
 					if(playerUpdater.sendRotValue > playerUpdater.sendRotEvery &&
 						matrixEngine.Engine.net.connection != null) {
-						if(typeof App.scene.playerCollisonBox.position.netObjId === undefined) {return;}
+
+						if(typeof App.scene.playerCollisonBox === undefined) {return;}
+
+						if(App.scene.playerCollisonBox.position.nameUniq == App.scene.playerCollisonBox.position.netObjId) {
+							console.log('NOT READY - MOBILE ALREADY IN SCENE MOMENT BUG')
+							return;
+						}
+
 						matrixEngine.Engine.net.connection.send({
 							netRot: {y: matrixEngine.Events.camera.yaw + 180},
 							netObjId: App.scene.playerCollisonBox.position.netObjId,
 						})
+
 						playerUpdater.sendRotValue = 0;
 					}
 					playerUpdater.sendRotValue++;
@@ -749,6 +764,7 @@ export var runHang3d = (world) => {
 
 	// Networking
 	addEventListener(`LOCAL-STREAM-READY`, (e) => {
+		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
 		// console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
 		console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, REDLOG)
 		// test first
@@ -758,7 +774,6 @@ export var runHang3d = (world) => {
 		// byId('netHeaderTitle').click()
 		console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 		// Make relation for net players
-		App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
 		App.scene.playerCollisonBox.position.yNetOffset = -2;
 		App.scene.playerCollisonBox.net.enable = true;
 		// CAMERA VIEW FOR SELF LOCAL CAM
@@ -790,13 +805,15 @@ export var runHang3d = (world) => {
 			console.log('MY CONNECTION IS NULL')
 			setTimeout(() => {
 				// test
-				if(typeof matrixEngine.Engine.net.connection === 'undefined') return;
+				if(typeof matrixEngine.Engine.net.connection === 'undefined' ||
+					matrixEngine.Engine.net.connection == null) return;
+
 				if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
 					console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
 					var name = e.detail.event.stream.connection.connectionId;
 					createNetworkPlayerCharacter(name)
 				}
-			}, 2500)
+			}, 3000)
 			return;
 		}
 		if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
@@ -826,10 +843,10 @@ export var runHang3d = (world) => {
 		`;
 		byId('session').appendChild(leaderboardBtn)
 		if(useRCSAccount == true) {
-			let myAccounts = new RCSAccount(RCSAccountDomain);
-			myAccounts.createDOM();
+			App.myAccounts = new RCSAccount(RCSAccountDomain);
+			App.myAccounts.createDOM();
 			notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
-			console.log(`%c<RocketCraftingServer [Account]> ${myAccounts}`, REDLOG);
+			console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, REDLOG);
 		}
 	})
 

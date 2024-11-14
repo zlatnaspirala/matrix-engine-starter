@@ -21290,7 +21290,7 @@ class RotationVector {
 
   rotateX(x, em) {
     this.rotx = x;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         x: this.rotx
       },
@@ -21300,7 +21300,7 @@ class RotationVector {
 
   rotateY(y, em) {
     this.roty = y;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         y: this.roty
       },
@@ -21310,7 +21310,7 @@ class RotationVector {
 
   rotateZ(z, em) {
     this.rotz = z;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         z: this.rotz
       },
@@ -21471,7 +21471,7 @@ class Position {
     this.targetX = newx;
     this.inMove = false; // console.log('test setX net.connection ', net)
 
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) {
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) {
       _engine.net.connection.send({
         netPos: {
           x: this.x + this.xNetOffset,
@@ -21487,7 +21487,7 @@ class Position {
     this.y = newy;
     this.targetY = newy;
     this.inMove = false;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x + this.xNetOffset,
         y: this.y + this.yNetOffset,
@@ -21501,7 +21501,7 @@ class Position {
     this.z = newz;
     this.targetZ = newz;
     this.inMove = false;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x + this.xNetOffset,
         y: this.y + this.yNetOffset,
@@ -21519,7 +21519,7 @@ class Position {
     this.targetY = newy;
     this.targetZ = newz;
     this.inMove = false;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
         x: this.x + this.xNetOffset,
         y: this.y + this.yNetOffset,
@@ -21553,7 +21553,7 @@ class TriangleVertex {
 
   setScale(scale) {
     this.size = scale;
-    if (typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -21617,7 +21617,7 @@ class SquareVertex {
     this.texCoordsPoints.left_top.y = 1 + newScaleFactror;
     this.texCoordsPoints.right_bottom.x = 1 + newScaleFactror;
     this.texCoordsPoints.right_bottom.y = 0 - newScaleFactror;
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       texScaleFactor: {
         newScaleFactror: newScaleFactror
       },
@@ -21683,7 +21683,7 @@ class SquareVertex {
 
   setScale(scale, em) {
     this.size = scale;
-    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -22146,7 +22146,7 @@ class CubeVertex {
     this.Back.pointB.x = -scale;
     this.Back.pointC.x = scale;
     this.Back.pointD.x = scale;
-    if (typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         x: scale
       },
@@ -22185,7 +22185,7 @@ class CubeVertex {
     this.Back.pointB.y = scale;
     this.Back.pointC.y = scale;
     this.Back.pointD.y = -scale;
-    if (typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         y: scale
       },
@@ -22223,7 +22223,7 @@ class CubeVertex {
     this.Back.pointB.z = -scale;
     this.Back.pointC.z = -scale;
     this.Back.pointD.z = -scale;
-    if (typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         z: scale
       },
@@ -22240,7 +22240,7 @@ class CubeVertex {
     this.size = scale;
     this.basePoint = 1.0 * this.size;
     this.basePointNeg = -1.0 * this.size;
-    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -22273,7 +22273,7 @@ class CubeVertex {
       this.texCoordsPoints[key].right_bottom.y = this.texCoordsPoints[key].right_bottom.y + newScaleFactror * calculate(this.texCoordsPoints[key].right_bottom.y);
     }
 
-    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq].net && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       texScaleFactor: {
         newScaleFactror: newScaleFactror
       },
@@ -22511,7 +22511,7 @@ class PiramideVertex {
     this.size = scale;
     this.basePoint = 1.0 * this.size;
     this.basePointNeg = -1.0 * this.size;
-    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -22526,7 +22526,7 @@ class PiramideVertex {
 
   setSpitz(newValueFloat, em) {
     this.spitz = newValueFloat;
-    if (typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       spitz: {
         newValueFloat: newValueFloat
       },
@@ -27079,11 +27079,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       triangleObject.net = {
-        enabled: false,
-        // Old net
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       triangleObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27153,10 +27149,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       squareObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       squareObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27249,10 +27242,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       squareObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       squareObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -27405,10 +27395,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
 
       if (cubeObject.shaderProgram && cubeObject.geometry) {
@@ -27474,10 +27461,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       sphereObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       sphereObject.custom = new Object();
       sphereObject.custom.gl_texture = null;
@@ -27624,10 +27608,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       pyramidObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       pyramidObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27695,8 +27676,9 @@ function defineworld(canvas, renderType) {
             }
           }, after);
         } else {
-          let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
-          _manifest.default.scene[objForDelete.name] = null;
+          world.contentList.splice(world.contentList.indexOf(objObject), 1)[0]; // App.scene[objForDelete.name] = null;
+
+          console.log("DESTROYED objObject.name ", objObject.name);
         }
       };
 
@@ -27708,10 +27690,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       objObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
 
       objObject.setFBO = function () {
@@ -27932,10 +27911,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       }; // Update others start
 
       cubeObject.useShadows = false;
@@ -28105,10 +28081,7 @@ function defineworld(canvas, renderType) {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       }; // Update others start NOT ACTIVE NOW
       // Calling with no error
 
@@ -28342,6 +28315,9 @@ function defineworld(canvas, renderType) {
 
       customObject.physics = {
         enabled: false
+      };
+      customObject.net = {
+        enable: false
       };
       customObject.instancedDraws = {
         numberOfInstance: 10,
@@ -39019,10 +38995,10 @@ function createDomFPSController() {
       text-align: center;
       display: none;
       position:absolute;
-      left: 80%;
-      top: 80%;
-      width: 14%;
-      height: 4%;
+      left: 74%;
+      top: 79%;
+      width: 23%;
+      height: 5%;
       background: rgba(255,255,255,0.2);
       margin: auto;
       align-items: center;
@@ -39038,10 +39014,10 @@ function createDomFPSController() {
       text-align: center;
       display: none;
       position:absolute;
-      left: 85%;
-      top: 90%;
-      width: 14%;
-      height: 4%;
+      left: 74%;
+      top: 89%;
+      width: 23%;
+      height: 5%;
       background: rgba(255,255,255,0.2);
       margin: auto;
       align-items: center;
@@ -39058,10 +39034,10 @@ function createDomFPSController() {
       text-align: center;
       display: none;
       position:absolute;
-      left: 70%;
-      top: 90%;
-      width: 14%;
-      height: 4%;
+      left: 51%;
+      top: 89%;
+      width: 23%;
+      height: 5%;
       background: rgba(255,255,255,0.2);
       margin: auto;
       align-items: center;
@@ -39078,10 +39054,10 @@ function createDomFPSController() {
       text-align: center;
       display: none;
       position:absolute;
-      left: 78%;
-      top: 86%;
-      width: 14%;
-      height: 4%;
+      left: 62%;
+      top: 84%;
+      width: 23%;
+      height: 5%;
       background: rgba(255,255,255,0.2);
       margin: auto;
       align-items: center;
@@ -39098,10 +39074,10 @@ function createDomFPSController() {
       text-align: center;
       display: grid;
       position:absolute;
-      left: 64%;
-      top: 80%;
-      width: 14%;
-      height: 4%;
+      left: 51%;
+      top: 79%;
+      width: 23%;
+      height: 5%;
       background: rgba(255,255,255,0.2);
       margin: auto;
       align-items: center;
@@ -39118,10 +39094,10 @@ function createDomFPSController() {
       text-align: center;
       display: none;
       position:absolute;
-      left: 78%;
+      left: 62%;
       top: 94%;
-      width: 14%;
-      height: 4%;
+      width: 23%;
+      height: 5%;
       background: rgba(255,255,255,0.1);
       margin: auto;
       align-items: center;
@@ -39138,9 +39114,9 @@ function createDomFPSController() {
       text-align: center;
       display: none;
       position:absolute;
-      left: 5%;
+      left: 3%;
       top: 69%;
-      width: 45%;
+      width: 47%;
       height: 28%;
       background: rgba(255,255,255,0.2);
       margin: auto;
@@ -39448,7 +39424,6 @@ class MatrixStream {
       console.log('[CHANNEL]' + this.sessionName.value);
       this.attachEvents();
       console.log(`%c MatrixStream constructed.`, _matrixStream.BIGLOG);
-      dispatchEvent(new CustomEvent('net-ready', {}));
     });
   }
 
@@ -39492,6 +39467,7 @@ class MatrixStream {
       (0, _matrixStream.leaveSession)();
     });
     (0, _matrixStream.byId)('netHeaderTitle').addEventListener('click', this.domManipulation.hideNetPanel);
+    setTimeout(() => dispatchEvent(new CustomEvent('net-ready', {})), 500);
   }
 
   multiPlayer = {
@@ -40368,7 +40344,7 @@ exports.ROCK_RANK = exports.REDLOG = void 0;
 
 var _utility = require("matrix-engine/lib/utility");
 
-var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
+var REDLOG = "background:black;color: lime;font-size:15px;text-shadow: 1px 1px 2px lime, -1px -1px 2px lime";
 exports.REDLOG = REDLOG;
 
 function createPauseScreen() {
@@ -40472,7 +40448,7 @@ var runHang3d = world => {
   }); // You can use import also.
 
   matrixEngine.utility.notify.hideTime = 100;
-  matrixEngine.utility.notify.showTime = 1200;
+  matrixEngine.utility.notify.showTime = 2100;
   let notify = matrixEngine.utility.notify;
   let byId = matrixEngine.utility.byId;
   let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
@@ -40485,7 +40461,9 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false;
   App.camera.speedAmp = 0.02;
-  matrixEngine.Events.camera.yPos = 10; // Keyboard event
+  matrixEngine.Events.camera.yPos = 10;
+  App.camera.yawRateOnEdge = 3;
+  App.myAccounts = {}; // Keyboard event
 
   addEventListener('hit.keyDown', e => {
     if (e.detail.origin.key == "Escape" || e.detail.keyCode == 27) {
@@ -40501,6 +40479,7 @@ var runHang3d = world => {
   }); // Only for mobile - Mobile player controller UI
 
   if (isMobile() == true) {
+    App.camera.yawRateOnEdge = 4;
     byId('fps').style.display = 'none';
     byId('debugBox').style.display = 'none';
     matrixEngine.utility.createDomFPSController();
@@ -40619,8 +40598,9 @@ var runHang3d = world => {
 
     App.events.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE = () => {};
 
-    byId('domAngleAxis').style.width = innerWidth / 100 * 30 + "px";
-    byId('domAngleAxis').style.height = innerHeight / 100 * 30 + "px";
+    byId('domAngleAxis').style.left = "25px"; // byId('domAngleAxis').style.width = innerWidth / 100 * 30 + "px";
+    // byId('domAngleAxis').style.height = innerHeight / 100 * 30 + "px";
+
     byId('domAngleAxis').addEventListener('touchmove', e => {
       e.preventDefault();
       var center_x = window.innerWidth / 2;
@@ -40722,7 +40702,9 @@ var runHang3d = world => {
       console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed);
 
       if (e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
-        notify.show('You kill ' + e.detail.kills.killed);
+        notify.show('You kill ' + e.detail.kills.killed); // ROCK
+
+        App.myAccounts.points10();
       } else if (e.detail.kills.killed != App.scene.playerCollisonBox.position.netObjId) {
         notify.show(`${e.detail.kills.killer} kills  ${e.detail.kills.killed}`);
       }
@@ -40928,7 +40910,12 @@ var runHang3d = world => {
 
 
           if (playerUpdater.sendRotValue > playerUpdater.sendRotEvery && matrixEngine.Engine.net.connection != null) {
-            if (typeof App.scene.playerCollisonBox.position.netObjId === undefined) {
+            if (typeof App.scene.playerCollisonBox === undefined) {
+              return;
+            }
+
+            if (App.scene.playerCollisonBox.position.nameUniq == App.scene.playerCollisonBox.position.netObjId) {
+              console.log('NOT READY - MOBILE ALREADY IN SCENE MOMENT BUG');
               return;
             }
 
@@ -41209,7 +41196,8 @@ var runHang3d = world => {
   App.scene['WALL_BLOCK2'].physics.enabled = true; // Networking
 
   addEventListener(`LOCAL-STREAM-READY`, e => {
-    // console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
+    App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId; // console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
+
     console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, _dom.REDLOG); // test first
 
     dispatchEvent(new CustomEvent(`onTitle`, {
@@ -41220,7 +41208,6 @@ var runHang3d = world => {
 
     console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
 
-    App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
     App.scene.playerCollisonBox.position.yNetOffset = -2;
     App.scene.playerCollisonBox.net.enable = true; // CAMERA VIEW FOR SELF LOCAL CAM
     // world.Add("squareTex", 1, name, tex);
@@ -41248,14 +41235,14 @@ var runHang3d = world => {
       console.log('MY CONNECTION IS NULL');
       setTimeout(() => {
         // test
-        if (typeof matrixEngine.Engine.net.connection === 'undefined') return;
+        if (typeof matrixEngine.Engine.net.connection === 'undefined' || matrixEngine.Engine.net.connection == null) return;
 
         if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
           console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
           var name = e.detail.event.stream.connection.connectionId;
           createNetworkPlayerCharacter(name);
         }
-      }, 2500);
+      }, 3000);
       return;
     }
 
@@ -41285,10 +41272,10 @@ var runHang3d = world => {
     byId('session').appendChild(leaderboardBtn);
 
     if (useRCSAccount == true) {
-      let myAccounts = new _rocketCraftingAccount.RCSAccount(RCSAccountDomain);
-      myAccounts.createDOM();
+      App.myAccounts = new _rocketCraftingAccount.RCSAccount(RCSAccountDomain);
+      App.myAccounts.createDOM();
       notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.");
-      console.log(`%c<RocketCraftingServer [Account]> ${myAccounts}`, _dom.REDLOG);
+      console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, _dom.REDLOG);
     }
   });
   addEventListener('connectionDestroyed', e => {
@@ -41463,7 +41450,6 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-// import {byId, isMobile, jsonHeaders, notify, REDLOG} from "../utility.js";
 const isMobile = matrixEngine.utility.isMobile;
 const byId = matrixEngine.utility.byId;
 const notify = matrixEngine.utility.notify;
@@ -41816,6 +41802,30 @@ class RCSAccount {
       return;
     });
   };
+
+  async points10() {
+    let route = this.apiDomain;
+    console.log("JSON.parse(sessionStorage.getItem('RocketAcount')).token", JSON.parse(sessionStorage.getItem('RocketAcount')).token);
+    let args = {
+      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
+      userAgent: navigator.userAgent.toString(),
+      fromUrl: location.href.toString(),
+      token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
+      mapName: 'hang3d-matrix-base0'
+    };
+    fetch(route + '/rocket/point-plus10', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(() => {
+      localStorage.setItem("visitor", "welcome");
+    }).catch(err => {
+      console.log('ERR', err);
+    });
+  }
+
 }
 
 exports.RCSAccount = RCSAccount;

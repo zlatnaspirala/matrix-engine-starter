@@ -1,6 +1,6 @@
 import {byId} from "matrix-engine/lib/utility";
 
-export var REDLOG = "background:black;color: lime;font-size:25px;text-shadow: 1px 1px 15px red, -4px -4px 15px orangered";
+export var REDLOG = "background:black;color: lime;font-size:15px;text-shadow: 1px 1px 2px lime, -1px -1px 2px lime";
 
 export function createPauseScreen () {
 	var root = document.createElement('div')

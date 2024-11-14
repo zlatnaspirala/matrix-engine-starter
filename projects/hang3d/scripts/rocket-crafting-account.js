@@ -1,5 +1,3 @@
-
-// import {byId, isMobile, jsonHeaders, notify, REDLOG} from "../utility.js";
 import * as matrixEngine from "matrix-engine";
 import {ROCK_RANK} from "./dom.js";
 import {jsonHeaders} from "matrix-engine/lib/utility.js";
@@ -91,11 +89,11 @@ export class RCSAccount {
 			byId('myAccountLoginForm').remove();
 		})
 
-		if (isMobile() == false) {
-		var descText = document.createElement('div');
-		descText.id = 'descText';
-		// logo.style = 'width: max-content;'
-		descText.innerHTML = `<span style="width:45%" >Hang3d use webcam for video chat and streaming data</span>
+		if(isMobile() == false) {
+			var descText = document.createElement('div');
+			descText.id = 'descText';
+			// logo.style = 'width: max-content;'
+			descText.innerHTML = `<span style="width:45%" >Hang3d use webcam for video chat and streaming data</span>
 		<span style="width:45%" >Add Url params '?video=false&audio=false' to disable streaming</span>
 		`;
 		}
@@ -110,7 +108,7 @@ export class RCSAccount {
 		content.appendChild(gotoRegisterMyAccount)
 		content.appendChild(hideLoginMyAccount)
 		// content.appendChild(logo)
-		if (isMobile() == false) content.appendChild(descText);
+		if(isMobile() == false) content.appendChild(descText);
 		document.body.appendChild(parent)
 	}
 
@@ -365,4 +363,25 @@ export class RCSAccount {
 		})
 	}
 
+	async points10() {
+		let route = this.apiDomain;
+		console.log("JSON.parse(sessionStorage.getItem('RocketAcount')).token", JSON.parse(sessionStorage.getItem('RocketAcount')).token)
+
+		let args = {
+			email: (byId('arg-email') != null ? byId('arg-email').value : 'no-email'),
+			userAgent: navigator.userAgent.toString(),
+			fromUrl: location.href.toString(),
+			token:  JSON.parse(sessionStorage.getItem('RocketAcount')).token,
+			mapName: 'hang3d-matrix-base0',
+		}
+		fetch(route + '/rocket/point-plus10', {
+			method: 'POST',
+			headers: jsonHeaders,
+			body: JSON.stringify(args)
+		}).then((d) => {
+			return d.json();
+		}).then(() => {
+			localStorage.setItem("visitor", "welcome")
+		}).catch((err) => {console.log('ERR', err)})
+	}
 }
