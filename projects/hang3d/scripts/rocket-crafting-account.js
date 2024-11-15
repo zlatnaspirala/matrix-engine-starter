@@ -37,7 +37,7 @@ export class RCSAccount {
 		logo.id = 'logologin';
 		logo.setAttribute('alt', 'Login');
 		logo.style = 'width: 100px;border-radius: 10px;padding: 6px;'
-		logo.src = './res/icons/512.png';
+		logo.src = './res/icons/512.webp';
 
 		var title = document.createElement('div');
 		title.style.display = 'flex';
@@ -117,17 +117,10 @@ export class RCSAccount {
 			byId('leaderboard').style.display = 'block';
 			return;
 		}
-		console.log('TEST MOBILE +++')
+		// console.log('TEST MOBILE +++')
 		var parent = document.createElement('div');
-		parent.style = `
-			position: absolute;
-			border-radius: 4px;
-			top: 10%;
-			left: 15%;
-			width: 60%;
-			padding: 10px 10px 10px 10px;
-			box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
-		`;
+		parent.style = ``;
+		parent.classList.add('leaderboard')
 		if(isMobile() == true) {
 			parent.style = `
 			position: absolute;
@@ -160,6 +153,7 @@ export class RCSAccount {
 		var parentForTable = document.createElement('div');
 		parentForTable.style.height = '70vh';
 		parentForTable.style.overflow = 'scroll';
+		parentForTable.style.overflowX = 'hidden';
 		data.forEach(element => {
 			var table = document.createElement('div');
 			table.style.display = 'flex';
@@ -341,6 +335,7 @@ export class RCSAccount {
 
 	getLeaderboard = async (e) => {
 		e.preventDefault();
+		byId('netHeaderTitle').click();
 		this.leaderboardBtn.disabled = true;
 		fetch(this.apiDomain + '/rocket/public-leaderboard', {
 			method: 'POST',
@@ -365,13 +360,40 @@ export class RCSAccount {
 
 	async points10() {
 		let route = this.apiDomain;
-		console.log("JSON.parse(sessionStorage.getItem('RocketAcount')).token", JSON.parse(sessionStorage.getItem('RocketAcount')).token)
+		if(sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
+			console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'))
+			return;
+		}
+		let args = {
+			email: (byId('arg-email') != null ? byId('arg-email').value : 'no-email'),
+			userAgent: navigator.userAgent.toString(),
+			fromUrl: location.href.toString(),
+			token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
+			mapName: 'hang3d-matrix-base0',
+		}
+		fetch(route + '/rocket/point-plus10', {
+			method: 'POST',
+			headers: jsonHeaders,
+			body: JSON.stringify(args)
+		}).then((d) => {
+			return d.json();
+		}).then(() => {
+			localStorage.setItem("visitor", "welcome")
+		}).catch((err) => {console.log('ERR', err)})
+	}
+
+	async dead() {
+		let route = this.apiDomain;
+		if(sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
+			console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'))
+			return;
+		}
 
 		let args = {
 			email: (byId('arg-email') != null ? byId('arg-email').value : 'no-email'),
 			userAgent: navigator.userAgent.toString(),
 			fromUrl: location.href.toString(),
-			token:  JSON.parse(sessionStorage.getItem('RocketAcount')).token,
+			token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
 			mapName: 'hang3d-matrix-base0',
 		}
 		fetch(route + '/rocket/point-plus10', {

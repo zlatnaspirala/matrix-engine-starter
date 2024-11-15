@@ -250,22 +250,22 @@ export var runHang3d = (world) => {
 				App.scene.player.energy.value -= (0.25 - (App.scene.player.items.armor ? App.scene.player.items.armor.preventDamage : 0));
 				// pre check for 0
 				if(App.scene.player.energy.value <= 0) {
-					// killed by 
+					// Stream part
+					// killed by
 					matrixEngine.Engine.net.connection.send({
 						kills: {
 							killer: e.detail.damage.from,
 							killed: e.detail.damage.to
 						}
 					})
-					// send it to spawn from space 
+					// Call rock platform
+					App.myAccounts.dead();
+					// send it to spawn from space
+					// Next feature : Implement map and Setup from map spawn positions.
 					matrixEngine.Events.camera.xPos = 0;
 					matrixEngine.Events.camera.zPos = 0;
 					matrixEngine.Events.camera.yPos = 300;
-					App.scene.playerCollisonBox.
-						physics.currentBody.position.set(
-							0,
-							0,
-							300);
+					App.scene.playerCollisonBox.physics.currentBody.position.set(0, 0, 300);
 				}
 				App.scene.player.updateEnergy(App.scene.player.energy.value);
 			}
@@ -273,7 +273,7 @@ export var runHang3d = (world) => {
 			console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed)
 			if(e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
 				notify.show('You kill ' + e.detail.kills.killed)
-				// ROCK
+				// ROCK - First step Not secured
 				App.myAccounts.points10();
 			} else if(e.detail.kills.killed != App.scene.playerCollisonBox.position.netObjId) {
 				notify.show(`${e.detail.kills.killer} kills  ${e.detail.kills.killed}`)
@@ -722,7 +722,7 @@ export var runHang3d = (world) => {
 	// App.scene['FLOOR2'].geometry.setScaleByX(3);
 	App.scene['FLOOR2'].physics.currentBody = b2;
 	App.scene['FLOOR2'].physics.enabled = true;
-	App.scene.FLOOR2.LightsData.ambientLight.set(0,0,0)
+	App.scene.FLOOR2.LightsData.ambientLight.set(0, 0, 0)
 
 	world.Add("cubeLightTex", 2, "FLOOR3", tex);
 	var b3 = new CANNON.Body({

@@ -40682,13 +40682,17 @@ var runHang3d = world => {
         App.scene.player.energy.value -= 0.25 - (App.scene.player.items.armor ? App.scene.player.items.armor.preventDamage : 0); // pre check for 0
 
         if (App.scene.player.energy.value <= 0) {
-          // killed by 
+          // Stream part
+          // killed by
           matrixEngine.Engine.net.connection.send({
             kills: {
               killer: e.detail.damage.from,
               killed: e.detail.damage.to
             }
-          }); // send it to spawn from space 
+          }); // Call rock platform
+
+          App.myAccounts.dead(); // send it to spawn from space
+          // Next feature : Implement map and Setup from map spawn positions.
 
           matrixEngine.Events.camera.xPos = 0;
           matrixEngine.Events.camera.zPos = 0;
@@ -40702,7 +40706,7 @@ var runHang3d = world => {
       console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed);
 
       if (e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
-        notify.show('You kill ' + e.detail.kills.killed); // ROCK
+        notify.show('You kill ' + e.detail.kills.killed); // ROCK - First step Not secured
 
         App.myAccounts.points10();
       } else if (e.detail.kills.killed != App.scene.playerCollisonBox.position.netObjId) {
@@ -41552,19 +41556,12 @@ class RCSAccount {
     if (byId('leaderboard') != null) {
       byId('leaderboard').style.display = 'block';
       return;
-    }
+    } // console.log('TEST MOBILE +++')
 
-    console.log('TEST MOBILE +++');
+
     var parent = document.createElement('div');
-    parent.style = `
-			position: absolute;
-			border-radius: 4px;
-			top: 10%;
-			left: 15%;
-			width: 60%;
-			padding: 10px 10px 10px 10px;
-			box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
-		`;
+    parent.style = ``;
+    parent.classList.add('leaderboard');
 
     if (isMobile() == true) {
       parent.style = `
@@ -41595,6 +41592,7 @@ class RCSAccount {
     var parentForTable = document.createElement('div');
     parentForTable.style.height = '70vh';
     parentForTable.style.overflow = 'scroll';
+    parentForTable.style.overflowX = 'hidden';
     data.forEach(element => {
       var table = document.createElement('div');
       table.style.display = 'flex';
@@ -41775,6 +41773,7 @@ class RCSAccount {
 
   getLeaderboard = async e => {
     e.preventDefault();
+    byId('netHeaderTitle').click();
     this.leaderboardBtn.disabled = true;
     fetch(this.apiDomain + '/rocket/public-leaderboard', {
       method: 'POST',
@@ -41805,7 +41804,40 @@ class RCSAccount {
 
   async points10() {
     let route = this.apiDomain;
-    console.log("JSON.parse(sessionStorage.getItem('RocketAcount')).token", JSON.parse(sessionStorage.getItem('RocketAcount')).token);
+
+    if (sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
+      console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'));
+      return;
+    }
+
+    let args = {
+      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
+      userAgent: navigator.userAgent.toString(),
+      fromUrl: location.href.toString(),
+      token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
+      mapName: 'hang3d-matrix-base0'
+    };
+    fetch(route + '/rocket/point-plus10', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(() => {
+      localStorage.setItem("visitor", "welcome");
+    }).catch(err => {
+      console.log('ERR', err);
+    });
+  }
+
+  async dead() {
+    let route = this.apiDomain;
+
+    if (sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
+      console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'));
+      return;
+    }
+
     let args = {
       email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
       userAgent: navigator.userAgent.toString(),
