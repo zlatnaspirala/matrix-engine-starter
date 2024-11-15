@@ -40333,7 +40333,31 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/fps_player_controller":44,"matrix-engine":8}],43:[function(require,module,exports){
+},{"./scripts/fps_player_controller":45,"matrix-engine":8}],43:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.map1 = void 0;
+let map1 = {
+  staticCubes: [{
+    name: "wall1",
+    position: {
+      x: 10,
+      y: 0,
+      z: 0
+    },
+    scale: [1, 3, 1],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }]
+};
+exports.map1 = map1;
+
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40407,7 +40431,7 @@ var ROCK_RANK = {
 };
 exports.ROCK_RANK = ROCK_RANK;
 
-},{"matrix-engine/lib/utility":36}],44:[function(require,module,exports){
+},{"matrix-engine/lib/utility":36}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40425,6 +40449,10 @@ var _rocketCraftingAccount = require("./rocket-crafting-account");
 
 var _events = require("matrix-engine/lib/events");
 
+var _mapLoader = require("./map-loader");
+
+var _map = require("../maps/map1");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -40438,6 +40466,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  *   `App.scene.player.updateEnergy(4);`
  * Predefined from 0 to the 8 energy value.
  * @class First Person Shooter example
+ * @mapLoader Best way for productivity.
  */
 const useRCSAccount = true;
 const RCSAccountDomain = 'https://maximumroulette.com';
@@ -40703,8 +40732,7 @@ var runHang3d = world => {
         App.scene.player.updateEnergy(App.scene.player.energy.value);
       }
     } else if (e.detail.kills) {
-      console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed);
-
+      // console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed)
       if (e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
         notify.show('You kill ' + e.detail.kills.killed); // ROCK - First step Not secured
 
@@ -40716,8 +40744,7 @@ var runHang3d = world => {
   });
   var preventFlagDouble = false;
   addEventListener('ray.hit.event', ev => {
-    console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, _dom.REDLOG);
-
+    // console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
     if (ev.detail.hitObject.name.indexOf('con_') == -1) {
       return;
     }
@@ -40794,7 +40821,7 @@ var runHang3d = world => {
       var collisionBox = new CANNON.Body({
         mass: 7,
         linearDamping: 0.01,
-        position: new CANNON.Vec3(0, 4, 0),
+        position: new CANNON.Vec3(0, 24, 0),
         shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2))
       }); // This is custom param added.
 
@@ -41024,7 +41051,7 @@ var runHang3d = world => {
       }
 
       var tex2 = {
-        source: ["res/images/hud/energy-bar.png", "res/images/hud/energy-bar.png"],
+        source: ["res/images/hud/energy-bar2.png", "res/images/hud/energy-bar2.png"],
         mix_operation: "multiply"
       };
       world.Add("squareTex", 1, 'energyBar', tex2);
@@ -41172,32 +41199,36 @@ var runHang3d = world => {
   physics.world.addBody(b3);
   App.scene['FLOOR3'].position.setPosition(0, 0, -19);
   App.scene['FLOOR3'].physics.currentBody = b3;
-  App.scene['FLOOR3'].physics.enabled = true; // Big wall
+  App.scene['FLOOR3'].physics.enabled = true; // MAP LOADER 
 
-  world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
-  var b5 = new CANNON.Body({
-    mass: 0,
-    linearDamping: 0.01,
-    position: new CANNON.Vec3(10, -19, 0),
-    shape: new CANNON.Box(new CANNON.Vec3(5, 5, 5))
-  });
-  physics.world.addBody(b5);
-  App.scene['WALL_BLOCK'].position.setPosition(10, 0, -19);
-  App.scene['WALL_BLOCK'].physics.currentBody = b5;
-  App.scene['WALL_BLOCK'].physics.enabled = true; // Big wall CUSTOM SHADERS
+  _mapLoader.meMapLoader.load(_map.map1, physics); // meMapLoader.load(meMapLoader.geminiMap(10 , 100, 2), physics)
 
-  world.Add("sphereLightTex", 1, "WALL_BLOCK2", texNoMipmap);
-  var b6 = new CANNON.Body({
-    mass: 0,
-    linearDamping: 0.01,
-    position: new CANNON.Vec3(30, -10, 0),
-    shape: new CANNON.Sphere(1) // new CANNON.Box(new CANNON.Vec3(5, 5, 5))
 
-  });
-  physics.world.addBody(b6);
-  App.scene['WALL_BLOCK2'].position.setPosition(30, -10, 19);
-  App.scene['WALL_BLOCK2'].physics.currentBody = b6;
-  App.scene['WALL_BLOCK2'].physics.enabled = true; // Networking
+  window.meMapLoader = _mapLoader.meMapLoader; // Big wall
+  // world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
+  // var b5 = new CANNON.Body({
+  // 	mass: 0,
+  // 	linearDamping: 0.01,
+  // 	position: new CANNON.Vec3(10, -19, 0),
+  // 	shape: new CANNON.Box(new CANNON.Vec3(5, 5, 5))
+  // });
+  // physics.world.addBody(b5);
+  // App.scene['WALL_BLOCK'].position.setPosition(10, 0, -19)
+  // App.scene['WALL_BLOCK'].physics.currentBody = b5;
+  // App.scene['WALL_BLOCK'].physics.enabled = true;
+  // Big wall CUSTOM SHADERS
+  // world.Add("sphereLightTex", 1, "WALL_BLOCK2", texNoMipmap);
+  // var b6 = new CANNON.Body({
+  // 	mass: 0,
+  // 	linearDamping: 0.01,
+  // 	position: new CANNON.Vec3(30, -10, 0),
+  // 	shape: new CANNON.Sphere(1) // new CANNON.Box(new CANNON.Vec3(5, 5, 5))
+  // });
+  // physics.world.addBody(b6);
+  // App.scene['WALL_BLOCK2'].position.setPosition(30, -10, 19)
+  // App.scene['WALL_BLOCK2'].physics.currentBody = b6;
+  // App.scene['WALL_BLOCK2'].physics.enabled = true;
+  // Networking
 
   addEventListener(`LOCAL-STREAM-READY`, e => {
     App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId; // console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
@@ -41436,7 +41467,73 @@ const createNetworkPlayerCharacter = objName => {
   }), onLoadObj);
 };
 
-},{"./dom":43,"./rocket-crafting-account":45,"cannon":5,"matrix-engine":8,"matrix-engine/lib/events":10}],45:[function(require,module,exports){
+},{"../maps/map1":43,"./dom":44,"./map-loader":46,"./rocket-crafting-account":47,"cannon":5,"matrix-engine":8,"matrix-engine/lib/events":10}],46:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.meMapLoader = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+var CANNON = _interopRequireWildcard(require("cannon"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+const meMapLoader = {
+  physics: null,
+  world: matrixEngine.matrixWorld.world,
+  load: function (map, physics) {
+    map.staticCubes.forEach(item => {
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+      App.scene[item.name].geometry.setScaleByX(item.scale[0]);
+      App.scene[item.name].geometry.setScaleByY(item.scale[1]);
+      App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+      var b = new CANNON.Body({
+        mass: 0,
+        linearDamping: 0.01,
+        position: new CANNON.Vec3(item.position.x, item.position.y, item.position.z),
+        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
+      });
+      physics.world.addBody(b);
+      App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
+      App.scene[item.name].physics.currentBody = b;
+      App.scene[item.name].physics.enabled = true;
+    });
+  },
+  // AI help ;)
+  geminiMap: function (numObjects, positionRange, scaleRange) {
+    const map = {
+      staticCubes: []
+    };
+
+    for (let i = 0; i < numObjects; i++) {
+      const object = {
+        name: "wall" + i,
+        texture: {
+          source: ["res/images/diffuse.png"],
+          mix_operation: "multiply"
+        },
+        position: {
+          x: Math.random() * positionRange * 2 - positionRange,
+          y: 1,
+          // y: Math.random() * positionRange * 2 - positionRange,
+          z: Math.random() * positionRange * 2 - positionRange
+        },
+        scale: [Math.random() * scaleRange + 1, Math.random() * scaleRange + 1, Math.random() * scaleRange + 1]
+      };
+      map.staticCubes.push(object);
+    }
+
+    return map;
+  }
+};
+exports.meMapLoader = meMapLoader;
+
+},{"cannon":5,"matrix-engine":8}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41882,4 +41979,4 @@ class RCSAccount {
 
 exports.RCSAccount = RCSAccount;
 
-},{"./dom.js":43,"matrix-engine":8,"matrix-engine/lib/utility.js":36}]},{},[42]);
+},{"./dom.js":44,"matrix-engine":8,"matrix-engine/lib/utility.js":36}]},{},[42]);

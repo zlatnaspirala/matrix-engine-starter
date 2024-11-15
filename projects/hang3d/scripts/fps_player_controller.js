@@ -8,12 +8,15 @@
  *   `App.scene.player.updateEnergy(4);`
  * Predefined from 0 to the 8 energy value.
  * @class First Person Shooter example
+ * @mapLoader Best way for productivity.
  */
 import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
 import {createPauseScreen, REDLOG} from "./dom";
 import {RCSAccount} from "./rocket-crafting-account";
 import {SYS} from "matrix-engine/lib/events";
+import {meMapLoader} from "./map-loader";
+import {map1} from "../maps/map1";
 
 const useRCSAccount = true;
 const RCSAccountDomain = 'https://maximumroulette.com';
@@ -270,7 +273,7 @@ export var runHang3d = (world) => {
 				App.scene.player.updateEnergy(App.scene.player.energy.value);
 			}
 		} else if(e.detail.kills) {
-			console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed)
+			// console.log("Killer: ", e.detail.kills.killer, " Killed: ", e.detail.kills.killed)
 			if(e.detail.kills.killer == App.scene.playerCollisonBox.position.netObjId) {
 				notify.show('You kill ' + e.detail.kills.killed)
 				// ROCK - First step Not secured
@@ -283,7 +286,7 @@ export var runHang3d = (world) => {
 
 	var preventFlagDouble = false;
 	addEventListener('ray.hit.event', (ev) => {
-		console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
+		// console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
 		if(ev.detail.hitObject.name.indexOf('con_') == -1) {
 			return;
 		}
@@ -354,7 +357,7 @@ export var runHang3d = (world) => {
 			var collisionBox = new CANNON.Body({
 				mass: 7,
 				linearDamping: 0.01,
-				position: new CANNON.Vec3(0, 4, 0),
+				position: new CANNON.Vec3(0, 24, 0),
 				shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2))
 			});
 			// This is custom param added.
@@ -577,7 +580,7 @@ export var runHang3d = (world) => {
 			}
 
 			var tex2 = {
-				source: ["res/images/hud/energy-bar.png", "res/images/hud/energy-bar.png"],
+				source: ["res/images/hud/energy-bar2.png", "res/images/hud/energy-bar2.png"],
 				mix_operation: "multiply",
 			};
 
@@ -736,31 +739,37 @@ export var runHang3d = (world) => {
 	App.scene['FLOOR3'].physics.currentBody = b3;
 	App.scene['FLOOR3'].physics.enabled = true;
 
+	// MAP LOADER 
+	meMapLoader.load(map1, physics);
+	// meMapLoader.load(meMapLoader.geminiMap(10 , 100, 2), physics)
+
+	window.meMapLoader = meMapLoader;
+
 	// Big wall
-	world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
-	var b5 = new CANNON.Body({
-		mass: 0,
-		linearDamping: 0.01,
-		position: new CANNON.Vec3(10, -19, 0),
-		shape: new CANNON.Box(new CANNON.Vec3(5, 5, 5))
-	});
-	physics.world.addBody(b5);
-	App.scene['WALL_BLOCK'].position.setPosition(10, 0, -19)
-	App.scene['WALL_BLOCK'].physics.currentBody = b5;
-	App.scene['WALL_BLOCK'].physics.enabled = true;
+	// world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
+	// var b5 = new CANNON.Body({
+	// 	mass: 0,
+	// 	linearDamping: 0.01,
+	// 	position: new CANNON.Vec3(10, -19, 0),
+	// 	shape: new CANNON.Box(new CANNON.Vec3(5, 5, 5))
+	// });
+	// physics.world.addBody(b5);
+	// App.scene['WALL_BLOCK'].position.setPosition(10, 0, -19)
+	// App.scene['WALL_BLOCK'].physics.currentBody = b5;
+	// App.scene['WALL_BLOCK'].physics.enabled = true;
 
 	// Big wall CUSTOM SHADERS
-	world.Add("sphereLightTex", 1, "WALL_BLOCK2", texNoMipmap);
-	var b6 = new CANNON.Body({
-		mass: 0,
-		linearDamping: 0.01,
-		position: new CANNON.Vec3(30, -10, 0),
-		shape: new CANNON.Sphere(1) // new CANNON.Box(new CANNON.Vec3(5, 5, 5))
-	});
-	physics.world.addBody(b6);
-	App.scene['WALL_BLOCK2'].position.setPosition(30, -10, 19)
-	App.scene['WALL_BLOCK2'].physics.currentBody = b6;
-	App.scene['WALL_BLOCK2'].physics.enabled = true;
+	// world.Add("sphereLightTex", 1, "WALL_BLOCK2", texNoMipmap);
+	// var b6 = new CANNON.Body({
+	// 	mass: 0,
+	// 	linearDamping: 0.01,
+	// 	position: new CANNON.Vec3(30, -10, 0),
+	// 	shape: new CANNON.Sphere(1) // new CANNON.Box(new CANNON.Vec3(5, 5, 5))
+	// });
+	// physics.world.addBody(b6);
+	// App.scene['WALL_BLOCK2'].position.setPosition(30, -10, 19)
+	// App.scene['WALL_BLOCK2'].physics.currentBody = b6;
+	// App.scene['WALL_BLOCK2'].physics.enabled = true;
 
 	// Networking
 	addEventListener(`LOCAL-STREAM-READY`, (e) => {

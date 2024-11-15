@@ -1,0 +1,14 @@
+
+export let map1 = {
+	staticCubes: [
+		{
+			name: "wall1",
+			position: {x: 10, y: 0, z: 0},
+			scale: [1, 3, 1],
+			texture: {
+				source: ["res/images/diffuse.png"],
+				mix_operation: "multiply"
+			}
+		}
+	]
+};
