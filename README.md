@@ -1,4 +1,4 @@
-# matrix-engine-starter 1.0.0
+# matrix-engine-starter 1.1.0
 
 ## Objective
 
@@ -6,7 +6,7 @@
 - Test matrix-engine usage with npm service (`npm i matrix-engine`).
 - Very interest apps (all done with matrixEngine):
   - Web Anatomy
-  - FPShooter
+  - FPShooter HANG3d-Matrix
   - Roulette
   - Slot
 
@@ -47,9 +47,9 @@ npm i
 
 And navigate to app.html, examples.html etc.
 
-### Projects
+## Projects
 
-#### NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter
+### NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter
 
 - Basic for now
 
@@ -57,7 +57,8 @@ And navigate to app.html, examples.html etc.
 Run:  `npm run hang3d`
 Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 
-#### Matrix Roulette - 3d physics roulette
+
+### Matrix Roulette - 3d physics roulette
 
 TODO:
 
@@ -86,8 +87,7 @@ events.onmessage = event => {
 };
 ```
 
-### Url parameters:
-
+#### Url parameters:
 <pre>
  +-----------------------------------------------------------------------------------+
  |-----------------------------------------------------------------------------------+
@@ -130,7 +130,7 @@ events.onmessage = event => {
 ![matrix-anatomy](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-anatomy.png)
 Implemented skeletal system ~ 20mb data
 
-#### Slot-Mashine
+### Slot-Mashine
 
 - Slot mashine config constructor.
 - Voice commander [Say `spin` or `play` for spining.].
