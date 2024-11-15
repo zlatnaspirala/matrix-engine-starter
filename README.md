@@ -49,7 +49,7 @@ And navigate to app.html, examples.html etc.
 
 ## Projects
 
-### NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter
+## NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter
 
 - Basic for now
 
@@ -58,7 +58,7 @@ Run:  `npm run hang3d`
 Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 
 
-### Matrix Roulette - 3d physics roulette
+## Matrix Roulette - 3d physics roulette
 
 TODO:
 
@@ -125,12 +125,13 @@ events.onmessage = event => {
 
 ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette-2.png)
 
-#### Web-Anatomy underconstructing
+## Web-Anatomy underconstructing
 
 ![matrix-anatomy](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-anatomy.png)
 Implemented skeletal system ~ 20mb data
 
-### Slot-Mashine
+
+## Slot-Mashine
 
 - Slot mashine config constructor.
 - Voice commander [Say `spin` or `play` for spining.].
