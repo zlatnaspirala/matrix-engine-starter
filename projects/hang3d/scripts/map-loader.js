@@ -2,8 +2,6 @@ import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
 
 export const meMapLoader = {
-	physics: null,
-	world: matrixEngine.matrixWorld.world,
 	load: function(map, physics) {
 		map.staticCubes.forEach(item => {
 			matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
@@ -22,7 +20,7 @@ export const meMapLoader = {
 			App.scene[item.name].physics.enabled = true;
 		});
 	},
-	// AI help ;)
+	// Not work collision - probably too mush overlaping...
 	geminiMap: function(numObjects, positionRange, scaleRange) {
 		const map = {staticCubes: []};
 		for(let i = 0;i < numObjects;i++) {

@@ -40342,7 +40342,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.map1 = void 0;
 let map1 = {
   staticCubes: [{
-    name: "wall1",
+    name: "wall_gen",
     position: {
       x: 10,
       y: 0,
@@ -41199,9 +41199,10 @@ var runHang3d = world => {
   physics.world.addBody(b3);
   App.scene['FLOOR3'].position.setPosition(0, 0, -19);
   App.scene['FLOOR3'].physics.currentBody = b3;
-  App.scene['FLOOR3'].physics.enabled = true; // MAP LOADER 
+  App.scene['FLOOR3'].physics.enabled = true; // MAP LOADER
 
-  _mapLoader.meMapLoader.load(_map.map1, physics); // meMapLoader.load(meMapLoader.geminiMap(10 , 100, 2), physics)
+  _mapLoader.meMapLoader.load(_map.map1, physics); // Still not work...
+  // meMapLoader.load(meMapLoader.geminiMap(10 , 150, 1), physics)
 
 
   window.meMapLoader = _mapLoader.meMapLoader; // Big wall
@@ -41484,8 +41485,6 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 const meMapLoader = {
-  physics: null,
-  world: matrixEngine.matrixWorld.world,
   load: function (map, physics) {
     map.staticCubes.forEach(item => {
       matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
@@ -41504,7 +41503,7 @@ const meMapLoader = {
       App.scene[item.name].physics.enabled = true;
     });
   },
-  // AI help ;)
+  // Not work collision - probably too mush overlaping...
   geminiMap: function (numObjects, positionRange, scaleRange) {
     const map = {
       staticCubes: []

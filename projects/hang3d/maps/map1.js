@@ -2,7 +2,7 @@
 export let map1 = {
 	staticCubes: [
 		{
-			name: "wall1",
+			name: "wall_gen",
 			position: {x: 10, y: 0, z: 0},
 			scale: [1, 3, 1],
 			texture: {

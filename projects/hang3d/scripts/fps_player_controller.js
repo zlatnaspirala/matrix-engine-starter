@@ -739,10 +739,10 @@ export var runHang3d = (world) => {
 	App.scene['FLOOR3'].physics.currentBody = b3;
 	App.scene['FLOOR3'].physics.enabled = true;
 
-	// MAP LOADER 
+	// MAP LOADER
 	meMapLoader.load(map1, physics);
-	// meMapLoader.load(meMapLoader.geminiMap(10 , 100, 2), physics)
-
+	// Still not work...
+	// meMapLoader.load(meMapLoader.geminiMap(10 , 150, 1), physics)
 	window.meMapLoader = meMapLoader;
 
 	// Big wall
