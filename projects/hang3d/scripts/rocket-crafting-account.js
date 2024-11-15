@@ -121,15 +121,15 @@ export class RCSAccount {
 		var parent = document.createElement('div');
 		parent.style = ``;
 		parent.classList.add('leaderboard')
-		if(isMobile() == true) {
-			parent.style = `
-			position: absolute;
-			border-radius: 4px;
-			top: 10%;
-			left: 0%;
-			width: 95%;
-			padding: 10px;`;
-		}
+		// if(isMobile() == true) {
+		// 	parent.style = `
+		// 	position: absolute;
+		// 	border-radius: 4px;
+		// 	top: 10%;
+		// 	left: 0%;
+		// 	width: 95%;
+		// 	padding: 10px;`;
+		// }
 		parent.id = 'leaderboard';
 
 		var title = document.createElement('div');
@@ -154,21 +154,38 @@ export class RCSAccount {
 		parentForTable.style.height = '70vh';
 		parentForTable.style.overflow = 'scroll';
 		parentForTable.style.overflowX = 'hidden';
-		data.forEach(element => {
+		data.forEach((element, index) => {
 			var table = document.createElement('div');
 			table.style.display = 'flex';
 			table.style.flexDirection = 'row';
 			table.style.justifyContent = 'center';
 			table.style.alignItems = 'center';
+			table.style.boxShadow = 'none';
 
 			var nick = document.createElement('div');
 			nick.innerText = element.nickname;
 			nick.style.width = '100%';
-			nick.style.boxShadow = 'none';
+			if(index == 0) {
+				nick.style.boxShadow = '0px 7px 2px -1px #ffe100';
+			} else if(index == 1) {
+				nick.style.boxShadow = '0px 7px 2px -1px white';
+			} else if(index == 2) {
+				nick.style.boxShadow = '0px 7px 2px -1px #a01010';
+			} else {
+				nick.style.boxShadow = '0px 7px 2px -1px #757471';
+			}
 			var points = document.createElement('div');
 			points.innerText = element.points;
 			points.style.width = '100%';
-			points.style.boxShadow = 'none';
+			if(index == 0) {
+				points.style.boxShadow = '0px 7px 2px -1px #ffe100';
+			} else if(index == 1) {
+				points.style.boxShadow = '0px 7px 2px -1px white';
+			} else if(index == 2) {
+				points.style.boxShadow = '0px 7px 2px -1px #a01010';
+			} else {
+				points.style.boxShadow = '0px 7px 2px -1px #757471';
+			}
 			// var medal = document.createElement('img');
 			// medal.id = 'medal';
 			// logo.src = './assets/icons/icon96.png';
@@ -182,7 +199,8 @@ export class RCSAccount {
 
 		var hideBtn = document.createElement('button');
 		hideBtn.classList = 'btn';
-		hideBtn.innerText = 'SHOW';
+		hideBtn.style.marginTop = '7px';
+		hideBtn.innerText = 'HIDE';
 		hideBtn.addEventListener('click', () => {
 			parent.style.display = 'none';
 		})

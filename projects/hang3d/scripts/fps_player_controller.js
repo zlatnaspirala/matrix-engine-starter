@@ -845,7 +845,7 @@ export var runHang3d = (world) => {
 		if(useRCSAccount == true) {
 			App.myAccounts = new RCSAccount(RCSAccountDomain);
 			App.myAccounts.createDOM();
-			notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
+			// notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
 			console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, REDLOG);
 		}
 	})
