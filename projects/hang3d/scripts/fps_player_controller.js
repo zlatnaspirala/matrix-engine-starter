@@ -17,6 +17,7 @@ import {RCSAccount} from "./rocket-crafting-account";
 import {SYS} from "matrix-engine/lib/events";
 import {meMapLoader} from "./map-loader";
 import {map1} from "../maps/map1";
+import {map2} from "../maps/map2";
 
 const useRCSAccount = true;
 const RCSAccountDomain = 'https://maximumroulette.com';
@@ -740,7 +741,7 @@ export var runHang3d = (world) => {
 	App.scene['FLOOR3'].physics.enabled = true;
 
 	// MAP LOADER
-	meMapLoader.load(map2, physics);
+	meMapLoader.load(map1, physics);
 	// Still not work...
 	// meMapLoader.load(meMapLoader.geminiMap(10 , 150, 1), physics)
 	window.meMapLoader = meMapLoader;
@@ -967,8 +968,8 @@ const createNetworkPlayerCharacter = (objName) => {
 		}
 
 		var textuteImageSamplers2 = {
-			source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png",
-				"res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png"],
+			source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.webp",
+				"res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.webp"],
 			mix_operation: "multiply", // ENUM : multiply , divide
 		};
 

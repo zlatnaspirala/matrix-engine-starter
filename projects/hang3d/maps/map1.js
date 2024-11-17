@@ -18,6 +18,15 @@ export let map1 = {
 				source: ["res/images/diffuse.png"],
 				mix_operation: "multiply"
 			}
+		},
+		{
+			name: "wall_gen3",
+			position: {x: 25, y: 0, z: 0},
+			scale: [1, 3, 1],
+			texture: {
+				source: ["res/images/diffuse.png"],
+				mix_operation: "multiply"
+			}
 		}
 	]
 };

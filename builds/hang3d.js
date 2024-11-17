@@ -18183,22 +18183,22 @@ camera.yawAmp = 0.077;
 camera.pitchAmp = 0.017;
 camera.virtualJumpY = 2;
 camera.virtualJumpActive = false;
-camera.preventSpeedZero = false; // eslint-disable-next-line no-global-assign
-
+camera.moveLeft = false;
+camera.preventSpeedZero = false;
 var keyboardPress = defineKeyBoardObject(); // For FirstPersonController
 
 exports.keyboardPress = keyboardPress;
 
 camera.setCamera = function (object) {
-  if (keyboardPress.getKeyStatus(37) || keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
-    /* Left Key  or A */
+  if (keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
+    /* A */
     camera.yawRate = _manifest.default.camera.yawRate;
 
     if (_manifest.default.camera.leftEdge == true) {
       camera.yawRate = _manifest.default.camera.yawRateOnEdge;
     }
-  } else if (keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
-    /* Right Key or D */
+  } else if (keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+    /* D */
     camera.yawRate = -_manifest.default.camera.yawRate;
 
     if (_manifest.default.camera.rightEdge == true) {
@@ -18210,21 +18210,27 @@ camera.setCamera = function (object) {
       this.virtualJumpActive = true;
     }
   }
-  /* Up Key or W */
 
-
-  if (keyboardPress.getKeyStatus(38) || keyboardPress.getKeyStatus(87)) {
+  if (keyboardPress.getKeyStatus(37)) {
+    /* Left Key  || App.camera.leftEdge == true*/
+    camera.moveLeft = true;
+    camera.speed = _manifest.default.camera.speedAmp;
+  } else if (keyboardPress.getKeyStatus(39)) {
+    /* Right Key || App.camera.rightEdge == true */
+    camera.moveRight = true;
+    camera.speed = _manifest.default.camera.speedAmp;
+  } else if (keyboardPress.getKeyStatus(38) || keyboardPress.getKeyStatus(87)) {
+    /* Up Key or W */
     camera.speed = _manifest.default.camera.speedAmp;
   } else if (keyboardPress.getKeyStatus(40) || keyboardPress.getKeyStatus(83)) {
     /* Down Key or S */
     camera.speed = -_manifest.default.camera.speedAmp;
-  } else {
-    if (camera.preventSpeedZero == false) camera.speed = 0;
+  } else {// if(camera.preventSpeedZero == false) camera.speed = 0;
   }
   /* Calculate yaw, pitch and roll(x,y,z) */
 
 
-  if (camera.speed != 0) {
+  if (camera.speed != 0 && camera.moveLeft == false && camera.moveRight == false) {
     camera.xPos -= Math.sin(degToRad(camera.yaw)) * camera.speed;
 
     if (camera.fly == true) {
@@ -18237,6 +18243,14 @@ camera.setCamera = function (object) {
     }
 
     camera.zPos -= Math.cos(degToRad(camera.yaw)) * camera.speed;
+  } else if (camera.moveLeft == true) {
+    // by side move left
+    camera.xPos -= Math.sin(degToRad(camera.yaw + 90)) * camera.speed;
+    camera.zPos -= Math.cos(degToRad(camera.yaw + 90)) * camera.speed;
+  } else if (camera.moveRight == true) {
+    // by side move rigth
+    camera.xPos -= Math.sin(degToRad(camera.yaw - 90)) * camera.speed;
+    camera.zPos -= Math.cos(degToRad(camera.yaw - 90)) * camera.speed;
   }
 
   camera.yaw += camera.yawRate * camera.yawAmp;
@@ -18245,7 +18259,11 @@ camera.setCamera = function (object) {
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(-camera.yaw), [0, 1, 0]);
   mat4.translate(object.mvMatrix, object.mvMatrix, [-camera.xPos, -camera.yPos, -camera.zPos]);
   camera.yawRate = 0;
-  camera.pitchRate = 0;
+  camera.pitchRate = 0; // update
+
+  camera.moveLeft = false;
+  camera.moveRight = false;
+  if (camera.preventSpeedZero == false) camera.speed = 0;
 }; // For sceneController
 
 
@@ -27676,9 +27694,8 @@ function defineworld(canvas, renderType) {
             }
           }, after);
         } else {
-          world.contentList.splice(world.contentList.indexOf(objObject), 1)[0]; // App.scene[objForDelete.name] = null;
-
-          console.log("DESTROYED objObject.name ", objObject.name);
+          let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
+          _manifest.default.scene[objForDelete.name] = null;
         }
       };
 
@@ -40333,7 +40350,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/fps_player_controller":45,"matrix-engine":8}],43:[function(require,module,exports){
+},{"./scripts/fps_player_controller":46,"matrix-engine":8}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40365,11 +40382,215 @@ let map1 = {
       source: ["res/images/diffuse.png"],
       mix_operation: "multiply"
     }
+  }, {
+    name: "wall_gen3",
+    position: {
+      x: 25,
+      y: 0,
+      z: 0
+    },
+    scale: [1, 3, 1],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
   }]
 };
 exports.map1 = map1;
 
 },{}],44:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.map2 = void 0;
+let map2 = {
+  "staticCubes": [{
+    "name": "wall_gen0_0",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen0_1",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 4.2
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen0_2",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 8.4
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen1_2",
+    "position": {
+      "x": 4.2,
+      "y": 1,
+      "z": 8.4
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen1_0",
+    "position": {
+      "x": 4.2,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen2_0",
+    "position": {
+      "x": 8.4,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen2_2",
+    "position": {
+      "x": 8.4,
+      "y": 1,
+      "z": 8.4
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen2_3",
+    "position": {
+      "x": 8.4,
+      "y": 1,
+      "z": 12.600000000000001
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen3_2",
+    "position": {
+      "x": 12.600000000000001,
+      "y": 1,
+      "z": 8.4
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen3_0",
+    "position": {
+      "x": 12.600000000000001,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen4_0",
+    "position": {
+      "x": 16.8,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen5_0",
+    "position": {
+      "x": 21,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen5_1",
+    "position": {
+      "x": 21,
+      "y": 1,
+      "z": 4.2
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen5_2",
+    "position": {
+      "x": 21,
+      "y": 1,
+      "z": 8.4
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen5_3",
+    "position": {
+      "x": 21,
+      "y": 1,
+      "z": 12.600000000000001
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }]
+};
+exports.map2 = map2;
+
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40443,7 +40664,7 @@ var ROCK_RANK = {
 };
 exports.ROCK_RANK = ROCK_RANK;
 
-},{"matrix-engine/lib/utility":36}],45:[function(require,module,exports){
+},{"matrix-engine/lib/utility":36}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40464,6 +40685,8 @@ var _events = require("matrix-engine/lib/events");
 var _mapLoader = require("./map-loader");
 
 var _map = require("../maps/map1");
+
+var _map2 = require("../maps/map2");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -41438,7 +41661,7 @@ const createNetworkPlayerCharacter = objName => {
     }
 
     var textuteImageSamplers2 = {
-      source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png", "res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png"],
+      source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.webp", "res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.webp"],
       mix_operation: "multiply" // ENUM : multiply , divide
 
     };
@@ -41480,7 +41703,7 @@ const createNetworkPlayerCharacter = objName => {
   }), onLoadObj);
 };
 
-},{"../maps/map1":43,"./dom":44,"./map-loader":46,"./rocket-crafting-account":47,"cannon":5,"matrix-engine":8,"matrix-engine/lib/events":10}],46:[function(require,module,exports){
+},{"../maps/map1":43,"../maps/map2":44,"./dom":45,"./map-loader":47,"./rocket-crafting-account":48,"cannon":5,"matrix-engine":8,"matrix-engine/lib/events":10}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41544,7 +41767,7 @@ const meMapLoader = {
 };
 exports.meMapLoader = meMapLoader;
 
-},{"cannon":5,"matrix-engine":8}],47:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":8}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41990,4 +42213,4 @@ class RCSAccount {
 
 exports.RCSAccount = RCSAccount;
 
-},{"./dom.js":44,"matrix-engine":8,"matrix-engine/lib/utility.js":36}]},{},[42]);
+},{"./dom.js":45,"matrix-engine":8,"matrix-engine/lib/utility.js":36}]},{},[42]);

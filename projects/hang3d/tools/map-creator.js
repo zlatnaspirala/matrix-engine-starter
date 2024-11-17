@@ -21,8 +21,8 @@ var mapCreator = {
 				const _add = (e) => {
 					this.map.staticCubes.push(
 						{
-							name: "wall_gen" + i + "_" + j,
-							position: {x: e.target.getAttribute('data-x'), y: 1, z: e.target.getAttribute('data-z')},
+							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
+							position: {x: 4.2*parseFloat(e.target.getAttribute('data-x')), y: 1, z: 4.2*parseFloat(e.target.getAttribute('data-z'))},
 							scale: [1, 1, 1],
 							texture: {
 								source: ["res/images/diffuse.png"],
