@@ -40394,6 +40394,18 @@ let map1 = {
       source: ["res/images/diffuse.png"],
       mix_operation: "multiply"
     }
+  }, {
+    name: "wall_gen4",
+    position: {
+      x: 29,
+      y: 0,
+      z: 0
+    },
+    scale: [1, 3, 1],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
   }]
 };
 exports.map1 = map1;
@@ -41286,7 +41298,7 @@ var runHang3d = world => {
       }
 
       var tex2 = {
-        source: ["res/images/hud/energy-bar2.png", "res/images/hud/energy-bar2.png"],
+        source: ["res/images/hud/energy-bar.png", "res/images/hud/energy-bar.png"],
         mix_operation: "multiply"
       };
       world.Add("squareTex", 1, 'energyBar', tex2);

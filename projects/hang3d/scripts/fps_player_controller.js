@@ -581,7 +581,7 @@ export var runHang3d = (world) => {
 			}
 
 			var tex2 = {
-				source: ["res/images/hud/energy-bar2.png", "res/images/hud/energy-bar2.png"],
+				source: ["res/images/hud/energy-bar.png", "res/images/hud/energy-bar.png"],
 				mix_operation: "multiply",
 			};
 
