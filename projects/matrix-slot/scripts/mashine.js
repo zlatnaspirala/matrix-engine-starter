@@ -37,7 +37,7 @@ export default class Mashines {
     this.createNidzaHudBalance = createNidzaHudBalance;
     // Slot status general
     this.status = "free";
-    this.font = new planeUVFont();
+    // this.font = new planeUVFont();
     this.speed = 0.8;
     this.thread = {
       control: {},
@@ -69,7 +69,7 @@ export default class Mashines {
 
     this.addMashine(world);
     this.addWheel(world);
-    this.addHeaderText();
+    // this.addHeaderText();
     this.addRaycaster();
 
     this.constructWinningObject = event => {

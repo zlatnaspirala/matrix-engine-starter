@@ -3,6 +3,8 @@ let OSC = matrixEngine.utility.OSCILLATOR;
 var App = matrixEngine.App;
 
 export async function loadLineEffects() {
+	let world = matrixEngine.matrixWorld.world;
+	
   var texTopHeader = {
     source: ["res/images/h1.png"],
     mix_operation: "multiply",

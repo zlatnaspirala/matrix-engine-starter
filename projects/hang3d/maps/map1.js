@@ -30,7 +30,7 @@ export let map1 = {
 		},
 		{
 			name: "wall_gen4",
-			position: {x: 29, y: 0, z: 0},
+			position: {x: 35, y: 0, z: 0},
 			scale: [1, 3, 1],
 			texture: {
 				source: ["res/images/diffuse.png"],
