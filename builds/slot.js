@@ -17171,8 +17171,6 @@ var _sounds = require("./sounds");
 
 var _app = require("../networking2/app");
 
-var _matrixStream = require("../networking2/matrix-stream");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
@@ -17373,13 +17371,11 @@ function defineWebGLWorld(cavnas) {
 }
 
 function updateFPS(elements) {
-  // console.log(" Update FPS");
   var now = new Date().getTime();
   var delta = now - lastTime;
   exports.lastTime = lastTime = now;
   exports.totalTime = totalTime = totalTime + delta;
-  exports.updateTime = updateTime = updateTime + delta; // eslint-disable-next-line no-global-assign
-
+  exports.updateTime = updateTime = updateTime + delta;
   (0, _matrixWorld.modifyFrames)(_matrixWorld.frames + 1);
   exports.updateFrames = updateFrames = updateFrames + 1;
 
@@ -17391,13 +17387,12 @@ function updateFPS(elements) {
 }
 
 function drawCanvas() {
-  // console.log("Init the canvas...");
   var canvas = document.createElement('canvas');
   canvas.id = 'canvas';
 
   if (_manifest.default.resize.canvas == 'full-screen') {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight; // SYS.DEBUG.LOG('SYS: fullscreen diametric resize is active. ');
+    canvas.height = window.innerHeight;
   } else {
     canvas.width = window.innerHeight * _manifest.default.resize.aspectRatio;
     canvas.height = window.innerHeight;
@@ -17406,7 +17401,7 @@ function drawCanvas() {
   }
 
   document.body.append(canvas);
-} // Degree to Radian converter 
+} // Degree to Radian converter
 
 
 function degToRad(degrees) {
@@ -17833,7 +17828,7 @@ exports.webcamError = webcamError;
 function SET_STREAM(video) {
   let v;
 
-  if (isMobile() == true) {
+  if ((0, _utility.isMobile)() == true) {
     v = {
       deviceId: {
         exact: videoSrc
@@ -17858,7 +17853,7 @@ function SET_STREAM(video) {
 
     navigator.mediaDevices.enumerateDevices().then(devices => {
       devices.forEach(device => {
-        console.log('device.label :', device.label);
+        if (_manifest.default.printDevicesInfo == true) console.log('device.label :', device.label);
       });
     });
   }).catch(error => {
@@ -18183,7 +18178,7 @@ function DOM_VT(video, name, options) {
   };
 }
 
-},{"../client-config":13,"../networking2/app":44,"../networking2/matrix-stream":45,"../program/manifest":46,"./events":16,"./matrix-render":24,"./matrix-shaders1":25,"./matrix-shaders3":26,"./matrix-world":30,"./net":31,"./sounds":41,"./utility":42,"./webgl-utils":43}],16:[function(require,module,exports){
+},{"../client-config":13,"../networking2/app":44,"../program/manifest":46,"./events":16,"./matrix-render":24,"./matrix-shaders1":25,"./matrix-shaders3":26,"./matrix-world":30,"./net":31,"./sounds":41,"./utility":42,"./webgl-utils":43}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40488,6 +40483,7 @@ var App = {
   updateBeforeDraw: [],
   audioSystem: {},
   // readOnly in manifest
+  printDevicesInfo: false,
   pwa: {
     addToHomePage: true
   },
@@ -43924,7 +43920,7 @@ class Mashines {
 
     this.status = "free"; // this.font = new planeUVFont();
 
-    this.speed = 0.8;
+    this.speed = 0.4;
     this.thread = {
       control: {}
     };
@@ -43953,7 +43949,9 @@ class Mashines {
     this.createNidzaHudLine1 = _activeTextures.createNidzaHudLine1;
     this.addMashine(world);
     this.addWheel(world); // this.addHeaderText();
+    // test
 
+    this.addSpinText();
     this.addRaycaster();
 
     this.constructWinningObject = event => {
@@ -44002,8 +44000,7 @@ class Mashines {
                     status: this.status
                   }
                 });
-                dispatchEvent(mashineFree);
-                this.vc.run();
+                dispatchEvent(mashineFree); // this.vc.run();
               }, this.config.waitForNextSpin);
             }
           }, 1000 * lineIndex);
@@ -44188,7 +44185,7 @@ class Mashines {
 
   addMashine = function (world) {
     var texTopHeader = {
-      source: ["res/images/freespin.png"],
+      source: ["res/icons/512.webp"],
       mix_operation: "multiply"
     };
     var texOverlayout = {
@@ -44207,10 +44204,11 @@ class Mashines {
     }
 
     world.Add("squareTex", 1, "topHeader", texTopHeader);
-    App.scene.topHeader.geometry.setScaleByX(5);
-    App.scene.topHeader.geometry.setScaleByY(0.5);
-    App.scene.topHeader.position.y = 2.56;
+    App.scene.topHeader.geometry.setScaleByX(6);
+    App.scene.topHeader.geometry.setScaleByY(1);
+    App.scene.topHeader.position.y = 3.3;
     App.scene.topHeader.position.z = -6.5;
+    App.scene.topHeader.glBlend.blendEnabled = true;
 
     App.scene.topHeader.custom.gl_texture = function (object, t) {
       world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
@@ -44224,7 +44222,7 @@ class Mashines {
       world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
     };
 
-    var coefic = 1;
+    var coefic = 2;
     App.scene.topHeader.geometry.texCoordsPoints.right_top.y = -coefic;
     App.scene.topHeader.geometry.texCoordsPoints.right_top.x = coefic;
     App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -coefic;
@@ -44234,13 +44232,13 @@ class Mashines {
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = coefic;
     App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = coefic;
     /*
-        setInterval(function () {
+    			setInterval(function () {
     App.scene.MySquareTexure1.geometry.texCoordsPoints.right_top.x += 0.001;
     App.scene.MySquareTexure1.geometry.texCoordsPoints.left_bottom.x += 0.001;
     App.scene.MySquareTexure1.geometry.texCoordsPoints.left_top.x += 0.001;
     App.scene.MySquareTexure1.geometry.texCoordsPoints.right_bottom.x += 0.001;
     }, 20);
-      App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
+    		App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 9.4;
     App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -11.4;
     App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -11.4;
@@ -44502,7 +44500,7 @@ class Mashines {
       mix_operation: "multiply" // ENUM : multiply , divide ,
 
     };
-    world.Add("squareTex", 1, "spinBtn", textuteImageSamplers);
+    matrixEngine.matrixWorld.world.Add("squareTex", 1, "spinBtn", textuteImageSamplers);
     App.scene.spinBtn.position.SetY(-1.98);
     App.scene.spinBtn.position.SetX(2);
     App.scene.spinBtn.position.SetZ(-5);
