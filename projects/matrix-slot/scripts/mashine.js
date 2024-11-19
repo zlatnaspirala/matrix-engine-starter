@@ -72,16 +72,13 @@ export default class Mashines {
 		// this.addHeaderText();
 		// test
 		this.addSpinText();
-
 		this.addRaycaster();
 
 		this.constructWinningObject = event => {
 			stopSpin[event.detail.wheelID].play();
-
 			// console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
 			// console.log( "constructWinningObject field name=> ", event.detail.fieldname );
 			// console.log( "constructWinningObject isLast=> ", event.detail.isLast );
-
 			let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
 			var newOrder = App.slot.mashine.arrayRotate(localHolder);
 			while(newOrder[newOrder.length - 1] != event.detail.fieldname) {
@@ -142,14 +139,11 @@ export default class Mashines {
 
 			// console.info("MASHINE STATUS IS FREE");
 			App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
-
 		});
-
 
 		if(isMobile()) {
 			if(window.innerWidth < window.innerHeight) {
 				console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
-
 			}
 		}
 
@@ -331,8 +325,34 @@ export default class Mashines {
 			mix_operation: "multiply",
 		};
 
-		if(isMobile()) {
+		// This must be part of engine
+		const displayOrientation = () => {
+			const screenOrientation = screen.orientation.type;
+			console.log(`The orientation of the screen is: ${screenOrientation}`);
+			if(screenOrientation === "landscape-primary") {
+				console.log("That looks good.");
+				// Alternative App.scene.overlayout.visible = false;
+				location.reload()
+			} else if(screenOrientation === "landscape-secondary") {
+				console.log("Mmmh... the screen is upside down!");
+			} else if(screenOrientation === "portrait-secondary" || screenOrientation === "portrait-primary") {
+				console.log("Mmmh... you should rotate your device to landscape");
+				location.reload() // Pragmatic for now...
+			} else if(screenOrientation === undefined) {
+				console.log("The orientation API isn't supported in this browser :(");
+			}
+		};
+		if(screen && screen.orientation !== null) {
+			try {
+				window.screen.orientation.onchange = displayOrientation;
+				// displayOrientation();
+			}
+			catch(e) {}
+		}
+		//
 
+		if(isMobile() && window.innerWidth < window.innerHeight) {
+			console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
 			world.Add("squareTex", 1, "overlayout", texOverlayout);
 			App.scene.overlayout.geometry.setScaleByX(1);
 			App.scene.overlayout.geometry.setScaleByY(2.2);
@@ -493,7 +513,7 @@ export default class Mashines {
 		//App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
 		//App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
 
-		if(isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
+		if(isMobile() && window.innerWidth < window.innerHeight) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
 
 		App.operation.squareTex_buffer_procedure(App.scene.topHeader);
 		App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
@@ -537,6 +557,11 @@ export default class Mashines {
 				// Referent done for default camera position.
 				var O = (window.innerWidth / 1000) * WW;
 				var O2 = (window.innerWidth / 1005) * WW;
+
+				if (isMobile() == true) {
+					O = (window.innerWidth / 400) * WW;
+					O2 = (window.innerWidth / 405) * WW;
+				}
 
 				App.scene[name].LightsData.ambientLight.set(
 					field.color.r,
@@ -666,9 +691,19 @@ export default class Mashines {
 			}
 		});
 
-		canvas.addEventListener("mousedown", ev => {
-			matrixEngine.raycaster.checkingProcedure(ev);
-		});
+		if(isMobile() == true) {
+			canvas.addEventListener("touchstart", (ev) => {
+				console.log('TEST MOB', ev)
+				matrixEngine.raycaster.checkingProcedure(ev, {
+					clientX: ev.targetTouches[0].clientX,
+					clientY: ev.targetTouches[0].clientY
+				});
+			});
+		} else {
+			canvas.addEventListener("mousedown", ev => {
+				matrixEngine.raycaster.checkingProcedure(ev);
+			});
+		}
 	};
 
 	addSpinText = function() {

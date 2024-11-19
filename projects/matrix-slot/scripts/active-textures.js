@@ -24,7 +24,7 @@ export function createNidzaTextureText( nidza ) {
       {
         id: "zlatna",
         text: "Welcome here. What's your name ?",
-        color: "lime",
+        color: "orangered",
         position: {
           x: 50,
           y: 10
@@ -34,13 +34,13 @@ export function createNidzaTextureText( nidza ) {
           height: 20
         },
         border: {
-          fillColor: "rgba(110,10,10,0.5)",
-          strokeColor: "rgba(0,0,0,0)"
+          fillColor: "rgba(10,10,0,0.9)",
+          strokeColor: "rgba(0,0,0,1)"
         },
         font: {
-          fontSize: "130%",
+          fontSize: "135%",
           fontStyle: "normal",
-          fontName: stdFonts.CourierNew
+          fontName: "stormfaze"
         }
       } );
 

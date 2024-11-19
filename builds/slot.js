@@ -17829,12 +17829,7 @@ function SET_STREAM(video) {
   let v;
 
   if ((0, _utility.isMobile)() == true) {
-    v = {
-      deviceId: {
-        exact: videoSrc
-      },
-      facingMode: 'user'
-    };
+    v = true; // {deviceId: {exact: videoSrc}, facingMode: 'user'}
   } else {
     v = true;
   }
@@ -43365,7 +43360,7 @@ function createNidzaTextureText(nidza) {
     let statusMessageBox = nidza.access.footerLabel.addTextComponent({
       id: "zlatna",
       text: "Welcome here. What's your name ?",
-      color: "lime",
+      color: "orangered",
       position: {
         x: 50,
         y: 10
@@ -43375,13 +43370,13 @@ function createNidzaTextureText(nidza) {
         height: 20
       },
       border: {
-        fillColor: "rgba(110,10,10,0.5)",
-        strokeColor: "rgba(0,0,0,0)"
+        fillColor: "rgba(10,10,0,0.9)",
+        strokeColor: "rgba(0,0,0,1)"
       },
       font: {
-        fontSize: "130%",
+        fontSize: "135%",
         fontStyle: "normal",
-        fontName: _standardFonts.stdFonts.CourierNew
+        fontName: "stormfaze"
       }
     }); // Create one simple oscillator
 
@@ -44191,9 +44186,35 @@ class Mashines {
     var texOverlayout = {
       source: ["res/icons/pleaserotate.png"],
       mix_operation: "multiply"
+    }; // This must be part of engine
+
+    const displayOrientation = () => {
+      const screenOrientation = screen.orientation.type;
+      console.log(`The orientation of the screen is: ${screenOrientation}`);
+
+      if (screenOrientation === "landscape-primary") {
+        console.log("That looks good."); // Alternative App.scene.overlayout.visible = false;
+
+        location.reload();
+      } else if (screenOrientation === "landscape-secondary") {
+        console.log("Mmmh... the screen is upside down!");
+      } else if (screenOrientation === "portrait-secondary" || screenOrientation === "portrait-primary") {
+        console.log("Mmmh... you should rotate your device to landscape");
+        location.reload(); // Pragmatic for now...
+      } else if (screenOrientation === undefined) {
+        console.log("The orientation API isn't supported in this browser :(");
+      }
     };
 
-    if (isMobile()) {
+    if (screen && screen.orientation !== null) {
+      try {
+        window.screen.orientation.onchange = displayOrientation; // displayOrientation();
+      } catch (e) {}
+    } //
+
+
+    if (isMobile() && window.innerWidth < window.innerHeight) {
+      console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
       world.Add("squareTex", 1, "overlayout", texOverlayout);
       App.scene.overlayout.geometry.setScaleByX(1);
       App.scene.overlayout.geometry.setScaleByY(2.2);
@@ -44323,7 +44344,7 @@ class Mashines {
     //App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
     //App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
 
-    if (isMobile()) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
+    if (isMobile() && window.innerWidth < window.innerHeight) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
     App.operation.squareTex_buffer_procedure(App.scene.topHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
     App.operation.squareTex_buffer_procedure(App.scene.footerLines);
@@ -44359,6 +44380,12 @@ class Mashines {
 
         var O = window.innerWidth / 1000 * WW;
         var O2 = window.innerWidth / 1005 * WW;
+
+        if (isMobile() == true) {
+          O = window.innerWidth / 400 * WW;
+          O2 = window.innerWidth / 405 * WW;
+        }
+
         App.scene[name].LightsData.ambientLight.set(field.color.r, field.color.g, field.color.b);
 
         if (field.videoTex && field.videoTex !== false) {
@@ -44490,9 +44517,20 @@ class Mashines {
         (0, _activeTextures.showActiveLinesByIndex)((0, _activeTextures.incActiveLines)());
       }
     });
-    canvas.addEventListener("mousedown", ev => {
-      matrixEngine.raycaster.checkingProcedure(ev);
-    });
+
+    if (isMobile() == true) {
+      canvas.addEventListener("touchstart", ev => {
+        console.log('TEST MOB', ev);
+        matrixEngine.raycaster.checkingProcedure(ev, {
+          clientX: ev.targetTouches[0].clientX,
+          clientY: ev.targetTouches[0].clientY
+        });
+      });
+    } else {
+      canvas.addEventListener("mousedown", ev => {
+        matrixEngine.raycaster.checkingProcedure(ev);
+      });
+    }
   };
   addSpinText = function () {
     var textuteImageSamplers = {
