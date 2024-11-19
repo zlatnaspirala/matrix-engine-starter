@@ -1429,7 +1429,7 @@ debug.enable = function(name) {
     , len = split.length;
 
   for (var i = 0; i < len; i++) {
-    name = split[i].replace('*', '.*?');
+    name = split[i].replace(/\*/g, '.*?');
     if (name[0] === '-') {
       debug.skips.push(new RegExp('^' + name.substr(1) + '$'));
     }
