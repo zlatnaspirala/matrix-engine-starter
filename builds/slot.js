@@ -43893,6 +43893,8 @@ var _nidza = require("nidza");
 
 var _audioGen = require("./audio-gen");
 
+var _utility = require("matrix-engine/lib/utility");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -43948,6 +43950,8 @@ class Mashines {
 
     this.addSpinText();
     this.addRaycaster();
+    (0, _utility.byId)('fps').style.display = 'none';
+    (0, _utility.byId)('debugBox').style.display = 'none';
 
     this.constructWinningObject = event => {
       _matrixAudio.stopSpin[event.detail.wheelID].play(); // console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
@@ -44227,7 +44231,7 @@ class Mashines {
     world.Add("squareTex", 1, "topHeader", texTopHeader);
     App.scene.topHeader.geometry.setScaleByX(6);
     App.scene.topHeader.geometry.setScaleByY(1);
-    App.scene.topHeader.position.y = 3.3;
+    App.scene.topHeader.position.y = 2.3;
     App.scene.topHeader.position.z = -6.5;
     App.scene.topHeader.glBlend.blendEnabled = true;
 
@@ -44671,7 +44675,7 @@ class Mashines {
 
 exports.default = Mashines;
 
-},{"./active-textures":70,"./audio-gen":71,"./effect-lines":72,"./matrix-audio":74,"matrix-engine":14,"matrix-engine-plugins":9,"nidza":47}],74:[function(require,module,exports){
+},{"./active-textures":70,"./audio-gen":71,"./effect-lines":72,"./matrix-audio":74,"matrix-engine":14,"matrix-engine-plugins":9,"matrix-engine/lib/utility":42,"nidza":47}],74:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

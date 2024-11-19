@@ -43,6 +43,7 @@ npm i
   npm run build.app
   npm run build.slot
   npm run build.roulette
+	npm run build.hang3d
 ```
 
 And navigate to app.html, examples.html etc.
@@ -56,7 +57,6 @@ And navigate to app.html, examples.html etc.
 <img src="https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/hang3d-matrix.png" >
 Run:  `npm run hang3d`
 Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
-
 
 ## Matrix Roulette - 3d physics roulette
 
@@ -88,6 +88,7 @@ events.onmessage = event => {
 ```
 
 #### Url parameters:
+
 <pre>
  +-----------------------------------------------------------------------------------+
  |-----------------------------------------------------------------------------------+
@@ -125,11 +126,10 @@ events.onmessage = event => {
 
 ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-roulette-2.png)
 
-## Web-Anatomy underconstructing
+## Web-Anatomy [skeletal , muscular]
 
 ![matrix-anatomy](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/matrix-anatomy.png)
 Implemented skeletal system ~ 20mb data
-
 
 ## Slot-Mashine
 
@@ -149,6 +149,7 @@ Implemented skeletal system ~ 20mb data
 - https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 
 ### Engine source link:
+
 https://github.com/zlatnaspirala/matrix-engine
 
 ### Credits

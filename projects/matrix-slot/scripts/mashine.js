@@ -19,6 +19,7 @@ import {
 } from "./effect-lines";
 import {Nidza} from "nidza";
 import {beep} from "./audio-gen";
+import {byId} from "matrix-engine/lib/utility";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
 let VT = matrixEngine.Engine.VT;
@@ -73,6 +74,9 @@ export default class Mashines {
 		// test
 		this.addSpinText();
 		this.addRaycaster();
+
+		byId('fps').style.display = 'none'
+		byId('debugBox').style.display = 'none'
 
 		this.constructWinningObject = event => {
 			stopSpin[event.detail.wheelID].play();
@@ -365,7 +369,7 @@ export default class Mashines {
 		world.Add("squareTex", 1, "topHeader", texTopHeader);
 		App.scene.topHeader.geometry.setScaleByX(6);
 		App.scene.topHeader.geometry.setScaleByY(1);
-		App.scene.topHeader.position.y = 3.3;
+		App.scene.topHeader.position.y = 2.3;
 		App.scene.topHeader.position.z = -6.5;
 		App.scene.topHeader.glBlend.blendEnabled = true;
 
