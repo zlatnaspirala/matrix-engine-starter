@@ -1,5 +1,5 @@
 import * as matrixEngine from "matrix-engine";
-import {planeFont, planeUVFont} from "matrix-engine-plugins";
+// import {planeFont, planeUVFont} from "matrix-engine-plugins";
 import {startSpin, stopSpin} from "./matrix-audio";
 import {
 	createNidzaTextureText,
@@ -22,7 +22,6 @@ import {beep} from "./audio-gen";
 import {byId} from "matrix-engine/lib/utility";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
-let VT = matrixEngine.Engine.VT;
 let App = matrixEngine.App;
 let isMobile = matrixEngine.utility.isMobile;
 
@@ -38,7 +37,7 @@ export default class Mashines {
 		this.createNidzaHudBalance = createNidzaHudBalance;
 		// Slot status general
 		this.status = "free";
-		// this.font = new planeUVFont();
+		// this.font = new planeUVFont(); DISABLED
 		this.speed = 0.4;
 		this.thread = {
 			control: {},
@@ -55,7 +54,7 @@ export default class Mashines {
 			order: [],
 		};
 
-		this.loadLineEffects = loadLineEffects; //loadLineEffects.bind(this);
+		this.loadLineEffects = loadLineEffects;
 
 		// hold threads - clear it
 		this.winningVisualEffect = {threads: [], ids: []};
@@ -71,7 +70,6 @@ export default class Mashines {
 		this.addMashine(world);
 		this.addWheel(world);
 		// this.addHeaderText();
-		// test
 		this.addSpinText();
 		this.addRaycaster();
 
@@ -81,46 +79,34 @@ export default class Mashines {
 		this.constructWinningObject = event => {
 			stopSpin[event.detail.wheelID].play();
 			// console.log( "constructWinningObject wheel id=>  ", event.detail.wheelID );
-			// console.log( "constructWinningObject field name=> ", event.detail.fieldname );
-			// console.log( "constructWinningObject isLast=> ", event.detail.isLast );
 			let localHolder = [...App.slot.mashine.accessKeys[event.detail.wheelID]];
 			var newOrder = App.slot.mashine.arrayRotate(localHolder);
 			while(newOrder[newOrder.length - 1] != event.detail.fieldname) {
 				newOrder = App.slot.mashine.arrayRotate(localHolder);
 			}
 			this.winningHandler.order.push(newOrder);
-
 			// Only on last stop
 			if(event.detail.isLast == true) {
 				// It is last activate from here
 				this.config.winnigLines.forEach((line, lineIndex) => {
-
 					let countLineWins = [];
 					let collectWinObjs = [];
-
 					setTimeout(() => {
 						this.killWinThreads();
-						// console.log('->>> LINE', line);
-						// console.log('->>> TEST FUCK IT ', this.winningHandler.order);
 						this.winningHandler.order.forEach((wheelData, index) => {
-							// hard code for multilines feature TEST
-							//console.log('->>> wheelData', wheelData);
-							//console.log('->>> wheelData INDEX', index);
 							let accessName = wheelData[line[index]];
 							countLineWins.push(App.scene[accessName].specialId);
 							collectWinObjs.push(App.scene[accessName]);
 						});
-
 						var finalResult = this.findMax(countLineWins);
 						this.checkForWinCombination(finalResult, collectWinObjs, lineIndex);
 						// soft hardcode
 						if(lineIndex == 16) {
-							// console.log("LAST +++++++++++++++++++++ ", lineIndex);
+							// console.log("LAST", lineIndex);
 							setTimeout(() => {
 								this.status = "free";
 								this.winningHandler.order = [];
 								this.killWinThreads();
-
 								let mashineFree = new CustomEvent("mashine.free", {
 									detail: {
 										status: this.status,
@@ -132,15 +118,12 @@ export default class Mashines {
 						}
 					}, 1000 * lineIndex);
 				});
-
-
 			}
 		};
 
 		window.addEventListener("wheel.stoped", this.constructWinningObject);
 
 		window.addEventListener("mashine.free", (e) => {
-
 			// console.info("MASHINE STATUS IS FREE");
 			App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
 		});
@@ -150,7 +133,6 @@ export default class Mashines {
 				console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
 			}
 		}
-
 	}
 
 	activateWinningVisualEffect(worldObj, comb) {
@@ -353,7 +335,6 @@ export default class Mashines {
 			}
 			catch(e) {}
 		}
-		//
 
 		if(isMobile() && window.innerWidth < window.innerHeight) {
 			console.log("Mobile device detected with portrain orientation, best fit for this game is landscape.");
@@ -369,7 +350,7 @@ export default class Mashines {
 		world.Add("squareTex", 1, "topHeader", texTopHeader);
 		App.scene.topHeader.geometry.setScaleByX(6);
 		App.scene.topHeader.geometry.setScaleByY(1);
-		App.scene.topHeader.position.y = 2.3;
+		App.scene.topHeader.position.y = 3.2;
 		App.scene.topHeader.position.z = -6.5;
 		App.scene.topHeader.glBlend.blendEnabled = true;
 
@@ -419,28 +400,9 @@ export default class Mashines {
 		App.scene.topHeader.geometry.texCoordsPoints.left_top.y = -coefic;
 		App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = coefic;
 		App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = coefic;
-		/*
-
-			setInterval(function () {
-		App.scene.MySquareTexure1.geometry.texCoordsPoints.right_top.x += 0.001;
-		App.scene.MySquareTexure1.geometry.texCoordsPoints.left_bottom.x += 0.001;
-		App.scene.MySquareTexure1.geometry.texCoordsPoints.left_top.x += 0.001;
-		App.scene.MySquareTexure1.geometry.texCoordsPoints.right_bottom.x += 0.001;
-	}, 20);
-
-		App.scene.topHeader.geometry.texCoordsPoints.right_top.y = 9.4;
-		App.scene.topHeader.geometry.texCoordsPoints.right_top.x = 9.4;
-		App.scene.topHeader.geometry.texCoordsPoints.left_bottom.x = -11.4;
-		App.scene.topHeader.geometry.texCoordsPoints.left_bottom.y = -11.4;
-		App.scene.topHeader.geometry.texCoordsPoints.left_top.x = -11.4;
-		App.scene.topHeader.geometry.texCoordsPoints.left_top.y = 9.4;
-		App.scene.topHeader.geometry.texCoordsPoints.right_bottom.x = 9.4;
-		App.scene.topHeader.geometry.texCoordsPoints.right_bottom.y = -11.4;
-		*/
 
 		// Addin anything at all
 		App.scene.topHeader.shake = false;
-
 		var osc_var = new matrixEngine.utility.OSCILLATOR(-0.01, 0.01, 0.001);
 
 		App.scene.topHeader.runShake = function() {
@@ -455,7 +417,7 @@ export default class Mashines {
 		};
 
 		this.createNidzaTextureText(this.nidza).then(what => {
-			console.log('TEST ??????????????????????', what)
+			// console.log('TEST createNidzaTextureText', what)
 			App.scene.footerHeader.streamTextures = {
 				videoImage: what,
 			};
@@ -484,7 +446,6 @@ export default class Mashines {
 
 		this.createNidzaHudLinesInfo(this.nidza).then(r => {
 			// INVERT
-			// console.log("-test---------------", r)
 			var localCtx = r.texCanvas.getContext("2d");
 			localCtx.scale(1, -1);
 			localCtx.translate(0, -r.texCanvas.height);
@@ -516,31 +477,20 @@ export default class Mashines {
 		//App.scene.footerHeader.geometry.colorData.color[1].set( 0.1, 0.1, 0.1 );
 		//App.scene.footerHeader.geometry.colorData.color[2].set( 0.1, 0.1, 0.1 );
 		//App.scene.footerHeader.geometry.colorData.color[3].set( 0.1, 0.1, 0.1 );
-
 		if(isMobile() && window.innerWidth < window.innerHeight) App.operation.squareTex_buffer_procedure(App.scene.overlayout);
-
 		App.operation.squareTex_buffer_procedure(App.scene.topHeader);
 		App.operation.squareTex_buffer_procedure(App.scene.footerHeader);
 		App.operation.squareTex_buffer_procedure(App.scene.footerLines);
 		App.operation.squareTex_buffer_procedure(App.scene.footerBalance);
-		// App.operation.squareTex_buffer_procedure( App.scene.footerLine1 );
-		// this.incraseNumOfDrawInstance();
 		console.info("Mashine is constructed.");
 		setTimeout(() => {
-			// App.slot.mashine.flashIn() startUpAnimMoveToUp
-			// App.slot.mashine.incraseNumOfDrawInstance
 			App.slot.mashine.startUpAnimMoveToRight();
-			// App.slot.mashine.startUpAnimMoveToUp()
-			// startUpAnimMoveToRight
 		}, 2500);
 	};
 
 	addWheel = function(world) {
-		// console.info("Number of wheels: ", App.slot.config.wheels.length);
-		// console.info("Number of vertical visible fields of wheels: ", App.slot.config.verticalSize);
 		var WW = App.slot.config.wheels.length;
 		var VW = App.slot.config.verticalSize;
-
 		let VT = matrixEngine.Engine.VT;
 
 		App.slot.config.wheels.forEach((wheel, indexWheel) => {
@@ -549,7 +499,6 @@ export default class Mashines {
 				lastY = 0;
 
 			wheel.forEach((field, indexField) => {
-
 				var textuteArg = {
 					source: field.textures,
 					mix_operation: "multiply",
@@ -562,7 +511,7 @@ export default class Mashines {
 				var O = (window.innerWidth / 1000) * WW;
 				var O2 = (window.innerWidth / 1005) * WW;
 
-				if (isMobile() == true) {
+				if(isMobile() == true) {
 					O = (window.innerWidth / 400) * WW;
 					O2 = (window.innerWidth / 405) * WW;
 				}
@@ -577,7 +526,7 @@ export default class Mashines {
 					App.scene[name].streamTextures = new VT(field.videoTex)
 				}
 				if(field.myFBO && field.myFBO === true) {
-					// console.log('TEST ETST  field.FBO ', field.videoTex)
+					// console.log('TEST field.FBO ', field.videoTex)
 					App.scene[name].rotation.rotz = 90;
 					App.scene[name].rotation.rotx = 90;
 					App.scene[name].rotation.roty = 0;
@@ -591,7 +540,7 @@ export default class Mashines {
 				}
 
 				if(field.myCamera && field.myCamera === true) {
-					// console.log('TEST ETST  field.FBO ', field.videoTex)
+					// console.log('TEST field.myCamera ', field.videoTex)
 					App.scene[name].streamTextures = new matrixEngine.Engine.ACCESS_CAMERA('webcam_beta')
 					App.scene[name].rotation.roty = 180;
 				}
@@ -603,19 +552,8 @@ export default class Mashines {
 				App.scene[name].position.z = _z;
 				App.scene[name].position.x = _x;
 				App.scene[name].position.y = _y;
-
 				localHandlerPos.push({_x, _y, _z});
-
 				lastY = App.scene[name].position.y;
-				try {
-					//console.log('______________')
-					// App.scene[name].geometry.setScaleByX(O / 10);
-					// App.scene[name].geometry.setScaleByY(2.97 / VW);
-				} catch(e) {}
-
-				// App.scene[name].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3,7)];
-				// App.scene[name].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3,7)];
-				// App.scene[name].glBlend.blendEnabled = true;
 
 				/*
 				App.scene[name].geometry.colorData.color[0].set(field.color.r,field.color.b,field.color.g)
@@ -636,7 +574,6 @@ export default class Mashines {
 		var c = 0;
 		var count = 0;
 		this.font.charLoaded = objChar => {
-			// console.log(objChar.name);
 			// headerTitleS
 			objChar.mesh.setScale(0.6);
 			objChar.position.SetZ(-6.45);
@@ -646,7 +583,6 @@ export default class Mashines {
 					break;
 				case "headerTitleL":
 					count = 1;
-					// objChar.rotation.rotationSpeed.x = 10;
 					break;
 				case "headerTitleO":
 					count = 1.4;
@@ -656,8 +592,6 @@ export default class Mashines {
 					break;
 			}
 			objChar.position.translateByXY(-1 + count * 0.4, 2.2);
-			// objChar.glBlend.blendEnabled = true;
-			// console.log("Explore objChar ", objChar);
 			if(c == 3) this.addSpinText();
 			c++;
 		};
@@ -668,9 +602,8 @@ export default class Mashines {
 	};
 
 	fieldOnClick = function(hitObject) {
-		var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.05);
+		// var oscAng = new matrixEngine.utility.OSCILLATOR(1, 2, 0.05);
 		hitObject.rotation.rotationSpeed.y = 200;
-
 		hitObject.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(4, 6)];
 		hitObject.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[matrixEngine.utility.randomIntFromTo(3, 5)];
 		hitObject.glBlend.blendEnabled = true;
@@ -713,23 +646,16 @@ export default class Mashines {
 	addSpinText = function() {
 		var textuteImageSamplers = {
 			source: ["res/images/spin.jpg"],
-			mix_operation: "multiply", // ENUM : multiply , divide ,
+			mix_operation: "multiply", // ENUM : multiply, divide,
 		};
-
 		matrixEngine.matrixWorld.world.Add("squareTex", 1, "spinBtn", textuteImageSamplers);
 		App.scene.spinBtn.position.SetY(-1.98);
 		App.scene.spinBtn.position.SetX(2);
 		App.scene.spinBtn.position.SetZ(-5);
 		App.scene.spinBtn.geometry.setScaleByX(0.3);
 		App.scene.spinBtn.geometry.setScaleByY(0.12);
-		App.scene.spinBtn.glBlend.blendParamSrc =
-			matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-		App.scene.spinBtn.glBlend.blendParamDest =
-			matrixEngine.utility.ENUMERATORS.glBlend.param[3];
-
-		// App.scene.spinBtn.geometry.setScaleByY(-0.76)
-		// App.scene.spinBtn.glBlend.blendEnabled = true;
-		// App.scene.spinBtn.rotation.rotz = 90;
+		App.scene.spinBtn.glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
+		App.scene.spinBtn.glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[3];
 	};
 
 	activateSpinning = () => {
@@ -773,12 +699,7 @@ export default class Mashines {
 
 	spinning = wheelID => {
 		this.thread.control["ctrl" + wheelID] = false;
-
-		console.log('TEST ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-
-		// this.thread["timer" + wheelID] = setInterval(() => {
 		this.thread["timer" + wheelID] = {};
-
 		this.thread["timer" + wheelID].UPDATE = () => {
 			this.accessKeys.forEach(
 				(accessWheelNames, indexWheel, accessKeysArray) => {
@@ -802,7 +723,6 @@ export default class Mashines {
 										// clearInterval(this.thread["timer" + wheelID]);
 										// console.log("####" + App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]))
 										App.updateBeforeDraw.splice(App.updateBeforeDraw.indexOf(this.thread["timer" + wheelID]), 1)
-
 										App.scene[fieldname].rotation.rotationSpeed.x = 0;
 										App.scene[fieldname].rotation.rotationSpeed.y = 0;
 
@@ -810,8 +730,8 @@ export default class Mashines {
 										// wheel0field5 parse 5 + 1 = 0  or
 										if(indexWheel == accessKeysArray.length - 1) {
 											isLast = true;
+											App.scene.topHeader.shake = false;
 										}
-
 										// get winning for wheel id and fieldname
 										let wheelStoped = new CustomEvent("wheel.stoped", {
 											detail: {
@@ -822,21 +742,15 @@ export default class Mashines {
 										});
 										dispatchEvent(wheelStoped);
 
-										// test line
-										console.log("#### y ", App.scene[fieldname].position.y)
 										App.scene[fieldname].position.y = this.spinHandler.lastInitY[indexWheel];
-										console.log("##after## y ", App.scene[fieldname].position.y)
-
 									}
 								}
 							}
 						);
 					}
 				});
-
-			// test to disable
 			clearInterval(this.preThread);
-		} // , 1);
+		}
 
 		App.updateBeforeDraw.push(this.thread["timer" + wheelID]);
 	};
@@ -844,6 +758,9 @@ export default class Mashines {
 	preSpinning = wheelID => {
 		return new Promise((resolve, reject) => {
 			startSpin[wheelID].play();
+
+			App.scene.topHeader.shake = true;
+			App.scene.topHeader.runShake()
 
 			this.preThread = setInterval(() => {
 				this.accessKeys.forEach((accessWheelNames, indexWheel) => {
