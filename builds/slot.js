@@ -42932,7 +42932,7 @@ function webGLStart() {
       g: 2,
       b: 1
     },
-    textures: ["res/images/metal-shets.jpg", "res/images/field3.png"],
+    textures: ["res/images/metal-shets.jpg", "res/images/field3.webp"],
     videoTex: false,
     winCoefficient: 10,
     geo: 'cubeLightTex',
@@ -42945,7 +42945,7 @@ function webGLStart() {
       g: 0.8,
       b: 1
     },
-    textures: ["res/images/field3.png", "res/images/html5.png"],
+    textures: ["res/images/field3.webp", "res/images/html5.png"],
     videoTex: false,
     winCoefficient: 5,
     geo: 'cubeLightTex',
@@ -42958,7 +42958,7 @@ function webGLStart() {
       g: 1,
       b: 0.2
     },
-    textures: ["res/images/html5.png", "res/images/field3.png"],
+    textures: ["res/images/html5.png", "res/images/field3.webp"],
     winCoefficient: 2,
     geo: 'cubeLightTex',
     scale: 0.9
@@ -42970,7 +42970,7 @@ function webGLStart() {
       g: 1,
       b: 0.2
     },
-    textures: ["res/images/html5.png", "res/images/field3.png"],
+    textures: ["res/images/html5.png", "res/images/field3.webp"],
     videoTex: "res/video-texture/lava1.mkv",
     winCoefficient: 0,
     geo: 'cubeLightTex',
