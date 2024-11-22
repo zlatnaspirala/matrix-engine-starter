@@ -16779,8 +16779,6 @@ var _sounds = require("./sounds");
 
 var _app = require("../networking2/app");
 
-var _matrixStream = require("../networking2/matrix-stream");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
@@ -16981,13 +16979,11 @@ function defineWebGLWorld(cavnas) {
 }
 
 function updateFPS(elements) {
-  // console.log(" Update FPS");
   var now = new Date().getTime();
   var delta = now - lastTime;
   exports.lastTime = lastTime = now;
   exports.totalTime = totalTime = totalTime + delta;
-  exports.updateTime = updateTime = updateTime + delta; // eslint-disable-next-line no-global-assign
-
+  exports.updateTime = updateTime = updateTime + delta;
   (0, _matrixWorld.modifyFrames)(_matrixWorld.frames + 1);
   exports.updateFrames = updateFrames = updateFrames + 1;
 
@@ -16999,13 +16995,12 @@ function updateFPS(elements) {
 }
 
 function drawCanvas() {
-  // console.log("Init the canvas...");
   var canvas = document.createElement('canvas');
   canvas.id = 'canvas';
 
   if (_manifest.default.resize.canvas == 'full-screen') {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight; // SYS.DEBUG.LOG('SYS: fullscreen diametric resize is active. ');
+    canvas.height = window.innerHeight;
   } else {
     canvas.width = window.innerHeight * _manifest.default.resize.aspectRatio;
     canvas.height = window.innerHeight;
@@ -17014,7 +17009,7 @@ function drawCanvas() {
   }
 
   document.body.append(canvas);
-} // Degree to Radian converter 
+} // Degree to Radian converter
 
 
 function degToRad(degrees) {
@@ -17439,64 +17434,43 @@ var webcamError = function (e) {
 exports.webcamError = webcamError;
 
 function SET_STREAM(video) {
-  var videoSrc = null;
-  navigator.mediaDevices.enumerateDevices().then(getDevices).then(getStream).catch(() => {
-    alert('ERR MEDIA');
-  });
+  let v;
 
-  function getDevices(deviceInfos) {
-    for (var i = 0; i !== deviceInfos.length; ++i) {
-      var deviceInfo = deviceInfos[i];
-
-      if (deviceInfo.kind === 'videoinput') {
-        videoSrc = deviceInfo.deviceId;
-        break;
-      }
-    }
+  if ((0, _utility.isMobile)() == true) {
+    v = true; // {deviceId: {exact: videoSrc}, facingMode: 'user'}
+  } else {
+    v = true;
   }
 
-  function getStream() {
-    if (navigator.getUserMedia) {
-      var VIDEO__;
-
-      if (isMobile() == true) {
-        VIDEO__ = {
-          deviceId: {
-            exact: videoSrc
-          },
-          facingMode: 'user'
-        };
-      } else {
-        VIDEO__ = true;
-      }
-
-      navigator.getUserMedia({
-        audio: true,
-        video: VIDEO__
-      }, function (stream) {
-        try {
-          console.log('stream1', stream);
-          video.srcObject = stream;
-          console.log('stream2', stream);
-        } catch (error) {
-          video.src = window.URL.createObjectURL(stream);
-        }
-      }, webcamError);
-    } else if (navigator.webkitGetUserMedia) {
-      navigator.webkitGetUserMedia({
-        audio: true,
-        video: true
-      }, function (stream) {
-        try {
-          video.srcObject = stream;
-        } catch (error) {
-          video.src = window.URL.createObjectURL(stream);
-        }
-      }, webcamError);
-    } else {
-      alert('webcam broken.');
+  navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: v
+  }).then(stream => {
+    try {
+      video.srcObject = stream;
+      console.log('[me][new-gen-device]', stream);
+    } catch (error) {
+      video.src = window.URL.createObjectURL(stream);
+      console.log('[me][old-gen-device]', stream);
     }
-  }
+
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      devices.forEach(device => {
+        if (_manifest.default.printDevicesInfo == true) console.log('device.label :', device.label);
+      });
+    });
+  }).catch(error => {
+    console.log('Error :', error);
+  }); // var videoSrc = null;
+  // function getDevices(deviceInfos) {
+  // 	for(var i = 0;i !== deviceInfos.length;++i) {
+  // 		var deviceInfo = deviceInfos[i];
+  // 		if(deviceInfo.kind === 'videoinput') {
+  // 			videoSrc = deviceInfo.deviceId;
+  // 			break;
+  // 		}
+  // 	}
+  // }
 }
 
 function ACCESS_CAMERA(htmlElement) {
@@ -17807,7 +17781,7 @@ function DOM_VT(video, name, options) {
   };
 }
 
-},{"../client-config":7,"../networking2/app":38,"../networking2/matrix-stream":39,"../program/manifest":40,"./events":10,"./matrix-render":18,"./matrix-shaders1":19,"./matrix-shaders3":20,"./matrix-world":24,"./net":25,"./sounds":35,"./utility":36,"./webgl-utils":37}],10:[function(require,module,exports){
+},{"../client-config":7,"../networking2/app":38,"../program/manifest":40,"./events":10,"./matrix-render":18,"./matrix-shaders1":19,"./matrix-shaders3":20,"./matrix-world":24,"./net":25,"./sounds":35,"./utility":36,"./webgl-utils":37}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26768,7 +26742,7 @@ window.quat2 = glMatrix.quat2;
 window.vec2 = glMatrix.vec2;
 window.vec3 = glMatrix.vec3;
 window.vec4 = glMatrix.vec4;
-console.info(`%cMatrix-Engine %c 2.0.0 BETA 🛸`, CS1, CS1);
+console.info(`%cMatrix-Engine %c 2.0.31 🛸`, CS1, CS1);
 var lastChanges = `
 [2.0.0] New networking based on kurento service and OpenVide web client
 [1.9.40] First version with both support opengles11/2 and opengles300
@@ -40112,6 +40086,7 @@ var App = {
   updateBeforeDraw: [],
   audioSystem: {},
   // readOnly in manifest
+  printDevicesInfo: false,
   pwa: {
     addToHomePage: true
   },
@@ -40397,7 +40372,7 @@ let map1 = {
   }, {
     name: "wall_gen4",
     position: {
-      x: 29,
+      x: 35,
       y: 0,
       z: 0
     },
@@ -41654,6 +41629,63 @@ var runHang3d = world => {
     var arg = {};
     arg[n.name] = n.path;
     matrixEngine.objLoader.downloadMeshes(arg, onLoadObj);
+  }
+
+  loadObjStatic({
+    name: "wall_from_code",
+    mass: 0,
+    path: "res/3d-objects/env/door1.obj",
+    position: [-10, 1, -20],
+    // activeRotation: [0, 20, 0],
+    rotation: [180, 0, 0],
+    scale: 1.1,
+    textures: ["res/3d-objects/env/metal1.png"],
+    shadows: false,
+    gamePlayItem: 'STATIC_WALL'
+  }); //
+  // Handler for obj
+
+  function loadObjStatic(n) {
+    function onLoadObjS(meshes) {
+      var tex = {
+        source: n.textures,
+        mix_operation: "multiply"
+      };
+
+      for (let key in meshes) {
+        matrixEngine.objLoader.initMeshBuffers(world.GL.gl, meshes[key]);
+        world.Add("obj", n.scale, n.name, tex, meshes[key]);
+      }
+
+      App.scene[n.name].position.x = n.position[0];
+      App.scene[n.name].position.y = n.position[1];
+      App.scene[n.name].position.z = n.position[2]; // App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+      // App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+      // App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+
+      App.scene[n.name].rotation.rotx = n.rotation[0];
+      App.scene[n.name].rotation.roty = n.rotation[1];
+      App.scene[n.name].rotation.rotz = n.rotation[2]; // App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
+
+      App.scene[n.name].mesh.setScale(n.scale);
+      var b44 = new CANNON.Body({
+        mass: n.mass,
+        linearDamping: 0.01,
+        position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
+        shape: new CANNON.Box(new CANNON.Vec3(1, 2, 1))
+      });
+      b44._name = n.gamePlayItem;
+      physics.world.addBody(b44);
+      App.scene[n.name].physics.currentBody = b44;
+      App.scene[n.name].physics.enabled = true;
+      if (n.shadows == true) setTimeout(() => {
+        App.scene[n.name].activateShadows('spot');
+      }, 100);
+    }
+
+    var arg = {};
+    arg[n.name] = n.path;
+    matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS);
   }
 };
 

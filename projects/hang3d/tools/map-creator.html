@@ -23,7 +23,26 @@
 <body tabindex="-1">
 	<div id="msgBox" class="msg-box animate1" onclick="mb.copy()"></div>
 	<div id="root" class="root"></div>
-	<script defer src="map-creator.js"></script>
+
+	<div id="paramsPopup">
+		<div>
+			SIZE OF MAP:
+			X:<input id="sizeX" type="number" value="100" min="10" max="1000" />
+			Y:<input id="sizeY" type="number" value="100" min="10" max="1000" />
+		</div>
+		<div>
+			TYPE OF ITEM:
+			X:<select id="tinput">
+				<option>Simple Cube</option>
+				<option>Obj </option>
+			</select>
+		</div>
+
+		<div>
+			<button onclick="mapCreator.run()">Create ME Map</button>
+		</div>
+
+		<script src="map-creator.js"></script>
 </body>
 
 </html>

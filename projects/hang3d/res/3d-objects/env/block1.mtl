@@ -1,0 +1,14 @@
+# Blender 4.1.1 MTL File: 'block1.blend'
+# www.blender.org
+
+newmtl Metal
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/metal-21_diffuse.jpg
+map_Ns C:/metal-21_roughness.jpg
+map_refl C:/metal-21_metal.jpg
+map_Bump -bm 1.000000 C:/metal-21_normal.jpg

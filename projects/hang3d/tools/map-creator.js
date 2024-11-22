@@ -1,3 +1,6 @@
+var byId= (id) => {
+	return document.getElementById(id)
+}
 
 var mapCreator = {
 	map: {staticCubes: []},
@@ -19,10 +22,12 @@ var mapCreator = {
 				field.setAttribute("data-z", j)
 				field.setAttribute("data-x", i)
 				const _add = (e) => {
+					var X = 4.2*parseFloat(e.target.getAttribute('data-x'));
+					var Z = 4.2*parseFloat(e.target.getAttribute('data-z'));
 					this.map.staticCubes.push(
 						{
 							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
-							position: {x: 4.2*parseFloat(e.target.getAttribute('data-x')), y: 1, z: 4.2*parseFloat(e.target.getAttribute('data-z'))},
+							position: {x: X, y: 1, z: Z},
 							scale: [1, 1, 1],
 							texture: {
 								source: ["res/images/diffuse.png"],
@@ -38,8 +43,14 @@ var mapCreator = {
 			root.appendChild(vertical);
 		}
 	},
+
+	run: () => {
+		mapCreator.createMap([byId('sizeX').value, byId('sizeY').value])
+		byId("paramsPopup").remove()
+	}
 };
 
-mapCreator.createMap([25, 25])
+// mapCreator.createMap([25, 25])
+
 
 window.mapCreator = mapCreator;
