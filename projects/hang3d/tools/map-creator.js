@@ -41,10 +41,11 @@ var mapCreator = {
 					var Z = 4.2 * parseFloat(e.target.getAttribute('data-z'));
 					X = parseFloat(X.toFixed(2))
 					Z = parseFloat(Z.toFixed(2))
+					var Y = parseFloat(byId('levelY').value);
 					this.map.staticCubes.push(
 						{
 							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
-							position: {x: X, y: byId('levelY').value, z: Z},
+							position: {x: X, y: Y, z: Z},
 							scale: [1, 1, 1],
 							texture: {
 								source: [byId('texinput').selectedOptions[0].value],
@@ -68,10 +69,11 @@ var mapCreator = {
 					var Z = 4.2 * parseFloat(e.target.getAttribute('data-z'));
 					X = parseFloat(X.toFixed(2))
 					Z = parseFloat(Z.toFixed(2))
+					var Y = parseFloat(byId('levelY').value);
 					this.map.staticCubes.push(
 						{
 							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
-							position: {x: X, y: byId('levelY').value, z: Z},
+							position: {x: X, y: Y, z: Z},
 							scale: [1, 1, 1],
 							texture: {
 								source: ["res/images/diffuse.png"],

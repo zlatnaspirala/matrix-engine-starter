@@ -11,7 +11,7 @@ export const meMapLoader = {
 			var b = new CANNON.Body({
 				mass: 0,
 				linearDamping: 0.01,
-				position: new CANNON.Vec3(item.position.x, item.position.y, item.position.z),
+				position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
 				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
 			});
 			physics.world.addBody(b);

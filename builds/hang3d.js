@@ -40375,13 +40375,49 @@ Object.defineProperty(exports, "__esModule", {
 exports.map2 = void 0;
 let map2 = {
   staticCubes: [{
-    name: "wall_gen15_18",
+    name: "wall_gen",
     position: {
-      x: 63,
-      y: "1",
-      z: 75.60000000000001
+      x: 10,
+      y: 1,
+      z: -10
     },
-    scale: [1, 1, 1],
+    scale: [1, 3, 1],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen2",
+    position: {
+      x: 15,
+      y: 1,
+      z: 0
+    },
+    scale: [1, 3, 1],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen3",
+    position: {
+      x: 25,
+      y: 1,
+      z: 0
+    },
+    scale: [1, 3, 1],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen4",
+    position: {
+      x: 35,
+      y: 1,
+      z: 0
+    },
+    scale: [1, 3, 1],
     texture: {
       source: ["res/images/diffuse.png"],
       mix_operation: "multiply"
@@ -41586,7 +41622,7 @@ const meMapLoader = {
       var b = new CANNON.Body({
         mass: 0,
         linearDamping: 0.01,
-        position: new CANNON.Vec3(item.position.x, item.position.y, item.position.z),
+        position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
         shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
       });
       physics.world.addBody(b);
