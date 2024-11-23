@@ -93,8 +93,8 @@ body {
 
 .btn {
 	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%);
-	margin: 10px;
-	padding: 15px 45px;
+	margin: 5px;
+	padding: 5px 45px;
 	text-align: center;
 	text-transform: uppercase;
 	transition: 0.5s;
@@ -114,8 +114,9 @@ body {
 
 .selecteElement {
 	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%);
+	font-size: smaller;
 	margin: 10px;
-	padding: 15px 25px;
+	padding: 5px 25px;
 	text-align: center;
 	text-transform: uppercase;
 	transition: 0.5s;
@@ -123,6 +124,21 @@ body {
 	color: white;
 	box-shadow: 0 0 20px #eee;
 	border-radius: 10px;
+	display: block;
+}
+
+.selecteElementTex{
+	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%);
+	font-size: smaller;
+	margin: 1px;
+	padding: 5px 2px;
+	text-align: center;
+	text-transform: uppercase;
+	transition: 0.5s;
+	background-size: 200% auto;
+	color: white;
+	box-shadow: 0 0 10px #eee;
+	border-radius: 5px;
 	display: block;
 }
 

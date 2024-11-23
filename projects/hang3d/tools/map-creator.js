@@ -39,13 +39,15 @@ var mapCreator = {
 					}
 					var X = 4.2 * parseFloat(e.target.getAttribute('data-x'));
 					var Z = 4.2 * parseFloat(e.target.getAttribute('data-z'));
+					X = parseFloat(X.toFixed(2))
+					Z = parseFloat(Z.toFixed(2))
 					this.map.staticCubes.push(
 						{
 							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 							position: {x: X, y: byId('levelY').value, z: Z},
 							scale: [1, 1, 1],
 							texture: {
-								source: ["res/images/diffuse.png"],
+								source: [byId('texinput').selectedOptions[0].value],
 								mix_operation: "multiply"
 							}
 						})
@@ -61,10 +63,11 @@ var mapCreator = {
 					if(mapCreator.isMousePressed == false ||
 						e.target.getAttribute('data-status') == 'used'
 					) return;
-
 					e.target.setAttribute('data-status', 'used')
 					var X = 4.2 * parseFloat(e.target.getAttribute('data-x'));
 					var Z = 4.2 * parseFloat(e.target.getAttribute('data-z'));
+					X = parseFloat(X.toFixed(2))
+					Z = parseFloat(Z.toFixed(2))
 					this.map.staticCubes.push(
 						{
 							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
