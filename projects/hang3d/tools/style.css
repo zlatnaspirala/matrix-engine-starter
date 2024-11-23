@@ -32,11 +32,17 @@
 	background: rgb(144, 144, 144);
 }
 
+a:link {
+  color: rgb(29, 185, 199);
+  background-color: transparent;
+  text-decoration: none;
+}
+
 body {
-	color: lime;
+	color: rgb(255, 255, 255);
 	background-color: black;
-	font-family: "Courier New";
-	font-size: 14px;
+	font-family: "stormfaze";
+	font-size: 16px;
 	background-color: black;
 	margin: 0;
 	padding: 0;
@@ -54,6 +60,9 @@ body {
 }
 
 .root {
+	position: absolute;
+	left: 180px;
+	top: 0;
 	display: flex;
 	flex-direction: column;
 	width: 100%;
@@ -63,12 +72,13 @@ body {
 #paramsPopup {
 	position: absolute;
 	left: 0;
-	top: 5%;
+	top: 0;
 	display: flex;
 	flex-direction: column;
 	width: 180px;
 	height: 100%;
-	border: solid red 1px;
+	border: solid #82a5b1 1px;
+	border-radius: 5px;
 }
 
 .vertical {
@@ -78,15 +88,11 @@ body {
 .field {
 	width: 100%;
 	border: solid #ffec0059 1px;
-	border-radius: 5px;
-}
-
-
-.btn {
-	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%)
+	border-radius: 2px;
 }
 
 .btn {
+	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%);
 	margin: 10px;
 	padding: 15px 45px;
 	text-align: center;
@@ -104,6 +110,20 @@ body {
 	/* change the direction of the change here */
 	color: #fff;
 	text-decoration: none;
+}
+
+.selecteElement {
+	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%);
+	margin: 10px;
+	padding: 15px 25px;
+	text-align: center;
+	text-transform: uppercase;
+	transition: 0.5s;
+	background-size: 200% auto;
+	color: white;
+	box-shadow: 0 0 20px #eee;
+	border-radius: 10px;
+	display: block;
 }
 
 .btnOpt {
