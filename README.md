@@ -58,6 +58,9 @@ And navigate to app.html, examples.html etc.
 Run:  `npm run hang3d`
 Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 
+Under hang3d project you can find in folder `tools/` Map Creator. [Will be part of MatrixEngine or ME-plugins]
+<img src="https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/map-creator.png" >
+
 ## Matrix Roulette - 3d physics roulette
 
 TODO:
