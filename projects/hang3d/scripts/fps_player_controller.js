@@ -40,9 +40,10 @@ export var runHang3d = (world) => {
 	canvas.style.cursor = 'none';
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
-	App.camera.speedAmp = 0.02;
+	// CPU~
+	App.camera.speedAmp = 0.01;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
-	App.camera.yawRateOnEdge = 3;
+	App.camera.yawRateOnEdge = 1; //ori 3
 
 	App.myAccounts = {};
 
@@ -714,31 +715,31 @@ export var runHang3d = (world) => {
 	App.scene.energy.geometry.setScaleByX(0.35)
 	App.scene.energy.geometry.setScaleByY(0.1)
 	// good for fix rotation in future
-	world.Add("cubeLightTex", 2, "FLOOR2", tex);
-	var b2 = new CANNON.Body({
-		mass: 0,
-		linearDamping: 0.01,
-		position: new CANNON.Vec3(0, -14.5, -2),
-		shape: new CANNON.Box(new CANNON.Vec3(2, 2, 2))
-	});
-	physics.world.addBody(b2);
-	App.scene['FLOOR2'].position.setPosition(0, -2, -14.5)
-	// App.scene['FLOOR2'].geometry.setScaleByX(3);
-	App.scene['FLOOR2'].physics.currentBody = b2;
-	App.scene['FLOOR2'].physics.enabled = true;
-	App.scene.FLOOR2.LightsData.ambientLight.set(0, 0, 0)
+	// world.Add("cubeLightTex", 2, "FLOOR2", tex);
+	// var b2 = new CANNON.Body({
+	// 	mass: 0,
+	// 	linearDamping: 0.01,
+	// 	position: new CANNON.Vec3(0, -14.5, -2),
+	// 	shape: new CANNON.Box(new CANNON.Vec3(2, 2, 2))
+	// });
+	// physics.world.addBody(b2);
+	// App.scene['FLOOR2'].position.setPosition(0, -2, -14.5)
+	// // App.scene['FLOOR2'].geometry.setScaleByX(3);
+	// App.scene['FLOOR2'].physics.currentBody = b2;
+	// App.scene['FLOOR2'].physics.enabled = true;
+	// App.scene.FLOOR2.LightsData.ambientLight.set(0, 0, 0)
 
-	world.Add("cubeLightTex", 2, "FLOOR3", tex);
-	var b3 = new CANNON.Body({
-		mass: 0,
-		linearDamping: 0.01,
-		position: new CANNON.Vec3(0, -19, 0),
-		shape: new CANNON.Box(new CANNON.Vec3(3, 3, 3))
-	});
-	physics.world.addBody(b3);
-	App.scene['FLOOR3'].position.setPosition(0, 0, -19)
-	App.scene['FLOOR3'].physics.currentBody = b3;
-	App.scene['FLOOR3'].physics.enabled = true;
+	// world.Add("cubeLightTex", 2, "FLOOR3", tex);
+	// var b3 = new CANNON.Body({
+	// 	mass: 0,
+	// 	linearDamping: 0.01,
+	// 	position: new CANNON.Vec3(0, -19, 0),
+	// 	shape: new CANNON.Box(new CANNON.Vec3(3, 3, 3))
+	// });
+	// physics.world.addBody(b3);
+	// App.scene['FLOOR3'].position.setPosition(0, 0, -19)
+	// App.scene['FLOOR3'].physics.currentBody = b3;
+	// App.scene['FLOOR3'].physics.enabled = true;
 
 	// MAP LOADER
 	meMapLoader.load(map2, physics);
@@ -873,48 +874,48 @@ export var runHang3d = (world) => {
 	})
 
 	// Graphics - Damage object test
-	world.Add("cubeLightTex", 1, "LAVA", tex);
-	var b4 = new CANNON.Body({
-		mass: 0,
-		linearDamping: 0.01,
-		position: new CANNON.Vec3(-6, -16.5, -1),
-		shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
-	});
-	b4._name = 'damage';
-	physics.world.addBody(b4);
-	App.scene.LAVA.position.setPosition(-6, -1, -16.5)
-	// App.scene.LAVA.geometry.setScaleByX(1);
-	App.scene.LAVA.physics.currentBody = b4;
-	App.scene.LAVA.physics.enabled = true;
-	App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
-	App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT(
-		"res/video-texture/lava1.mkv"
-	);
+	// world.Add("cubeLightTex", 1, "LAVA", tex);
+	// var b4 = new CANNON.Body({
+	// 	mass: 0,
+	// 	linearDamping: 0.01,
+	// 	position: new CANNON.Vec3(-6, -16.5, -1),
+	// 	shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
+	// });
+	// b4._name = 'damage';
+	// physics.world.addBody(b4);
+	// App.scene.LAVA.position.setPosition(-6, -1, -16.5)
+	// // App.scene.LAVA.geometry.setScaleByX(1);
+	// App.scene.LAVA.physics.currentBody = b4;
+	// App.scene.LAVA.physics.enabled = true;
+	// App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
+	// App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT(
+	// 	"res/video-texture/lava1.mkv"
+	// );
 
-	// How to load obj and give him gameplay item props
-	loadObj({
-		name: "armor",
-		path: "res/3d-objects/armor.obj",
-		position: [-10, 0, -10],
-		activeRotation: [0, 20, 0],
-		rotation: [0, 0, 0],
-		scale: 1.1,
-		textures: ["res/images/armor.png"],
-		shadows: false,
-		gamePlayItem: 'item-armor'
-	})
+	// // How to load obj and give him gameplay item props
+	// loadObj({
+	// 	name: "armor",
+	// 	path: "res/3d-objects/armor.obj",
+	// 	position: [-10, 0, -10],
+	// 	activeRotation: [0, 20, 0],
+	// 	rotation: [0, 0, 0],
+	// 	scale: 1.1,
+	// 	textures: ["res/images/armor.png"],
+	// 	shadows: false,
+	// 	gamePlayItem: 'item-armor'
+	// })
 
-	loadObj({
-		name: "munition",
-		path: "res/3d-objects/ammo.obj",
-		position: [-10, 0, -20],
-		activeRotation: [0, 20, 0],
-		rotation: [0, 0, 0],
-		scale: 1.1,
-		textures: ["res/images/normalmap.png"],
-		shadows: false,
-		gamePlayItem: 'item-munition'
-	})
+	// loadObj({
+	// 	name: "munition",
+	// 	path: "res/3d-objects/ammo.obj",
+	// 	position: [-10, 0, -20],
+	// 	activeRotation: [0, 20, 0],
+	// 	rotation: [0, 0, 0],
+	// 	scale: 1.1,
+	// 	textures: ["res/images/normalmap.png"],
+	// 	shadows: false,
+	// 	gamePlayItem: 'item-munition'
+	// })
 
 	// Handler for obj
 	function loadObj(n) {
@@ -955,18 +956,18 @@ export var runHang3d = (world) => {
 		matrixEngine.objLoader.downloadMeshes(arg, onLoadObj)
 	}
 
-	loadObjStatic({
-		name: "wall_from_code",
-		mass: 0,
-		path: "res/3d-objects/env/door1.obj",
-		position: [-10, 1, -20],
-		// activeRotation: [0, 20, 0],
-		rotation: [180, 0, 0],
-		scale: 1.1,
-		textures: ["res/3d-objects/env/metal1.png"],
-		shadows: false,
-		gamePlayItem: 'STATIC_WALL'
-	})
+	// loadObjStatic({
+	// 	name: "wall_from_code",
+	// 	mass: 0,
+	// 	path: "res/3d-objects/env/door1.obj",
+	// 	position: [-10, 1, -20],
+	// 	// activeRotation: [0, 20, 0],
+	// 	rotation: [180, 0, 0],
+	// 	scale: 1.1,
+	// 	textures: ["res/3d-objects/env/metal1.png"],
+	// 	shadows: false,
+	// 	gamePlayItem: 'STATIC_WALL'
+	// })
 
 	//
 	// Handler for obj

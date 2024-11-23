@@ -34,6 +34,7 @@ var mapCreator = {
 					console.log("🖱 mapCreator.isMousePressed = true; ", e)
 					e.target.setAttribute('data-status', 'used')
 					mapCreator.isMousePressed = true;
+					e.target.style.background = `url(${'../' + byId('texinput').selectedOptions[0].value})`
 					if(e.button == 2) {
 						console.log("1 🖱 right click detected!")
 					}
@@ -46,14 +47,14 @@ var mapCreator = {
 						{
 							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 							position: {x: X, y: Y, z: Z},
-							scale: [1, 1, 1],
+							scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
 							texture: {
 								source: [byId('texinput').selectedOptions[0].value],
 								mix_operation: "multiply"
 							}
 						})
 					this.copyToStorage()
-					e.target.style.background = 'gray';
+					// e.target.style.background = 'gray';
 				}
 				field.addEventListener("mousedown", _add)
 				field.addEventListener("mouseup", () => {
@@ -65,6 +66,7 @@ var mapCreator = {
 						e.target.getAttribute('data-status') == 'used'
 					) return;
 					e.target.setAttribute('data-status', 'used')
+					e.target.style.background = `url(${'../' + byId('texinput').selectedOptions[0].value})`
 					var X = 4.2 * parseFloat(e.target.getAttribute('data-x'));
 					var Z = 4.2 * parseFloat(e.target.getAttribute('data-z'));
 					X = parseFloat(X.toFixed(2))
@@ -74,14 +76,14 @@ var mapCreator = {
 						{
 							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 							position: {x: X, y: Y, z: Z},
-							scale: [1, 1, 1],
+							scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
 							texture: {
-								source: ["res/images/diffuse.png"],
+								source: [byId('texinput').selectedOptions[0].value],
 								mix_operation: "multiply"
 							}
 						})
 					this.copyToStorage()
-					e.target.style.background = 'gray';
+					// e.target.style.background = 'gray';
 				}
 				field.addEventListener("mousemove", _add_OnHover)
 

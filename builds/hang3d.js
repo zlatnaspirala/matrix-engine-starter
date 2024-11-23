@@ -40374,53 +40374,341 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map2 = void 0;
 let map2 = {
-  staticCubes: [{
-    name: "wall_gen",
-    position: {
-      x: 10,
-      y: 1,
-      z: -10
+  "staticCubes": [{
+    "name": "wall_gen13_15",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 63
     },
-    scale: [1, 3, 1],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
     }
   }, {
-    name: "wall_gen2",
-    position: {
-      x: 15,
-      y: 1,
-      z: 0
+    "name": "wall_gen13_16",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 67.2
     },
-    scale: [1, 3, 1],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
     }
   }, {
-    name: "wall_gen3",
-    position: {
-      x: 25,
-      y: 1,
-      z: 0
+    "name": "wall_gen13_17",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 71.4
     },
-    scale: [1, 3, 1],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
     }
   }, {
-    name: "wall_gen4",
-    position: {
-      x: 35,
-      y: 1,
-      z: 0
+    "name": "wall_gen13_18",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 75.6
     },
-    scale: [1, 3, 1],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_19",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 79.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_20",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 84
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_21",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 88.2
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_22",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 92.4
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_23",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 96.6
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_24",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 100.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_25",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 105
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_26",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 109.2
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_27",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 113.4
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_28",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 117.6
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_14",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 58.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_29",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen12_29",
+    "position": {
+      "x": 50.4,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen14_29",
+    "position": {
+      "x": 58.8,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen12_14",
+    "position": {
+      "x": 50.4,
+      "y": 1,
+      "z": 58.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen14_14",
+    "position": {
+      "x": 58.8,
+      "y": 1,
+      "z": 58.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen15_29",
+    "position": {
+      "x": 63,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen11_29",
+    "position": {
+      "x": 46.2,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen11_14",
+    "position": {
+      "x": 46.2,
+      "y": 1,
+      "z": 58.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen16_14",
+    "position": {
+      "x": 67.2,
+      "y": 1,
+      "z": 58.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen15_14",
+    "position": {
+      "x": 63,
+      "y": 1,
+      "z": 58.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen10_14",
+    "position": {
+      "x": 42,
+      "y": 1,
+      "z": 58.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen10_29",
+    "position": {
+      "x": 42,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen16_29",
+    "position": {
+      "x": 67.2,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/RustPaint.jpg"],
+      "mix_operation": "multiply"
     }
   }]
 };
@@ -40559,10 +40847,13 @@ var runHang3d = world => {
 
   canvas.style.cursor = 'none';
   App.camera.FirstPersonController = true;
-  matrixEngine.Events.camera.fly = false;
-  App.camera.speedAmp = 0.02;
+  matrixEngine.Events.camera.fly = false; // CPU~
+
+  App.camera.speedAmp = 0.01; //ori 0.02
+
   matrixEngine.Events.camera.yPos = 10;
-  App.camera.yawRateOnEdge = 3;
+  App.camera.yawRateOnEdge = 1; //ori 3
+
   App.myAccounts = {}; // Keyboard event
 
   addEventListener('hit.keyDown', e => {
@@ -41246,31 +41537,31 @@ var runHang3d = world => {
   App.scene.energy.position.setPosition(-1, 1.15, -3);
   App.scene.energy.geometry.setScaleByX(0.35);
   App.scene.energy.geometry.setScaleByY(0.1); // good for fix rotation in future
-
-  world.Add("cubeLightTex", 2, "FLOOR2", tex);
-  var b2 = new CANNON.Body({
-    mass: 0,
-    linearDamping: 0.01,
-    position: new CANNON.Vec3(0, -14.5, -2),
-    shape: new CANNON.Box(new CANNON.Vec3(2, 2, 2))
-  });
-  physics.world.addBody(b2);
-  App.scene['FLOOR2'].position.setPosition(0, -2, -14.5); // App.scene['FLOOR2'].geometry.setScaleByX(3);
-
-  App.scene['FLOOR2'].physics.currentBody = b2;
-  App.scene['FLOOR2'].physics.enabled = true;
-  App.scene.FLOOR2.LightsData.ambientLight.set(0, 0, 0);
-  world.Add("cubeLightTex", 2, "FLOOR3", tex);
-  var b3 = new CANNON.Body({
-    mass: 0,
-    linearDamping: 0.01,
-    position: new CANNON.Vec3(0, -19, 0),
-    shape: new CANNON.Box(new CANNON.Vec3(3, 3, 3))
-  });
-  physics.world.addBody(b3);
-  App.scene['FLOOR3'].position.setPosition(0, 0, -19);
-  App.scene['FLOOR3'].physics.currentBody = b3;
-  App.scene['FLOOR3'].physics.enabled = true; // MAP LOADER
+  // world.Add("cubeLightTex", 2, "FLOOR2", tex);
+  // var b2 = new CANNON.Body({
+  // 	mass: 0,
+  // 	linearDamping: 0.01,
+  // 	position: new CANNON.Vec3(0, -14.5, -2),
+  // 	shape: new CANNON.Box(new CANNON.Vec3(2, 2, 2))
+  // });
+  // physics.world.addBody(b2);
+  // App.scene['FLOOR2'].position.setPosition(0, -2, -14.5)
+  // // App.scene['FLOOR2'].geometry.setScaleByX(3);
+  // App.scene['FLOOR2'].physics.currentBody = b2;
+  // App.scene['FLOOR2'].physics.enabled = true;
+  // App.scene.FLOOR2.LightsData.ambientLight.set(0, 0, 0)
+  // world.Add("cubeLightTex", 2, "FLOOR3", tex);
+  // var b3 = new CANNON.Body({
+  // 	mass: 0,
+  // 	linearDamping: 0.01,
+  // 	position: new CANNON.Vec3(0, -19, 0),
+  // 	shape: new CANNON.Box(new CANNON.Vec3(3, 3, 3))
+  // });
+  // physics.world.addBody(b3);
+  // App.scene['FLOOR3'].position.setPosition(0, 0, -19)
+  // App.scene['FLOOR3'].physics.currentBody = b3;
+  // App.scene['FLOOR3'].physics.enabled = true;
+  // MAP LOADER
 
   _mapLoader.meMapLoader.load(_map2.map2, physics); // Still not work...
   // meMapLoader.load(meMapLoader.geminiMap(10 , 150, 1), physics)
@@ -41396,45 +41687,47 @@ var runHang3d = world => {
       }
     }
   }); // Graphics - Damage object test
-
-  world.Add("cubeLightTex", 1, "LAVA", tex);
-  var b4 = new CANNON.Body({
-    mass: 0,
-    linearDamping: 0.01,
-    position: new CANNON.Vec3(-6, -16.5, -1),
-    shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
-  });
-  b4._name = 'damage';
-  physics.world.addBody(b4);
-  App.scene.LAVA.position.setPosition(-6, -1, -16.5); // App.scene.LAVA.geometry.setScaleByX(1);
-
-  App.scene.LAVA.physics.currentBody = b4;
-  App.scene.LAVA.physics.enabled = true;
-  App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
-  App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT("res/video-texture/lava1.mkv"); // How to load obj and give him gameplay item props
-
-  loadObj({
-    name: "armor",
-    path: "res/3d-objects/armor.obj",
-    position: [-10, 0, -10],
-    activeRotation: [0, 20, 0],
-    rotation: [0, 0, 0],
-    scale: 1.1,
-    textures: ["res/images/armor.png"],
-    shadows: false,
-    gamePlayItem: 'item-armor'
-  });
-  loadObj({
-    name: "munition",
-    path: "res/3d-objects/ammo.obj",
-    position: [-10, 0, -20],
-    activeRotation: [0, 20, 0],
-    rotation: [0, 0, 0],
-    scale: 1.1,
-    textures: ["res/images/normalmap.png"],
-    shadows: false,
-    gamePlayItem: 'item-munition'
-  }); // Handler for obj
+  // world.Add("cubeLightTex", 1, "LAVA", tex);
+  // var b4 = new CANNON.Body({
+  // 	mass: 0,
+  // 	linearDamping: 0.01,
+  // 	position: new CANNON.Vec3(-6, -16.5, -1),
+  // 	shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
+  // });
+  // b4._name = 'damage';
+  // physics.world.addBody(b4);
+  // App.scene.LAVA.position.setPosition(-6, -1, -16.5)
+  // // App.scene.LAVA.geometry.setScaleByX(1);
+  // App.scene.LAVA.physics.currentBody = b4;
+  // App.scene.LAVA.physics.enabled = true;
+  // App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
+  // App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT(
+  // 	"res/video-texture/lava1.mkv"
+  // );
+  // // How to load obj and give him gameplay item props
+  // loadObj({
+  // 	name: "armor",
+  // 	path: "res/3d-objects/armor.obj",
+  // 	position: [-10, 0, -10],
+  // 	activeRotation: [0, 20, 0],
+  // 	rotation: [0, 0, 0],
+  // 	scale: 1.1,
+  // 	textures: ["res/images/armor.png"],
+  // 	shadows: false,
+  // 	gamePlayItem: 'item-armor'
+  // })
+  // loadObj({
+  // 	name: "munition",
+  // 	path: "res/3d-objects/ammo.obj",
+  // 	position: [-10, 0, -20],
+  // 	activeRotation: [0, 20, 0],
+  // 	rotation: [0, 0, 0],
+  // 	scale: 1.1,
+  // 	textures: ["res/images/normalmap.png"],
+  // 	shadows: false,
+  // 	gamePlayItem: 'item-munition'
+  // })
+  // Handler for obj
 
   function loadObj(n) {
     function onLoadObj(meshes) {
@@ -41478,21 +41771,21 @@ var runHang3d = world => {
     var arg = {};
     arg[n.name] = n.path;
     matrixEngine.objLoader.downloadMeshes(arg, onLoadObj);
-  }
-
-  loadObjStatic({
-    name: "wall_from_code",
-    mass: 0,
-    path: "res/3d-objects/env/door1.obj",
-    position: [-10, 1, -20],
-    // activeRotation: [0, 20, 0],
-    rotation: [180, 0, 0],
-    scale: 1.1,
-    textures: ["res/3d-objects/env/metal1.png"],
-    shadows: false,
-    gamePlayItem: 'STATIC_WALL'
-  }); //
+  } // loadObjStatic({
+  // 	name: "wall_from_code",
+  // 	mass: 0,
+  // 	path: "res/3d-objects/env/door1.obj",
+  // 	position: [-10, 1, -20],
+  // 	// activeRotation: [0, 20, 0],
+  // 	rotation: [180, 0, 0],
+  // 	scale: 1.1,
+  // 	textures: ["res/3d-objects/env/metal1.png"],
+  // 	shadows: false,
+  // 	gamePlayItem: 'STATIC_WALL'
+  // })
+  //
   // Handler for obj
+
 
   function loadObjStatic(n) {
     function onLoadObjS(meshes) {
