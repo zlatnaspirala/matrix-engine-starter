@@ -7,7 +7,7 @@ var mapCreator = {
 	clear: () => {
 		location.reload()
 	},
-	map: {staticCubes: []},
+	map: {staticCubes: [], staticObjs: []},
 	copyToStorage: () => {
 		localStorage.setItem('map', JSON.stringify(mapCreator.map))
 	},
@@ -29,37 +29,9 @@ var mapCreator = {
 				field.id = 'field' + i;
 				field.setAttribute("data-z", j)
 				field.setAttribute("data-x", i)
-				const _add = (e) => {
-					if(e.target.getAttribute('data-status') == 'used') return;
-					console.log("🖱 mapCreator.isMousePressed = true; ", e)
-					e.target.setAttribute('data-status', 'used')
-					mapCreator.isMousePressed = true;
-					e.target.style.background = `url(${'../' + byId('texinput').selectedOptions[0].value})`
-					if(e.button == 2) {
-						console.log("1 🖱 right click detected!")
-					}
-					var X = 4.2 * parseFloat(e.target.getAttribute('data-x'));
-					var Z = 4.2 * parseFloat(e.target.getAttribute('data-z'));
-					X = parseFloat(X.toFixed(2))
-					Z = parseFloat(Z.toFixed(2))
-					var Y = parseFloat(byId('levelY').value);
-					this.map.staticCubes.push(
-						{
-							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
-							position: {x: X, y: Y, z: Z},
-							scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
-							texture: {
-								source: [byId('texinput').selectedOptions[0].value],
-								mix_operation: "multiply"
-							}
-						})
-					this.copyToStorage()
-					// e.target.style.background = 'gray';
-				}
+				const _add = (e) => {mapCreator.isMousePressed = true}
 				field.addEventListener("mousedown", _add)
-				field.addEventListener("mouseup", () => {
-					mapCreator.isMousePressed = false;
-				})
+				field.addEventListener("mouseup", () => {mapCreator.isMousePressed = false})
 				// mousemove
 				const _add_OnHover = (e) => {
 					if(mapCreator.isMousePressed == false ||
@@ -72,16 +44,34 @@ var mapCreator = {
 					X = parseFloat(X.toFixed(2))
 					Z = parseFloat(Z.toFixed(2))
 					var Y = parseFloat(byId('levelY').value);
-					this.map.staticCubes.push(
-						{
-							name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
-							position: {x: X, y: Y, z: Z},
-							scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
-							texture: {
-								source: [byId('texinput').selectedOptions[0].value],
-								mix_operation: "multiply"
-							}
-						})
+
+					if(byId('tinput').selectedOptions[0].value == "ME Cube") {
+
+						this.map.staticCubes.push(
+							{
+								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
+								position: {x: X, y: Y, z: Z},
+								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
+								texture: {
+									source: [byId('texinput').selectedOptions[0].value],
+									mix_operation: "multiply"
+								}
+							})
+					} else {
+
+						this.map.staticObjs.push(
+							{
+								name: "mapobjs_" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
+								path: byId('tinput').selectedOptions[0].value,
+								position: {x: X, y: Y, z: Z},
+								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
+								texture: {
+									source: [byId('texinput').selectedOptions[0].value],
+									mix_operation: "multiply"
+								}
+							})
+					}
+
 					this.copyToStorage()
 					// e.target.style.background = 'gray';
 				}

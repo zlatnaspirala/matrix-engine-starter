@@ -2,7 +2,9 @@ import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
 
 export const meMapLoader = {
+	physics: {},
 	load: function(map, physics) {
+		this.physics = physics;
 		map.staticCubes.forEach(item => {
 			matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
 			App.scene[item.name].geometry.setScaleByX(item.scale[0]);
@@ -18,6 +20,24 @@ export const meMapLoader = {
 			App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z)
 			App.scene[item.name].physics.currentBody = b;
 			App.scene[item.name].physics.enabled = true;
+		});
+		if (map.staticObjs) map.staticObjs.forEach(item => {
+			// matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+			// App.scene[item.name].geometry.setScaleByX(item.scale[0]);
+			// App.scene[item.name].geometry.setScaleByY(item.scale[1]);
+			// App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+				this.loadObjStatic({
+					name: item.name,
+					mass: 0,
+					path: item.path,
+					position: [item.position.x, item.position.y, item.position.z],
+					// activeRotation: [0, 20, 0],
+					rotation: [0, 0, 0],
+					scale: item.scale[0],
+					textures: item.texture.source,
+					shadows: false,
+					gamePlayItem: 'STATIC_rock'
+				}, physics)
 		});
 	},
 	// Not work collision - probably too mush overlaping...
@@ -45,5 +65,41 @@ export const meMapLoader = {
 			map.staticCubes.push(object);
 		}
 		return map;
+	},
+	loadObjStatic(n, physics) {
+		function onLoadObjS(meshes) {
+			var tex = {source: n.textures, mix_operation: "multiply"}
+			for(let key in meshes) {
+				matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[key])
+				matrixEngine.matrixWorld.world.Add("obj", n.scale, n.name, tex, meshes[key]);
+			}
+			App.scene[n.name].position.x = n.position[0];
+			App.scene[n.name].position.y = n.position[1];
+			App.scene[n.name].position.z = n.position[2];
+			// App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+			// App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+			// App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+			App.scene[n.name].rotation.rotx = n.rotation[0];
+			App.scene[n.name].rotation.roty = n.rotation[1];
+			App.scene[n.name].rotation.rotz = n.rotation[2];
+			// App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
+			App.scene[n.name].mesh.setScale(n.scale)
+			var b44 = new CANNON.Body({
+				mass: n.mass,
+				linearDamping: 0.01,
+				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
+				shape: new CANNON.Box(new CANNON.Vec3(1, 2, 1))
+			});
+			b44._name = n.gamePlayItem;
+			physics.world.addBody(b44);
+			App.scene[n.name].physics.currentBody = b44;
+			App.scene[n.name].physics.enabled = true;
+			if(n.shadows == true) setTimeout(() => {
+				App.scene[n.name].activateShadows('spot')
+			}, 100)
+		}
+		var arg = {};
+		arg[n.name] = n.path;
+		matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS)
 	}
 };

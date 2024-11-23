@@ -40374,10 +40374,77 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map2 = void 0;
 let map2 = {
-  "staticCubes": [{
-    "name": "wall_gen13_15",
+  "staticCubes": [],
+  "staticObjs": [{
+    "name": "mapobjs_7_9",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 29.4,
+      "y": 1,
+      "z": 37.8
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "mapobjs_7_10",
+    "path": "res/3d-objects/env/rock1.obj",
+    "position": {
+      "x": 29.4,
+      "y": 1,
+      "z": 42
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "mapobjs_7_12",
+    "path": "res/3d-objects/env/rock1.obj",
+    "position": {
+      "x": 29.4,
+      "y": 1,
+      "z": 50.4
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "mapobjs_7_13",
+    "path": "res/3d-objects/env/rock1.obj",
+    "position": {
+      "x": 29.4,
+      "y": 1,
+      "z": 54.6
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "mapobjs_8_13",
+    "path": "res/3d-objects/env/rock1.obj",
+    "position": {
+      "x": 33.6,
+      "y": 1,
+      "z": 54.6
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "mapobjs_8_15",
+    "path": "res/3d-objects/env/rock1.obj",
+    "position": {
+      "x": 33.6,
       "y": 1,
       "z": 63
     },
@@ -40387,9 +40454,10 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_16",
+    "name": "mapobjs_8_16",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 33.6,
       "y": 1,
       "z": 67.2
     },
@@ -40399,9 +40467,10 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_17",
+    "name": "mapobjs_7_17",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 29.4,
       "y": 1,
       "z": 71.4
     },
@@ -40411,9 +40480,23 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_18",
+    "name": "mapobjs_8_17",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 33.6,
+      "y": 1,
+      "z": 71.4
+    },
+    "scale": ["1", "1", "1"],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "mapobjs_7_18",
+    "path": "res/3d-objects/env/rock1.obj",
+    "position": {
+      "x": 29.4,
       "y": 1,
       "z": 75.6
     },
@@ -40423,129 +40506,49 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_19",
+    "name": "mapobjs_5_12",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 21,
       "y": 1,
-      "z": 79.8
+      "z": 50.4
     },
     "scale": ["1", "1", "1"],
     "texture": {
-      "source": ["res/images/diffuse.png"],
+      "source": ["res/images/n-stone.png"],
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_20",
+    "name": "mapobjs_5_13",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 21,
       "y": 1,
-      "z": 84
+      "z": 54.6
     },
     "scale": ["1", "1", "1"],
     "texture": {
-      "source": ["res/images/diffuse.png"],
+      "source": ["res/images/n-stone.png"],
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_21",
+    "name": "mapobjs_4_13",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 16.8,
       "y": 1,
-      "z": 88.2
+      "z": 54.6
     },
     "scale": ["1", "1", "1"],
     "texture": {
-      "source": ["res/images/diffuse.png"],
+      "source": ["res/images/n-stone.png"],
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_22",
+    "name": "mapobjs_4_14",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
-      "y": 1,
-      "z": 92.4
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen13_23",
-    "position": {
-      "x": 54.6,
-      "y": 1,
-      "z": 96.6
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen13_24",
-    "position": {
-      "x": 54.6,
-      "y": 1,
-      "z": 100.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen13_25",
-    "position": {
-      "x": 54.6,
-      "y": 1,
-      "z": 105
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen13_26",
-    "position": {
-      "x": 54.6,
-      "y": 1,
-      "z": 109.2
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen13_27",
-    "position": {
-      "x": 54.6,
-      "y": 1,
-      "z": 113.4
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen13_28",
-    "position": {
-      "x": 54.6,
-      "y": 1,
-      "z": 117.6
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen13_14",
-    "position": {
-      "x": 54.6,
+      "x": 16.8,
       "y": 1,
       "z": 58.8
     },
@@ -40555,11 +40558,12 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen13_29",
+    "name": "mapobjs_4_15",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 54.6,
+      "x": 16.8,
       "y": 1,
-      "z": 121.8
+      "z": 63
     },
     "scale": ["1", "1", "1"],
     "texture": {
@@ -40567,11 +40571,12 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen12_29",
+    "name": "mapobjs_4_16",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 50.4,
+      "x": 16.8,
       "y": 1,
-      "z": 121.8
+      "z": 67.2
     },
     "scale": ["1", "1", "1"],
     "texture": {
@@ -40579,135 +40584,16 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen14_29",
+    "name": "mapobjs_4_17",
+    "path": "res/3d-objects/env/rock1.obj",
     "position": {
-      "x": 58.8,
+      "x": 16.8,
       "y": 1,
-      "z": 121.8
+      "z": 71.4
     },
     "scale": ["1", "1", "1"],
     "texture": {
       "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen12_14",
-    "position": {
-      "x": 50.4,
-      "y": 1,
-      "z": 58.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen14_14",
-    "position": {
-      "x": 58.8,
-      "y": 1,
-      "z": 58.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen15_29",
-    "position": {
-      "x": 63,
-      "y": 1,
-      "z": 121.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen11_29",
-    "position": {
-      "x": 46.2,
-      "y": 1,
-      "z": 121.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen11_14",
-    "position": {
-      "x": 46.2,
-      "y": 1,
-      "z": 58.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen16_14",
-    "position": {
-      "x": 67.2,
-      "y": 1,
-      "z": 58.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen15_14",
-    "position": {
-      "x": 63,
-      "y": 1,
-      "z": 58.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen10_14",
-    "position": {
-      "x": 42,
-      "y": 1,
-      "z": 58.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen10_29",
-    "position": {
-      "x": 42,
-      "y": 1,
-      "z": 121.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen16_29",
-    "position": {
-      "x": 67.2,
-      "y": 1,
-      "z": 121.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/RustPaint.jpg"],
       "mix_operation": "multiply"
     }
   }]
@@ -41906,7 +41792,9 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 const meMapLoader = {
+  physics: {},
   load: function (map, physics) {
+    this.physics = physics;
     map.staticCubes.forEach(item => {
       matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
       App.scene[item.name].geometry.setScaleByX(item.scale[0]);
@@ -41922,6 +41810,24 @@ const meMapLoader = {
       App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
       App.scene[item.name].physics.currentBody = b;
       App.scene[item.name].physics.enabled = true;
+    });
+    if (map.staticObjs) map.staticObjs.forEach(item => {
+      // matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+      // App.scene[item.name].geometry.setScaleByX(item.scale[0]);
+      // App.scene[item.name].geometry.setScaleByY(item.scale[1]);
+      // App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+      this.loadObjStatic({
+        name: item.name,
+        mass: 0,
+        path: item.path,
+        position: [item.position.x, item.position.y, item.position.z],
+        // activeRotation: [0, 20, 0],
+        rotation: [0, 0, 0],
+        scale: item.scale[0],
+        textures: item.texture.source,
+        shadows: false,
+        gamePlayItem: 'STATIC_rock'
+      }, physics);
     });
   },
   // Not work collision - probably too mush overlaping...
@@ -41949,7 +41855,51 @@ const meMapLoader = {
     }
 
     return map;
+  },
+
+  loadObjStatic(n, physics) {
+    function onLoadObjS(meshes) {
+      var tex = {
+        source: n.textures,
+        mix_operation: "multiply"
+      };
+
+      for (let key in meshes) {
+        matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[key]);
+        matrixEngine.matrixWorld.world.Add("obj", n.scale, n.name, tex, meshes[key]);
+      }
+
+      App.scene[n.name].position.x = n.position[0];
+      App.scene[n.name].position.y = n.position[1];
+      App.scene[n.name].position.z = n.position[2]; // App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+      // App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+      // App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+
+      App.scene[n.name].rotation.rotx = n.rotation[0];
+      App.scene[n.name].rotation.roty = n.rotation[1];
+      App.scene[n.name].rotation.rotz = n.rotation[2]; // App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
+
+      App.scene[n.name].mesh.setScale(n.scale);
+      var b44 = new CANNON.Body({
+        mass: n.mass,
+        linearDamping: 0.01,
+        position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
+        shape: new CANNON.Box(new CANNON.Vec3(1, 2, 1))
+      });
+      b44._name = n.gamePlayItem;
+      physics.world.addBody(b44);
+      App.scene[n.name].physics.currentBody = b44;
+      App.scene[n.name].physics.enabled = true;
+      if (n.shadows == true) setTimeout(() => {
+        App.scene[n.name].activateShadows('spot');
+      }, 100);
+    }
+
+    var arg = {};
+    arg[n.name] = n.path;
+    matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS);
   }
+
 };
 exports.meMapLoader = meMapLoader;
 
