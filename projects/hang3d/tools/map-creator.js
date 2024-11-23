@@ -46,7 +46,7 @@ var mapCreator = {
 
 	run: () => {
 		mapCreator.createMap([byId('sizeX').value, byId('sizeY').value])
-		byId("paramsPopup").remove()
+		// byId("paramsPopup").()
 	}
 };
 

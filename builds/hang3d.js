@@ -18379,64 +18379,64 @@ class constructMesh {
     if (typeof callback === 'undefined') callback = function () {};
     let initOrientation = [0, 1, 2];
     /*
-      The OBJ file format does a sort of compression when saving a model in a
-      program like Blender. There are at least 3 sections (4 including textures)
-      within the file. Each line in a section begins with the same string:
-        * 'v': indicates vertex section
-        * 'vn': indicates vertex normal section
-        * 'f': indicates the faces section
-        * 'vt': indicates vertex texture section (if textures were used on the model)
-      Each of the above sections (except for the faces section) is a list/set of
-      unique vertices.
-      Each line of the faces section contains a list of
-      (vertex, [texture], normal) groups
-      Some examples:
-          // the texture index is optional, both formats are possible for models
-          // without a texture applied
-          f 1/25 18/46 12/31
-          f 1//25 18//46 12//31
-          // A 3 vertex face with texture indices
-          f 16/92/11 14/101/22 1/69/1
-          // A 4 vertex face
-          f 16/92/11 40/109/40 38/114/38 14/101/22
-      The first two lines are examples of a 3 vertex face without a texture applied.
-      The second is an example of a 3 vertex face with a texture applied.
-      The third is an example of a 4 vertex face. Note: a face can contain N
-      number of vertices.
-      Each number that appears in one of the groups is a 1-based index
-      corresponding to an item from the other sections (meaning that indexing
-      starts at one and *not* zero).
-      For example:
-          `f 16/92/11` is saying to
-            - take the 16th element from the [v] vertex array
-            - take the 92nd element from the [vt] texture array
-            - take the 11th element from the [vn] normal array
-          and together they make a unique vertex.
-      Using all 3+ unique Vertices from the face line will produce a polygon.
-      Now, you could just go through the OBJ file and create a new vertex for
-      each face line and WebGL will draw what appears to be the same model.
-      However, vertices will be overlapped and duplicated all over the place.
-      Consider a cube in 3D space centered about the origin and each side is
-      2 units long. The front face (with the positive Z-axis pointing towards
-      you) would have a Top Right vertex (looking orthogonal to its normal)
-      mapped at (1,1,1) The right face would have a Top Left vertex (looking
-      orthogonal to its normal) at (1,1,1) and the top face would have a Bottom
-      Right vertex (looking orthogonal to its normal) at (1,1,1). Each face
-      has a vertex at the same coordinates, however, three distinct vertices
-      will be drawn at the same spot.
-      To solve the issue of duplicate Vertices (the `(vertex, [texture], normal)`
-      groups), while iterating through the face lines, when a group is encountered
-      the whole group string ('16/92/11') is checked to see if it exists in the
-      packed.hashindices object, and if it doesn't, the indices it specifies
-      are used to look up each attribute in the corresponding attribute arrays
-      already created. The values are then copied to the corresponding unpacked
-      array (flattened to play nice with WebGL's ELEMENT_ARRAY_BUFFER indexing),
-      the group string is added to the hashindices set and the current unpacked
-      index is used as this hashindices value so that the group of elements can
-      be reused. The unpacked index is incremented. If the group string already
-      exists in the hashindices object, its corresponding value is the index of
-      that group and is appended to the unpacked indices array.
-      */
+    	The OBJ file format does a sort of compression when saving a model in a
+    	program like Blender. There are at least 3 sections (4 including textures)
+    	within the file. Each line in a section begins with the same string:
+    		* 'v': indicates vertex section
+    		* 'vn': indicates vertex normal section
+    		* 'f': indicates the faces section
+    		* 'vt': indicates vertex texture section (if textures were used on the model)
+    	Each of the above sections (except for the faces section) is a list/set of
+    	unique vertices.
+    	Each line of the faces section contains a list of
+    	(vertex, [texture], normal) groups
+    	Some examples:
+    			// the texture index is optional, both formats are possible for models
+    			// without a texture applied
+    			f 1/25 18/46 12/31
+    			f 1//25 18//46 12//31
+    			// A 3 vertex face with texture indices
+    			f 16/92/11 14/101/22 1/69/1
+    			// A 4 vertex face
+    			f 16/92/11 40/109/40 38/114/38 14/101/22
+    	The first two lines are examples of a 3 vertex face without a texture applied.
+    	The second is an example of a 3 vertex face with a texture applied.
+    	The third is an example of a 4 vertex face. Note: a face can contain N
+    	number of vertices.
+    	Each number that appears in one of the groups is a 1-based index
+    	corresponding to an item from the other sections (meaning that indexing
+    	starts at one and *not* zero).
+    	For example:
+    			`f 16/92/11` is saying to
+    				- take the 16th element from the [v] vertex array
+    				- take the 92nd element from the [vt] texture array
+    				- take the 11th element from the [vn] normal array
+    			and together they make a unique vertex.
+    	Using all 3+ unique Vertices from the face line will produce a polygon.
+    	Now, you could just go through the OBJ file and create a new vertex for
+    	each face line and WebGL will draw what appears to be the same model.
+    	However, vertices will be overlapped and duplicated all over the place.
+    	Consider a cube in 3D space centered about the origin and each side is
+    	2 units long. The front face (with the positive Z-axis pointing towards
+    	you) would have a Top Right vertex (looking orthogonal to its normal)
+    	mapped at (1,1,1) The right face would have a Top Left vertex (looking
+    	orthogonal to its normal) at (1,1,1) and the top face would have a Bottom
+    	Right vertex (looking orthogonal to its normal) at (1,1,1). Each face
+    	has a vertex at the same coordinates, however, three distinct vertices
+    	will be drawn at the same spot.
+    	To solve the issue of duplicate Vertices (the `(vertex, [texture], normal)`
+    	groups), while iterating through the face lines, when a group is encountered
+    	the whole group string ('16/92/11') is checked to see if it exists in the
+    	packed.hashindices object, and if it doesn't, the indices it specifies
+    	are used to look up each attribute in the corresponding attribute arrays
+    	already created. The values are then copied to the corresponding unpacked
+    	array (flattened to play nice with WebGL's ELEMENT_ARRAY_BUFFER indexing),
+    	the group string is added to the hashindices set and the current unpacked
+    	index is used as this hashindices value so that the group of elements can
+    	be reused. The unpacked index is incremented. If the group string already
+    	exists in the hashindices object, its corresponding value is the index of
+    	that group and is appended to the unpacked indices array.
+    	*/
 
     var verts = [],
         vertNormals = [],
@@ -18450,7 +18450,9 @@ class constructMesh {
     unpacked.indices = [];
     unpacked.index = 0; // array of lines separated by the newline
 
-    var lines = objectData.split('\n'); // update swap orientation
+    var lines = objectData.split('\n'); // test group catch data bpund or center
+
+    var objGroups = []; // update swap orientation
 
     if (inputArg.swap[0] !== null) {
       swap(inputArg.swap[0], inputArg.swap[1], initOrientation);
@@ -18470,6 +18472,10 @@ class constructMesh {
       if (VERTEX_RE.test(line)) {
         // if this is a vertex
         verts.push.apply(verts, elements);
+
+        if (objGroups.length > 0) {
+          objGroups[objGroups.length - 1].groupVert.push(elements);
+        }
       } else if (NORMAL_RE.test(line)) {
         // if this is a vertex normal
         vertNormals.push.apply(vertNormals, elements);
@@ -18480,12 +18486,12 @@ class constructMesh {
         // if this is a face
 
         /*
-          split this face into an array of vertex groups
-          for example:
-            f 16/92/11 14/101/22 1/69/1
-          becomes:
-            ['16/92/11', '14/101/22', '1/69/1'];
-          */
+        	split this face into an array of vertex groups
+        	for example:
+        		f 16/92/11 14/101/22 1/69/1
+        	becomes:
+        		['16/92/11', '14/101/22', '1/69/1'];
+        	*/
         var quad = false;
 
         for (var j = 0, eleLen = elements.length; j < eleLen; j++) {
@@ -18504,35 +18510,35 @@ class constructMesh {
             unpacked.indices.push(unpacked.hashindices[elements[j]]);
           } else {
             /*
-                  Each element of the face line array is a vertex which has its
-                  attributes delimited by a forward slash. This will separate
-                  each attribute into another array:
-                      '19/92/11'
-                  becomes:
-                      vertex = ['19', '92', '11'];
-                  where
-                      vertex[0] is the vertex index
-                      vertex[1] is the texture index
-                      vertex[2] is the normal index
-                  Think of faces having Vertices which are comprised of the
-                  attributes location (v), texture (vt), and normal (vn).
-                  */
+            			Each element of the face line array is a vertex which has its
+            			attributes delimited by a forward slash. This will separate
+            			each attribute into another array:
+            					'19/92/11'
+            			becomes:
+            					vertex = ['19', '92', '11'];
+            			where
+            					vertex[0] is the vertex index
+            					vertex[1] is the texture index
+            					vertex[2] is the normal index
+            			Think of faces having Vertices which are comprised of the
+            			attributes location (v), texture (vt), and normal (vn).
+            			*/
             var vertex = elements[j].split('/');
             /*
-                  The verts, textures, and vertNormals arrays each contain a
-                  flattend array of coordinates.
-                  Because it gets confusing by referring to vertex and then
-                  vertex (both are different in my descriptions) I will explain
-                  what's going on using the vertexNormals array:
-                  vertex[2] will contain the one-based index of the vertexNormals
-                  section (vn). One is subtracted from this index number to play
-                  nice with javascript's zero-based array indexing.
-                  Because vertexNormal is a flattened array of x, y, z values,
-                  simple pointer arithmetic is used to skip to the start of the
-                  vertexNormal, then the offset is added to get the correct
-                  component: +0 is x, +1 is y, +2 is z.
-                  This same process is repeated for verts and textures.
-                  */
+            			The verts, textures, and vertNormals arrays each contain a
+            			flattend array of coordinates.
+            			Because it gets confusing by referring to vertex and then
+            			vertex (both are different in my descriptions) I will explain
+            			what's going on using the vertexNormals array:
+            			vertex[2] will contain the one-based index of the vertexNormals
+            			section (vn). One is subtracted from this index number to play
+            			nice with javascript's zero-based array indexing.
+            			Because vertexNormal is a flattened array of x, y, z values,
+            			simple pointer arithmetic is used to skip to the start of the
+            			vertexNormal, then the offset is added to get the correct
+            			component: +0 is x, +1 is y, +2 is z.
+            			This same process is repeated for verts and textures.
+            			*/
             // vertex position
 
             unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale);
@@ -18560,6 +18566,21 @@ class constructMesh {
             unpacked.indices.push(unpacked.hashindices[elements[0]]);
           }
         }
+      } else {
+        if (line.indexOf('# ') != -1) {// console.log('obj loader comment:', line)
+        } else if (line.indexOf('mtllib') != -1) {// console.log('obj loader MTL file:', line)
+        } else if (line.indexOf('g ') != -1) {
+          // console.log('obj loader group :', line)
+          var nameOFGroup = line.split(' ')[1];
+
+          if (nameOFGroup.indexOf('COLLIDER') != -1) {
+            console.log('obj loader group [SPECIAL CASE COLLIDER]:', nameOFGroup);
+            objGroups.push({
+              groupName: nameOFGroup,
+              groupVert: []
+            });
+          }
+        }
       }
     }
 
@@ -18567,6 +18588,13 @@ class constructMesh {
     this.vertexNormals = unpacked.norms;
     this.textures = unpacked.textures;
     this.indices = unpacked.indices;
+
+    if (objGroups.length > 0) {
+      this.groups = objGroups;
+    } else {
+      this.groups = null;
+    }
+
     callback();
     return this;
   };
@@ -18699,53 +18727,6 @@ var _buildBuffer = function (gl, type, data, itemSize) {
  * **indexBuffer**        |contains the indices of the faces
  * indexBuffer.itemSize   |is set to 1
  * indexBuffer.numItems   |the total number of indices
- *
- * A simple example (a lot of steps are missing, so don't copy and paste):
- *
- *     var gl   = canvas.getContext('webgl'),
- *         mesh = OBJ.Mesh(obj_file_data);
- *     // compile the shaders and create a shader program
- *     var shaderProgram = gl.createProgram();
- *     // compilation stuff here
- *     ...
- *     // make sure you have vertex, vertex normal, and texture coordinate
- *     // attributes located in your shaders and attach them to the shader program
- *     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
- *     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
- *
- *     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
- *     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
- *
- *     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
- *     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *
- *     // create and initialize the vertex, vertex normal, and texture coordinate buffers
- *     // and save on to the mesh object
- *     OBJ.initMeshBuffers(gl, mesh);
- *
- *     // now to render the mesh
- *     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
- *     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *     // it's possible that the mesh doesn't contain
- *     // any texture coordinates (e.g. suzanne.obj in the development branch).
- *     // in this case, the texture vertexAttribArray will need to be disabled
- *     // before the call to drawElements
- *     if(!mesh.textures.length){
- *       gl.disableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *     }
- *     else{
- *       // if the texture vertexAttribArray has been previously
- *       // disabled, then it needs to be re-enabled
- *       gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *       gl.bindBuffer(gl.ARRAY_BUFFER, mesh.textureBuffer);
- *       gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *     }
- *
- *     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.normalBuffer);
- *     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *
- *     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.mesh.indexBuffer);
- *     gl.drawElements(gl.TRIANGLES, model.mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
  */
 
 
@@ -18770,24 +18751,24 @@ var deleteMeshBuffers = function (gl, mesh) {
  * This is adaptation for blender obj animation export.
  * For example:
  *    matrixEngine.objLoader.downloadMeshes(
-      matrixEngine.objLoader.makeObjSeqArg(
-        {
-          id: objName,
-          joinMultiPahts: [
-            {
-              path: "res/bvh-skeletal-base/swat-guy/seq-walk/low/swat",
-              id: objName,
-              from: 1, to: 34
-            },
-            {
-              path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
-              id: objName,
-              from: 35, to: 54
-            }
-          ]
-        }),
-      onLoadObj
-    );
+			matrixEngine.objLoader.makeObjSeqArg(
+				{
+					id: objName,
+					joinMultiPahts: [
+						{
+							path: "res/bvh-skeletal-base/swat-guy/seq-walk/low/swat",
+							id: objName,
+							from: 1, to: 34
+						},
+						{
+							path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
+							id: objName,
+							from: 35, to: 54
+						}
+					]
+				}),
+			onLoadObj
+		);
  */
 
 
@@ -18854,7 +18835,7 @@ exports.makeObjSeqArg = makeObjSeqArg;
 function play(nameAni) {
   this.animation.anims.active = nameAni;
   this.animation.currentAni = this.animation.anims[this.animation.anims.active].from;
-} // TEST 
+} // TEST
 // add destroy animation meshs procedure
 
 },{"./matrix-world":24}],12:[function(require,module,exports){
@@ -40400,43 +40381,7 @@ let map2 = {
       "y": 1,
       "z": 0
     },
-    "scale": [1, 1, 1],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen0_1",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 4.2
-    },
-    "scale": [1, 1, 1],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen0_2",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 8.4
-    },
-    "scale": [1, 1, 1],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen1_2",
-    "position": {
-      "x": 4.2,
-      "y": 1,
-      "z": 8.4
-    },
-    "scale": [1, 1, 1],
+    "scale": [1, 2, 1],
     "texture": {
       "source": ["res/images/diffuse.png"],
       "mix_operation": "multiply"
@@ -40457,54 +40402,6 @@ let map2 = {
     "name": "wall_gen2_0",
     "position": {
       "x": 8.4,
-      "y": 1,
-      "z": 0
-    },
-    "scale": [1, 1, 1],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen2_2",
-    "position": {
-      "x": 8.4,
-      "y": 1,
-      "z": 8.4
-    },
-    "scale": [1, 1, 1],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen2_3",
-    "position": {
-      "x": 8.4,
-      "y": 1,
-      "z": 12.600000000000001
-    },
-    "scale": [1, 1, 1],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen3_2",
-    "position": {
-      "x": 12.600000000000001,
-      "y": 1,
-      "z": 8.4
-    },
-    "scale": [1, 1, 1],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "wall_gen3_0",
-    "position": {
-      "x": 12.600000000000001,
       "y": 1,
       "z": 0
     },
@@ -40538,11 +40435,11 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen5_1",
+    "name": "wall_gen6_0",
     "position": {
-      "x": 21,
+      "x": 25.200000000000003,
       "y": 1,
-      "z": 4.2
+      "z": 0
     },
     "scale": [1, 1, 1],
     "texture": {
@@ -40550,11 +40447,11 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen5_2",
+    "name": "wall_gen8_0",
     "position": {
-      "x": 21,
+      "x": 33.6,
       "y": 1,
-      "z": 8.4
+      "z": 0
     },
     "scale": [1, 1, 1],
     "texture": {
@@ -40562,11 +40459,107 @@ let map2 = {
       "mix_operation": "multiply"
     }
   }, {
-    "name": "wall_gen5_3",
+    "name": "wall_gen9_0",
     "position": {
-      "x": 21,
+      "x": 37.800000000000004,
       "y": 1,
-      "z": 12.600000000000001
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen10_0",
+    "position": {
+      "x": 42,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen12_0",
+    "position": {
+      "x": 50.400000000000006,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen13_0",
+    "position": {
+      "x": 54.6,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen14_0",
+    "position": {
+      "x": 58.800000000000004,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen16_0",
+    "position": {
+      "x": 67.2,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen17_0",
+    "position": {
+      "x": 71.4,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen18_0",
+    "position": {
+      "x": 75.60000000000001,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [1, 1, 1],
+    "texture": {
+      "source": ["res/images/diffuse.png"],
+      "mix_operation": "multiply"
+    }
+  }, {
+    "name": "wall_gen19_0",
+    "position": {
+      "x": 79.8,
+      "y": 1,
+      "z": 0
     },
     "scale": [1, 1, 1],
     "texture": {
@@ -41423,7 +41416,7 @@ var runHang3d = world => {
   App.scene['FLOOR3'].physics.currentBody = b3;
   App.scene['FLOOR3'].physics.enabled = true; // MAP LOADER
 
-  _mapLoader.meMapLoader.load(_map.map1, physics); // Still not work...
+  _mapLoader.meMapLoader.load(_map2.map2, physics); // Still not work...
   // meMapLoader.load(meMapLoader.geminiMap(10 , 150, 1), physics)
 
 

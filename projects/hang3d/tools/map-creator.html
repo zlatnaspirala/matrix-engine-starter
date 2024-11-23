@@ -26,20 +26,19 @@
 
 	<div id="paramsPopup">
 		<div>
-			SIZE OF MAP:
-			X:<input id="sizeX" type="number" value="100" min="10" max="1000" />
-			Y:<input id="sizeY" type="number" value="100" min="10" max="1000" />
+			<div>Size of map:</div>
+			<div>X:<input  class="btn" id="sizeX" type="number" value="100" min="10" max="1000" /></div>
+			<div>Y:<input  class="btn" id="sizeY" type="number" value="100" min="10" max="1000" /></div>
 		</div>
 		<div>
-			TYPE OF ITEM:
-			X:<select id="tinput">
-				<option>Simple Cube</option>
-				<option>Obj </option>
+			<div>Type of item:</div>
+			<select class="btn"  id="tinput">
+				<option class="btnOpt">Simple Cube</option>
+				<option class="btnOpt">Obj </option>
 			</select>
 		</div>
-
 		<div>
-			<button onclick="mapCreator.run()">Create ME Map</button>
+			<button class="btn" onclick="mapCreator.run()">Create ME Map</button>
 		</div>
 
 		<script src="map-creator.js"></script>
