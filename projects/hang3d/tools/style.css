@@ -79,6 +79,8 @@ body {
 	height: 100%;
 	border: solid #82a5b1 1px;
 	border-radius: 5px;
+	overflow: scroll;
+	overflow-x: hidden;
 }
 
 .vertical {

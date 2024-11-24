@@ -7,7 +7,13 @@ var mapCreator = {
 	clear: () => {
 		location.reload()
 	},
-	map: {staticCubes: [], staticObjs: []},
+	map: {
+		staticCubes: [],
+		staticObjs: [],
+		noPhysics: {
+			cubes: []
+		}
+	},
 	copyToStorage: () => {
 		localStorage.setItem('map', JSON.stringify(mapCreator.map))
 	},
@@ -52,6 +58,21 @@ var mapCreator = {
 								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 								position: {x: X, y: Y, z: Z},
 								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
+								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
+								activeRotation: [byId('arotX').value, byId('arotY').value, byId('arotZ').value],
+								texture: {
+									source: [byId('texinput').selectedOptions[0].value],
+									mix_operation: "multiply"
+								}
+							})
+					} else if(byId('tinput').selectedOptions[0].value == "NOPHYSICS Cube") {
+						this.map.noPhysics.cubes.push(
+							{
+								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
+								position: {x: X, y: Y, z: Z},
+								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
+								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
+								activeRotation: [byId('arotX').value, byId('arotY').value, byId('arotZ').value],
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
@@ -64,6 +85,8 @@ var mapCreator = {
 								name: "mapobjs_" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 								path: byId('tinput').selectedOptions[0].value,
 								position: {x: X, y: Y, z: Z},
+								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
+								activeRotation: [byId('arotX').value, byId('arotY').value, byId('arotZ').value],
 								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],

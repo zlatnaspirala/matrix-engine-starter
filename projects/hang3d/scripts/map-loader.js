@@ -17,6 +17,12 @@ export const meMapLoader = {
 				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
 			});
 			physics.world.addBody(b);
+			App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+			App.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+			App.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+			App.scene[item.name].rotation.rotationSpeed.x = item.activeRotation[0];
+			App.scene[item.name].rotation.rotationSpeed.y = item.activeRotation[1];
+			App.scene[item.name].rotation.rotationSpeed.z = item.activeRotation[2];
 			App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z)
 			App.scene[item.name].physics.currentBody = b;
 			App.scene[item.name].physics.enabled = true;
@@ -31,13 +37,27 @@ export const meMapLoader = {
 					mass: 0,
 					path: item.path,
 					position: [item.position.x, item.position.y, item.position.z],
-					// activeRotation: [0, 20, 0],
-					rotation: [0, 0, 0],
+					activeRotation: item.activeRotation,
+					rotation: [item.rotation.rotx, item.rotation.roty, item.rotation.rotz],
 					scale: item.scale[0],
 					textures: item.texture.source,
 					shadows: false,
 					gamePlayItem: 'STATIC_rock'
 				}, physics)
+		});
+
+		if (map.noPhysics && map.noPhysics.cubes.length > 0) map.noPhysics.cubes.forEach((item) => {
+			matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+			App.scene[item.name].geometry.setScaleByX(item.scale[0]);
+			App.scene[item.name].geometry.setScaleByY(item.scale[1]);
+			App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+			App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+			App.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+			App.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+			App.scene[item.name].rotation.rotationSpeed.x = item.activeRotation[0];
+			App.scene[item.name].rotation.rotationSpeed.y = item.activeRotation[1];
+			App.scene[item.name].rotation.rotationSpeed.z = item.activeRotation[2];
+			App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z)
 		});
 	},
 	// Not work collision - probably too mush overlaping...
@@ -76,9 +96,9 @@ export const meMapLoader = {
 			App.scene[n.name].position.x = n.position[0];
 			App.scene[n.name].position.y = n.position[1];
 			App.scene[n.name].position.z = n.position[2];
-			// App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
-			// App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
-			// App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+			App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
 			App.scene[n.name].rotation.rotx = n.rotation[0];
 			App.scene[n.name].rotation.roty = n.rotation[1];
 			App.scene[n.name].rotation.rotz = n.rotation[2];

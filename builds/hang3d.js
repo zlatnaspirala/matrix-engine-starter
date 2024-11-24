@@ -40375,228 +40375,172 @@ Object.defineProperty(exports, "__esModule", {
 exports.map2 = void 0;
 let map2 = {
   "staticCubes": [],
-  "staticObjs": [{
-    "name": "mapobjs_7_9",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 29.4,
-      "y": 1,
-      "z": 37.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_7_10",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 29.4,
-      "y": 1,
-      "z": 42
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_7_12",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 29.4,
-      "y": 1,
-      "z": 50.4
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_7_13",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 29.4,
-      "y": 1,
-      "z": 54.6
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_8_13",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 33.6,
-      "y": 1,
-      "z": 54.6
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_8_15",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 33.6,
-      "y": 1,
-      "z": 63
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_8_16",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 33.6,
-      "y": 1,
-      "z": 67.2
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_7_17",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 29.4,
-      "y": 1,
-      "z": 71.4
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_8_17",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 33.6,
-      "y": 1,
-      "z": 71.4
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_7_18",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 29.4,
-      "y": 1,
-      "z": 75.6
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/diffuse.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_5_12",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 21,
-      "y": 1,
-      "z": 50.4
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_5_13",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 21,
-      "y": 1,
-      "z": 54.6
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_4_13",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 16.8,
-      "y": 1,
-      "z": 54.6
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_4_14",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 16.8,
-      "y": 1,
-      "z": 58.8
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_4_15",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 16.8,
-      "y": 1,
-      "z": 63
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_4_16",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 16.8,
-      "y": 1,
-      "z": 67.2
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }, {
-    "name": "mapobjs_4_17",
-    "path": "res/3d-objects/env/rock1.obj",
-    "position": {
-      "x": 16.8,
-      "y": 1,
-      "z": 71.4
-    },
-    "scale": ["1", "1", "1"],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
-    }
-  }]
+  "staticObjs": [],
+  "noPhysics": {
+    "cubes": [{
+      "name": "wall_gen5_6",
+      "position": {
+        "x": 21,
+        "y": 1,
+        "z": 25.2
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "0", "0"],
+      "texture": {
+        "source": ["res/images/diffuse.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen6_6",
+      "position": {
+        "x": 25.2,
+        "y": 1,
+        "z": 25.2
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "0", "0"],
+      "texture": {
+        "source": ["res/images/diffuse.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen7_6",
+      "position": {
+        "x": 29.4,
+        "y": 1,
+        "z": 25.2
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "0", "0"],
+      "texture": {
+        "source": ["res/images/diffuse.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen8_6",
+      "position": {
+        "x": 33.6,
+        "y": 1,
+        "z": 25.2
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "0", "0"],
+      "texture": {
+        "source": ["res/images/diffuse.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen9_8",
+      "position": {
+        "x": 37.8,
+        "y": 1,
+        "z": 33.6
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "8", "0"],
+      "texture": {
+        "source": ["res/images/n-stone.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen9_9",
+      "position": {
+        "x": 37.8,
+        "y": 1,
+        "z": 37.8
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "8", "0"],
+      "texture": {
+        "source": ["res/images/n-stone.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen9_10",
+      "position": {
+        "x": 37.8,
+        "y": 1,
+        "z": 42
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "8", "0"],
+      "texture": {
+        "source": ["res/images/n-stone.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen9_11",
+      "position": {
+        "x": 37.8,
+        "y": 1,
+        "z": 46.2
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "8", "0"],
+      "texture": {
+        "source": ["res/images/n-stone.png"],
+        "mix_operation": "multiply"
+      }
+    }, {
+      "name": "wall_gen9_12",
+      "position": {
+        "x": 37.8,
+        "y": 1,
+        "z": 50.4
+      },
+      "scale": ["1", "1", "1"],
+      "rotation": {
+        "rotx": 43,
+        "roty": 0,
+        "rotz": 0
+      },
+      "activeRotation": ["0", "8", "0"],
+      "texture": {
+        "source": ["res/images/n-stone.png"],
+        "mix_operation": "multiply"
+      }
+    }]
+  }
 };
 exports.map2 = map2;
 
@@ -40735,10 +40679,12 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.01; //ori 0.02
+  App.camera.speedAmp = 0.04; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
-  App.camera.yawRateOnEdge = 1; //ori 3
+  App.camera.yawRateOnEdge = 2; //ori 3
+
+  App.camera.yawRate = 4; // 1
 
   App.myAccounts = {}; // Keyboard event
 
@@ -41807,6 +41753,12 @@ const meMapLoader = {
         shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
       });
       physics.world.addBody(b);
+      App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+      App.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+      App.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+      App.scene[item.name].rotation.rotationSpeed.x = item.activeRotation[0];
+      App.scene[item.name].rotation.rotationSpeed.y = item.activeRotation[1];
+      App.scene[item.name].rotation.rotationSpeed.z = item.activeRotation[2];
       App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
       App.scene[item.name].physics.currentBody = b;
       App.scene[item.name].physics.enabled = true;
@@ -41821,13 +41773,26 @@ const meMapLoader = {
         mass: 0,
         path: item.path,
         position: [item.position.x, item.position.y, item.position.z],
-        // activeRotation: [0, 20, 0],
-        rotation: [0, 0, 0],
+        activeRotation: item.activeRotation,
+        rotation: [item.rotation.rotx, item.rotation.roty, item.rotation.rotz],
         scale: item.scale[0],
         textures: item.texture.source,
         shadows: false,
         gamePlayItem: 'STATIC_rock'
       }, physics);
+    });
+    if (map.noPhysics && map.noPhysics.cubes.length > 0) map.noPhysics.cubes.forEach(item => {
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+      App.scene[item.name].geometry.setScaleByX(item.scale[0]);
+      App.scene[item.name].geometry.setScaleByY(item.scale[1]);
+      App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+      App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+      App.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+      App.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+      App.scene[item.name].rotation.rotationSpeed.x = item.activeRotation[0];
+      App.scene[item.name].rotation.rotationSpeed.y = item.activeRotation[1];
+      App.scene[item.name].rotation.rotationSpeed.z = item.activeRotation[2];
+      App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
     });
   },
   // Not work collision - probably too mush overlaping...
@@ -41871,10 +41836,10 @@ const meMapLoader = {
 
       App.scene[n.name].position.x = n.position[0];
       App.scene[n.name].position.y = n.position[1];
-      App.scene[n.name].position.z = n.position[2]; // App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
-      // App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
-      // App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
-
+      App.scene[n.name].position.z = n.position[2];
+      App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+      App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+      App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
       App.scene[n.name].rotation.rotx = n.rotation[0];
       App.scene[n.name].rotation.roty = n.rotation[1];
       App.scene[n.name].rotation.rotz = n.rotation[2]; // App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);

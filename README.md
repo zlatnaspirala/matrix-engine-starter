@@ -65,6 +65,7 @@ Under hang3d project you can find in folder `tools/` Map Creator. [Will be part 
 
 TODO:
 
+- After updating me2.0.xx i found bug in wheels roation
 - Replace with net2 driver. WIP
 
 In `projects\matrix-roulette` First time is used ServerEvents tech from rocketcraftingserver project.
