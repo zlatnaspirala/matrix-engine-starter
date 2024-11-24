@@ -40374,172 +40374,208 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map2 = void 0;
 let map2 = {
-  "staticCubes": [],
-  "staticObjs": [],
-  "noPhysics": {
-    "cubes": [{
-      "name": "wall_gen5_6",
-      "position": {
-        "x": 21,
-        "y": 1,
-        "z": 25.2
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "0", "0"],
-      "texture": {
-        "source": ["res/images/diffuse.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen6_6",
-      "position": {
-        "x": 25.2,
-        "y": 1,
-        "z": 25.2
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "0", "0"],
-      "texture": {
-        "source": ["res/images/diffuse.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen7_6",
-      "position": {
-        "x": 29.4,
-        "y": 1,
-        "z": 25.2
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "0", "0"],
-      "texture": {
-        "source": ["res/images/diffuse.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen8_6",
-      "position": {
-        "x": 33.6,
-        "y": 1,
-        "z": 25.2
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "0", "0"],
-      "texture": {
-        "source": ["res/images/diffuse.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen9_8",
-      "position": {
-        "x": 37.8,
-        "y": 1,
-        "z": 33.6
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "8", "0"],
-      "texture": {
-        "source": ["res/images/n-stone.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen9_9",
-      "position": {
-        "x": 37.8,
-        "y": 1,
-        "z": 37.8
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "8", "0"],
-      "texture": {
-        "source": ["res/images/n-stone.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen9_10",
-      "position": {
-        "x": 37.8,
-        "y": 1,
-        "z": 42
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "8", "0"],
-      "texture": {
-        "source": ["res/images/n-stone.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen9_11",
-      "position": {
-        "x": 37.8,
-        "y": 1,
-        "z": 46.2
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "8", "0"],
-      "texture": {
-        "source": ["res/images/n-stone.png"],
-        "mix_operation": "multiply"
-      }
-    }, {
-      "name": "wall_gen9_12",
-      "position": {
-        "x": 37.8,
-        "y": 1,
-        "z": 50.4
-      },
-      "scale": ["1", "1", "1"],
-      "rotation": {
-        "rotx": 43,
-        "roty": 0,
-        "rotz": 0
-      },
-      "activeRotation": ["0", "8", "0"],
-      "texture": {
-        "source": ["res/images/n-stone.png"],
-        "mix_operation": "multiply"
-      }
-    }]
+  staticCubes: [{
+    name: "wall_gen6_9",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen7_9",
+    position: {
+      x: 29.4,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen8_9",
+    position: {
+      x: 33.6,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen9_9",
+    position: {
+      x: 37.8,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen10_9",
+    position: {
+      x: 42,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen11_9",
+    position: {
+      x: 46.2,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen12_9",
+    position: {
+      x: 50.4,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen13_9",
+    position: {
+      x: 54.6,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen14_9",
+    position: {
+      x: 58.8,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen15_9",
+    position: {
+      x: 63,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }, {
+    name: "wall_gen16_9",
+    position: {
+      x: 67.2,
+      y: 1,
+      z: 37.8
+    },
+    scale: ["1", "1", "1"],
+    rotation: {
+      rotx: 43,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/diffuse.png"],
+      mix_operation: "multiply"
+    }
+  }],
+  staticObjs: [],
+  noPhysics: {
+    cubes: []
   }
 };
 exports.map2 = map2;
@@ -41762,6 +41798,7 @@ const meMapLoader = {
       App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
       App.scene[item.name].physics.currentBody = b;
       App.scene[item.name].physics.enabled = true;
+      App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx, item.rotation.rotz, item.rotation.roty);
     });
     if (map.staticObjs) map.staticObjs.forEach(item => {
       // matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
@@ -41840,9 +41877,7 @@ const meMapLoader = {
       App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
       App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
       App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
-      App.scene[n.name].rotation.rotx = n.rotation[0];
-      App.scene[n.name].rotation.roty = n.rotation[1];
-      App.scene[n.name].rotation.rotz = n.rotation[2]; // App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
+      App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty); // App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
 
       App.scene[n.name].mesh.setScale(n.scale);
       var b44 = new CANNON.Body({

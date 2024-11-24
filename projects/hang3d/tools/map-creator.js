@@ -59,7 +59,7 @@ var mapCreator = {
 								position: {x: X, y: Y, z: Z},
 								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
-								activeRotation: [byId('arotX').value, byId('arotY').value, byId('arotZ').value],
+								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
@@ -72,7 +72,7 @@ var mapCreator = {
 								position: {x: X, y: Y, z: Z},
 								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
-								activeRotation: [byId('arotX').value, byId('arotY').value, byId('arotZ').value],
+								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"

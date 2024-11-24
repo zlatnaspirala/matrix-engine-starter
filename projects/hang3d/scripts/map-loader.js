@@ -26,6 +26,7 @@ export const meMapLoader = {
 			App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z)
 			App.scene[item.name].physics.currentBody = b;
 			App.scene[item.name].physics.enabled = true;
+			App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx,item.rotation.rotz,item.rotation.roty) 
 		});
 		if (map.staticObjs) map.staticObjs.forEach(item => {
 			// matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
@@ -99,9 +100,8 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
 			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
-			App.scene[n.name].rotation.rotx = n.rotation[0];
-			App.scene[n.name].rotation.roty = n.rotation[1];
-			App.scene[n.name].rotation.rotz = n.rotation[2];
+
+			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx,n.rotation.rotz,n.rotation.roty) 
 			// App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
 			App.scene[n.name].mesh.setScale(n.scale)
 			var b44 = new CANNON.Body({
