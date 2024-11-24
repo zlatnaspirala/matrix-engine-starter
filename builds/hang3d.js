@@ -40374,206 +40374,27 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map2 = void 0;
 let map2 = {
-  staticCubes: [{
-    name: "wall_gen6_9",
+  staticCubes: [],
+  staticObjs: [{
+    name: "mapobjs_5_7",
+    path: "res/3d-objects/env/block1.obj",
     position: {
-      x: 25.2,
+      x: 21,
       y: 1,
-      z: 37.8
+      z: 29.4
     },
-    scale: ["1", "1", "1"],
     rotation: {
-      rotx: 43,
+      rotx: 45,
       roty: 0,
-      rotz: 0
+      rotz: 45
     },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen7_9",
-    position: {
-      x: 29.4,
-      y: 1,
-      z: 37.8
-    },
+    activeRotation: ["0", "0", "0"],
     scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen8_9",
-    position: {
-      x: 33.6,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen9_9",
-    position: {
-      x: 37.8,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen10_9",
-    position: {
-      x: 42,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen11_9",
-    position: {
-      x: 46.2,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen12_9",
-    position: {
-      x: 50.4,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen13_9",
-    position: {
-      x: 54.6,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen14_9",
-    position: {
-      x: 58.8,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen15_9",
-    position: {
-      x: 63,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
-    }
-  }, {
-    name: "wall_gen16_9",
-    position: {
-      x: 67.2,
-      y: 1,
-      z: 37.8
-    },
-    scale: ["1", "1", "1"],
-    rotation: {
-      rotx: 43,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
     texture: {
       source: ["res/images/diffuse.png"],
       mix_operation: "multiply"
     }
   }],
-  staticObjs: [],
   noPhysics: {
     cubes: []
   }
@@ -41811,8 +41632,8 @@ const meMapLoader = {
         path: item.path,
         position: [item.position.x, item.position.y, item.position.z],
         activeRotation: item.activeRotation,
-        rotation: [item.rotation.rotx, item.rotation.roty, item.rotation.rotz],
-        scale: item.scale[0],
+        rotation: item.rotation,
+        scale: item.scale,
         textures: item.texture.source,
         shadows: false,
         gamePlayItem: 'STATIC_rock'
@@ -41876,20 +41697,24 @@ const meMapLoader = {
       App.scene[n.name].position.z = n.position[2];
       App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
       App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
-      App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
-      App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty); // App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
+      App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2]; // MUST BE FIXED ---------------------->>
 
-      App.scene[n.name].mesh.setScale(n.scale);
+      App.scene[n.name].mesh.setScale(n.scale[0]);
       var b44 = new CANNON.Body({
         mass: n.mass,
         linearDamping: 0.01,
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
-        shape: new CANNON.Box(new CANNON.Vec3(1, 2, 1))
+        shape: new CANNON.Box(new CANNON.Vec3(n.scale[0], n.scale[1], n.scale[2]))
       });
       b44._name = n.gamePlayItem;
       physics.world.addBody(b44);
       App.scene[n.name].physics.currentBody = b44;
-      App.scene[n.name].physics.enabled = true;
+      App.scene[n.name].physics.enabled = true; // console.log('????????????????????????????????')
+
+      App.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
+      App.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
+      App.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
+      App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty);
       if (n.shadows == true) setTimeout(() => {
         App.scene[n.name].activateShadows('spot');
       }, 100);

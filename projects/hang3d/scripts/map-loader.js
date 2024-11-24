@@ -39,8 +39,8 @@ export const meMapLoader = {
 					path: item.path,
 					position: [item.position.x, item.position.y, item.position.z],
 					activeRotation: item.activeRotation,
-					rotation: [item.rotation.rotx, item.rotation.roty, item.rotation.rotz],
-					scale: item.scale[0],
+					rotation: item.rotation,
+					scale: item.scale,
 					textures: item.texture.source,
 					shadows: false,
 					gamePlayItem: 'STATIC_rock'
@@ -101,19 +101,23 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
 
-			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx,n.rotation.rotz,n.rotation.roty) 
-			// App.scene[n.name].LightsData.ambientLight.set(1, 1, 1);
-			App.scene[n.name].mesh.setScale(n.scale)
+			// MUST BE FIXED ---------------------->>
+			App.scene[n.name].mesh.setScale(n.scale[0])
 			var b44 = new CANNON.Body({
 				mass: n.mass,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
-				shape: new CANNON.Box(new CANNON.Vec3(1, 2, 1))
+				shape: new CANNON.Box(new CANNON.Vec3(n.scale[0], n.scale[1], n.scale[2]))
 			});
 			b44._name = n.gamePlayItem;
 			physics.world.addBody(b44);
 			App.scene[n.name].physics.currentBody = b44;
 			App.scene[n.name].physics.enabled = true;
+			// console.log('????????????????????????????????')
+			App.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
+			App.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
+			App.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
+			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx,n.rotation.rotz,n.rotation.roty) 
 			if(n.shadows == true) setTimeout(() => {
 				App.scene[n.name].activateShadows('spot')
 			}, 100)
