@@ -41,7 +41,7 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.04;//ori 0.02
+	App.camera.speedAmp = 0.05;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 2; //ori 3
 	App.camera.yawRate = 4; // 1
@@ -369,6 +369,7 @@ export var runHang3d = (world) => {
 			App.scene.playerCollisonBox.physics.currentBody = collisionBox;
 			App.scene.playerCollisonBox.physics.enabled = true;
 			App.scene.playerCollisonBox.physics.currentBody.fixedRotation = true;
+			App.scene.playerCollisonBox.physics.currentBody.updateMassProperties();
 			App.scene.playerCollisonBox.geometry.setScale(0.02);
 			App.scene.playerCollisonBox.glBlend.blendEnabled = true;
 			App.scene.playerCollisonBox.glBlend.blendParamSrc = ENUMERATORS.glBlend.param[0];
@@ -875,6 +876,28 @@ export var runHang3d = (world) => {
 	})
 
 	// Graphics - Damage object test
+	// WORKING
+	// var textuteImageSamplers2 = {
+	// 	source: ["res/bvh-skeletal-base/swat-guy/gun2.png"],
+	// 	mix_operation: "multiply"
+	// };
+
+	// world.Add("cubeLightTex", 1, "floorAngle", textuteImageSamplers2);
+	// const testCustomBody1 = new CANNON.Body({
+	// 	shape: new CANNON.Box(new CANNON.Vec3(15, 15, 0.1)),
+	// 	type: CANNON.Body.STATIC,
+	// 	position: new CANNON.Vec3(0, 0, 0)
+	// })
+	// testCustomBody1.fixedRotation = true;
+	// testCustomBody1.updateMassProperties();
+	// physics.world.addBody(testCustomBody1);
+	// App.scene.floorAngle.physics.currentBody = testCustomBody1;
+	// App.scene.floorAngle.physics.enabled = true;
+	// App.scene['floorAngle'].geometry.setScaleByX(15);
+	// App.scene['floorAngle'].geometry.setScaleByZ(15);
+	// App.scene['floorAngle'].geometry.setScaleByY(-0.9);
+	// App.scene.floorAngle.physics.currentBody.quaternion.setFromEuler(5 * Math.PI/180,0,0)
+
 	// world.Add("cubeLightTex", 1, "LAVA", tex);
 	// var b4 = new CANNON.Body({
 	// 	mass: 0,

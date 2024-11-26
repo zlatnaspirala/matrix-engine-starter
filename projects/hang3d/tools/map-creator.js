@@ -9,6 +9,7 @@ var mapCreator = {
 	},
 	map: {
 		staticCubes: [],
+		staticFloors: [],
 		staticObjs: [],
 		noPhysics: {
 			cubes: []
@@ -25,7 +26,7 @@ var mapCreator = {
 		var root = document.getElementById('root');
 		for(var j = 0;j < size[0];j++) {
 			var vertical = document.createElement('div');
-			vertical.style = `width:100%;height:${innerHeight / size[1]}px;`;
+			vertical.style = `width:90%;height:${innerHeight / size[1]}px;`;
 			vertical.classList.add('vertical')
 			vertical.id = 'vertical';
 			for(var i = 0;i < size[1];i++) {
@@ -57,9 +58,22 @@ var mapCreator = {
 							{
 								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 								position: {x: X, y: Y, z: Z},
-								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
+								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
 								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
+								texture: {
+									source: [byId('texinput').selectedOptions[0].value],
+									mix_operation: "multiply"
+								}
+							})
+					} else if(byId('tinput').selectedOptions[0].value == "Static Floor") {
+						this.map.staticFloors.push(
+							{
+								name: "sf_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
+								position: {x: X, y: Y, z: Z},
+								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
+								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
+								// activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
@@ -70,7 +84,7 @@ var mapCreator = {
 							{
 								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 								position: {x: X, y: Y, z: Z},
-								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
+								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
 								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								texture: {
@@ -79,7 +93,6 @@ var mapCreator = {
 								}
 							})
 					} else {
-
 						this.map.staticObjs.push(
 							{
 								name: "mapobjs_" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
@@ -87,16 +100,14 @@ var mapCreator = {
 								position: {x: X, y: Y, z: Z},
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
 								activeRotation: [byId('arotX').value, byId('arotY').value, byId('arotZ').value],
-								scale: [byId('scaleX').value, byId('scaleY').value, byId('scaleZ').value],
+								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
 								}
 							})
 					}
-
 					this.copyToStorage()
-					// e.target.style.background = 'gray';
 				}
 				field.addEventListener("mousemove", _add_OnHover)
 
@@ -115,6 +126,19 @@ var mapCreator = {
 		navigator.clipboard.writeText(
 			localStorage.getItem('map')
 		);
+	},
+	loadMap: (arg) => {
+		// make inverse - load map from file. wip
+		console.log('TEST LOAD MAP , ', arg)
+		if(byId('mapForLoad').files.length == 1) {
+			console.log("File selected: ", byId('mapForLoad').files[0]);
+			var reader = new FileReader();
+			reader.readAsText(byId('mapForLoad').files[0], "UTF-8");
+			reader.onload = function(evt) {
+				console.log(evt.target.result)
+			}
+			reader.onerror = function(err) {console.log(err)}
+		}
 	}
 };
 window.mapCreator = mapCreator;

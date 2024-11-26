@@ -17,8 +17,7 @@
 		"build.slot": "browserify projects/matrix-slot/App.js -p esmify > builds/slot.js",
 		"build.web.anatomy": "browserify projects/web-anatomy/App.js -p esmify > builds/web-anatomy.js",
 		"build.all": "npm run build.examples | npm run build.app | npm run build.slot | npm run build.web.anatomy",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"info": "echo \"Matrix engine writen in ECMA6. \n  From begin it was opengles1.1 in future i will find easy procedure for switch 3d context [webgl/webgl2] [shader opengles 3/2/1.1] Enjoy!  \n  Nikola Lukic @zlatnaspirala  \""
+		"info": "echo \"Matrix engine writen in ECMA6. \n  From begin it was opengles1.1. For switch 3d context [webgl/webgl2] [shader opengles 300/2.0/1.1] see readme docs - Enjoy!  \n  Nikola Lukic @zlatnaspirala maximumroulette.com 2024 \""
 	},
 	"repository": {
 		"type": "git",
@@ -48,6 +47,7 @@
 		"pushMatrix",
 		"blender-glmatrix-export",
 		"obj-loader",
+		"obj-sequence",
 		"bvh",
 		"games",
 		"3d-games",
@@ -57,6 +57,7 @@
 		"3d-roulette-real-physics",
 		"web-anatomy",
 		"First-person-shooter",
+		"open-source",
 		"mobile",
 		"android"
 	],
@@ -69,7 +70,7 @@
 	"dependencies": {
 		"audio-commander": "^1.0.3",
 		"fs": "0.0.1-security",
-		"matrix-engine": "^2.0.37",
+		"matrix-engine": "^2.1.1",
 		"matrix-engine-plugins": "0.1.0",
 		"matrix-network": "^1.0.12",
 		"nidza": "^1.2.15",

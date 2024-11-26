@@ -82,9 +82,8 @@ const scriptManager = matrixEngine.utility.scriptManager;
 
 var world;
 var App = matrixEngine.App;
-
-// deplaced
-// matrixEngine.Engine.load_shaders("shaders/shaders.html")
+window.matrixEngine = matrixEngine;
+window.App = App;
 
 const addBtn = document.querySelector(".button1");
 const regularBtn = document.querySelector(".button2");
@@ -113,12 +112,7 @@ function webGLStart() {
   } else {
     console.error("Canvas has not been initialized, contact your programmer...");
   }
-  // Make it global for console easy access.
-  window.App = App;
 }
 
-// Make it global for console easy access.
-window.matrixEngine = matrixEngine;
-var App = matrixEngine.App;
 
 export default App;

@@ -19627,7 +19627,7 @@ _manifest.default.operation.draws.cube = function (object, ray) {
     if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
     var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.z, object.rotation.axis.y);
     object.rotation.axisSystem[0].normalize();
-    var AXIS = vec3.fromValues(object.rotation.axisSystem[0].x.toFixed(2), object.rotation.axisSystem[0].z.toFixed(2), object.rotation.axisSystem[0].y.toFixed(2));
+    var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), parseFloat(object.rotation.axisSystem[0].z.toFixed(2)), parseFloat(object.rotation.axisSystem[0].y.toFixed(2)));
     var MY_ANGLE = 2 * Math.acos(QP.w); // if(radToDeg(object.rotation.angle) > 90) console.log("aNGLE:" + radToDeg(object.rotation.angle) + " VS MY_ANGLE " + radToDeg(MY_ANGLE) + "  axis ++++ " + AXIS)
     // mat4.rotateX(object.mvMatrix, object.mvMatrix, (object.rotation.angle));
     // mat4.rotateY(object.mvMatrix, object.mvMatrix, (object.rotation.angle));
@@ -22669,6 +22669,7 @@ class sphereVertex {
 }
 
 exports.sphereVertex = sphereVertex;
+var S1 = new _utility.SWITCHER();
 
 class customVertex {
   createGeoData(root) {
@@ -22724,13 +22725,19 @@ class customVertex {
         }
       }
     } else if (this.root.custom_type == "cubic") {
-      for (var j = 0; j < 8; j++) {
+      // console.log('??????????not work for now???????????????')
+      for (var j = 0; j < 118; j++) {
         var x = j + 1 * S1.GET();
         var y = 1;
         var z = j + 1;
         this.normalData.push(x);
         this.normalData.push(y);
         this.normalData.push(z);
+        const u = j / root.loops;
+        const loop_angle = u * 2 * Math.PI; // const v = slice / this.root.slices;
+
+        const v = 2 / this.root.slices;
+        const slice_angle = v * 2 * Math.PI;
         this.textureCoordData.push(u);
         this.textureCoordData.push(v);
         this.vertexPositionData.push(this.radius * x);
@@ -22796,6 +22803,50 @@ class customVertex {
           v1 += 1;
           v2 += 1;
         }
+      }
+    } else if (this.root.custom_type == "testConvex") {
+      if (this.root.custom_geometry) {
+        this.indexData = [];
+        console.log('[CUSTOM-GEO][from cannonjs]', this.root.custom_geometry); // try to convert direct from CANNON geometry - can be reused for diff stuff.
+
+        this.root.custom_geometry.vertices.forEach(point => {
+          this.textureCoordData.push(point.x);
+          this.textureCoordData.push(point.y);
+          this.vertexPositionData.push(this.radius * point.x);
+          this.vertexPositionData.push(this.radius * point.y);
+          this.vertexPositionData.push(this.radius * point.z);
+        });
+        this.root.custom_geometry.faceNormals.forEach(point => {
+          this.normalData.push(point.x);
+          this.normalData.push(point.y);
+          this.normalData.push(point.z);
+        });
+        this.root.custom_geometry.faces.forEach(face => {
+          // console.log("FACES", face)
+          face.forEach(f => {
+            this.indexData.push(f);
+          });
+        });
+      }
+    } else if (this.root.custom_type == "testTrimesh") {
+      if (this.root.custom_geometry) {
+        this.indexData = []; // console.log('[CUSTOM-GEO][from cannonjs trimesh]', this.root.custom_geometry)
+        // try to convert direct from CANNON geometry - can be reused for diff stuff.
+        // FOr trimesh is little dif cannonjs role
+
+        this.vertexPositionData = this.root.custom_geometry.vertices;
+
+        if (this.root.custom_geometry.textureCoordData) {
+          this.textureCoordData = this.root.custom_geometry.textureCoordData;
+        } else {
+          this.root.custom_geometry.vertices.forEach(point => {
+            this.textureCoordData.push(point.x);
+            this.textureCoordData.push(point.y);
+          });
+        }
+
+        this.normalData = this.root.custom_geometry.normals;
+        this.indexData = this.root.custom_geometry.indices;
       }
     }
   }
@@ -28347,7 +28398,18 @@ function defineworld(canvas, renderType) {
           customObject.loops = mesh_.loops;
           customObject.inner_rad = mesh_.inner_rad;
           customObject.outerRad = mesh_.outerRad;
-        }
+        } else if (mesh_.custom_type == 'testConvex' || mesh_.custom_type == 'testTrimesh') {
+          // Little diff for this line 
+          // custom_geometry is geometry prepared for CANNONJS
+          customObject.custom_geometry = mesh_.custom_geometry;
+        } // Trimesh
+        else {
+            // same for now DEFAULT
+            customObject.slices = mesh_.slices;
+            customObject.loops = mesh_.loops;
+            customObject.inner_rad = mesh_.inner_rad;
+            customObject.outerRad = mesh_.outerRad;
+          }
       } else {
         customObject.latitudeBands = 30;
         customObject.longitudeBands = 30;
@@ -28371,7 +28433,7 @@ function defineworld(canvas, renderType) {
         this.contentList[this.contentList.length] = customObject;
         _manifest.default.scene[customObject.name] = customObject;
       } else {
-        console.log("   customObject shader failure");
+        console.log("customObject shader failure");
       }
     }
   };
@@ -40374,27 +40436,27 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map2 = void 0;
 let map2 = {
-  staticCubes: [],
-  staticObjs: [{
-    name: "mapobjs_5_7",
-    path: "res/3d-objects/env/block1.obj",
+  staticCubes: [{
+    name: "wall_gen8_23",
     position: {
-      x: 21,
+      x: 33.6,
       y: 1,
-      z: 29.4
+      z: 96.6
     },
+    scale: [1, 1, 14],
     rotation: {
-      rotx: 45,
+      rotx: 0,
       roty: 0,
-      rotz: 45
+      rotz: 0
     },
-    activeRotation: ["0", "0", "0"],
-    scale: ["1", "1", "1"],
+    activeRotation: [0, 0, 0],
     texture: {
       source: ["res/images/diffuse.png"],
       mix_operation: "multiply"
     }
   }],
+  staticFloors: [],
+  staticObjs: [],
   noPhysics: {
     cubes: []
   }
@@ -40536,7 +40598,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.04; //ori 0.02
+  App.camera.speedAmp = 0.05; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
   App.camera.yawRateOnEdge = 2; //ori 3
@@ -40881,6 +40943,7 @@ var runHang3d = world => {
       App.scene.playerCollisonBox.physics.currentBody = collisionBox;
       App.scene.playerCollisonBox.physics.enabled = true;
       App.scene.playerCollisonBox.physics.currentBody.fixedRotation = true;
+      App.scene.playerCollisonBox.physics.currentBody.updateMassProperties();
       App.scene.playerCollisonBox.geometry.setScale(0.02);
       App.scene.playerCollisonBox.glBlend.blendEnabled = true;
       App.scene.playerCollisonBox.glBlend.blendParamSrc = ENUMERATORS.glBlend.param[0];
@@ -41376,6 +41439,26 @@ var runHang3d = world => {
       }
     }
   }); // Graphics - Damage object test
+  // WORKING
+  // var textuteImageSamplers2 = {
+  // 	source: ["res/bvh-skeletal-base/swat-guy/gun2.png"],
+  // 	mix_operation: "multiply"
+  // };
+  // world.Add("cubeLightTex", 1, "floorAngle", textuteImageSamplers2);
+  // const testCustomBody1 = new CANNON.Body({
+  // 	shape: new CANNON.Box(new CANNON.Vec3(15, 15, 0.1)),
+  // 	type: CANNON.Body.STATIC,
+  // 	position: new CANNON.Vec3(0, 0, 0)
+  // })
+  // testCustomBody1.fixedRotation = true;
+  // testCustomBody1.updateMassProperties();
+  // physics.world.addBody(testCustomBody1);
+  // App.scene.floorAngle.physics.currentBody = testCustomBody1;
+  // App.scene.floorAngle.physics.enabled = true;
+  // App.scene['floorAngle'].geometry.setScaleByX(15);
+  // App.scene['floorAngle'].geometry.setScaleByZ(15);
+  // App.scene['floorAngle'].geometry.setScaleByY(-0.9);
+  // App.scene.floorAngle.physics.currentBody.quaternion.setFromEuler(5 * Math.PI/180,0,0)
   // world.Add("cubeLightTex", 1, "LAVA", tex);
   // var b4 = new CANNON.Body({
   // 	mass: 0,
@@ -41607,7 +41690,7 @@ const meMapLoader = {
         mass: 0,
         linearDamping: 0.01,
         position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
-        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
+        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0], item.scale[2], item.scale[1]))
       });
       physics.world.addBody(b);
       App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
@@ -41620,7 +41703,35 @@ const meMapLoader = {
       App.scene[item.name].physics.currentBody = b;
       App.scene[item.name].physics.enabled = true;
       App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx, item.rotation.rotz, item.rotation.roty);
-    });
+    }); // platform angle
+
+    if (map.staticFloors) map.staticFloors.forEach(item => {
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
+      const b = new CANNON.Body({
+        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0], item.scale[2], 0.1)),
+        type: CANNON.Body.STATIC,
+        position: new CANNON.Vec3(0, 0, 0)
+      });
+      b.fixedRotation = true;
+      b.updateMassProperties();
+      App.scene[item.name].physics.currentBody = b;
+      App.scene[item.name].physics.enabled = true;
+      App.scene[item.name].geometry.setScaleByX(item.scale[0]);
+      App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+      App.scene[item.name].geometry.setScaleByY(-0.9); // App.scene[item.name].physics.currentBody.quaternion.setFromEuler(5 * Math.PI/180,0,0)
+      // shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
+      // App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+      // App.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+      // App.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+      // no active rot for floors
+
+      App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
+      App.scene[item.name].physics.currentBody = b;
+      App.scene[item.name].physics.enabled = true;
+      App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx * Math.PI / 180, 0, 0);
+      physics.world.addBody(b);
+    }); //
+
     if (map.staticObjs) map.staticObjs.forEach(item => {
       // matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
       // App.scene[item.name].geometry.setScaleByX(item.scale[0]);
@@ -41653,7 +41764,6 @@ const meMapLoader = {
       App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
     });
   },
-  // Not work collision - probably too mush overlaping...
   geminiMap: function (numObjects, positionRange, scaleRange) {
     const map = {
       staticCubes: []

@@ -28,7 +28,7 @@
 		<h2>MatrixEngine MapCreator</h2>
 		<div>v1.0.0</div>
 		<div id="createMapDom" style="display: block;">
-			<h2>Size of map:</h2>
+			<p>Size of map:</p>
 			<div>X:<input class="btn" id="sizeX" type="number" value="50" min="10" max="1000" /></div>
 			<div>Y:<input class="btn" id="sizeY" type="number" value="50" min="10" max="1000" /></div>
 
@@ -39,43 +39,44 @@
 
 		<div id="mapDom" style="display: none;">
 			<div>
-				<h2>Layout Y level:</h2>
+				<p>Layout Y level:</p>
 				<div>Y:<input class="btn" id="levelY" type="number" value="1" min="0" max="20" /></div>
 			</div>
 
 			<div>
-				<h2>Scale:</h2>
+				<p>Scale:</p>
 				<div>X:<input class="btn" id="scaleX" type="number" value="1" min="1" max="100" /></div>
 				<div>Y:<input class="btn" id="scaleY" type="number" value="1" min="1" max="100" /></div>
 				<div>Z:<input class="btn" id="scaleZ" type="number" value="1" min="1" max="100" /></div>
 			</div>
 
 			<div>
-				<h2>Rotation:</h2>
+				<p>Rotation:</p>
 				<div>X:<input class="btn" id="rotX" type="number" value="0" min="0" max="360" /></div>
 				<div>Y:<input class="btn" id="rotY" type="number" value="0" min="0" max="360" /></div>
 				<div>Z:<input class="btn" id="rotZ" type="number" value="0" min="0" max="360" /></div>
 			</div>
 
 			<div>
-				<h2>Active Rotation:</h2>
+				<p>Active Rotation:</p>
 				<div>X:<input class="btn" id="arotX" type="number" value="0" min="0" max="100" /></div>
 				<div>Y:<input class="btn" id="arotY" type="number" value="0" min="0" max="100" /></div>
 				<div>Z:<input class="btn" id="arotZ" type="number" value="0" min="0" max="100" /></div>
 			</div>
 
 			<div>
-				<h2>Type of item:</h2>
+				<p>Type of item:</p>
 				<select class="selecteElement" id="tinput">
 					<option class="btnOpt">ME Cube</option>
 					<option class="btnOpt">NOPHYSICS Cube</option>
+					<option class="btnOpt">Static Floor</option>
 					<option class="btnOpt">res/3d-objects/env/rock1.obj</option>
 					<option class="btnOpt">res/3d-objects/env/block1.obj</option>
 				</select>
 			</div>
 
 			<div>
-				<h2>Texture:</h2>
+				<p>Texture:</p>
 				<select class="selecteElement" id="texinput">
 					<option class="btnOpt">res/images/diffuse.png</option>
 					<option class="btnOpt">res/images/n-stone.png</option>
@@ -86,6 +87,10 @@
 			<div>
 				<button class="btn" onclick="mapCreator.clear()">Clear Map</button>
 				<button class="btn" onclick="mapCreator.copyMap()">Copy Map</button>
+				<div>
+					<p>Select & open map from file</p>
+					<input id="mapForLoad" type="file" onchange="mapCreator.loadMap(this)"/>
+				</div>
 			</div>
 		</div>
 

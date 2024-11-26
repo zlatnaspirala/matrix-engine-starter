@@ -74,11 +74,14 @@ var _active_editor = require("./apps/active_editor");
 
 var _basic_fbo = require("./apps/basic_fbo");
 
+var _fbo_manipulation = require("./apps/fbo_manipulation");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var Examples = {
+  fbo_manipulation: _fbo_manipulation.runThis,
   active_editor: _active_editor.runThis,
   basic_fbo: _basic_fbo.runThis,
   physics_sphere: _physics_sphere.runThis,
@@ -121,9 +124,9 @@ var Examples = {
 const QueryString = matrixEngine.utility.QueryString;
 const scriptManager = matrixEngine.utility.scriptManager;
 var world;
-var App = matrixEngine.App; // deplaced
-// matrixEngine.Engine.load_shaders("shaders/shaders.html")
-
+var App = matrixEngine.App;
+window.matrixEngine = matrixEngine;
+window.App = App;
 const addBtn = document.querySelector(".button1");
 const regularBtn = document.querySelector(".button2");
 addBtn.style.display = "none";
@@ -153,19 +156,13 @@ function webGLStart() {
     }
   } else {
     console.error("Canvas has not been initialized, contact your programmer...");
-  } // Make it global for console easy access.
+  }
+}
 
-
-  window.App = App;
-} // Make it global for console easy access.
-
-
-window.matrixEngine = matrixEngine;
-var App = matrixEngine.App;
 var _default = App;
 exports.default = _default;
 
-},{"./apps/active_editor":2,"./apps/adding_color_cube":3,"./apps/adding_color_piramyde":4,"./apps/adding_color_square":5,"./apps/adding_color_square_raycast":6,"./apps/adding_color_triangle":7,"./apps/adding_more_texture_samplers":8,"./apps/adding_square_texture":9,"./apps/all_variant_of_blending":10,"./apps/audio_manipulation":11,"./apps/basic_fbo":12,"./apps/camera_texture":13,"./apps/cube_experimental":14,"./apps/cube_geometry":15,"./apps/cube_light_and_texture":16,"./apps/cube_light_dinamic":17,"./apps/cube_tex_arrays":18,"./apps/custom_texture":19,"./apps/first_person_controller":20,"./apps/load_obj_file":21,"./apps/my_world":22,"./apps/obj_animation":23,"./apps/obj_animation_build_mesh_effect":24,"./apps/one-kilo":25,"./apps/physics_cube":26,"./apps/physics_sphere":27,"./apps/porting2d":28,"./apps/porting2d_particle":29,"./apps/porting2d_text":30,"./apps/sphere_geometry":31,"./apps/spot_light_basic":32,"./apps/texture_dinamic_manipulation":33,"./apps/video_texture":34,"matrix-engine":42}],2:[function(require,module,exports){
+},{"./apps/active_editor":2,"./apps/adding_color_cube":3,"./apps/adding_color_piramyde":4,"./apps/adding_color_square":5,"./apps/adding_color_square_raycast":6,"./apps/adding_color_triangle":7,"./apps/adding_more_texture_samplers":8,"./apps/adding_square_texture":9,"./apps/all_variant_of_blending":10,"./apps/audio_manipulation":11,"./apps/basic_fbo":12,"./apps/camera_texture":13,"./apps/cube_experimental":14,"./apps/cube_geometry":15,"./apps/cube_light_and_texture":16,"./apps/cube_light_dinamic":17,"./apps/cube_tex_arrays":18,"./apps/custom_texture":19,"./apps/fbo_manipulation":20,"./apps/first_person_controller":21,"./apps/load_obj_file":22,"./apps/my_world":23,"./apps/obj_animation":24,"./apps/obj_animation_build_mesh_effect":25,"./apps/one-kilo":26,"./apps/physics_cube":27,"./apps/physics_sphere":28,"./apps/porting2d":29,"./apps/porting2d_particle":30,"./apps/porting2d_text":31,"./apps/sphere_geometry":32,"./apps/spot_light_basic":33,"./apps/texture_dinamic_manipulation":34,"./apps/video_texture":35,"matrix-engine":43}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -302,7 +299,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{"cannon":39}],3:[function(require,module,exports){
+},{"cannon":40}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1012,6 +1009,154 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.runThis = void 0;
 
+/**
+ *@Author Nikola Lukic
+ *@Description Matrix Engine Api Example
+  @name MultiFBO
+ */
+var runThis = matrixEngine => {
+  let world = matrixEngine.matrixWorld.world;
+  let App = matrixEngine.App; // Camera
+
+  App.camera.SceneController = true; // Image texs
+
+  var tex = {
+    source: ["res/images/complex_texture_1/diffuse.png"],
+    mix_operation: "multiply",
+    params: {
+      TEXTURE_MAG_FILTER: world.GL.gl.NEAREST,
+      TEXTURE_MIN_FILTER: world.GL.gl.NEAREST
+    }
+  }; // world.Add("cubeLightTex", 0.2, "myCube", tex);
+  // App.scene.myCube.position.SetZ(-9);
+  // App.scene.myCube.position.SetX(1);
+  // App.scene.myCube.position.SetY(0.6);
+  // App.scene.myCube.activateShadows('spot');
+
+  var textuteImageSamplers2 = {
+    source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png", "res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png"],
+    mix_operation: "multiply"
+  }; // Load obj seq animation
+
+  const createObjSequence = objName => {
+    function onLoadObj(meshes) {
+      App.meshes = meshes;
+
+      for (let key in meshes) {
+        matrixEngine.objLoader.initMeshBuffers(world.GL.gl, meshes[key]);
+      }
+
+      var textuteImageSamplers2 = {
+        source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.png"],
+        mix_operation: "multiply",
+        // ENUM : multiply , divide
+        params: {
+          TEXTURE_MAG_FILTER: world.GL.gl.NEAREST,
+          TEXTURE_MIN_FILTER: world.GL.gl.NEAREST
+        }
+      };
+      setTimeout(function () {
+        var animArg = {
+          id: objName,
+          meshList: meshes,
+          // sumOfAniFrames: 61, No need if `animations` exist!
+          currentAni: 0,
+          // speed: 3, No need if `animations` exist!
+          // upgrade - optimal
+          animations: {
+            active: 'walk',
+            walk: {
+              from: 0,
+              to: 35,
+              speed: 3
+            },
+            walkPistol: {
+              from: 36,
+              to: 60,
+              speed: 3
+            }
+          }
+        };
+        world.Add("obj", 1, objName, textuteImageSamplers2, meshes[objName], animArg);
+        App.scene[objName].position.y = -1;
+        App.scene[objName].position.z = -2;
+        App.scene[objName].rotation.rotationSpeed.y = 50;
+      }, 1);
+    }
+
+    matrixEngine.objLoader.downloadMeshes(matrixEngine.objLoader.makeObjSeqArg({
+      id: objName,
+      path: "res/bvh-skeletal-base/swat-guy/anims/swat-multi",
+      from: 1,
+      to: 61
+    }), onLoadObj);
+  };
+
+  createObjSequence('player'); // FBO BASIC
+
+  world.Add("cubeLightTex", 2.5, "myMirror", tex);
+  App.scene.myMirror.position.SetZ(-15);
+  App.scene.myMirror.position.SetX(-3);
+  App.scene.myMirror.position.SetY(2.5);
+  App.scene.myMirror.rotation.rotz = 90;
+  App.scene.myMirror.setFBO({
+    cameraX: 0,
+    cameraY: 0,
+    cameraZ: 5,
+    pitch: 12,
+    yaw: 0
+  }); // Easy manipilation
+  // App.scene.myMirror.FBO.settings.cameraX = 0
+
+  world.Add("cubeLightTex", 2.5, "myMirrorUP", tex);
+  App.scene.myMirrorUP.position.SetZ(-15);
+  App.scene.myMirrorUP.position.SetX(3);
+  App.scene.myMirrorUP.position.SetY(2.5);
+  App.scene.myMirrorUP.rotation.rotz = 90;
+  App.scene.myMirrorUP.setFBO({
+    cameraX: 0,
+    cameraY: 0,
+    cameraZ: 2,
+    pitch: 0,
+    yaw: 1
+  }); // world.Add("cubeLightTex", 2.5, "myMirrorBottom", tex);
+  // App.scene.myMirrorBottom.position.SetZ(-15);
+  // App.scene.myMirrorBottom.position.SetX(3);
+  // App.scene.myMirrorBottom.position.SetY(-2.5);
+  // App.scene.myMirrorBottom.rotation.rotz = 90
+  // App.scene.myMirrorBottom.setFBO({
+  //   cameraX: 0,
+  //   cameraY: 0,
+  //   cameraZ: 2,
+  //   pitch: 0,
+  //   yaw: 1
+  // });
+  // App.scene.myMirror.rotation.rotationSpeed.z = 10;
+  // App.scene.myMirrorBottom.activateShadows();
+  // TEST ALSO ANIMATIONLINE
+  // matrixEngine.matrixWorld.world.useAnimationLine({sequenceSize: 500});
+  // Click event
+
+  canvas.addEventListener('mousedown', ev => {
+    matrixEngine.raycaster.checkingProcedure(ev);
+  });
+  addEventListener("ray.hit.event", function (e) {
+    e.detail.hitObject.LightsData.ambientLight.r = matrixEngine.utility.randomFloatFromTo(0, 2);
+    e.detail.hitObject.LightsData.ambientLight.g = matrixEngine.utility.randomFloatFromTo(0, 2);
+    e.detail.hitObject.LightsData.ambientLight.b = matrixEngine.utility.randomFloatFromTo(0, 2); // console.info(e.detail);
+  });
+};
+
+exports.runThis = runThis;
+
+},{}],21:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.runThis = void 0;
+
 /* eslint-disable no-unused-vars */
 
 /**
@@ -1086,7 +1231,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1142,7 +1287,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1353,7 +1498,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1447,7 +1592,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1576,7 +1721,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1760,7 +1905,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1842,7 +1987,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{"cannon":39}],27:[function(require,module,exports){
+},{"cannon":40}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1903,7 +2048,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{"cannon":39}],28:[function(require,module,exports){
+},{"cannon":40}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1949,7 +2094,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1992,7 +2137,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2035,7 +2180,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2061,7 +2206,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2236,7 +2381,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2299,7 +2444,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2336,7 +2481,7 @@ var runThis = matrixEngine => {
 
 exports.runThis = runThis;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -2488,7 +2633,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -4269,7 +4414,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":35,"buffer":36,"ieee754":40}],37:[function(require,module,exports){
+},{"base64-js":36,"buffer":37,"ieee754":41}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4282,7 +4427,7 @@ var _bvhLoader = require("./module/bvh-loader");
 var _default = _bvhLoader.MEBvh;
 exports.default = _default;
 
-},{"./module/bvh-loader":38}],38:[function(require,module,exports){
+},{"./module/bvh-loader":39}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4995,7 +5140,7 @@ class MEBvh {
 
 exports.MEBvh = MEBvh;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (global){(function (){
 /*
  * Copyright (c) 2015 cannon.js Authors
@@ -18685,7 +18830,7 @@ World.prototype.clearForces = function(){
 (2)
 });
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -18772,7 +18917,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18809,11 +18954,14 @@ class ClientConfig {
    * disable (false) you can't use Account system or any other
    * network. Use 'false' if you wanna make single player game.
    * In other way keep it 'true'.
+   * 
+   * @note [OLD]
    */
 
-  showBroadcasterOnInt = true;
+  showBroadcasterOnInt = false;
   /**
    * networkDeepLogs control of dev logs for webRTC context only.
+   *  @note [OLD]
    */
 
   networkDeepLogs = false;
@@ -18826,29 +18974,30 @@ class ClientConfig {
   /**
    * @description
    * runBroadcasterOnInt load broadcaster
+   * 
+   * 	 * @note [OLD]
+   * 
    */
 
-  runBroadcasterOnInt = true;
-  broadcastAutoConnect = true;
+  runBroadcasterOnInt = false;
+  broadcastAutoConnect = false;
   /**
    * @description
    * broadcasterPort Port used to connect multimedia server MultiRTC3.
    * I will use it for explicit video chat multiplatform support.
-   * Default value is 9001
+   * Default value is 999
+   * 
+   * @note [OLD]
+   * 
    */
 
-  broadcasterPort = 9001;
-  /**
-   * @description
-   * broadcaster socket.io address.
-   * Change it for production regime
-   */
-
-  broadcastAutoConnect = false;
+  broadcasterPort = 999;
   /**
    * @description
    * broadcaster rtc session init values.
    * Change it for production regime
+   * 
+   * @note [OLD]
    */
 
   broadcasterSessionDefaults = {
@@ -18862,9 +19011,22 @@ class ClientConfig {
    * Optimal for dev stage.
    * read more about webRtc protocols.
    * Recommended: coturn open source project.
+   * 
+   * @note [OLD]
+   * When you run your OV there is coturn already fixed.
    */
 
   stunList = ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun.l.google.com:19302?transport=udp"];
+  /**
+   * New networking platform
+   * Based on kurento/Ov media server
+   */
+
+  networking2 = {
+    active: true,
+    domain: 'maximumroulette.com',
+    port: 2020
+  };
   /**
    * @description
    * constructor will save interest data for game platform
@@ -18894,11 +19056,8 @@ class ClientConfig {
     return this.getProtocolFromAddressBar() + this.getDomain() + ":" + this.broadcasterPort + "/";
   }
 
-  getCoordinatorSockRoute() {
-    return this.getProtocolFromAddressBar() + this.getDomain() + ":" + this.rtcServerPort + "/";
-  }
-
   getDomain() {
+    // localhost vs prodc domain not works CORS not equal!
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
       return window.location.hostname;
     }
@@ -18926,21 +19085,14 @@ class ClientConfig {
     return location.protocol === "https:" ? "https://" : "http://";
   }
 
-  getRemoteServerAddress() {
-    return (location.protocol === "https:" ? "wss" : "ws") + "://" + document.domain + ":" + this.rtcServerPort + "/";
-  }
-
-  getRemoteServerAddressControlller() {
-    return (location.protocol === "https:" ? "wss" : "ws") + "://" + document.domain + ":" + this.getConnectorPort() + "/";
-  }
-
   setNetworkDeepLog(newState) {
     this.networkDeepLogs = newState;
   }
 
   getNetworkDeepLog() {
     return this.networkDeepLogs;
-  }
+  } // Used for both net variant
+
 
   getMasterServerKey() {
     return this.masterServerKey;
@@ -18951,7 +19103,7 @@ class ClientConfig {
 var _default = ClientConfig;
 exports.default = _default;
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18979,6 +19131,30 @@ Object.defineProperty(exports, "MEBvhAnimation", {
   enumerable: true,
   get: function () {
     return _matrixBvh.default;
+  }
+});
+Object.defineProperty(exports, "standardMEShaderDrawer", {
+  enumerable: true,
+  get: function () {
+    return _buildinShaders.standardMEShaderDrawer;
+  }
+});
+Object.defineProperty(exports, "toyShaderHeader", {
+  enumerable: true,
+  get: function () {
+    return _buildinShaders.toyShaderHeader;
+  }
+});
+Object.defineProperty(exports, "freeShadersToy", {
+  enumerable: true,
+  get: function () {
+    return _buildinShaders.freeShadersToy;
+  }
+});
+Object.defineProperty(exports, "defineShader", {
+  enumerable: true,
+  get: function () {
+    return _buildinMyShaders.defineShader;
   }
 });
 exports.raycaster = exports.utility = exports.objLoader = exports.Events = exports.Engine = exports.matrixRender = exports.matrixGeometry = exports.matrixWorld = void 0;
@@ -19023,13 +19199,17 @@ exports.raycaster = raycaster;
 
 var _matrixBvh = _interopRequireDefault(require("./lib/matrix-bvh"));
 
+var _buildinShaders = require("./lib/optimizer/buildin-shaders");
+
+var _buildinMyShaders = require("./lib/optimizer/buildin-my-shaders");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":43,"./lib/events":44,"./lib/loader-obj":45,"./lib/matrix-buffers":46,"./lib/matrix-bvh":47,"./lib/matrix-geometry":49,"./lib/matrix-render":51,"./lib/matrix-textures":55,"./lib/matrix-world":56,"./lib/raycast":59,"./lib/utility":65,"./program/manifest":67}],43:[function(require,module,exports){
+},{"./lib/engine":44,"./lib/events":45,"./lib/loader-obj":46,"./lib/matrix-buffers":47,"./lib/matrix-bvh":48,"./lib/matrix-geometry":50,"./lib/matrix-render":53,"./lib/matrix-textures":58,"./lib/matrix-world":59,"./lib/optimizer/buildin-my-shaders":61,"./lib/optimizer/buildin-shaders":62,"./lib/raycast":65,"./lib/utility":71,"./program/manifest":75}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19055,7 +19235,8 @@ exports.VIDEO_TEXTURE = VIDEO_TEXTURE;
 exports.VT = VT;
 exports.Vjs3 = Vjs3;
 exports.anyCanvas = anyCanvas;
-exports.webcamError = exports.RegenerateCustomShader = exports.RegenerateCubeMapShader = exports.RegenerateShader = exports.activateNet = exports.net = exports.looper = exports.updateFrames = exports.updateTime = exports.totalTime = exports.lastTime = exports.ht = exports.wd = void 0;
+exports.DOM_VT = DOM_VT;
+exports.webcamError = exports.RegenerateCustomShader = exports.RegenerateCubeMapShader = exports.RegenerateShader = exports.activateNet2 = exports.activateNet = exports.looper = exports.net = exports.updateFrames = exports.updateTime = exports.totalTime = exports.lastTime = exports.ht = exports.wd = void 0;
 
 var _net = require("./net");
 
@@ -19071,30 +19252,41 @@ var _matrixRender = require("./matrix-render");
 
 var _matrixWorld = require("./matrix-world");
 
-var _matrixShaders = require("./matrix-shaders");
+var _matrixShaders = require("./matrix-shaders3");
+
+var _matrixShaders2 = require("./matrix-shaders1");
 
 var _clientConfig = _interopRequireDefault(require("../client-config"));
 
 var _sounds = require("./sounds");
 
+var _app = require("../networking2/app");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* eslint-disable no-undef */
+if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
+  _manifest.default.offScreenCanvas = true;
+  console.log('[matrix-engine] offScreenCanvas activated =>', _manifest.default.offScreenCanvas);
 
-/* eslint-disable no-unused-vars */
+  _utility.scriptManager.LOAD('./hacker-timer/hack-timer.js');
+} else {
+  _manifest.default.offScreenCanvas = false;
+}
+
 var wd = 0,
     ht = 0,
     lastTime = 0,
     totalTime = 0,
     updateTime = 0,
-    updateFrames = 0; // export let EVENTS_INSTANCE = null;
-
+    updateFrames = 0;
 exports.updateFrames = updateFrames;
 exports.updateTime = updateTime;
 exports.totalTime = totalTime;
 exports.lastTime = lastTime;
 exports.ht = ht;
 exports.wd = wd;
+let net = null;
+exports.net = net;
 let looper = 0;
 exports.looper = looper;
 
@@ -19112,24 +19304,59 @@ function resizeView() {
   }
 }
 
-let net = null;
-exports.net = net;
+let activateNet = CustomConfig => {
+  if (typeof _manifest.default.net !== 'undefined' && _manifest.default.net === true) {
+    if (typeof CustomConfig !== 'undefined') {
+      var t = new CustomConfig();
+    } else {
+      var t = new _clientConfig.default();
+    }
 
-let activateNet = () => {
-  if (typeof _manifest.default.net !== 'undefinde' && _manifest.default.net === true) {
-    var t = new _clientConfig.default();
     exports.net = net = new _net.Broadcaster(t);
+    _manifest.default.network = net;
     console.info('Networking is active.', net);
   }
 };
 
 exports.activateNet = activateNet;
 
+let activateNet2 = (CustomConfig, sessionOption) => {
+  if (typeof _manifest.default.net !== 'undefined' && _manifest.default.net === true) {
+    if (typeof CustomConfig !== 'undefined') {
+      var t = new CustomConfig();
+    } else {
+      var t = new _clientConfig.default();
+    } // -----------------------
+    // Make run
+    // -----------------------
+
+
+    if (typeof sessionOption === 'undefined') {
+      sessionOption.sessionName = 'matrix-engine-random';
+      sessionOption.resolution = '160x240';
+    }
+
+    exports.net = net = new _app.MatrixStream({
+      domain: t.networking2.domain,
+      port: t.networking2.port,
+      sessionName: sessionOption.sessionName,
+      resolution: sessionOption.resolution
+    });
+    addEventListener(`onTitle`, e => {
+      document.title = e.detail;
+    }); // remove at the end
+
+    window.matrixStream = net;
+    console.info(`%c Networking2 params: ${t.networking2}`, _matrixWorld.CS3);
+  }
+};
+
+exports.activateNet2 = activateNet2;
+
 function initApp(callback) {
-  /* Calculate Width and Height before rendering */
   resizeView();
   drawCanvas();
-  window.canvas = document.getElementById('canvas');
+  _manifest.default.canvas = document.getElementById('canvas');
 
   if (_manifest.default.events == true) {
     _manifest.default.events = new _events.EVENTS((0, _utility.E)('canvas'));
@@ -19140,7 +19367,6 @@ function initApp(callback) {
   }
 
   if (typeof callback !== 'undefined') {
-    // E('canvas').webGLStartCallBack = callback;
     window.webGLStartCallBack = callback;
     callback();
   }
@@ -19162,7 +19388,7 @@ async function load_shaders(href) {
         resolve();
       } else {
         reject();
-        console.warn('Something went wrong on shaders load procces!');
+        console.warn('Something went wrong on shaders load procces! => ', href);
       }
     }
 
@@ -19176,14 +19402,12 @@ async function load_shaders(href) {
 function loadHtmlPowerAsset(href, callback) {
   function handler() {
     if (this.status == 200 && this.responseText != null) {
-      // Success
       document.getElementById('media-holder').innerHTML = this.responseText;
 
       if (typeof callback !== 'undefined') {
         callback();
       }
-    } else {// something went wrong
-      // console.log("something went wrong on shaders load procces!");
+    } else {// console.log("something went wrong on shaders load procces!");
     }
   }
 
@@ -19195,14 +19419,12 @@ function loadHtmlPowerAsset(href, callback) {
 /**
  * @description
  * WebGL start
- * Base environment property for totality of WEBGL 
+ * Base environment property for totality of WEBGL.
  */
 
 
 function defineWebGLWorld(cavnas) {
-  // console.log("Define the WEBGL base pocket");
   var world = new Object();
-  /* Constructor for a particular GL environment */
 
   try {
     var gl = _webglUtils.WebGLUtils.setupWebGL(canvas);
@@ -19214,9 +19436,9 @@ function defineWebGLWorld(cavnas) {
     const test_depth_texture = gl.getExtension('WEBGL_depth_texture');
 
     if (!test_depth_texture) {// console.warn('No support for WEBGL_depth_texture [opengles1.1] !', ext);
-    }
+    } // console.info("WEBGL base pocket: SUCCESS , Lets see list of ext : ", available_extensions);
 
-    console.info("WEBGL base pocket: SUCCESS , Lets see list of ext : ", available_extensions);
+
     const extTFAnisotropic = gl.getExtension('EXT_texture_filter_anisotropic') || gl.getExtension('MOZ_EXT_texture_filter_anisotropic') || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
 
     if (extTFAnisotropic) {
@@ -19226,7 +19448,6 @@ function defineWebGLWorld(cavnas) {
       world.extTFAnisotropic = extTFAnisotropic;
     }
   } catch (e) {
-    /* Exception: Could not initialise WebGL     */
     console.error("Exception in WEBGL base pocket: " + e);
   }
   /* Destructor */
@@ -19238,17 +19459,14 @@ function defineWebGLWorld(cavnas) {
   };
 
   return world;
-} // Update the frame rate FPS counter
-
+}
 
 function updateFPS(elements) {
-  // console.log(" Update FPS");
   var now = new Date().getTime();
   var delta = now - lastTime;
   exports.lastTime = lastTime = now;
   exports.totalTime = totalTime = totalTime + delta;
-  exports.updateTime = updateTime = updateTime + delta; // eslint-disable-next-line no-global-assign
-
+  exports.updateTime = updateTime = updateTime + delta;
   (0, _matrixWorld.modifyFrames)(_matrixWorld.frames + 1);
   exports.updateFrames = updateFrames = updateFrames + 1;
 
@@ -19260,15 +19478,12 @@ function updateFPS(elements) {
 }
 
 function drawCanvas() {
-  // console.log("Init the canvas...");
   var canvas = document.createElement('canvas');
   canvas.id = 'canvas';
 
   if (_manifest.default.resize.canvas == 'full-screen') {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    _events.SYS.DEBUG.LOG('SYS: fullscreen diametric resize is active. ');
   } else {
     canvas.width = window.innerHeight * _manifest.default.resize.aspectRatio;
     canvas.height = window.innerHeight;
@@ -19277,18 +19492,16 @@ function drawCanvas() {
   }
 
   document.body.append(canvas);
-}
-/* Degree to Radian converter */
+} // Degree to Radian converter
 
 
 function degToRad(degrees) {
   return degrees * Math.PI / 180;
 }
-/* One time initiation of FPS to store initial time */
 
+; // One time initiation of FPS to store initial time 
 
 function initiateFPS() {
-  // console.log("    Initiate FPS");
   exports.lastTime = lastTime = new Date().getTime();
 } // Help the browser Garbage collect
 
@@ -19303,10 +19516,6 @@ window.cancelRequestAnimFrame = function () {
 
 
 function onExit() {
-  /* RIP Mouse object */
-  // mouseLoc.destroy();
-
-  /* RIP Objects */
   exports.looper = looper = 0;
 
   while (looper <= _matrixWorld.objListToDispose.length - 1) {
@@ -19320,8 +19529,6 @@ function onExit() {
 
 _manifest.default.operation.destroyWorld = function () {
   // console.log("Destroy at iteration:" + reDrawID);
-
-  /* Stop the render */
   cancelRequestAnimFrame(_matrixRender.reDrawID);
   delete this.pMatrix;
   delete this.mvMatrixStack;
@@ -19335,13 +19542,11 @@ _manifest.default.operation.destroyWorld = function () {
     /* Dispose the shaders */
 
     if (this.contentList[looper].shaderProgram.fragmentShader) {
-      // console.log("Dispose Fragment Shader");
       this.GL.gl.deleteShader(this.contentList[looper].shaderProgram.fragmentShader);
       delete this.contentList[looper].shaderProgram.fragmentShader;
     }
 
     if (this.contentList[looper].shaderProgram.vertexShader) {
-      // console.log("Dispose Vertex Shader");
       this.GL.gl.deleteShader(this.contentList[looper].shaderProgram.vertexShader);
       delete this.contentList[looper].shaderProgram.vertexShader;
     }
@@ -19349,12 +19554,10 @@ _manifest.default.operation.destroyWorld = function () {
 
 
     if (this.contentList[looper].texture) {
-      // console.log("Dispose Texture");
-      // must be improved Nikola Lukic
       try {
         this.GL.gl.deleteTexture(this.contentList[looper].texture);
       } catch (e) {
-        _events.SYS.DEBUG.WARNING('Problem in destroying function : This is e log : ' + e);
+        console.warn('Problem in destroying function : This is e log : ' + e);
       }
 
       delete this.contentList[looper].texture;
@@ -19363,34 +19566,28 @@ _manifest.default.operation.destroyWorld = function () {
 
 
     if (this.contentList[looper].shaderProgram) {
-      // console.log("Dispose Shader program");
       this.GL.gl.deleteProgram(this.contentList[looper].shaderProgram);
       delete this.contentList[looper].shaderProgram;
     }
     /* Empty the buffers */
-    // console.log(" Dispose buffers");
 
 
     if (this.contentList[looper].vertexPositionBuffer) {
-      // console.log("Dispose Vertex Position Buffer");
       this.GL.gl.deleteBuffer(this.contentList[looper].vertexPositionBuffer);
       delete this.contentList[looper].vertexPositionBuffer;
     }
 
     if (this.contentList[looper].vertexTexCoordBuffer) {
-      // console.log("Dispose Vertex Coordinate Buffer");
       this.GL.gl.deleteBuffer(this.contentList[looper].vertexTexCoordBuffer);
       delete this.contentList[looper].vertexTexCoordBuffer;
     }
 
     if (this.contentList[looper].vertexColorBuffer) {
-      // console.log("Dispose Vertex Color Buffer");
       this.GL.gl.deleteBuffer(this.contentList[looper].vertexColorBuffer);
       delete this.contentList[looper].vertexColorBuffer;
     }
 
     if (this.contentList[looper].vertexIndexBuffer) {
-      // console.log("Dispose Vertex Index Buffer");
       this.GL.gl.deleteBuffer(this.contentList[looper].vertexIndexBuffer);
       delete this.contentList[looper].vertexIndexBuffer;
     }
@@ -19403,20 +19600,11 @@ _manifest.default.operation.destroyWorld = function () {
 
   this.contentList.length = 0;
   this.GL.destroy();
-
-  _events.SYS.DEBUG.WARNING('exit');
-
   delete this;
 };
-/**
- * @description
- * LOAD SHADERS DYNAMIC
- */
-
 
 function loadShaders(gl, id) {
-  // console.log("          Get the Shader");
-  // console.log("            Creating Shader:" + id);
+  // console.log("Creating Shader:" + id);
   var shaderScript = document.getElementById(id);
   var shader;
   var str = '';
@@ -19446,14 +19634,14 @@ function loadShaders(gl, id) {
     gl.compileShader(shader);
 
     if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      // console.log("Shader Program compile success");
       return shader;
     } else {
       console.warn('Shader Program compile failed:' + gl.getShaderInfoLog(shader));
+      console.warn('Shader Program name :' + id);
       return 0;
     }
   } else {
-    console.warn('Shader Program creation failed');
+    console.warn('Shader Program creation failed', gl.getShaderInfoLog(shader));
     return 0;
   }
 }
@@ -19474,7 +19662,6 @@ function initShaders(gl, fragment, vertex) {
     gl.linkProgram(shaderProgram);
 
     if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-      // console.log("Returning Shader fragment successfully");
       gl.useProgram(shaderProgram);
       shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
       gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
@@ -19596,9 +19783,7 @@ function initShaders(gl, fragment, vertex) {
 
       if (null !== gl.getUniformLocation(shaderProgram, 'u_bias')) {
         shaderProgram.u_bias = gl.getUniformLocation(shaderProgram, 'u_bias');
-      } // 
-      //
-      // 1.8.4 cubeMap
+      } // 1.8.4 cubeMap
 
 
       if (null !== gl.getUniformLocation(shaderProgram, 'u_texture')) {
@@ -19623,6 +19808,20 @@ function initShaders(gl, fragment, vertex) {
         shaderProgram.uControl = gl.getUniformLocation(shaderProgram, 'uControl');
       }
 
+      if (null !== gl.getUniformLocation(shaderProgram, 'iResolution')) {
+        // toy adaptatino iResolution indicator
+        shaderProgram.positionAttributeLocation = gl.getAttribLocation(shaderProgram, "a_position");
+        shaderProgram.resolutionLocation = gl.getUniformLocation(shaderProgram, "iResolution");
+        shaderProgram.mouseLocation = gl.getUniformLocation(shaderProgram, "iMouse");
+        shaderProgram.timeLocation = gl.getUniformLocation(shaderProgram, "iTime");
+      } else {// console.log('adaptation initshaders for toyshaders. UNDEFINED')
+      } // matrixSkyRad
+
+
+      if (null !== gl.getUniformLocation(shaderProgram, 'matrixSkyRad')) {
+        shaderProgram.matrixSkyRad = gl.getUniformLocation(shaderProgram, "matrixSkyRad");
+      }
+
       shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, 'uPMatrix');
       shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, 'uMVMatrix');
       /* For destroying properly            */
@@ -19631,11 +19830,11 @@ function initShaders(gl, fragment, vertex) {
       shaderProgram.vertexShader = vertexShader;
       return shaderProgram;
     } else {
-      console.warn('Returning Shader fragment failed!');
+      console.warn('Returning Shader fragment failed! \n ', gl.getProgramInfoLog(shaderProgram));
       return 0;
     }
   }
-} // END OF SHADERS DYNAMIC
+} // END OF SHADERS
 // MATRIX OPETARION
 
 
@@ -19656,8 +19855,7 @@ _manifest.default.operation.POP_MATRIX = function (mvMatrix, mvMatrixStack) {
 _manifest.default.operation.SET_MATRIX_UNIFORMS = function (object, pMatrix) {
   this.GL.gl.uniformMatrix4fv(object.shaderProgram.pMatrixUniform, false, pMatrix);
   this.GL.gl.uniformMatrix4fv(object.shaderProgram.mvMatrixUniform, false, object.mvMatrix);
-}; // Modify shaders in runtime.
-
+};
 
 var RegenerateShader = function (id_elem, numOfSamplerInUse, mixOperand, lightType) {
   var e = document.getElementById(id_elem);
@@ -19668,15 +19866,14 @@ var RegenerateShader = function (id_elem, numOfSamplerInUse, mixOperand, lightTy
     mixOperand = 1;
   }
 
-  if (typeof lightType !== 'undefined') {
-    console.log('shader version: 300 ', lightType);
+  if (_manifest.default.openglesShaderVersion == 1.3) {
+    // console.log('RegenerateShader 300 => ', lightType)
     e.innerHTML = (0, _matrixShaders.generateShaderSrc3)(numOfSamplerInUse, mixOperand, lightType);
   } else {
-    console.warn('shader version: 2 ', lightType);
-    e.innerHTML = (0, _matrixShaders.generateShaderSrc)(numOfSamplerInUse, mixOperand);
+    // console.warn('RegenerateShader 2 => ', lightType)
+    e.innerHTML = (0, _matrixShaders2.generateShaderSrc)(numOfSamplerInUse, mixOperand, lightType);
   }
-}; // Modify shaders in runtime.
-
+};
 
 exports.RegenerateShader = RegenerateShader;
 
@@ -19689,22 +19886,12 @@ var RegenerateCubeMapShader = function (id_elem, numOfSamplerInUse, mixOperand, 
     mixOperand = 1;
   }
 
-  if (typeof lightType !== 'undefined') {
-    e.innerHTML = (0, _matrixShaders.generateCubeMapShaderSrc)(numOfSamplerInUse, mixOperand, lightType);
+  if (_manifest.default.openglesShaderVersion == 1.3) {
+    e.innerHTML = (0, _matrixShaders.generateCubeMapShaderSrc3)(numOfSamplerInUse, mixOperand, lightType);
   } else {
-    e.innerHTML = (0, _matrixShaders.generateCubeMapShaderSrc)(numOfSamplerInUse, mixOperand);
+    e.innerHTML = (0, _matrixShaders2.generateCubeMapShaderSrc1)(numOfSamplerInUse, mixOperand);
   }
-}; // Not active
-// export var RegenerateShaderSimpleDirectionLight = function (id_elem) {
-//   var e = document.getElementById(id_elem);
-//   e.innerHTML = generateShaderSimpleDirection();
-// };
-// // Not active
-// export var RegenerateVShaderSimpleDirectionLight = function (id_elem) {
-//   var e = document.getElementById(id_elem);
-//   e.innerHTML = generateVShaderSimpleDirectionLight();
-// };
-
+};
 
 exports.RegenerateCubeMapShader = RegenerateCubeMapShader;
 
@@ -19718,7 +19905,8 @@ var RegenerateCustomShader = function (id_elem, numOfSamplerInUse, mixOperand, c
   }
 
   e.innerHTML = (0, _matrixShaders.generateCustomShaderSrc)(numOfSamplerInUse, mixOperand, code_);
-};
+}; // Streams stuff
+
 
 exports.RegenerateCustomShader = RegenerateCustomShader;
 
@@ -19729,35 +19917,48 @@ var webcamError = function (e) {
 exports.webcamError = webcamError;
 
 function SET_STREAM(video) {
-  if (navigator.getUserMedia) {
-    navigator.getUserMedia({
-      audio: true,
-      video: true
-    }, function (stream) {
-      try {
-        video.srcObject = stream;
-      } catch (error) {
-        video.src = window.URL.createObjectURL(stream);
-      }
-    }, webcamError);
-  } else if (navigator.webkitGetUserMedia) {
-    navigator.webkitGetUserMedia({
-      audio: true,
-      video: true
-    }, function (stream) {
-      try {
-        video.srcObject = stream;
-      } catch (error) {
-        video.src = window.URL.createObjectURL(stream);
-      }
-    }, webcamError);
+  let v;
+
+  if ((0, _utility.isMobile)() == true) {
+    v = true; // {deviceId: {exact: videoSrc}, facingMode: 'user'}
   } else {
-    alert('webcam broken.');
+    v = true;
   }
+
+  navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: v
+  }).then(stream => {
+    try {
+      video.srcObject = stream;
+      console.log('[me][new-gen-device]', stream);
+    } catch (error) {
+      video.src = window.URL.createObjectURL(stream);
+      console.log('[me][old-gen-device]', stream);
+    }
+
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      devices.forEach(device => {
+        if (_manifest.default.printDevicesInfo == true) console.log('device.label :', device.label);
+      });
+    });
+  }).catch(error => {
+    console.log('Error :', error);
+  }); // var videoSrc = null;
+  // function getDevices(deviceInfos) {
+  // 	for(var i = 0;i !== deviceInfos.length;++i) {
+  // 		var deviceInfo = deviceInfos[i];
+  // 		if(deviceInfo.kind === 'videoinput') {
+  // 			videoSrc = deviceInfo.deviceId;
+  // 			break;
+  // 		}
+  // 	}
+  // }
 }
 
 function ACCESS_CAMERA(htmlElement) {
   var ROOT = this;
+  console.log('ACCESS_CAMERA');
   ROOT.video = document.getElementById(htmlElement);
   SET_STREAM(ROOT.video);
   var DIV_CONTENT_STREAMS = document.getElementById('HOLDER_STREAMS');
@@ -19947,13 +20148,15 @@ function anyCanvas(path_, nameOfCanvas) {
     }
 
     ROOT.canvasTexture = ROOT.videoImage.getContext('2d'); // App.scene.outsideBox.streamTextures.iframe.contentWindow.runTextureEditor(nameOfCanvas);
+    // E('HOLDER_STREAMS').style.display = 'block';
 
-    (0, _utility.E)('HOLDER_STREAMS').style.display = 'block';
     ROOT.texture = _manifest.default.tools.loadVideoTexture('glVideoTexture', ROOT.videoImage);
   };
 
   ROOT.showTextureEditor = function () {
-    var T = (0, _utility.E)('HOLDER_STREAMS').style;
+    var T = (0, _utility.E)('HOLDER_STREAMS').style; // fix for ios defoult screen
+
+    (0, _utility.E)('webcam_beta').style.display = 'none';
     T.display = 'block';
     T.left = '0';
   };
@@ -19961,7 +20164,107 @@ function anyCanvas(path_, nameOfCanvas) {
   ROOT.iframe.data = path_;
 }
 
-},{"../client-config":41,"../program/manifest":67,"./events":44,"./matrix-render":51,"./matrix-shaders":52,"./matrix-world":56,"./net":57,"./sounds":64,"./utility":65,"./webgl-utils":66}],44:[function(require,module,exports){
+function DOM_VT(video, name, options) {
+  if (typeof name === 'undefined') name = 'vtex' + (0, _utility.randomIntFromTo)(1, 999999);
+
+  if (typeof options === 'undefined') {
+    options = {
+      mixWithCanvas2d: false
+    };
+  }
+
+  function fixAutoPlay() {
+    console.log("Autoplay fixing...? ", ROOT.video);
+    window.addEventListener('click', FirstClickAutoPlay, {
+      passive: false
+    });
+  }
+
+  function FirstClickAutoPlay() {
+    var t = ROOT.video.play();
+    t.then(() => {
+      console.info("Autoplay fixed.");
+      window.removeEventListener('click', FirstClickAutoPlay);
+    }).catch(() => {
+      console.warn("Autoplay error.");
+    });
+  }
+
+  var ROOT = this;
+  console.log("input ", video);
+  ROOT.video = video;
+
+  let READY = function (e) {
+    ROOT.videoImage = document.createElement('canvas');
+    ROOT.videoImage.id = 'vtex-' + name;
+    ROOT.videoImage.setAttribute('width', '512px');
+    ROOT.videoImage.setAttribute('height', '512px');
+    ROOT.video.mute = true;
+    ROOT.video.autoplay = true;
+    ROOT.video.loop = true; // test maybe
+
+    ROOT.video.crossOrigin = "anonymous";
+    var DIV_CONTENT_STREAMS = document.getElementById('HOLDER_STREAMS');
+    DIV_CONTENT_STREAMS.appendChild(ROOT.videoImage);
+    ROOT.options = options;
+
+    if (options.mixWithCanvas2d == true) {
+      ROOT.videoImageContext = ROOT.videoImage.getContext('2d');
+      ROOT.videoImageContext.fillStyle = '#00003F';
+      ROOT.videoImageContext.fillRect(0, 0, ROOT.videoImage.width, ROOT.videoImage.height);
+      console.log('CCCCCCCC   1');
+      ROOT.texture = _manifest.default.tools.loadVideoTexture('glVideoTexture' + name, ROOT.videoImage);
+    } else {
+      console.log('CCCCCCCC   2'); // must be fixed
+
+      if (typeof ROOT.video.video !== 'undefined') {
+        // new net2
+        ROOT.texture = _manifest.default.tools.loadVideoTexture('glVideoTexture' + name, ROOT.video.video);
+      } else {
+        ROOT.texture = _manifest.default.tools.loadVideoTexture('glVideoTexture' + name, ROOT.video);
+      }
+    }
+
+    try {
+      var testAutoplay = ROOT.video.play();
+      testAutoplay.catch(() => {
+        fixAutoPlay();
+      });
+    } catch (err) {}
+
+    _manifest.default.updateBeforeDraw.push(ROOT);
+
+    console.info("Video 2dcanvas texture created!!!.", ROOT.video);
+  };
+
+  READY();
+
+  if (ROOT.video.addEventListener) {
+    ROOT.video.addEventListener('loadeddata', ROOT.video.READY, false);
+    ROOT.video.load();
+  } else {
+    ROOT.video.video.addEventListener('loadeddata', ROOT.video.READY, false);
+    ROOT.video.video.load();
+  }
+
+  ROOT.UPDATE = function () {
+    if (ROOT.options.mixWithCanvas2d == false) return;
+
+    if (ROOT.video.readyState === ROOT.video.HAVE_ENOUGH_DATA) {
+      ROOT.videoImageContext.drawImage(ROOT.video, 0, 0, ROOT.videoImage.width, ROOT.videoImage.height);
+      ROOT.videoImageContext.font = '30px Georgia';
+      ROOT.videoImageContext.fillStyle = 'black';
+      ROOT.videoImageContext.fillText('Matrix-Engine [1.8.10] ', 0, 85);
+      ROOT.videoImageContext.fillText('Video texture', 20, 50);
+    }
+  };
+
+  return {
+    video: video
+  };
+}
+
+},{"../client-config":42,"../networking2/app":73,"../program/manifest":75,"./events":45,"./matrix-render":53,"./matrix-shaders1":54,"./matrix-shaders3":55,"./matrix-world":59,"./net":60,"./sounds":70,"./utility":71,"./webgl-utils":72}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19979,9 +20282,6 @@ var _utility = require("./utility");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* eslint-disable no-unused-vars */
-
-/* globals LOG App NOMOBILE keyboardPress printLog degToRad mat4 */
 var SYS = {};
 exports.SYS = SYS;
 SYS.MOUSE = {
@@ -19998,12 +20298,14 @@ SYS.MOUSE = {
   ON_MID_BTN_PRESSED: function () {},
   MOUSE_MOVING: false
 };
-SYS.DEBUG = new _utility.LOG();
+SYS.DEBUG = new _utility.LOG(); // from 1.9.44
+
+_manifest.default.sys = SYS;
 
 function EVENTS(canvas) {
-  var ROOT_EVENTS = this; //Mobile device
+  var ROOT_EVENTS = this; // Mobile device
 
-  if (NOMOBILE == 0) {
+  if ((0, _utility.isMobile)() == true) {
     canvas.addEventListener('touchstart', function (e) {
       e.preventDefault();
       var touchList = e.changedTouches;
@@ -20011,6 +20313,8 @@ function EVENTS(canvas) {
       SYS.MOUSE.x = touchList[0].pageX;
       SYS.MOUSE.y = touchList[0].pageY;
       ROOT_EVENTS.CALCULATE_TOUCH_OR_CLICK();
+      ROOT_EVENTS.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN(e, SYS.MOUSE);
+      ROOT_EVENTS.multiTouch(e, touchList);
     }, {
       passive: false
     });
@@ -20041,12 +20345,15 @@ function EVENTS(canvas) {
 
       SYS.MOUSE.x = touchList[0].pageX;
       SYS.MOUSE.y = touchList[0].pageY;
-      ROOT_EVENTS.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE();
+      ROOT_EVENTS.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE({
+        x: touchList[0].pageX,
+        y: touchList[0].pageY
+      });
     }, {
       passive: false
     });
   } else {
-    //Desktop device
+    //D esktop device
     canvas.addEventListener('click', function (e) {
       //SYS.MOUSE.PRESS = true;
       SYS.MOUSE.x = e.layerX;
@@ -20070,7 +20377,10 @@ function EVENTS(canvas) {
       SYS.MOUSE.MOUSE_MOVING = true;
       SYS.MOUSE.x = e.layerX;
       SYS.MOUSE.y = e.layerY;
-      ROOT_EVENTS.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE(e);
+      ROOT_EVENTS.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE({
+        x: e.layerX,
+        y: e.layerY
+      });
     };
 
     canvas.onmousedown = function (e) {
@@ -20098,14 +20408,17 @@ function EVENTS(canvas) {
   }
 
   window.addEventListener('resize', function (e) {
+    if (_manifest.default.resize.canvas == "false" || _manifest.default.resize.canvas == false) {
+      return;
+    }
+
     if (_manifest.default.resize.canvas == "full-screen") {
       //canvas.width =  window.innerHeight * App.resize.aspectRatio;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      SYS.DEBUG.LOG('SYS: fullscreen diametric resize is active. ' + _matrixWorld.world);
+      _manifest.default.canvas.width = window.innerWidth;
+      _manifest.default.canvas.height = window.innerHeight; // SYS.DEBUG.LOG('SYS: fullscreen diametric resize is active. ' + world);
     } else {
-      canvas.width = window.innerHeight * _manifest.default.resize.aspectRatio;
-      canvas.height = window.innerHeight;
+      _manifest.default.canvas.width = window.innerHeight * _manifest.default.resize.aspectRatio;
+      _manifest.default.canvas.height = window.innerHeight;
       SYS.DEBUG.LOG('SYS: aspect ration resize is active. ' + _matrixWorld.world);
     }
 
@@ -20116,8 +20429,13 @@ function EVENTS(canvas) {
     passive: true
   }); // Calculate touch or click event
 
-  this.CALCULATE_TOUCH_OR_CLICK = function () {
-    SYS.DEBUG.LOG('EVENT: MOUSE/TOUCH CLICK');
+  this.CALCULATE_TOUCH_OR_CLICK = function () {// console.log('TEST EVENTS CALCULATE_TOUCH_OR_CLICK')
+    // SYS.DEBUG.LOG('EVENT: MOUSE/TOUCH CLICK');
+  }; // Calculate touch or click event
+
+
+  this.multiTouch = function (e) {
+    SYS.DEBUG.LOG('EVENT: MOUSE/TOUCH CLICK', e);
   };
 
   this.virtualUpDownScene = 0;
@@ -20126,8 +20444,8 @@ function EVENTS(canvas) {
   this.CALCULATE_TOUCH_MOVE_OR_MOUSE_MOVE = function (e) {
     var center_x = window.innerWidth / 2;
     var center_y = window.innerHeight / 2;
-    SYS.MOUSE.x = e.layerX - center_x;
-    SYS.MOUSE.y = e.layerY - center_y; //check to make sure there is data to compare against
+    SYS.MOUSE.x = e.x - center_x;
+    SYS.MOUSE.y = e.y - center_y; //check to make sure there is data to compare against
 
     if (typeof SYS.MOUSE.LAST_POSITION.x != 'undefined') {
       //get the change from last position to this position
@@ -20141,13 +20459,15 @@ function EVENTS(canvas) {
       camera.yawRate += deltaX * 1;
 
       if (SYS.MOUSE.x < _manifest.default.camera.edgeMarginValue - center_x) {
-        _manifest.default.camera.leftEdge = true; // SYS.DEBUG.LOG(" mouse on edge ! ");
+        _manifest.default.camera.leftEdge = true;
+        SYS.DEBUG.LOG("Mouse on edge!");
       } else {
         _manifest.default.camera.leftEdge = false;
       }
 
       if (SYS.MOUSE.x > center_x - _manifest.default.camera.edgeMarginValue) {
-        _manifest.default.camera.rightEdge = true; //SYS.DEBUG.LOG(" mouse on edge ! ");
+        _manifest.default.camera.rightEdge = true;
+        SYS.DEBUG.LOG("Mouse on edge!");
       } else {
         _manifest.default.camera.rightEdge = false;
       }
@@ -20155,14 +20475,14 @@ function EVENTS(canvas) {
 
     if (_manifest.default.camera.SceneController === true && SYS.MOUSE.BUTTON_PRESSED == 'MID') {
       if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 0) {
-        //left
+        // left
         if (SYS.MOUSE.LAST_POSITION.x < SYS.MOUSE.x) {
           this.virtualLeftRightScene -= _manifest.default.camera.sceneControllerDragAmp;
         } else if (SYS.MOUSE.LAST_POSITION.x > SYS.MOUSE.x) {
           this.virtualLeftRightScene += _manifest.default.camera.sceneControllerDragAmp;
         }
       } else if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX < 0) {
-        //right
+        // right
         if (SYS.MOUSE.LAST_POSITION.x < SYS.MOUSE.x) {
           this.virtualLeftRightScene -= _manifest.default.camera.sceneControllerDragAmp;
         } else if (SYS.MOUSE.LAST_POSITION.x > SYS.MOUSE.x) {
@@ -20197,7 +20517,8 @@ function EVENTS(canvas) {
     SYS.DEBUG.LOG(' EVENT : MOUSE/TOUCH UP ');
   };
 
-  this.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = function (ev, m) {// SYS.DEBUG.LOG(' EVENT : MOUSE/TOUCH DOWN ');
+  this.CALCULATE_TOUCH_DOWN_OR_MOUSE_DOWN = function (ev, m) {
+    SYS.DEBUG.LOG(' EVENT : MOUSE/TOUCH DOWN ');
   };
 }
 
@@ -20208,6 +20529,7 @@ function defineKeyBoardObject() {
   globKeyPressObj.keyArr = new Array();
 
   document.onkeydown = function (e) {
+    // console.log('......')
     globKeyPressObj.handleKeyDown(e);
   };
 
@@ -20245,7 +20567,8 @@ function defineKeyBoardObject() {
 
     let emitKeyDown = new CustomEvent('hit.keyDown', {
       detail: {
-        keyCode: evt.keyCode
+        keyCode: evt.keyCode,
+        origin: evt
       }
     });
     dispatchEvent(emitKeyDown);
@@ -20256,7 +20579,8 @@ function defineKeyBoardObject() {
     evt = evt ? evt : window.event ? window.event : '';
     let emitKeyUp = new CustomEvent('hit.keyUp', {
       detail: {
-        keyCode: evt.keyCode
+        keyCode: evt.keyCode,
+        origin: evt
       }
     });
     dispatchEvent(emitKeyUp);
@@ -20315,43 +20639,55 @@ camera.speed = 0;
 camera.yawAmp = 0.077;
 camera.pitchAmp = 0.017;
 camera.virtualJumpY = 2;
-camera.virtualJumpActive = false; // eslint-disable-next-line no-global-assign
-
+camera.virtualJumpActive = false;
+camera.moveLeft = false;
+camera.preventSpeedZero = false;
 var keyboardPress = defineKeyBoardObject(); // For FirstPersonController
 
 exports.keyboardPress = keyboardPress;
 
 camera.setCamera = function (object) {
-  /* Left Key  or A */
-  if (keyboardPress.getKeyStatus(37) || keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
+  if (keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
+    /* A */
     camera.yawRate = _manifest.default.camera.yawRate;
-    if (_manifest.default.camera.leftEdge == true) camera.yawRate = _manifest.default.camera.yawRate;
-  } else if (
-  /* Right Key or D */
-  keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+
+    if (_manifest.default.camera.leftEdge == true) {
+      camera.yawRate = _manifest.default.camera.yawRateOnEdge;
+    }
+  } else if (keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+    /* D */
     camera.yawRate = -_manifest.default.camera.yawRate;
-    if (_manifest.default.camera.rightEdge == true) camera.yawRate = -_manifest.default.camera.yawRate;
+
+    if (_manifest.default.camera.rightEdge == true) {
+      camera.yawRate = -_manifest.default.camera.yawRateOnEdge;
+    }
   } else if (keyboardPress.getKeyStatus(32)) {
     /* Right Key or SPACE */
     if (this.virtualJumpActive != true) {
       this.virtualJumpActive = true;
     }
   }
-  /* Up Key or W */
 
-
-  if (keyboardPress.getKeyStatus(38) || keyboardPress.getKeyStatus(87)) {
+  if (keyboardPress.getKeyStatus(37)) {
+    /* Left Key  || App.camera.leftEdge == true*/
+    camera.moveLeft = true;
+    camera.speed = _manifest.default.camera.speedAmp;
+  } else if (keyboardPress.getKeyStatus(39)) {
+    /* Right Key || App.camera.rightEdge == true */
+    camera.moveRight = true;
+    camera.speed = _manifest.default.camera.speedAmp;
+  } else if (keyboardPress.getKeyStatus(38) || keyboardPress.getKeyStatus(87)) {
+    /* Up Key or W */
     camera.speed = _manifest.default.camera.speedAmp;
   } else if (keyboardPress.getKeyStatus(40) || keyboardPress.getKeyStatus(83)) {
     /* Down Key or S */
     camera.speed = -_manifest.default.camera.speedAmp;
-  } else {
-    camera.speed = 0;
+  } else {// if(camera.preventSpeedZero == false) camera.speed = 0;
   }
   /* Calculate yaw, pitch and roll(x,y,z) */
 
 
-  if (camera.speed != 0) {
+  if (camera.speed != 0 && camera.moveLeft == false && camera.moveRight == false) {
     camera.xPos -= Math.sin(degToRad(camera.yaw)) * camera.speed;
 
     if (camera.fly == true) {
@@ -20364,6 +20700,14 @@ camera.setCamera = function (object) {
     }
 
     camera.zPos -= Math.cos(degToRad(camera.yaw)) * camera.speed;
+  } else if (camera.moveLeft == true) {
+    // by side move left
+    camera.xPos -= Math.sin(degToRad(camera.yaw + 90)) * camera.speed;
+    camera.zPos -= Math.cos(degToRad(camera.yaw + 90)) * camera.speed;
+  } else if (camera.moveRight == true) {
+    // by side move rigth
+    camera.xPos -= Math.sin(degToRad(camera.yaw - 90)) * camera.speed;
+    camera.zPos -= Math.cos(degToRad(camera.yaw - 90)) * camera.speed;
   }
 
   camera.yaw += camera.yawRate * camera.yawAmp;
@@ -20372,7 +20716,11 @@ camera.setCamera = function (object) {
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(-camera.yaw), [0, 1, 0]);
   mat4.translate(object.mvMatrix, object.mvMatrix, [-camera.xPos, -camera.yPos, -camera.zPos]);
   camera.yawRate = 0;
-  camera.pitchRate = 0;
+  camera.pitchRate = 0; // update
+
+  camera.moveLeft = false;
+  camera.moveRight = false;
+  if (camera.preventSpeedZero == false) camera.speed = 0;
 }; // For sceneController
 
 
@@ -20381,9 +20729,7 @@ camera.setSceneCamera = function (object) {
   if (keyboardPress.getKeyStatus(37) || keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
     camera.yawRate = _manifest.default.camera.sceneControllerWASDKeysAmp;
     if (_manifest.default.camera.leftEdge == true) camera.yawRate = _manifest.default.camera.sceneControllerEdgeCameraYawRate;
-  } else if (
-  /* Right Key or D */
-  keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+  } else if (keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
     camera.yawRate = -_manifest.default.camera.sceneControllerWASDKeysAmp;
     if (_manifest.default.camera.rightEdge == true) camera.yawRate = -_manifest.default.camera.sceneControllerEdgeCameraYawRate;
   } else {// camera.yawRate = 0;
@@ -20422,12 +20768,15 @@ camera.setSceneCamera = function (object) {
 let addBtn = document.querySelector('.button1');
 let regularBtn = document.querySelector('.button2');
 regularBtn.addEventListener('click', () => {
-  addBtn.style.display = 'none';
-  regularBtn.style.display = 'none';
+  regularBtn.parentElement.classList.add('hideMe');
+  setTimeout(() => {
+    addBtn.style.display = 'none';
+    regularBtn.style.display = 'none';
+  }, 950);
 }); // Track web app install by user
 
 document.addEventListener('appinstalled', event => {
-  console.log('PWA app installed by user!!! Hurray');
+  console.log('PWA app installed by user! Hurray...');
 });
 
 if (_manifest.default.pwa.addToHomePage === true) {
@@ -20470,7 +20819,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":67,"./matrix-world":56,"./utility":65}],45:[function(require,module,exports){
+},{"../program/manifest":75,"./matrix-world":59,"./utility":71}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20513,64 +20862,64 @@ class constructMesh {
     if (typeof callback === 'undefined') callback = function () {};
     let initOrientation = [0, 1, 2];
     /*
-      The OBJ file format does a sort of compression when saving a model in a
-      program like Blender. There are at least 3 sections (4 including textures)
-      within the file. Each line in a section begins with the same string:
-        * 'v': indicates vertex section
-        * 'vn': indicates vertex normal section
-        * 'f': indicates the faces section
-        * 'vt': indicates vertex texture section (if textures were used on the model)
-      Each of the above sections (except for the faces section) is a list/set of
-      unique vertices.
-      Each line of the faces section contains a list of
-      (vertex, [texture], normal) groups
-      Some examples:
-          // the texture index is optional, both formats are possible for models
-          // without a texture applied
-          f 1/25 18/46 12/31
-          f 1//25 18//46 12//31
-          // A 3 vertex face with texture indices
-          f 16/92/11 14/101/22 1/69/1
-          // A 4 vertex face
-          f 16/92/11 40/109/40 38/114/38 14/101/22
-      The first two lines are examples of a 3 vertex face without a texture applied.
-      The second is an example of a 3 vertex face with a texture applied.
-      The third is an example of a 4 vertex face. Note: a face can contain N
-      number of vertices.
-      Each number that appears in one of the groups is a 1-based index
-      corresponding to an item from the other sections (meaning that indexing
-      starts at one and *not* zero).
-      For example:
-          `f 16/92/11` is saying to
-            - take the 16th element from the [v] vertex array
-            - take the 92nd element from the [vt] texture array
-            - take the 11th element from the [vn] normal array
-          and together they make a unique vertex.
-      Using all 3+ unique Vertices from the face line will produce a polygon.
-      Now, you could just go through the OBJ file and create a new vertex for
-      each face line and WebGL will draw what appears to be the same model.
-      However, vertices will be overlapped and duplicated all over the place.
-      Consider a cube in 3D space centered about the origin and each side is
-      2 units long. The front face (with the positive Z-axis pointing towards
-      you) would have a Top Right vertex (looking orthogonal to its normal)
-      mapped at (1,1,1) The right face would have a Top Left vertex (looking
-      orthogonal to its normal) at (1,1,1) and the top face would have a Bottom
-      Right vertex (looking orthogonal to its normal) at (1,1,1). Each face
-      has a vertex at the same coordinates, however, three distinct vertices
-      will be drawn at the same spot.
-      To solve the issue of duplicate Vertices (the `(vertex, [texture], normal)`
-      groups), while iterating through the face lines, when a group is encountered
-      the whole group string ('16/92/11') is checked to see if it exists in the
-      packed.hashindices object, and if it doesn't, the indices it specifies
-      are used to look up each attribute in the corresponding attribute arrays
-      already created. The values are then copied to the corresponding unpacked
-      array (flattened to play nice with WebGL's ELEMENT_ARRAY_BUFFER indexing),
-      the group string is added to the hashindices set and the current unpacked
-      index is used as this hashindices value so that the group of elements can
-      be reused. The unpacked index is incremented. If the group string already
-      exists in the hashindices object, its corresponding value is the index of
-      that group and is appended to the unpacked indices array.
-      */
+    	The OBJ file format does a sort of compression when saving a model in a
+    	program like Blender. There are at least 3 sections (4 including textures)
+    	within the file. Each line in a section begins with the same string:
+    		* 'v': indicates vertex section
+    		* 'vn': indicates vertex normal section
+    		* 'f': indicates the faces section
+    		* 'vt': indicates vertex texture section (if textures were used on the model)
+    	Each of the above sections (except for the faces section) is a list/set of
+    	unique vertices.
+    	Each line of the faces section contains a list of
+    	(vertex, [texture], normal) groups
+    	Some examples:
+    			// the texture index is optional, both formats are possible for models
+    			// without a texture applied
+    			f 1/25 18/46 12/31
+    			f 1//25 18//46 12//31
+    			// A 3 vertex face with texture indices
+    			f 16/92/11 14/101/22 1/69/1
+    			// A 4 vertex face
+    			f 16/92/11 40/109/40 38/114/38 14/101/22
+    	The first two lines are examples of a 3 vertex face without a texture applied.
+    	The second is an example of a 3 vertex face with a texture applied.
+    	The third is an example of a 4 vertex face. Note: a face can contain N
+    	number of vertices.
+    	Each number that appears in one of the groups is a 1-based index
+    	corresponding to an item from the other sections (meaning that indexing
+    	starts at one and *not* zero).
+    	For example:
+    			`f 16/92/11` is saying to
+    				- take the 16th element from the [v] vertex array
+    				- take the 92nd element from the [vt] texture array
+    				- take the 11th element from the [vn] normal array
+    			and together they make a unique vertex.
+    	Using all 3+ unique Vertices from the face line will produce a polygon.
+    	Now, you could just go through the OBJ file and create a new vertex for
+    	each face line and WebGL will draw what appears to be the same model.
+    	However, vertices will be overlapped and duplicated all over the place.
+    	Consider a cube in 3D space centered about the origin and each side is
+    	2 units long. The front face (with the positive Z-axis pointing towards
+    	you) would have a Top Right vertex (looking orthogonal to its normal)
+    	mapped at (1,1,1) The right face would have a Top Left vertex (looking
+    	orthogonal to its normal) at (1,1,1) and the top face would have a Bottom
+    	Right vertex (looking orthogonal to its normal) at (1,1,1). Each face
+    	has a vertex at the same coordinates, however, three distinct vertices
+    	will be drawn at the same spot.
+    	To solve the issue of duplicate Vertices (the `(vertex, [texture], normal)`
+    	groups), while iterating through the face lines, when a group is encountered
+    	the whole group string ('16/92/11') is checked to see if it exists in the
+    	packed.hashindices object, and if it doesn't, the indices it specifies
+    	are used to look up each attribute in the corresponding attribute arrays
+    	already created. The values are then copied to the corresponding unpacked
+    	array (flattened to play nice with WebGL's ELEMENT_ARRAY_BUFFER indexing),
+    	the group string is added to the hashindices set and the current unpacked
+    	index is used as this hashindices value so that the group of elements can
+    	be reused. The unpacked index is incremented. If the group string already
+    	exists in the hashindices object, its corresponding value is the index of
+    	that group and is appended to the unpacked indices array.
+    	*/
 
     var verts = [],
         vertNormals = [],
@@ -20584,7 +20933,9 @@ class constructMesh {
     unpacked.indices = [];
     unpacked.index = 0; // array of lines separated by the newline
 
-    var lines = objectData.split('\n'); // update swap orientation
+    var lines = objectData.split('\n'); // test group catch data bpund or center
+
+    var objGroups = []; // update swap orientation
 
     if (inputArg.swap[0] !== null) {
       swap(inputArg.swap[0], inputArg.swap[1], initOrientation);
@@ -20604,6 +20955,10 @@ class constructMesh {
       if (VERTEX_RE.test(line)) {
         // if this is a vertex
         verts.push.apply(verts, elements);
+
+        if (objGroups.length > 0) {
+          objGroups[objGroups.length - 1].groupVert.push(elements);
+        }
       } else if (NORMAL_RE.test(line)) {
         // if this is a vertex normal
         vertNormals.push.apply(vertNormals, elements);
@@ -20614,12 +20969,12 @@ class constructMesh {
         // if this is a face
 
         /*
-          split this face into an array of vertex groups
-          for example:
-            f 16/92/11 14/101/22 1/69/1
-          becomes:
-            ['16/92/11', '14/101/22', '1/69/1'];
-          */
+        	split this face into an array of vertex groups
+        	for example:
+        		f 16/92/11 14/101/22 1/69/1
+        	becomes:
+        		['16/92/11', '14/101/22', '1/69/1'];
+        	*/
         var quad = false;
 
         for (var j = 0, eleLen = elements.length; j < eleLen; j++) {
@@ -20638,35 +20993,35 @@ class constructMesh {
             unpacked.indices.push(unpacked.hashindices[elements[j]]);
           } else {
             /*
-                  Each element of the face line array is a vertex which has its
-                  attributes delimited by a forward slash. This will separate
-                  each attribute into another array:
-                      '19/92/11'
-                  becomes:
-                      vertex = ['19', '92', '11'];
-                  where
-                      vertex[0] is the vertex index
-                      vertex[1] is the texture index
-                      vertex[2] is the normal index
-                  Think of faces having Vertices which are comprised of the
-                  attributes location (v), texture (vt), and normal (vn).
-                  */
+            			Each element of the face line array is a vertex which has its
+            			attributes delimited by a forward slash. This will separate
+            			each attribute into another array:
+            					'19/92/11'
+            			becomes:
+            					vertex = ['19', '92', '11'];
+            			where
+            					vertex[0] is the vertex index
+            					vertex[1] is the texture index
+            					vertex[2] is the normal index
+            			Think of faces having Vertices which are comprised of the
+            			attributes location (v), texture (vt), and normal (vn).
+            			*/
             var vertex = elements[j].split('/');
             /*
-                  The verts, textures, and vertNormals arrays each contain a
-                  flattend array of coordinates.
-                  Because it gets confusing by referring to vertex and then
-                  vertex (both are different in my descriptions) I will explain
-                  what's going on using the vertexNormals array:
-                  vertex[2] will contain the one-based index of the vertexNormals
-                  section (vn). One is subtracted from this index number to play
-                  nice with javascript's zero-based array indexing.
-                  Because vertexNormal is a flattened array of x, y, z values,
-                  simple pointer arithmetic is used to skip to the start of the
-                  vertexNormal, then the offset is added to get the correct
-                  component: +0 is x, +1 is y, +2 is z.
-                  This same process is repeated for verts and textures.
-                  */
+            			The verts, textures, and vertNormals arrays each contain a
+            			flattend array of coordinates.
+            			Because it gets confusing by referring to vertex and then
+            			vertex (both are different in my descriptions) I will explain
+            			what's going on using the vertexNormals array:
+            			vertex[2] will contain the one-based index of the vertexNormals
+            			section (vn). One is subtracted from this index number to play
+            			nice with javascript's zero-based array indexing.
+            			Because vertexNormal is a flattened array of x, y, z values,
+            			simple pointer arithmetic is used to skip to the start of the
+            			vertexNormal, then the offset is added to get the correct
+            			component: +0 is x, +1 is y, +2 is z.
+            			This same process is repeated for verts and textures.
+            			*/
             // vertex position
 
             unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale);
@@ -20694,6 +21049,21 @@ class constructMesh {
             unpacked.indices.push(unpacked.hashindices[elements[0]]);
           }
         }
+      } else {
+        if (line.indexOf('# ') != -1) {// console.log('obj loader comment:', line)
+        } else if (line.indexOf('mtllib') != -1) {// console.log('obj loader MTL file:', line)
+        } else if (line.indexOf('g ') != -1) {
+          // console.log('obj loader group :', line)
+          var nameOFGroup = line.split(' ')[1];
+
+          if (nameOFGroup.indexOf('COLLIDER') != -1) {
+            console.log('obj loader group [SPECIAL CASE COLLIDER]:', nameOFGroup);
+            objGroups.push({
+              groupName: nameOFGroup,
+              groupVert: []
+            });
+          }
+        }
       }
     }
 
@@ -20701,6 +21071,13 @@ class constructMesh {
     this.vertexNormals = unpacked.norms;
     this.textures = unpacked.textures;
     this.indices = unpacked.indices;
+
+    if (objGroups.length > 0) {
+      this.groups = objGroups;
+    } else {
+      this.groups = null;
+    }
+
     callback();
     return this;
   };
@@ -20833,53 +21210,6 @@ var _buildBuffer = function (gl, type, data, itemSize) {
  * **indexBuffer**        |contains the indices of the faces
  * indexBuffer.itemSize   |is set to 1
  * indexBuffer.numItems   |the total number of indices
- *
- * A simple example (a lot of steps are missing, so don't copy and paste):
- *
- *     var gl   = canvas.getContext('webgl'),
- *         mesh = OBJ.Mesh(obj_file_data);
- *     // compile the shaders and create a shader program
- *     var shaderProgram = gl.createProgram();
- *     // compilation stuff here
- *     ...
- *     // make sure you have vertex, vertex normal, and texture coordinate
- *     // attributes located in your shaders and attach them to the shader program
- *     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
- *     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
- *
- *     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
- *     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
- *
- *     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
- *     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *
- *     // create and initialize the vertex, vertex normal, and texture coordinate buffers
- *     // and save on to the mesh object
- *     OBJ.initMeshBuffers(gl, mesh);
- *
- *     // now to render the mesh
- *     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
- *     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *     // it's possible that the mesh doesn't contain
- *     // any texture coordinates (e.g. suzanne.obj in the development branch).
- *     // in this case, the texture vertexAttribArray will need to be disabled
- *     // before the call to drawElements
- *     if(!mesh.textures.length){
- *       gl.disableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *     }
- *     else{
- *       // if the texture vertexAttribArray has been previously
- *       // disabled, then it needs to be re-enabled
- *       gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *       gl.bindBuffer(gl.ARRAY_BUFFER, mesh.textureBuffer);
- *       gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *     }
- *
- *     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.normalBuffer);
- *     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *
- *     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.mesh.indexBuffer);
- *     gl.drawElements(gl.TRIANGLES, model.mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
  */
 
 
@@ -20904,24 +21234,24 @@ var deleteMeshBuffers = function (gl, mesh) {
  * This is adaptation for blender obj animation export.
  * For example:
  *    matrixEngine.objLoader.downloadMeshes(
-      matrixEngine.objLoader.makeObjSeqArg(
-        {
-          id: objName,
-          joinMultiPahts: [
-            {
-              path: "res/bvh-skeletal-base/swat-guy/seq-walk/low/swat",
-              id: objName,
-              from: 1, to: 34
-            },
-            {
-              path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
-              id: objName,
-              from: 35, to: 54
-            }
-          ]
-        }),
-      onLoadObj
-    );
+			matrixEngine.objLoader.makeObjSeqArg(
+				{
+					id: objName,
+					joinMultiPahts: [
+						{
+							path: "res/bvh-skeletal-base/swat-guy/seq-walk/low/swat",
+							id: objName,
+							from: 1, to: 34
+						},
+						{
+							path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
+							id: objName,
+							from: 35, to: 54
+						}
+					]
+				}),
+			onLoadObj
+		);
  */
 
 
@@ -20988,9 +21318,10 @@ exports.makeObjSeqArg = makeObjSeqArg;
 function play(nameAni) {
   this.animation.anims.active = nameAni;
   this.animation.currentAni = this.animation.anims[this.animation.anims.active].from;
-}
+} // TEST
+// add destroy animation meshs procedure
 
-},{"./matrix-world":56}],46:[function(require,module,exports){
+},{"./matrix-world":59}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21398,7 +21729,7 @@ _manifest.default.operation.cubemap_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":67,"./matrix-world":56}],47:[function(require,module,exports){
+},{"../program/manifest":75,"./matrix-world":59}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21694,7 +22025,7 @@ class MEBvhAnimation {
 
 exports.default = MEBvhAnimation;
 
-},{"./matrix-world":56,"./utility":65,"bvh-loader":37}],48:[function(require,module,exports){
+},{"./matrix-world":59,"./utility":71,"bvh-loader":38}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21716,22 +22047,81 @@ var _matrixShadows = require("./matrix-shadows");
 
 var _matrixTextures = require("./matrix-textures");
 
+var _engine = require("./engine");
+
+var CANNON = _interopRequireWildcard(require("cannon"));
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import {vec2} from 'wgpu-matrix';
+// test override 
+CANNON.Quaternion.prototype.toAxisAngle = function (targetAxis) {
+  targetAxis = targetAxis || new CANNON.Vec3();
+  if (this.w > 1) this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
+
+  var angle = 2 * Math.acos(this.w);
+  var s = Math.sqrt(1 - this.w * this.w); // assuming quaternion normalised then w is less than 1, so term always positive.
+
+  if (s < 0.00000001) {
+    // test to avoid divide by zero, s is always positive due to sqrt
+    // if s close to zero then direction of axis not important
+    // if it is important that axis is normalised then replace with x=1; y=z=0;
+    // console.log('override works: x: ', this.x + " y: ", this.y, " z: ", this.z)
+    // nikola lukic
+    var max1 = [this.x, this.y, this.z];
+    var getMaxValue = Math.max(...max1);
+    var index = max1.indexOf(getMaxValue);
+    targetAxis.x = 1;
+    targetAxis.y = 0;
+    targetAxis.z = 0;
+  } else {
+    targetAxis.x = this.x / s; // normalise axis
+
+    targetAxis.y = this.y / s;
+    targetAxis.z = this.z / s;
+  }
+
+  return [targetAxis, angle];
+};
+
 _manifest.default.operation.draws = new Object();
 
-_manifest.default.operation.draws.cube = function (object) {
+_manifest.default.operation.draws.cube = function (object, ray) {
   var lighting = true;
   var localLooper = 0;
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
-  if (object.isHUD === true) {
+  if (object.physics.enabled == true) {
+    if (_manifest.default.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (_manifest.default.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
+
+    var QP = object.physics.currentBody.quaternion;
+    QP.normalize(); // mat4.translate(object.mvMatrix, object.mvMatrix, [0.0, 0.0, 0.0]);
+
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+    var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.z, object.rotation.axis.y);
+    object.rotation.axisSystem[0].normalize();
+    var AXIS = vec3.fromValues(-object.rotation.axisSystem[0].x.toFixed(2), object.rotation.axisSystem[0].z.toFixed(2), object.rotation.axisSystem[0].y.toFixed(2));
+    var MY_ANGLE = 2 * Math.acos(QP.w); // if(radToDeg(object.rotation.angle) > 90) console.log("aNGLE:" + radToDeg(object.rotation.angle) + " VS MY_ANGLE " + radToDeg(MY_ANGLE) + "  axis ++++ " + AXIS)
+    // mat4.rotateX(object.mvMatrix, object.mvMatrix, (object.rotation.angle));
+    // mat4.rotateY(object.mvMatrix, object.mvMatrix, (object.rotation.angle));
+    // mat4.rotateZ(object.mvMatrix, object.mvMatrix, (-object.rotation.angle));
+
+    mat4.rotate(object.mvMatrix, object.mvMatrix, MY_ANGLE, AXIS);
+  } else if (object.isHUD === true) {
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
     if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
   } else {
     if (_manifest.default.camera.FirstPersonController == true) {
@@ -21741,10 +22131,10 @@ _manifest.default.operation.draws.cube = function (object) {
     }
 
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
   } // V
 
 
@@ -21819,7 +22209,7 @@ _manifest.default.operation.draws.cube = function (object) {
     if (object.shaderProgram.lightingDirectionUniform) {
       if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
         // console.log("LIGHTS UNIFORM AMB  B = ",  E('dirZ').value )
-        lightingDirection = [degToRad(parseFloat((0, _utility.E)('dirX').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirY').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirZ').getAttribute('value')))];
+        lightingDirection = [(0, _engine.degToRad)(parseFloat((0, _utility.E)('dirX').getAttribute('value'))), (0, _engine.degToRad)(parseFloat((0, _utility.E)('dirY').getAttribute('value'))), (0, _engine.degToRad)(parseFloat((0, _utility.E)('dirZ').getAttribute('value')))];
       } else {
         lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
       }
@@ -21868,72 +22258,51 @@ _manifest.default.operation.draws.cube = function (object) {
       // test FBO
       // spot light test light
       // Fbo staff
-      if (!object.FBO.FB) {
-        // console.log('ONLY ONCE ')
-        object.FBO = {
-          name: object.name
-        };
-        object.FBO.FB = (0, _matrixTextures.makeFBO)(_matrixWorld.world.GL.gl, object);
-        object.FBO.settings = {
-          cameraX: 6,
-          cameraY: 5,
-          posX: 2.5,
-          posY: 4.8,
-          posZ: 4.3,
-          targetX: 2.5,
-          targetY: 0,
-          targetZ: 3.5,
-          projWidth: 1,
-          projHeight: 1,
-          perspective: true,
-          fieldOfView: 120,
-          bias: -0.006
-        }; // for now
-
-        _matrixWorld.world.FBOS.push(object.FBO);
-      }
-
       _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
 
       _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
 
-      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // shadow staff dev
-
-
-      var target = [0, 0, 0];
-      var up = [0, 1, 0]; // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
-
-      var lmat = m4.lookAt([0, 2, 0], target, up);
-      const viewMatrix = m4.inverse(lmat); // first draw from the POV of the light
-
-      const lightWorldMatrix = m4.lookAt([object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ], // position
-      [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-      [0, 1, 0] // up
-      );
-      const lightProjectionMatrix = object.FBO.settings.perspective ? m4.perspective(degToRad(object.FBO.settings.fieldOfView), object.FBO.settings.projWidth / object.FBO.settings.projHeight, 0.5, // near
-      10) // far
-      : m4.orthographic(-object.FBO.settings.projWidth / 2, // left
-      object.FBO.settings.projWidth / 2, // right
-      -object.FBO.settings.projHeight / 2, // bottom
-      object.FBO.settings.projHeight / 2, // top
-      0.5, // near
-      10); // far
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // // shadow staff dev
+      // var target = [0, 0, 0];
+      // var up = [0, 1, 0];
+      // // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
+      // var lmat = m4.lookAt([0, 2, 0], target, up);
+      // const viewMatrix = m4.inverse(lmat);
+      // // first draw from the POV of the light
+      // const lightWorldMatrix = m4.lookAt(
+      //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
+      //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
+      //   [0, 1, 0],                                              // up
+      // );
+      // const lightProjectionMatrix = object.FBO.settings.perspective
+      //   ? m4.perspective(
+      //     degToRad(object.FBO.settings.fieldOfView),
+      //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
+      //     0.5,  // near
+      //     10)   // far
+      //   : m4.orthographic(
+      //     -object.FBO.settings.projWidth / 2,   // left
+      //     object.FBO.settings.projWidth / 2,   // right
+      //     -object.FBO.settings.projHeight / 2,  // bottom
+      //     object.FBO.settings.projHeight / 2,  // top
+      //     0.5,                      // near
+      //     10);                      // far
       // // draw to the depth texture
       // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
       // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
       // world.GL.gl.viewport(0, 0, 512, 512);
       // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
       // draw 
+      // let textureMatrix = m4.identity();
+      // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
+      // textureMatrix = m4.multiply(
+      //   textureMatrix,
+      //   m4.inverse(lightWorldMatrix));
+      // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
+      // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
 
-      let textureMatrix = m4.identity();
-      textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-      textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
-
-      _matrixWorld.world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-
-      _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
     } else {
       for (var t = 0; t < object.textures.length; t++) {
         if (object.custom.gl_texture == null) {
@@ -21984,7 +22353,6 @@ _manifest.default.operation.draws.cube = function (object) {
 
       if (object.cubeMap.type == 'images') {
         object.cubeMap.cubeMap2dCanvasSet.forEach((faceInfo, index) => {
-          // Upload the canvas to the cubemap face.
           const level = 0;
           const internalFormat = gl.RGBA;
           const format = gl.RGBA;
@@ -22011,14 +22379,12 @@ _manifest.default.operation.draws.cube = function (object) {
               text
             } = faceInfo;
             (0, _utility.gen2DTextFace)(object.cubeMap.cubeMap2dCtx, faceColor, textColor, text);
-          } // Upload the canvas to the cubemap face.
-
+          }
 
           const level = 0;
           const internalFormat = gl.RGBA;
           const format = gl.RGBA;
-          const type = gl.UNSIGNED_BYTE; // gl.texImage2D(faceInfo.target, level, internalFormat, format, type, object.cubeMap.images[0]);
-
+          const type = gl.UNSIGNED_BYTE;
           gl.texImage2D(faceInfo.target, level, internalFormat, format, type, object.cubeMap.cubeMap2dCtx.canvas);
           gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
         });
@@ -22083,9 +22449,11 @@ _manifest.default.operation.draws.cube = function (object) {
     mat3.transpose(normalMatrix, normalMatrix);
 
     _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
-  }
+  } // world.disableUnusedAttr(world.GL.gl, localLooper);
+  // FIX FOR MOBILE - from white cube to normal texture view , good
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper);
+
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -22106,7 +22474,7 @@ _manifest.default.operation.draws.cube = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.piramide = function (object) {
+_manifest.default.operation.draws.piramide = function (object, ray) {
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
@@ -22118,10 +22486,10 @@ _manifest.default.operation.draws.piramide = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+  if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
 
   if (object.geometry.dynamicBuffer == true) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -22162,7 +22530,7 @@ _manifest.default.operation.draws.piramide = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.square = function (object) {
+_manifest.default.operation.draws.square = function (object, ray) {
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
@@ -22174,10 +22542,10 @@ _manifest.default.operation.draws.square = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+  if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
 
   if (object.geometry.dynamicBuffer == true) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -22216,7 +22584,7 @@ _manifest.default.operation.draws.square = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.triangle = function (object) {
+_manifest.default.operation.draws.triangle = function (object, ray) {
   mat4.identity(object.mvMatrix);
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
@@ -22228,10 +22596,10 @@ _manifest.default.operation.draws.triangle = function (object) {
   }
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+  if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
 
   _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
 
@@ -22267,7 +22635,7 @@ _manifest.default.operation.draws.triangle = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.drawObj = function (object) {
+_manifest.default.operation.draws.drawObj = function (object, ray) {
   var lighting = 1;
   var localLooper = 0;
   lighting = true;
@@ -22277,7 +22645,10 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
   if (object.isHUD === true) {
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalcObj(object);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
   } else {
     if (_manifest.default.camera.FirstPersonController == true) {
       _events.camera.setCamera(object);
@@ -22286,10 +22657,10 @@ _manifest.default.operation.draws.drawObj = function (object) {
     }
 
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalcObj(object);
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
   }
 
   if (typeof object.mesh.vertexBuffer != 'undefined') {
@@ -22426,8 +22797,8 @@ _manifest.default.operation.draws.drawObj = function (object) {
 
       if (object.streamTextures != null) {
         // video/webcam tex
-        // App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
         if (object.streamTextures.video) {
+          // App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
           _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.video);
         } else {
           _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
@@ -22436,70 +22807,72 @@ _manifest.default.operation.draws.drawObj = function (object) {
         _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
       } else if (object.FBO) {
         // Fbo staff
-        if (!object.FBO.FB) {
-          object.FBO = {
-            name: object.name
-          };
-          object.FBO.FB = (0, _matrixTextures.makeFBO)(_matrixWorld.world.GL.gl, object);
-          object.FBO.settings = {
-            cameraX: 6,
-            cameraY: 5,
-            posX: 2.5,
-            posY: 4.8,
-            posZ: 4.3,
-            targetX: 2.5,
-            targetY: 0,
-            targetZ: 3.5,
-            projWidth: 1,
-            projHeight: 1,
-            perspective: true,
-            fieldOfView: 120,
-            bias: -0.006
-          };
-
-          _matrixWorld.world.FBOS.push(object.FBO);
-        }
-
+        // if(!object.FBO.FB) {
+        //   object.FBO = {
+        //     name: object.name
+        //   };
+        //   object.FBO.FB = makeFBO(world.GL.gl, object);
+        //   object.FBO.settings = {
+        //     cameraX: 6,
+        //     cameraY: 5,
+        //     posX: 2.5,
+        //     posY: 4.8,
+        //     posZ: 4.3,
+        //     targetX: 2.5,
+        //     targetY: 0,
+        //     targetZ: 3.5,
+        //     projWidth: 1,
+        //     projHeight: 1,
+        //     perspective: true,
+        //     fieldOfView: 120,
+        //     bias: -0.006,
+        //   };
+        //   world.FBOS.push(object.FBO);
+        // }
         _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
 
         _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
 
         _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // shadow staff
+        // var target = [0, 0, 0];
+        // var up = [0, 1, 0];
+        // var lmat = m4.lookAt([0, 1, 0], target, up);
+        // const viewMatrix = m4.inverse(lmat);
+        // // first draw from the POV of the light
+        // const lightWorldMatrix = m4.lookAt(
+        //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
+        //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
+        //   [0, 1, 0],                                              // up
+        // );
+        // const lightProjectionMatrix = object.FBO.settings.perspective
+        //   ? m4.perspective(
+        //     degToRad(object.FBO.settings.fieldOfView),
+        //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
+        //     0.5,  // near
+        //     10)   // far
+        //   : m4.orthographic(
+        //     -object.FBO.settings.projWidth / 2,   // left
+        //     object.FBO.settings.projWidth / 2,   // right
+        //     -object.FBO.settings.projHeight / 2,  // bottom
+        //     object.FBO.settings.projHeight / 2,  // top
+        //     0.5,                      // near
+        //     10);                      // far
+        // // // draw to the depth texture
+        // // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
+        // // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
+        // // world.GL.gl.viewport(0, 0, 512, 512);
+        // // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
+        // // draw 
+        // let textureMatrix = m4.identity();
+        // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+        // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+        // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
+        // textureMatrix = m4.multiply(
+        //   textureMatrix,
+        //   m4.inverse(lightWorldMatrix));
+        // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
+        // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
 
-
-        var target = [0, 0, 0];
-        var up = [0, 1, 0];
-        var lmat = m4.lookAt([0, 1, 0], target, up);
-        const viewMatrix = m4.inverse(lmat); // first draw from the POV of the light
-
-        const lightWorldMatrix = m4.lookAt([object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ], // position
-        [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-        [0, 1, 0] // up
-        );
-        const lightProjectionMatrix = object.FBO.settings.perspective ? m4.perspective(degToRad(object.FBO.settings.fieldOfView), object.FBO.settings.projWidth / object.FBO.settings.projHeight, 0.5, // near
-        10) // far
-        : m4.orthographic(-object.FBO.settings.projWidth / 2, // left
-        object.FBO.settings.projWidth / 2, // right
-        -object.FBO.settings.projHeight / 2, // bottom
-        object.FBO.settings.projHeight / 2, // top
-        0.5, // near
-        10); // far
-        // // draw to the depth texture
-        // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
-        // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
-        // world.GL.gl.viewport(0, 0, 512, 512);
-        // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
-        // draw 
-
-        let textureMatrix = m4.identity();
-        textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-        textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-        textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-        textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
-
-        _matrixWorld.world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-
-        _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
       } else {
         for (var t = 0; t < object.textures.length; t++) {
           _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
@@ -22609,7 +22982,7 @@ _manifest.default.operation.draws.drawObj = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.drawSquareTex = function (object) {
+_manifest.default.operation.draws.drawSquareTex = function (object, ray) {
   var lighting = true; // eslint-disable-next-line no-unused-vars
 
   var localLooper = 0;
@@ -22618,7 +22991,10 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
   if (object.isHUD === true) {
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
+    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
   } else {
     if (_manifest.default.camera.FirstPersonController == true) {
       _events.camera.setCamera(object);
@@ -22628,9 +23004,9 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
 
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
     if (raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
   } // V
 
 
@@ -22748,72 +23124,73 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
     } else if (object.FBO) {
       // test FBO
       // Fbo staff
-      if (!object.FBO.FB) {
-        object.FBO = {
-          name: object.name
-        };
-        object.FBO.FB = (0, _matrixTextures.makeFBO)(_matrixWorld.world.GL.gl, object);
-
-        _matrixWorld.world.FBOS.push(object.FBO);
-
-        object.FBO.settings = {
-          cameraX: 6,
-          cameraY: 5,
-          posX: 2.5,
-          posY: 4.8,
-          posZ: 4.3,
-          targetX: 2.5,
-          targetY: 0,
-          targetZ: 3.5,
-          projWidth: 1,
-          projHeight: 1,
-          perspective: true,
-          fieldOfView: 120,
-          bias: -0.006
-        };
-      }
-
+      // if(!object.FBO.FB) {
+      //   object.FBO = {
+      //     name: object.name
+      //   };
+      //   object.FBO.FB = makeFBO(world.GL.gl, object);
+      //   world.FBOS.push(object.FBO);
+      //   object.FBO.settings = {
+      //     cameraX: 6,
+      //     cameraY: 5,
+      //     posX: 2.5,
+      //     posY: 4.8,
+      //     posZ: 4.3,
+      //     targetX: 2.5,
+      //     targetY: 0,
+      //     targetZ: 3.5,
+      //     projWidth: 1,
+      //     projHeight: 1,
+      //     perspective: true,
+      //     fieldOfView: 120,
+      //     bias: -0.006,
+      //   };
+      // }
       _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
 
       _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
 
-      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // shadow staff
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // // shadow staff
+      // var target = [0, 0, 0];
+      // var up = [0, 1, 0];
+      // // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
+      // var lmat = m4.lookAt([0, 1, 0], target, up);
+      // const viewMatrix = m4.inverse(lmat);
+      // // first draw from the POV of the light
+      // const lightWorldMatrix = m4.lookAt(
+      //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
+      //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
+      //   [0, 1, 0],                                              // up
+      // );
+      // const lightProjectionMatrix = object.FBO.settings.perspective
+      //   ? m4.perspective(
+      //     degToRad(object.FBO.settings.fieldOfView),
+      //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
+      //     0.5,  // near
+      //     10)   // far
+      //   : m4.orthographic(
+      //     -object.FBO.settings.projWidth / 2,   // left
+      //     object.FBO.settings.projWidth / 2,   // right
+      //     -object.FBO.settings.projHeight / 2,  // bottom
+      //     object.FBO.settings.projHeight / 2,  // top
+      //     0.5,                      // near
+      //     10);                      // far
+      // // // draw to the depth texture
+      // // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
+      // // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
+      // // world.GL.gl.viewport(0, 0, 512, 512);
+      // // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
+      // // draw 
+      // let textureMatrix = m4.identity();
+      // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+      // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
+      // textureMatrix = m4.multiply(
+      //   textureMatrix,
+      //   m4.inverse(lightWorldMatrix));
+      // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
+      // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
 
-
-      var target = [0, 0, 0];
-      var up = [0, 1, 0]; // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
-
-      var lmat = m4.lookAt([0, 1, 0], target, up);
-      const viewMatrix = m4.inverse(lmat); // first draw from the POV of the light
-
-      const lightWorldMatrix = m4.lookAt([object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ], // position
-      [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-      [0, 1, 0] // up
-      );
-      const lightProjectionMatrix = object.FBO.settings.perspective ? m4.perspective(degToRad(object.FBO.settings.fieldOfView), object.FBO.settings.projWidth / object.FBO.settings.projHeight, 0.5, // near
-      10) // far
-      : m4.orthographic(-object.FBO.settings.projWidth / 2, // left
-      object.FBO.settings.projWidth / 2, // right
-      -object.FBO.settings.projHeight / 2, // bottom
-      object.FBO.settings.projHeight / 2, // top
-      0.5, // near
-      10); // far
-      // // draw to the depth texture
-      // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
-      // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
-      // world.GL.gl.viewport(0, 0, 512, 512);
-      // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
-      // draw 
-
-      let textureMatrix = m4.identity();
-      textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-      textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-      textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
-
-      _matrixWorld.world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-
-      _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
     } else {
       for (var t = 0; t < object.textures.length; t++) {
         if (object.custom.gl_texture == null) {
@@ -22936,7 +23313,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object) {
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
-_manifest.default.operation.draws.sphere = function (object) {
+_manifest.default.operation.draws.sphere = function (object, ray) {
   var lighting = true;
   var localLooper = 0;
   mat4.identity(object.mvMatrix);
@@ -22946,12 +23323,13 @@ _manifest.default.operation.draws.sphere = function (object) {
     _events.camera.setCamera(object);
   } else if (_manifest.default.camera.SceneController == true) {
     _events.camera.setSceneCamera(object);
-  }
+  } // no ray for now !!!
+
 
   mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ()); // V
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ()); // V
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -23056,8 +23434,11 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
 
     if (object.streamTextures != null) {
-      // App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
-      _manifest.default.tools.loadVideoTexture('glVideoTexture', object.streamTextures.video);
+      if (object.streamTextures.video) {
+        _manifest.default.tools.loadVideoTexture('glVideoTextureTorus', object.streamTextures.video);
+      } else {
+        _manifest.default.tools.loadVideoTexture('glVideoTextureTorus', object.streamTextures.videoImage);
+      }
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
     } else {
@@ -23099,9 +23480,10 @@ _manifest.default.operation.draws.sphere = function (object) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.uniformTime, 0.1);
   } catch (e) {
     console.warn('WTF - ERROR10001');
-  }
+  } // world.disableUnusedAttr(world.GL.gl, localLooper);
 
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper);
+
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -23127,10 +23509,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":67,"./events":44,"./matrix-shadows":53,"./matrix-textures":55,"./matrix-world":56,"./raycast":59,"./utility":65}],49:[function(require,module,exports){
-/* eslint-disable no-redeclare */
-
-/* eslint-disable no-unused-vars */
+},{"../program/manifest":75,"./engine":44,"./events":45,"./matrix-shadows":56,"./matrix-textures":58,"./matrix-world":59,"./raycast":65,"./utility":71,"cannon":40}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23138,7 +23517,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.COLOR = COLOR;
 exports.COLOR_ALPHA = COLOR_ALPHA;
-exports.ring = ring;
 exports.GeoOfColor = exports.customVertex_1 = exports.customVertex = exports.sphereVertex = exports.PiramideVertex = exports.CubeVertex = exports.SquareVertex = exports.TriangleVertex = exports.Position = exports.RotationVector = exports.Point = exports.Scale = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
@@ -23149,6 +23527,14 @@ var _engine = require("./engine");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * @description
+ * Networking is deep integrated in me engine.
+ * You can change network driver but this code still works (net interface).
+ * Reccommended Net2 new version based on kurento/openvidu server.
+ * @author Nikola Lukic
+ * @date oct 2024
+ */
 class Scale {
   constructor() {
     this.x = 1;
@@ -23221,6 +23607,7 @@ class RotationVector {
     }
 
     this.nameUniq = null;
+    this.netObjId = null;
     this.x = x;
     this.y = y;
     this.z = z;
@@ -23238,6 +23625,23 @@ class RotationVector {
       y: 0,
       z: 0
     };
+    this.angle = 0;
+    this.axis = {
+      x: 0,
+      y: 0,
+      z: 0
+    }; // this.adapt_quaternion = () => {
+    //   this.getRotDirX = () => {
+    //     return this.RotationVector;
+    //   }
+    //   this.getRotDirY = () => {
+    //     return this.RotationVector;
+    //   }
+    //   this.getRotDirZ = () => {
+    //     return this.RotationVector;
+    //   }
+    // }
+
     return this;
   }
 
@@ -23342,31 +23746,31 @@ class RotationVector {
 
   rotateX(x, em) {
     this.rotx = x;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         x: this.rotx
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
   rotateY(y, em) {
     this.roty = y;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         y: this.roty
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
   rotateZ(z, em) {
     this.rotz = z;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netRot: {
         z: this.rotz
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -23387,6 +23791,11 @@ class RotationVector {
  * @description Base class
  * Powered for multiplayer feature:
  * - position ref to x,y,z
+ * New case if you wanna send for some other object from uniq local
+ * See example from FPShooter. Explanation : In MultiPlayer mode 
+ * local player dont have animation character only gun classic for FPShooters.
+ * We project position values on remote computer for our character by different nameUniq (netObjId).
+ * Setup of `nameUniq` props done in initial/loading stage.
  */
 
 
@@ -23395,6 +23804,7 @@ exports.RotationVector = RotationVector;
 class Position {
   constructor(x, y, z) {
     this.nameUniq = null;
+    this.netObjId = null;
 
     if (typeof x == 'undefined') {
       x = 0;
@@ -23411,6 +23821,9 @@ class Position {
     this.x = x;
     this.y = y;
     this.z = z;
+    this.xNetOffset = 0;
+    this.yNetOffset = 0;
+    this.zNetOffset = 0;
     this.velY = 0;
     this.velX = 0;
     this.velZ = 0;
@@ -23479,13 +23892,13 @@ class Position {
         this.x += this.velX;
         this.y += this.velY;
         this.z += this.velZ;
-        if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+        if (_manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
           netPos: {
-            x: this.x,
-            y: this.y,
-            z: this.z
+            x: this.x + this.xNetOffset,
+            y: this.y + this.yNetOffset,
+            z: this.z + this.zNetOffset
           },
-          netObjId: this.nameUniq
+          netObjId: this.netObjId
         });
       } else {
         this.x = this.targetX;
@@ -23493,13 +23906,13 @@ class Position {
         this.z = this.targetZ;
         this.inMove = false;
         this.onTargetPositionReach();
-        if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+        if (_manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
           netPos: {
             x: this.x,
             y: this.y,
             z: this.z
           },
-          netObjId: this.nameUniq
+          netObjId: this.netObjId
         });
       }
     }
@@ -23512,16 +23925,16 @@ class Position {
   SetX(newx, em) {
     this.x = newx;
     this.targetX = newx;
-    this.inMove = false;
+    this.inMove = false; // console.log('test setX net.connection ', net)
 
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') {
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) {
       _engine.net.connection.send({
         netPos: {
-          x: this.x,
-          y: this.y,
-          z: this.z
+          x: this.x + this.xNetOffset,
+          y: this.y + this.yNetOffset,
+          z: this.z + this.zNetOffset
         },
-        netObjId: this.nameUniq
+        netObjId: this.netObjId
       });
     }
   }
@@ -23530,13 +23943,13 @@ class Position {
     this.y = newy;
     this.targetY = newy;
     this.inMove = false;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
-        x: this.x,
-        y: this.y,
-        z: this.z
+        x: this.x + this.xNetOffset,
+        y: this.y + this.yNetOffset,
+        z: this.z + this.zNetOffset
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -23544,13 +23957,13 @@ class Position {
     this.z = newz;
     this.targetZ = newz;
     this.inMove = false;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
-        x: this.x,
-        y: this.y,
-        z: this.z
+        x: this.x + this.xNetOffset,
+        y: this.y + this.yNetOffset,
+        z: this.z + this.zNetOffset
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -23562,13 +23975,13 @@ class Position {
     this.targetY = newy;
     this.targetZ = newz;
     this.inMove = false;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netPos: {
-        x: this.x,
-        y: this.y,
-        z: this.z
+        x: this.x + this.xNetOffset,
+        y: this.y + this.yNetOffset,
+        z: this.z + this.zNetOffset
       },
-      netObjId: this.nameUniq
+      netObjId: this.netObjId
     });
   }
 
@@ -23596,7 +24009,7 @@ class TriangleVertex {
 
   setScale(scale) {
     this.size = scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -23606,7 +24019,7 @@ class TriangleVertex {
 
     _manifest.default.operation.triangle_buffer_procedure(this.root);
 
-    return "dynamicBuffer is false but i will update vertex array prototypical.";
+    return "update vertex array prototypical";
   }
 
 }
@@ -23660,7 +24073,7 @@ class SquareVertex {
     this.texCoordsPoints.left_top.y = 1 + newScaleFactror;
     this.texCoordsPoints.right_bottom.x = 1 + newScaleFactror;
     this.texCoordsPoints.right_bottom.y = 0 - newScaleFactror;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       texScaleFactor: {
         newScaleFactror: newScaleFactror
       },
@@ -23672,7 +24085,7 @@ class SquareVertex {
     this.texCoordsPoints.right_top.y = 1 + newScaleFactror;
     this.texCoordsPoints.left_bottom.y = 0 - newScaleFactror;
     this.texCoordsPoints.left_top.y = 1 + newScaleFactror;
-    this.texCoordsPoints.right_bottom.y = 0 - newScaleFactror; // if(net && net.connection && typeof em === 'undefined') net.connection.send({
+    this.texCoordsPoints.right_bottom.y = 0 - newScaleFactror; // if( typeof em === 'undefined') net.connection.send({
     //   texScaleFactor: {newScaleFactror: newScaleFactror},
     //   netObjId: this.nameUniq,
     // });
@@ -23682,7 +24095,7 @@ class SquareVertex {
     this.texCoordsPoints.right_top.x = 1 + newScaleFactror;
     this.texCoordsPoints.left_bottom.x = 0 - newScaleFactror;
     this.texCoordsPoints.left_top.x = 0 - newScaleFactror;
-    this.texCoordsPoints.right_bottom.x = 1 + newScaleFactror; // if(net && net.connection && typeof em === 'undefined') net.connection.send({
+    this.texCoordsPoints.right_bottom.x = 1 + newScaleFactror; // if( typeof em === 'undefined') net.connection.send({
     //   texScaleFactor: {newScaleFactror: newScaleFactror},
     //   netObjId: this.nameUniq,
     // });
@@ -23693,7 +24106,7 @@ class SquareVertex {
     this.pointB.x = -scale;
     this.pointC.x = scale;
     this.pointD.x = -scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_manifest.default.scene[this.nameUniq] && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         x: scale
       },
@@ -23703,7 +24116,7 @@ class SquareVertex {
 
     _manifest.default.operation.square_buffer_procedure(this.root);
 
-    return 'dynamicBuffer is false but i will update vertex array prototypical.';
+    return 'update vertex array prototypical';
   }
 
   setScaleByY(scale, em) {
@@ -23711,7 +24124,7 @@ class SquareVertex {
     this.pointB.y = scale;
     this.pointC.y = -scale;
     this.pointD.y = -scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (_manifest.default.scene[this.nameUniq] && typeof em === 'undefined' && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         y: scale
       },
@@ -23721,12 +24134,12 @@ class SquareVertex {
 
     _manifest.default.operation.square_buffer_procedure(this.root);
 
-    return 'dynamicBuffer is false but i will update vertex array prototypical.';
+    return 'update vertex array prototypical';
   }
 
   setScale(scale, em) {
     this.size = scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -23736,7 +24149,7 @@ class SquareVertex {
 
     _manifest.default.operation.square_buffer_procedure(this.root);
 
-    return 'DynamicBuffer is false but i will update vertex array prototypical.';
+    return 'update vertex array prototypical';
   }
 
   get color() {
@@ -24189,7 +24602,7 @@ class CubeVertex {
     this.Back.pointB.x = -scale;
     this.Back.pointC.x = scale;
     this.Back.pointD.x = scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         x: scale
       },
@@ -24199,7 +24612,7 @@ class CubeVertex {
 
     _manifest.default.operation.cube_buffer_procedure(this.root);
 
-    return "dynamicBuffer is false but i will update vertex array prototypical.";
+    return "update vertex array prototypical";
   }
 
   setScaleByY(scale, em) {
@@ -24228,7 +24641,7 @@ class CubeVertex {
     this.Back.pointB.y = scale;
     this.Back.pointC.y = scale;
     this.Back.pointD.y = -scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         y: scale
       },
@@ -24238,7 +24651,7 @@ class CubeVertex {
 
     _manifest.default.operation.cube_buffer_procedure(this.root);
 
-    return "dynamicBuffer is false but i will update vertex array prototypical.";
+    return "update vertex array prototypical";
   }
 
   setScaleByZ(scale, em) {
@@ -24266,7 +24679,7 @@ class CubeVertex {
     this.Back.pointB.z = -scale;
     this.Back.pointC.z = -scale;
     this.Back.pointD.z = -scale;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         z: scale
       },
@@ -24276,14 +24689,14 @@ class CubeVertex {
 
     _manifest.default.operation.cube_buffer_procedure(this.root);
 
-    return "dynamicBuffer is false but i will update vertex array prototypical.";
+    return "update vertex array prototypical";
   }
 
   setScale(scale, em) {
     this.size = scale;
     this.basePoint = 1.0 * this.size;
     this.basePointNeg = -1.0 * this.size;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -24293,7 +24706,7 @@ class CubeVertex {
 
     _manifest.default.operation.cube_buffer_procedure(this.root);
 
-    return "dynamicBuffer is false but i will update vertex array prototypical.";
+    return "update vertex array prototypical";
   }
 
   setTexCoordScaleFactor(newScaleFactror, em) {
@@ -24316,7 +24729,7 @@ class CubeVertex {
       this.texCoordsPoints[key].right_bottom.y = this.texCoordsPoints[key].right_bottom.y + newScaleFactror * calculate(this.texCoordsPoints[key].right_bottom.y);
     }
 
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       texScaleFactor: {
         newScaleFactror: newScaleFactror
       },
@@ -24349,7 +24762,7 @@ class CubeVertex {
       this.texCoordsPoints[key].right_bottom.x = this.texCoordsPoints[key].right_bottom.x + newScaleFactror * calculate(this.texCoordsPoints[key].right_bottom.x); // this.texCoordsPoints[key].right_bottom.y =
       //   this.texCoordsPoints[key].right_bottom.y +
       //   newScaleFactror * calculate(this.texCoordsPoints[key].right_bottom.y);
-    } // if(net && net.connection && typeof em === 'undefined') net.connection.send({
+    } // if( typeof em === 'undefined') net.connection.send({
     //   texScaleFactor: {newScaleFactror: newScaleFactror},
     //   netObjId: this.nameUniq,
     // });
@@ -24370,7 +24783,7 @@ class CubeVertex {
       this.texCoordsPoints[key].left_bottom.y = this.texCoordsPoints[key].left_bottom.y + newScaleFactror * calculate(this.texCoordsPoints[key].left_bottom.y);
       this.texCoordsPoints[key].left_top.y = this.texCoordsPoints[key].left_top.y + newScaleFactror * calculate(this.texCoordsPoints[key].left_top.y);
       this.texCoordsPoints[key].right_bottom.y = this.texCoordsPoints[key].right_bottom.y + newScaleFactror * calculate(this.texCoordsPoints[key].right_bottom.y);
-    } // if(net && net.connection && typeof em === 'undefined') net.connection.send({
+    } // if( typeof em === 'undefined') net.connection.send({
     //   texScaleFactor: {newScaleFactror: newScaleFactror},
     //   netObjId: this.nameUniq,
     // });
@@ -24554,7 +24967,7 @@ class PiramideVertex {
     this.size = scale;
     this.basePoint = 1.0 * this.size;
     this.basePointNeg = -1.0 * this.size;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em === 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       netScale: {
         scale: scale
       },
@@ -24564,12 +24977,12 @@ class PiramideVertex {
 
     _manifest.default.operation.piramide_buffer_procedure(this.root);
 
-    return "dynamicBuffer is false but i will update vertex array prototypical.";
+    return "update vertex array prototypical";
   }
 
   setSpitz(newValueFloat, em) {
     this.spitz = newValueFloat;
-    if (_engine.net && _engine.net.connection && typeof em === 'undefined') _engine.net.connection.send({
+    if (typeof em == 'undefined' && _manifest.default.scene[this.nameUniq] && _manifest.default.scene[this.nameUniq].net.enable == true) _engine.net.connection.send({
       spitz: {
         newValueFloat: newValueFloat
       },
@@ -24716,7 +25129,7 @@ class sphereVertex {
 
       return;
     } //App.operation.sphere_buffer_procedure(this.root)
-    //return 'dynamicBuffer is false but i will update vertex array prototypical.';
+    //return 'update vertex array prototypical';
 
   }
 
@@ -24739,6 +25152,7 @@ class sphereVertex {
 }
 
 exports.sphereVertex = sphereVertex;
+var S1 = new _utility.SWITCHER();
 
 class customVertex {
   createGeoData(root) {
@@ -24794,13 +25208,19 @@ class customVertex {
         }
       }
     } else if (this.root.custom_type == "cubic") {
-      for (var j = 0; j < 8; j++) {
+      // console.log('??????????not work for now???????????????')
+      for (var j = 0; j < 118; j++) {
         var x = j + 1 * S1.GET();
         var y = 1;
         var z = j + 1;
         this.normalData.push(x);
         this.normalData.push(y);
         this.normalData.push(z);
+        const u = j / root.loops;
+        const loop_angle = u * 2 * Math.PI; // const v = slice / this.root.slices;
+
+        const v = 2 / this.root.slices;
+        const slice_angle = v * 2 * Math.PI;
         this.textureCoordData.push(u);
         this.textureCoordData.push(v);
         this.vertexPositionData.push(this.radius * x);
@@ -24819,6 +25239,77 @@ class customVertex {
         this.indexData.push(second);
         this.indexData.push(second + 1);
         this.indexData.push(first + 1);
+      }
+    } else if (this.root.custom_type == "torus") {
+      for (let slice = 0; slice <= this.root.slices; ++slice) {
+        const v = slice / this.root.slices;
+        const slice_angle = v * 2 * Math.PI;
+        const cos_slices = Math.cos(slice_angle);
+        const sin_slices = Math.sin(slice_angle);
+        const slice_rad = this.root.outerRad + this.root.inner_rad * cos_slices;
+
+        for (let loop = 0; loop <= this.root.loops; ++loop) {
+          //   x=(R+r·cos(v))cos(w)
+          //   y=(R+r·cos(v))sin(w)
+          //             z=r.sin(v)
+          const u = loop / this.root.loops;
+          const loop_angle = u * 2 * Math.PI;
+          const cos_loops = Math.cos(loop_angle);
+          const sin_loops = Math.sin(loop_angle);
+          const x = slice_rad * cos_loops;
+          const y = slice_rad * sin_loops;
+          const z = this.root.inner_rad * sin_slices;
+          this.vertexPositionData.push(x, y, z);
+          this.normalData.push(cos_loops * sin_slices, sin_loops * sin_slices, cos_slices);
+          this.textureCoordData.push(u);
+          this.textureCoordData.push(v);
+        }
+      } // 0  1  2  3  4  5
+      // 6  7  8  9  10 11
+      // 12 13 14 15 16 17
+
+
+      this.indexData = [];
+      const vertsPerSlice = this.root.loops + 1;
+
+      for (let i = 0; i < this.root.slices; ++i) {
+        let v1 = i * vertsPerSlice;
+        let v2 = v1 + vertsPerSlice;
+
+        for (let j = 0; j < this.root.loops; ++j) {
+          this.indexData.push(v1);
+          this.indexData.push(v1 + 1);
+          this.indexData.push(v2);
+          this.indexData.push(v2);
+          this.indexData.push(v1 + 1);
+          this.indexData.push(v2 + 1);
+          v1 += 1;
+          v2 += 1;
+        }
+      }
+    } else if (this.root.custom_type == "testConvex") {
+      if (this.root.custom_geometry) {
+        this.indexData = [];
+        console.log('[CUSTOM-GEO][from cannonjs]', this.root.custom_geometry); // try to convert direct from CANNON geometry - can be reused for diff stuff.
+
+        this.root.custom_geometry.vertices.forEach(point => {
+          this.textureCoordData.push(point.x);
+          this.textureCoordData.push(point.y);
+          this.vertexPositionData.push(this.radius * point.x);
+          this.vertexPositionData.push(this.radius * point.y);
+          this.vertexPositionData.push(this.radius * point.z);
+        });
+        this.root.custom_geometry.faceNormals.forEach(point => {
+          this.normalData.push(point.x);
+          this.normalData.push(point.y);
+          this.normalData.push(point.z);
+        });
+        this.root.custom_geometry.faces.forEach(face => {
+          // console.log("FACES", face)
+          face.forEach(f => {
+            this.indexData.push(f);
+          });
+        });
       }
     }
   }
@@ -24844,7 +25335,7 @@ class customVertex {
     _manifest.default.operation.sphere_buffer_procedure(this.root);
 
     this.root.glDrawElements.numberOfIndicesRender = this.indices.length;
-    return "dynamicBuffer is false but i will update vertex array prototypical.";
+    return "update vertex array prototypical";
   }
 
   get vertices() {
@@ -25088,19 +25579,18 @@ class GeoOfColor {
     }
   }
 
-}
+} // export function ring(innerRadius, outerRadius, slices) {}
+
 
 exports.GeoOfColor = GeoOfColor;
 
-function ring(innerRadius, outerRadius, slices) {}
-
-},{"../program/manifest":67,"./engine":43,"./utility":65}],50:[function(require,module,exports){
+},{"../program/manifest":75,"./engine":44,"./utility":71}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadShaders2 = loadShaders2;
+exports.loadShaders11 = loadShaders11;
 exports.genInitFSTriangle = genInitFSTriangle;
 exports.getInitVSTriangle = getInitVSTriangle;
 exports.getInitFSCubeTexLight = getInitFSCubeTexLight;
@@ -25128,12 +25618,726 @@ var _utility = require("./utility");
  * @description From 1.7.11
  * Initial Shaders coming from code.
  * loadShaders will be adapted for deplacement
- *
+ * This is for `opengles 2.0 or 1.1` - GLSL It is a webGL1
+ * 
  * - Can be overrided
  * - For textures program use regenerate shader procedure.
  * - Can be selective for optimisation.
  */
-function loadShaders2() {
+function loadShaders11() {
+  genInitFSTriangle();
+  getInitVSTriangle();
+  getInitVSCube();
+  getInitFSCube();
+  getInitFSCubeTex();
+  getInitVSCubeTex();
+  getInitFSCubeTexLight();
+  getInitVSCubeTexLight();
+  getInitFSSquare();
+  getInitVSSquare();
+  getInitFSObj();
+  getInitVSObj();
+  getInitFSPyramid();
+  getInitVSPyramid();
+  getInitFSSphereLightTex();
+  getInitVSSphereLightTex();
+  getInitVSCubeMap();
+  getInitFSCubeMap();
+  getInitFSSquareTex();
+  getInitVSSquareTex(); // console.info("Shaders ready.");
+}
+
+function genInitFSTriangle() {
+  const f = `
+  precision mediump float;
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_FragColor = vColor;
+  }
+  `;
+
+  _utility.scriptManager.LOAD(f, "triangle-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSTriangle() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec4 aVertexColor;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vColor      = aVertexColor;
+  }
+  `;
+
+  _utility.scriptManager.LOAD(f, "triangle-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSCubeTexLight() {
+  const f = `
+  precision mediump float;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  uniform sampler2D uSampler;
+  uniform sampler2D uSampler1;
+  uniform sampler2D uSampler2;
+  uniform sampler2D uSampler3;
+  uniform sampler2D uSampler4;
+  uniform sampler2D uSampler5;
+
+  // The CubeMap texture.
+  uniform samplerCube u_texture;
+  // cube map
+  varying vec3 v_normal_cubemap;
+
+  uniform float numberOfsamplers;
+
+  // Spot
+  // Passed in from the vertex shader.
+  varying vec3 v_normal;
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+
+  uniform vec4 u_color;
+  uniform float u_shininess;
+  uniform vec3 u_lightDirection;
+  uniform float u_innerLimit;          // in dot space
+  uniform float u_outerLimit;          // in dot space
+
+  void main(void) {
+    // because v_normal is a varying it's interpolated
+    // so it will not be a unit vector. Normalizing it
+    // will make it a unit vector again
+    vec3 normal = normalize(v_normal);
+
+    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+    vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+    vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+
+    float dotFromDirection = dot(surfaceToLightDirection,
+                                 -u_lightDirection);
+    float limitRange = u_innerLimit - u_outerLimit;
+    float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+    float light = inLight * dot(normal, surfaceToLightDirection);
+    float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+
+    // Directioin vs uAmbientColor
+    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+
+    vec4 testUnused = texture2D(u_texture, vec2(vTextureCoord.s, vTextureCoord.t));
+
+    gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+
+    // Lets multiply just the color portion (not the alpha)
+    // by the light
+    gl_FragColor.rgb *= light;
+    // Just add in the specular
+    gl_FragColor.rgb += specular;
+  }
+  `;
+
+  _utility.scriptManager.LOAD(f, "cubeLightTex-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSCubeTexLight() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec3 aVertexNormal;
+  attribute vec2 aTextureCoord;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  uniform mat3 uNMatrix;
+
+  uniform vec3 uAmbientColor;
+
+  uniform vec3 uLightingDirection;
+  uniform vec3 uDirectionalColor;
+
+  uniform bool uUseLighting;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  // Spot
+  uniform vec3 u_lightWorldPosition;
+  varying vec3 v_normal;
+  varying vec3 v_normal_cubemap;
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+
+  // Specular
+  varying mat4 uMVMatrixINTER;
+  varying mat3 uNMatrixINTER;
+  varying mat4 uPMatrixINNTER;
+
+  attribute vec4 specularColor;
+  varying vec4 vColor;
+  varying vec3 vNormal;
+  varying vec4 vPosition;
+  varying float vDist;
+
+  void main(void) {
+    uMVMatrixINTER = uMVMatrix;
+    uNMatrixINTER = uNMatrix;
+    uPMatrixINNTER = uPMatrix;
+
+    // GLOBAL POS SPECULAR
+    vColor = specularColor;
+    vNormal = normalize(uNMatrix * vec3(aVertexNormal));
+    // Calculate the modelView of the model, and set the vPosition
+    // mat4 modelViewMatrix = uViewMatrix * uModelMatrix;
+    vPosition = uMVMatrix * vec4(1,1,1,1);
+    vDist = gl_Position.w;
+
+    // SPOT
+    // orient the normals and pass to the fragment shader
+    v_normal = mat3(uNMatrix) * aVertexNormal;
+
+    // normalize
+    v_normal_cubemap = normalize(aVertexPosition.xyz);
+
+    // compute the world position of the surfoace
+    vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
+
+    // compute the vector of the surface to the light
+    // and pass it to the fragment shader
+    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+
+    // compute the vector of the surface to the view/camera
+    // and pass it to the fragment shader
+    v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
+
+    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vTextureCoord = aTextureCoord;
+
+    if (!uUseLighting) {
+      vLightWeighting = vec3(1.0, 1.0, 1.0);
+    }
+    else {
+      vec3 transformedNormal          = uNMatrix * aVertexNormal;
+      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+    }
+  } `;
+
+  _utility.scriptManager.LOAD(f, "cubeLightTex-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSSquare() {
+  const f = `
+  precision mediump float;
+
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_FragColor = vColor;
+  }
+  `;
+
+  _utility.scriptManager.LOAD(f, "square-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSSquare() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec4 aVertexColor;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vColor      = aVertexColor;
+  }`;
+
+  _utility.scriptManager.LOAD(f, "square-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSCube() {
+  const f = `
+  precision mediump float;
+
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_FragColor = vColor;
+  }`;
+
+  _utility.scriptManager.LOAD(f, "cube-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSCube() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec4 aVertexColor;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vColor      = aVertexColor;
+  }`;
+
+  _utility.scriptManager.LOAD(f, "cube-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSCubeTex() {
+  const f = `
+  precision mediump float;
+
+  varying vec2 vTextureCoord;
+  uniform sampler2D uSampler;
+
+  void main(void) {
+    gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+  }`;
+
+  _utility.scriptManager.LOAD(f, "cubeTex-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSCubeTex() {
+  const f = `
+  #version 300 es
+  #define POSITION_LOCATION 0
+
+  attribute vec3 aVertexPosition;
+  attribute vec2 aTextureCoord;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+
+  varying vec2 vTextureCoord;
+
+  void main(void) {
+    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vTextureCoord = aTextureCoord;
+  }`;
+
+  _utility.scriptManager.LOAD(f, "cubeTex-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSObj() {
+  const f = `
+  precision mediump float;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  uniform sampler2D uSampler;
+  uniform sampler2D uSampler1;
+  uniform sampler2D uSampler2;
+
+  void main(void) {
+    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+    gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+  }`;
+
+  _utility.scriptManager.LOAD(f, "obj-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSObj() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec3 aVertexNormal;
+  attribute vec2 aTextureCoord;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  uniform mat3 uNMatrix;
+
+  uniform vec3 uAmbientColor;
+
+  uniform vec3 uLightingDirection;
+  uniform vec3 uDirectionalColor;
+
+  uniform bool uUseLighting;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  void main(void) {
+    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vTextureCoord = aTextureCoord;
+
+    if (!uUseLighting) {
+      vLightWeighting = vec3( 1.0, 1.0, 1.0);
+    }
+    else {
+      vec3 transformedNormal          = uNMatrix * aVertexNormal;
+      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+    }
+  }
+`;
+
+  _utility.scriptManager.LOAD(f, "obj-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSPyramid() {
+  const f = `
+  precision mediump float;
+  varying vec4 vColor;
+
+  void main(void) {
+    gl_FragColor = vColor;
+  }`;
+
+  _utility.scriptManager.LOAD(f, "pyramid-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSPyramid() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec4 aVertexColor;
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  varying vec4 vColor;
+
+  void main(void) {
+    // instance = gl_InstanceID;
+    // gl_Position = vec4(aVertexPosition + vec2(float(gl_InstanceID) - 0.5, 0.0), 0.0, 1.0);
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vColor      = aVertexColor;
+  }
+`;
+
+  _utility.scriptManager.LOAD(f, "pyramid-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSSquareTex() {
+  const f = `
+  precision mediump float;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  uniform sampler2D uSampler;
+  uniform sampler2D uSampler1;
+  uniform sampler2D uSampler2;
+  uniform sampler2D uSampler3;
+  uniform sampler2D uSampler4;
+  uniform sampler2D uSampler5;
+  uniform float numberOfsamplers;
+
+  // Spot
+  // Passed in from the vertex shader.
+  varying vec3 v_normal;
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+
+  uniform vec4 u_color;
+  uniform float u_shininess;
+  uniform vec3 u_lightDirection;
+  uniform float u_innerLimit;          // in dot space
+  uniform float u_outerLimit;          // in dot space
+
+  void main(void) {
+    vec3 normal = normalize(v_normal);
+    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+    vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+    vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+    float dotFromDirection = dot(surfaceToLightDirection,
+                                 -u_lightDirection);
+    float limitRange = u_innerLimit - u_outerLimit;
+    float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+    float light = inLight * dot(normal, surfaceToLightDirection);
+    float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+    vec4 textureColor  = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+    gl_FragColor       = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+
+    // gl_FragColor.rgb *= light;
+    // gl_FragColor.rgb += specular;
+  }
+  `;
+
+  _utility.scriptManager.LOAD(f, "squareTex-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSSquareTex() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec3 aVertexNormal;
+  attribute vec2 aTextureCoord;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  uniform mat3 uNMatrix;
+
+  uniform vec3 uAmbientColor;
+
+  uniform vec3 uLightingDirection;
+  uniform vec3 uDirectionalColor;
+
+  uniform bool uUseLighting;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  // Spot
+  uniform vec3 u_lightWorldPosition;
+  uniform vec3 u_viewWorldPosition;
+
+  // uniform mat4 u_world;
+  // uniform mat4 u_worldViewProjection;
+  // uniform mat4 u_worldInverseTranspose;
+
+  varying vec3 v_normal;
+
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+
+  void main(void) {
+    // Spot
+    v_normal = mat3(uPMatrix) * aVertexNormal;
+    vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
+    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+    v_surfaceToView = -surfaceWorldPosition;
+
+    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vTextureCoord = aTextureCoord;
+
+    if (!uUseLighting) {
+      vLightWeighting = vec3(1.0, 1.0, 1.0);
+    }
+    else {
+      vec3 transformedNormal          = uNMatrix * aVertexNormal;
+      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+    }
+  }
+`;
+
+  _utility.scriptManager.LOAD(f, "squareTex-shader-vs", "x-shader/x-vertex", "shaders"); // console.log(" squareTex-shader-vs v")
+
+}
+
+function getInitFSSphereLightTex() {
+  const f = `// #version 300 es
+  precision mediump float;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  uniform sampler2D uSampler;
+  uniform sampler2D uSampler1;
+  uniform sampler2D uSampler2;
+  uniform sampler2D uSampler3;
+  uniform sampler2D uSampler4;
+  uniform sampler2D uSampler5;
+  uniform float numberOfsamplers;
+
+  void main(void) {
+
+    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+    gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+
+  }
+  `;
+
+  _utility.scriptManager.LOAD(f, "sphereLightTex-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSSphereLightTex() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec3 aVertexNormal;
+  attribute vec2 aTextureCoord;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  uniform mat3 uNMatrix;
+
+  uniform vec3 uAmbientColor;
+
+  uniform vec3 uLightingDirection;
+  uniform vec3 uDirectionalColor;
+
+  uniform bool uUseLighting;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  void main(void) {
+    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vTextureCoord = aTextureCoord;
+
+    if (!uUseLighting) {
+      vLightWeighting = vec3(1.0, 1.0, 1.0);
+    }
+    else {
+      vec3 transformedNormal          = uNMatrix * aVertexNormal;
+      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+    }
+  }
+`;
+
+  _utility.scriptManager.LOAD(f, "sphereLightTex-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+function getInitFSCubeMap() {
+  const f = `
+  precision mediump float;
+
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  // The CubeMap texture.
+  uniform samplerCube u_texture;
+  // cube map
+  varying vec3 v_normal_cubemap;
+
+  uniform float numberOfsamplers;
+
+  // Spot
+  // Passed in from the vertex shader.
+  varying vec3 v_normal;
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+
+  uniform vec4 u_color;
+  uniform float u_shininess;
+  uniform vec3 u_lightDirection;
+  uniform float u_innerLimit;          // in dot space
+  uniform float u_outerLimit;          // in dot space
+
+  void main(void) {
+    // because v_normal is a varying it's interpolated
+    // so it will not be a unit vector. Normalizing it
+    // will make it a unit vector again
+    vec3 normal = normalize(v_normal);
+
+    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+    vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+    vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+
+    float dotFromDirection = dot(surfaceToLightDirection,
+                                 -u_lightDirection);
+    float limitRange = u_innerLimit - u_outerLimit;
+    float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+    float light = inLight * dot(normal, surfaceToLightDirection);
+    float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+
+    // Directioin vs uAmbientColor
+    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+    vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+
+    vec4 testUnused = texture2D(u_texture, vec2(vTextureCoord.s, vTextureCoord.t));
+
+     gl_FragColor = textureCube(u_texture, normal);
+
+    // gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+
+    // Lets multiply just the color portion (not the alpha)
+    // by the light
+    gl_FragColor.rgb *= light;
+    // Just add in the specular
+    gl_FragColor.rgb += specular;
+  }
+  `;
+
+  _utility.scriptManager.LOAD(f, "cubeMap-shader-fs", "x-shader/x-fragment", "shaders");
+}
+
+function getInitVSCubeMap() {
+  const f = `
+  attribute vec3 aVertexPosition;
+  attribute vec3 aVertexNormal;
+
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  uniform mat3 uNMatrix;
+
+  varying vec3 v_normal;
+  varying vec3 v_normal_cubemap;
+
+  // lights
+  uniform vec3 uAmbientColor;
+  uniform vec3 uLightingDirection;
+  uniform vec3 uDirectionalColor;
+  uniform bool uUseLighting;
+  // varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+
+  void main(void) {
+
+    v_normal = mat3(uNMatrix) * aVertexNormal;
+    v_normal_cubemap = normalize(aVertexPosition.xyz);
+    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+    // lights
+    // vTextureCoord = aTextureCoord;
+
+    if (!uUseLighting) {
+      vLightWeighting = vec3(1.0, 1.0, 1.0);
+    }
+    else {
+      vec3 transformedNormal          = uNMatrix * aVertexNormal;
+      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+    }
+
+  } `;
+
+  _utility.scriptManager.LOAD(f, "cubeMap-shader-vs", "x-shader/x-vertex", "shaders");
+}
+
+},{"./utility":71}],52:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.loadShaders300 = loadShaders300;
+exports.genInitFSTriangle = genInitFSTriangle;
+exports.getInitVSTriangle = getInitVSTriangle;
+exports.getInitFSCubeTexLight = getInitFSCubeTexLight;
+exports.getInitVSCubeTexLight = getInitVSCubeTexLight;
+exports.getInitFSSquare = getInitFSSquare;
+exports.getInitVSSquare = getInitVSSquare;
+exports.getInitFSCube = getInitFSCube;
+exports.getInitVSCube = getInitVSCube;
+exports.getInitFSCubeTex = getInitFSCubeTex;
+exports.getInitVSCubeTex = getInitVSCubeTex;
+exports.getInitFSObj = getInitFSObj;
+exports.getInitVSObj = getInitVSObj;
+exports.getInitFSPyramid = getInitFSPyramid;
+exports.getInitVSPyramid = getInitVSPyramid;
+exports.getInitFSSquareTex = getInitFSSquareTex;
+exports.getInitVSSquareTex = getInitVSSquareTex;
+exports.getInitFSSphereLightTex = getInitFSSphereLightTex;
+exports.getInitVSSphereLightTex = getInitVSSphereLightTex;
+exports.getInitFSCubeMap = getInitFSCubeMap;
+exports.getInitVSCubeMap = getInitVSCubeMap;
+
+var _utility = require("./utility");
+
+/**
+ * @description From 1.9.43
+ * Opengles300 in single file.
+ */
+function loadShaders300() {
   genInitFSTriangle();
   getInitVSTriangle();
   getInitVSCube();
@@ -25154,7 +26358,6 @@ function loadShaders2() {
   getInitFSCubeMap();
   getInitFSSquareTex();
   getInitVSSquareTex();
-  console.info("Shaders ready.");
 }
 
 function genInitFSTriangle() {
@@ -25176,8 +26379,10 @@ function getInitVSTriangle() {
   in vec4 aVertexColor;
   uniform mat4 uMVMatrix;
   uniform mat4 uPMatrix;
+  out vec3 meVertexPosition;
   out vec4 vColor;
   void main(void) {
+    meVertexPosition = aVertexPosition;
     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
     vColor      = aVertexColor;
   }
@@ -25200,7 +26405,7 @@ function getInitFSCubeTexLight() {
   // The CubeMap texture.
   uniform samplerCube u_texture;
   // cube map
-  in vec3 v_normal_cubemap;
+  // in vec3 v_normal_cubemap;
   uniform float numberOfsamplers;
 
   // Spot
@@ -25268,11 +26473,12 @@ function getInitVSCubeTexLight() {
   uniform bool uUseLighting;
   out vec2 vTextureCoord;
   out vec3 vLightWeighting;
+  out vec3 meVertexPosition;
 
   // Spot
   uniform vec3 u_lightWorldPosition;
   out vec3 v_normal;
-  out vec3 v_normal_cubemap;
+  // out vec3 v_normal_cubemap;
   out vec3 v_surfaceToLight;
   out vec3 v_surfaceToView;
 
@@ -25288,6 +26494,8 @@ function getInitVSCubeTexLight() {
   out float vDist;
 
   void main(void) {
+
+    meVertexPosition = aVertexPosition;
     uMVMatrixINTER = uMVMatrix;
     uNMatrixINTER = uNMatrix;
     uPMatrixINNTER = uPMatrix;
@@ -25305,7 +26513,7 @@ function getInitVSCubeTexLight() {
     v_normal = mat3(uNMatrix) * aVertexNormal;
 
     // normalize
-    v_normal_cubemap = normalize(aVertexPosition.xyz);
+    // v_normal_cubemap = normalize(aVertexPosition.xyz);
 
     // compute the world position of the surfoace
     vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
@@ -25353,9 +26561,11 @@ function getInitVSSquare() {
   in vec4 aVertexColor;
   uniform mat4 uMVMatrix;
   uniform mat4 uPMatrix;
+  out vec3 meVertexPosition;
   out vec4 vColor;
 
   void main(void) {
+    meVertexPosition = aVertexPosition;
     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
     vColor      = aVertexColor;
   }`;
@@ -25381,8 +26591,10 @@ function getInitVSCube() {
   in vec4 aVertexColor;
   uniform mat4 uMVMatrix;
   uniform mat4 uPMatrix;
+  out vec3 meVertexPosition;
   out vec4 vColor;
   void main(void) {
+    meVertexPosition = aVertexPosition;
     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
     vColor      = aVertexColor;
   }`;
@@ -25410,8 +26622,10 @@ function getInitVSCubeTex() {
   in vec2 aTextureCoord;
   uniform mat4 uMVMatrix;
   uniform mat4 uPMatrix;
+  out vec3 meVertexPosition;
   out vec2 vTextureCoord;
   void main(void) {
+    meVertexPosition = aVertexPosition;
     gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
     vTextureCoord = aTextureCoord;
   }`;
@@ -25495,6 +26709,7 @@ function getInitVSObj() {
   uniform bool uUseLighting;
   out vec2 vTextureCoord;
   out vec3 vLightWeighting;
+  out vec3 meVertexPosition;
 
   // Spot
   uniform vec3 u_lightWorldPosition;
@@ -25515,6 +26730,8 @@ function getInitVSObj() {
   out float vDist;
 
   void main(void) {
+    meVertexPosition = aVertexPosition;
+
     uMVMatrixINTER = uMVMatrix;
     uNMatrixINTER = uNMatrix;
     uPMatrixINNTER = uPMatrix;
@@ -25581,8 +26798,10 @@ function getInitVSPyramid() {
   in vec4 aVertexColor;
   uniform mat4 uMVMatrix;
   uniform mat4 uPMatrix;
+  out vec3 meVertexPosition;
   out vec4 vColor;
   void main(void) {
+    meVertexPosition = aVertexPosition;
     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
     vColor      = aVertexColor;
   }
@@ -25655,6 +26874,7 @@ function getInitVSSquareTex() {
   uniform bool uUseLighting;
   out vec2 vTextureCoord;
   out vec3 vLightWeighting;
+  out vec3 meVertexPosition;
 
   // Spot
   uniform vec3 u_lightWorldPosition;
@@ -25675,6 +26895,7 @@ function getInitVSSquareTex() {
   // out float vDist;
 
   void main(void) {
+    meVertexPosition = aVertexPosition;
     // GLOBAL POS SPECULAR
     // vColor = specularColor;
     // vNormal = normalize(uNMatrix * vec3(aVertexNormal));
@@ -25709,9 +26930,8 @@ function getInitVSSquareTex() {
   }
 `;
 
-  _utility.scriptManager.LOAD(f, "squareTex-shader-vs", "x-shader/x-vertex", "shaders");
+  _utility.scriptManager.LOAD(f, "squareTex-shader-vs", "x-shader/x-vertex", "shaders"); // console.log(" squareTex-shader-vs v")
 
-  console.log(" squareTex-shader-vs v");
 }
 
 function getInitFSSphereLightTex() {
@@ -25752,8 +26972,10 @@ function getInitVSSphereLightTex() {
 
   out vec2 vTextureCoord;
   out vec3 vLightWeighting;
+  out vec3 meVertexPosition;
 
   void main(void) {
+    meVertexPosition = aVertexPosition;
     gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
     vTextureCoord = aTextureCoord;
 
@@ -25778,15 +27000,13 @@ function getInitFSCubeMap() {
   in vec2 vTextureCoord;
   in vec3 vLightWeighting;
 
-  // The CubeMap texture.
+  // The CubeMap texture test.
   uniform samplerCube u_texture;
   // cube map
   in vec3 v_normal_cubemap;
-
   uniform float numberOfsamplers;
 
   // Spot
-  // Passed in from the vertex shader.
   in vec3 v_normal;
   in vec3 v_surfaceToLight;
   in vec3 v_surfaceToView;
@@ -25800,36 +27020,21 @@ function getInitFSCubeMap() {
   out vec4 outColor;
 
   void main(void) {
-    // because v_normal is a varying it's interpolated
-    // so it will not be a unit vector. Normalizing it
-    // will make it a unit vector again
     vec3 normal = normalize(v_normal);
 
     vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
     vec3 surfaceToViewDirection = normalize(v_surfaceToView);
     vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
 
-    float dotFromDirection = dot(surfaceToLightDirection,
-                                 -u_lightDirection);
+    float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
     float limitRange = u_innerLimit - u_outerLimit;
     float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
     float light = inLight * dot(normal, surfaceToLightDirection);
     float specular = inLight * pow(dot(normal, halfVector), u_shininess);
 
-    // Directioin vs uAmbientColor
-    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 testUnused = texture2D(u_texture, vec2(vTextureCoord.s, vTextureCoord.t));
-
-    outColor = textureCube(u_texture, normal);
-    // Lets multiply just the color portion (not the alpha)
-    // by the light
-    outColor.rgb *= light;
-    // Just add in the specular
+    outColor = texture(u_texture, normal);
     outColor.rgb += specular;
-  }
-  `;
+  }`;
 
   _utility.scriptManager.LOAD(f, "cubeMap-shader-fs", "x-shader/x-fragment", "shaders");
 }
@@ -25851,18 +27056,53 @@ function getInitVSCubeMap() {
   uniform vec3 uLightingDirection;
   uniform vec3 uDirectionalColor;
   uniform bool uUseLighting;
-  // varying vec2 vTextureCoord;
   out vec3 vLightWeighting;
+  out vec3 meVertexPosition;
+
+  // test 
+  // Spot
+  uniform vec3 u_lightWorldPosition;
+  // out vec3 v_normal;
+  out vec3 v_surfaceToLight;
+  out vec3 v_surfaceToView;
+
+  // Specular
+  out mat4 uMVMatrixINTER;
+  out mat3 uNMatrixINTER;
+  out mat4 uPMatrixINNTER;
+
+  in vec4 specularColor;
+  out vec4 vColor;
+  out vec3 vNormal;
+  out vec4 vPosition;
+  out float vDist;
+  // end test
 
   void main(void) {
-
+    meVertexPosition = aVertexPosition;
     v_normal = mat3(uNMatrix) * aVertexNormal;
+    // v_normal_cubemap = normalize(aVertexPosition.xyz);
+
+    // test SPOT
+    // orient the normals and pass to the fragment shader
+    v_normal = mat3(uNMatrix) * aVertexNormal;
+
+    // normalize
     v_normal_cubemap = normalize(aVertexPosition.xyz);
+
+    // compute the world position of the surfoace
+    vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
+
+    // compute the vector of the surface to the light
+    // and pass it to the fragment shader
+    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+
+    // compute the vector of the surface to the view/camera
+    // and pass it to the fragment shader
+    v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
+    // end test
+
     gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-
-    // lights
-    // vTextureCoord = aTextureCoord;
-
     if (!uUseLighting) {
       vLightWeighting = vec3(1.0, 1.0, 1.0);
     }
@@ -25871,19 +27111,18 @@ function getInitVSCubeMap() {
       float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
       vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
     }
-
   } `;
 
   _utility.scriptManager.LOAD(f, "cubeMap-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
-},{"./utility":65}],51:[function(require,module,exports){
+},{"./utility":71}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.callReDraw_ = exports.reDrawID = exports.animate = void 0;
+exports.reDrawID = exports.animate = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
 
@@ -25901,9 +27140,6 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* eslint-disable no-undef */
-
-/* eslint-disable no-unused-vars */
 var animate = function (sceneObject) {
   var timeNow = new Date().getTime();
 
@@ -25929,16 +27165,421 @@ var reDrawID = 0;
 exports.reDrawID = reDrawID;
 var secondPass = 0;
 var physicsLooper = 0,
-    lt = 0; // HARDCODE 
-
-window.testX = 0;
-window.testY = 0;
-window.testZ = 0;
-window.PLEASE = 'CE';
+    lt = 0;
 
 _manifest.default.operation.reDrawGlobal = function (time) {
   (0, _engine.modifyLooper)(0);
-  exports.reDrawID = reDrawID = requestAnimationFrame(_matrixWorld.reDraw);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.reDrawGlobal);
+
+  _matrixWorld.world.renderPerspective();
+
+  for (var t = 0; t < _manifest.default.updateBeforeDraw.length; t++) {
+    _manifest.default.updateBeforeDraw[t].UPDATE();
+  } // Physics [cannonjs-matrix engine implementation]
+
+
+  if (_matrixWorld.world.physics !== null) {
+    var dt = (time - lt) / 1000;
+
+    _matrixWorld.world.physics.world.step(1.0 / 60.0, dt, 3);
+
+    lt = time;
+
+    while (physicsLooper <= _matrixWorld.world.contentList.length - 1) {
+      if (_matrixWorld.world.contentList[physicsLooper].physics.enabled) {
+        var local = _matrixWorld.world.contentList[physicsLooper];
+
+        if (local.physics.currentBody.shapeOrientations.length == 1) {
+          if (local.position.x.toFixed(2) == local.physics.currentBody.position.x.toFixed(2)) {// console.log(' TEST SLEEP RENDER local.position.x', local.position.x.toFixed(2), " VS ", local.physics.currentBody.position.x.toFixed(2))
+          } else {
+            local.position.SetX(local.physics.currentBody.position.x);
+            local.position.SetZ(local.physics.currentBody.position.y);
+            local.position.SetY(local.physics.currentBody.position.z);
+          }
+
+          if (_matrixWorld.world.contentList[physicsLooper].custom_type && _matrixWorld.world.contentList[physicsLooper].custom_type == 'torus') {
+            _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]) + 90;
+            _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+            _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+          } else {
+            var axisAngle = local.physics.currentBody.quaternion.toAxisAngle()[1];
+            _matrixWorld.world.contentList[physicsLooper].rotation.angle = axisAngle;
+            _matrixWorld.world.contentList[physicsLooper].rotation.axisSystem = local.physics.currentBody.quaternion.toAxisAngle();
+            _matrixWorld.world.contentList[physicsLooper].rotation.axis.x = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].x.toFixed(2));
+            _matrixWorld.world.contentList[physicsLooper].rotation.axis.y = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].y.toFixed(2));
+            _matrixWorld.world.contentList[physicsLooper].rotation.axis.z = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].z.toFixed(2)); // if (world.contentList[physicsLooper].rotation.x > 0) {
+
+            console.log('1 TEST ', _matrixWorld.world.contentList[physicsLooper].rotation.x); // }
+            // if(local.physics.currentBody.quaternion.x != 0) world.contentList[physicsLooper].rotation.rotx = radToDeg(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+            // if(local.physics.currentBody.quaternion.y != 0) world.contentList[physicsLooper].rotation.roty = radToDeg(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+            // if(local.physics.currentBody.quaternion.z != 0) world.contentList[physicsLooper].rotation.rotz = radToDeg(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+          }
+        } else if (local.physics.currentBody.shapeOrientations.length > 1) {
+          // subObjs
+          for (var x = 0; x < local.subObjs.length; x++) {
+            local.subObjs[x].position.SetX(local.physics.currentBody.shapeOffsets[x].x);
+            local.subObjs[x].position.SetZ(local.physics.currentBody.shapeOffsets[x].y);
+            local.subObjs[x].position.SetY(local.physics.currentBody.shapeOffsets[x].z);
+            if (local.physics.currentBody.quaternion.x != 0) local.subObjs[x].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.shapeOrientations[x].toAxisAngle()[1]);
+            if (local.physics.currentBody.quaternion.y != 0) local.subObjs[x].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.shapeOrientations[x].toAxisAngle()[1]);
+            if (local.physics.currentBody.quaternion.z != 0) local.subObjs[x].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.shapeOrientations[x].toAxisAngle()[1]);
+          }
+        }
+      }
+
+      physicsLooper++;
+    }
+  } // reset to zero
+
+
+  physicsLooper = 0; // Must be override for performance 
+  // - non FBO and FBO option draw coroutine
+  // hc 512x512
+  // Important camera setup must be in the first place in exe order!
+  // Before FB bind
+
+  if (_matrixWorld.world.FBOS.length > 0) {
+    matrixEngine.Events.camera.pitchMemo = matrixEngine.Events.camera.pitch;
+    matrixEngine.Events.camera.yawMemo = matrixEngine.Events.camera.yaw;
+    matrixEngine.Events.camera.xPosMemo = matrixEngine.Events.camera.xPos;
+    matrixEngine.Events.camera.zPosMemo = matrixEngine.Events.camera.zPos;
+    matrixEngine.Events.camera.yPosMemo = matrixEngine.Events.camera.yPos;
+  } // Multi FB
+
+
+  for (var fbindex = 0; fbindex < _matrixWorld.world.FBOS.length; fbindex++) {
+    // save samera pos
+    // if (typeof world.FBOS[fbindex].settings.xPosMemo === 'undefined') {
+    // setup by custom params
+    matrixEngine.Events.camera.xPos = _matrixWorld.world.FBOS[fbindex].settings.cameraX;
+    matrixEngine.Events.camera.yPos = _matrixWorld.world.FBOS[fbindex].settings.cameraY;
+    matrixEngine.Events.camera.zPos = _matrixWorld.world.FBOS[fbindex].settings.cameraZ;
+    matrixEngine.Events.camera.pitch = _matrixWorld.world.FBOS[fbindex].settings.pitch;
+    matrixEngine.Events.camera.yaw = _matrixWorld.world.FBOS[fbindex].settings.yaw;
+
+    _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[fbindex].FB);
+
+    _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
+
+    _matrixWorld.world.GL.gl.clearColor(0.2, 0.2, 0.4, 1.0);
+
+    _matrixWorld.world.GL.gl.clear(_matrixWorld.world.GL.gl.COLOR_BUFFER_BIT | _matrixWorld.world.GL.gl.DEPTH_BUFFER_BIT);
+
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
+
+    _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
+
+    _matrixWorld.world.GL.gl.depthMask(true); // - draw all `non fbo` and `no blend`
+
+
+    while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
+      if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
+        if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if (_matrixWorld.world.contentList[_engine.looper].type.indexOf("custom-") != -1) {
+          // interest part - frst time draw func taken from object inself not from world.
+          // Looks like better solution.
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.contentList[_engine.looper].drawCustom(_matrixWorld.world.contentList[_engine.looper]);
+
+          _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]); //
+
+        } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        }
+      }
+
+      (0, _engine.modifyLooper)(_engine.looper + 1);
+    }
+
+    (0, _engine.modifyLooper)(0); // maybe no need here
+
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
+
+    _matrixWorld.world.GL.gl.depthMask(false); // all non FBO but blended
+
+
+    while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
+      if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == true) {
+        if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if (_matrixWorld.world.contentList[_engine.looper].type.indexOf("custom-") != -1) {
+          // interest part - frst time draw func taken from object inself not from world.
+          // Looks like better solution.
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.contentList[_engine.looper].drawCustom(_matrixWorld.world.contentList[_engine.looper]);
+
+          _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]); //
+
+        } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]), 'noray';
+        } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+          _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+          _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper], 'noray');
+        }
+      }
+
+      (0, _engine.modifyLooper)(_engine.looper + 1);
+    }
+
+    (0, _engine.modifyLooper)(0);
+
+    _matrixWorld.world.GL.gl.depthMask(true); // Back to drawing on the main color buffer!
+
+
+    _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, null); // Multi FBO camera view works but obj seq speed up - probably becouse OSC !! must be fixed
+    // Reset camera
+
+
+    if (typeof _matrixWorld.world.FBOS[0] !== 'undefined') {
+      matrixEngine.Events.camera.zPos = matrixEngine.Events.camera.zPosMemo;
+      matrixEngine.Events.camera.xPos = matrixEngine.Events.camera.xPosMemo;
+      matrixEngine.Events.camera.yPos = matrixEngine.Events.camera.yPosMemo;
+      matrixEngine.Events.camera.pitch = matrixEngine.Events.camera.pitchMemo;
+      matrixEngine.Events.camera.yaw = matrixEngine.Events.camera.yawMemo;
+    }
+  }
+
+  _matrixWorld.world.GL.gl.viewport(0, 0, _matrixWorld.world.GL.gl.canvas.width, _matrixWorld.world.GL.gl.canvas.height);
+
+  _matrixWorld.world.GL.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+  _matrixWorld.world.GL.gl.clear(_matrixWorld.world.GL.gl.COLOR_BUFFER_BIT | _matrixWorld.world.GL.gl.DEPTH_BUFFER_BIT); // Draw again all
+
+
+  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
+
+  _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
+
+  _matrixWorld.world.GL.gl.depthMask(true); // All but no blend
+
+
+  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
+    if (_matrixWorld.world.contentList[_engine.looper].visible === true && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
+      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if (_matrixWorld.world.contentList[_engine.looper].type.indexOf("custom-") != -1) {
+        // interest part - frst time draw func taken from object inself not from world.
+        // Looks like better solution.
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.contentList[_engine.looper].drawCustom(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]); //
+
+      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      }
+    }
+
+    (0, _engine.modifyLooper)(_engine.looper + 1);
+  }
+
+  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
+
+  _matrixWorld.world.GL.gl.depthMask(false);
+
+  (0, _engine.modifyLooper)(0); // all but blend
+
+  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
+    if (_matrixWorld.world.contentList[_engine.looper].visible === true && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == true) {
+      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if (_matrixWorld.world.contentList[_engine.looper].type.indexOf("custom-") != -1) {
+        // interest part - frst time draw func taken from object inself not from world.
+        // Looks like better solution.
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.contentList[_engine.looper].drawCustom(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]); //
+
+      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
+
+        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]);
+
+        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
+      }
+    }
+
+    (0, _engine.modifyLooper)(_engine.looper + 1);
+  }
+
+  (0, _engine.modifyLooper)(0);
+
+  _matrixWorld.world.GL.gl.depthMask(true);
+
+  if (_manifest.default.raycast) {
+    if (secondPass <= 2) {
+      raycaster.touchCoordinate.enabled = false;
+      secondPass = 0;
+    }
+  }
+
+  secondPass++;
+  physicsLooper = 0;
+  (0, _engine.updateFPS)(1);
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.reDrawGlobal(), _manifest.default.redrawInterval);
+
+  if (_matrixWorld.world.animLine) {
+    // animatinLine
+    _matrixWorld.world.globalAnimCounter++;
+
+    if (_matrixWorld.world.globalAnimCounter >= _matrixWorld.world.globalAnimSequenceSize) {
+      _matrixWorld.world.globalAnimCounter = 0;
+
+      if (_matrixWorld.world.timeline.commands[_matrixWorld.world.globalAnimCurSequence]) {
+        // auto call
+        _matrixWorld.world.timeline.commands[_matrixWorld.world.globalAnimCurSequence](); // console.log("TIMELINE SEQ EXE");
+
+      } // VALIDACIJA
+
+
+      if (_matrixWorld.world.globalAnimCurSequence >= _matrixWorld.world.globalAnimTotalSequence) {
+        // for now simple reset - we can add option for reverse playing ...
+        _matrixWorld.world.globalAnimCurSequence = 0;
+      }
+
+      _matrixWorld.world.globalAnimCurSequence++;
+      document.getElementById('globalAnimCurSequence').innerText = _matrixWorld.world.globalAnimCurSequence;
+    }
+
+    document.getElementById('globalAnimCounter').innerText = _matrixWorld.world.globalAnimCounter;
+    document.getElementById('timeline').value = _matrixWorld.world.globalAnimCounter;
+  }
+};
+/* Field of view, Width height ratio, min distance of viewpoint, max distance of viewpoint, */
+
+
+_manifest.default.operation.CameraPerspective = function () {
+  this.GL.gl.viewport(0, 0, canvas.width, canvas.height);
+  this.GL.gl.clear(this.GL.gl.COLOR_BUFFER_BIT | this.GL.gl.DEPTH_BUFFER_BIT);
+  mat4.perspective(this.pMatrix, (0, _engine.degToRad)(_manifest.default.camera.viewAngle), this.GL.gl.viewportWidth / this.GL.gl.viewportHeight, _manifest.default.camera.nearViewpoint, _manifest.default.camera.farViewpoint);
+};
+
+_manifest.default.operation.simplyRender = function (time) {
+  (0, _engine.modifyLooper)(0);
+  if (_manifest.default.offScreenCanvas == false) exports.reDrawID = reDrawID = requestAnimationFrame(_manifest.default.operation.simplyRender);
 
   _matrixWorld.world.renderPerspective();
 
@@ -25970,143 +27611,22 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   } // reset to zero
 
 
-  physicsLooper = 0; // Must be override for performance 
-  // - non FBO and FBO option draw coroutine
-  // hc 512
+  physicsLooper = 0; // Back to drawing on the main color buffer!
+  // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, null);
 
-  if (_matrixWorld.world.FBOS.length > 0) _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[0].FB); // world.FBOS.forEach((fbo) => {
-  // 
-  // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, fbo.fb);
-
-  _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
-
-  _matrixWorld.world.GL.gl.clearColor(0.2, 0.2, 0.4, 1.0);
-
-  _matrixWorld.world.GL.gl.clear(_matrixWorld.world.GL.gl.COLOR_BUFFER_BIT | _matrixWorld.world.GL.gl.DEPTH_BUFFER_BIT);
-
-  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-
-  _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
-
-  _matrixWorld.world.GL.gl.depthMask(true); // - draw all `non fbo` and `no blend`
-
-
-  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
-    if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
-      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      }
-    }
-
-    (0, _engine.modifyLooper)(_engine.looper + 1);
-  }
-
-  (0, _engine.modifyLooper)(0); // maybe no need here
-
-  _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
-
-  _matrixWorld.world.GL.gl.depthMask(false); // all non FBO but blended
-
-
-  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
-    if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == true) {
-      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]); // world.animate(world.contentList[looper]);
-
-      }
-    }
-
-    (0, _engine.modifyLooper)(_engine.looper + 1);
-  }
-
-  (0, _engine.modifyLooper)(0);
-
-  _matrixWorld.world.GL.gl.depthMask(true); // Back to drawing on the main color buffer!
-
-
-  _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, null);
-
-  _matrixWorld.world.GL.gl.viewport(0, 0, _matrixWorld.world.GL.gl.canvas.width, _matrixWorld.world.GL.gl.canvas.height);
-
-  _matrixWorld.world.GL.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-  _matrixWorld.world.GL.gl.clear(_matrixWorld.world.GL.gl.COLOR_BUFFER_BIT | _matrixWorld.world.GL.gl.DEPTH_BUFFER_BIT); // Draw again all
+  _matrixWorld.world.GL.gl.viewport(0, 0, _matrixWorld.world.GL.gl.canvas.width, _matrixWorld.world.GL.gl.canvas.height); // world.GL.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
+  // Draw again all
 
 
   _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
 
   _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
-  _matrixWorld.world.GL.gl.depthMask(true); // all but no blend
-
+  _matrixWorld.world.GL.gl.depthMask(true);
 
   while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
-    if (_matrixWorld.world.contentList[_engine.looper].visible === true && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
+    if (_matrixWorld.world.contentList[_engine.looper].visible === true) {
       if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
         _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
@@ -26159,105 +27679,9 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
   _matrixWorld.world.GL.gl.depthMask(false);
 
-  (0, _engine.modifyLooper)(0); // all but no blend
-
-  while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
-    if (_matrixWorld.world.contentList[_engine.looper].visible === true && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == true) {
-      if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawTriangle(_matrixWorld.world.contentList[_engine.looper]);
-
-        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
-      } else if ('square' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSquare(_matrixWorld.world.contentList[_engine.looper]);
-
-        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
-      } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper]);
-
-        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
-      } else if ('pyramid' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawPyramid(_matrixWorld.world.contentList[_engine.looper]);
-
-        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
-      } else if ('obj' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawObj(_matrixWorld.world.contentList[_engine.looper]);
-
-        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
-      } else if ('squareTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]);
-
-        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
-      } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
-        _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
-
-        _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper]);
-
-        _matrixWorld.world.animate(_matrixWorld.world.contentList[_engine.looper]);
-      }
-    }
-
-    (0, _engine.modifyLooper)(_engine.looper + 1);
-  }
-
   (0, _engine.modifyLooper)(0);
 
-  _matrixWorld.world.GL.gl.depthMask(true); ////////////////
-  // })
-  // if (world.FBOS.length==0) {
-  //     // all but no blend
-  //     while(looper <= world.contentList.length - 1) {
-  //       if(world.contentList[looper].visible === true) {
-  //         if('triangle' == world.contentList[looper].type) {
-  //           world.GL.gl.useProgram(world.contentList[looper].shaderProgram);
-  //           world.drawTriangle(world.contentList[looper]);
-  //           world.animate(world.contentList[looper]);
-  //         } else if('square' == world.contentList[looper].type) {
-  //           world.GL.gl.useProgram(world.contentList[looper].shaderProgram);
-  //           world.drawSquare(world.contentList[looper]);
-  //           world.animate(world.contentList[looper]);
-  //         } else if('cube' == world.contentList[looper].type ||
-  //           'cubeTex' == world.contentList[looper].type ||
-  //           'cubeLightTex' == world.contentList[looper].type ||
-  //           'cubeMap' == world.contentList[looper].type) {
-  //           world.GL.gl.useProgram(world.contentList[looper].shaderProgram);
-  //           world.drawCube(world.contentList[looper]);
-  //           world.animate(world.contentList[looper]);
-  //         } else if('pyramid' == world.contentList[looper].type) {
-  //           world.GL.gl.useProgram(world.contentList[looper].shaderProgram);
-  //           world.drawPyramid(world.contentList[looper]);
-  //           world.animate(world.contentList[looper]);
-  //         } else if('obj' == world.contentList[looper].type) {
-  //           world.GL.gl.useProgram(world.contentList[looper].shaderProgram);
-  //           world.drawObj(world.contentList[looper]);
-  //           world.animate(world.contentList[looper]);
-  //         } else if('squareTex' == world.contentList[looper].type) {
-  //           world.GL.gl.useProgram(world.contentList[looper].shaderProgram);
-  //           world.drawSquareTex(world.contentList[looper]);
-  //           world.animate(world.contentList[looper]);
-  //         } else if('sphereLightTex' == world.contentList[looper].type || 'sphere' == world.contentList[looper].type || 'generatorLightTex' == world.contentList[looper].type) {
-  //           world.GL.gl.useProgram(world.contentList[looper].shaderProgram);
-  //           world.drawSphere(world.contentList[looper]);
-  //           world.animate(world.contentList[looper]);
-  //         }
-  //       }
-  //       modifyLooper(looper + 1);
-  //     }
-  //     modifyLooper(0);
-  // }
-  ///////////////////////
-
+  _matrixWorld.world.GL.gl.depthMask(true);
 
   if (_manifest.default.raycast) {
     if (secondPass <= 2) {
@@ -26283,46 +27707,390 @@ _manifest.default.operation.reDrawGlobal = function (time) {
     document.getElementById('globalAnimCounter').innerText = _matrixWorld.world.globalAnimCounter;
     document.getElementById('timeline').value = _matrixWorld.world.globalAnimCounter;
   }
-};
-/* Field of view, Width height ratio, min distance of viewpoint, max distance of viewpoint, */
 
-
-_manifest.default.operation.CameraPerspective = function () {
-  this.GL.gl.viewport(0, 0, canvas.width, canvas.height);
-  this.GL.gl.clear(this.GL.gl.COLOR_BUFFER_BIT | this.GL.gl.DEPTH_BUFFER_BIT);
-  mat4.perspective(this.pMatrix, (0, _engine.degToRad)(_manifest.default.camera.viewAngle), this.GL.gl.viewportWidth / this.GL.gl.viewportHeight, _manifest.default.camera.nearViewpoint, _manifest.default.camera.farViewpoint);
+  if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.simplyRender(), _manifest.default.redrawInterval);
 };
 
-var callReDraw_ = function () {
-  requestAnimationFrame(_matrixWorld.reDraw);
-};
+},{"../program/manifest":75,"./engine":44,"./matrix-world":59,"./raycast":65,"./utility":71}],54:[function(require,module,exports){
+"use strict";
 
-exports.callReDraw_ = callReDraw_;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.generateShaderSrc = generateShaderSrc;
+exports.generateLensDefinitions11 = generateLensDefinitions11;
+exports.generateLensMain11 = generateLensMain11;
+exports.generateCubeMapShaderSrc1 = generateCubeMapShaderSrc1;
+exports.generateCustomShaderSrc1 = generateCustomShaderSrc1;
+exports.generateSpotLightShadowDefinitions1 = generateSpotLightShadowDefinitions1;
+exports.generateSpotLightShadowMain1 = generateSpotLightShadowMain1;
 
-},{"../program/manifest":67,"./engine":43,"./matrix-world":56,"./raycast":59,"./utility":65}],52:[function(require,module,exports){
+/**
+* @description
+* webGL1
+* GLSL 1.1/1.2
+**/
+function generateShaderSrc(numTextures, mixOperand, lightType) {
+  return `// Matrix-engine shader for ${numTextures} textures samples.
+    precision mediump float;
+    precision highp float;
+    varying vec2 vTextureCoord;
+    varying vec3 vLightWeighting;
+
+    uniform float textureSamplerAmount[${numTextures}];
+    int MixOperandString = ${mixOperand};
+
+    uniform sampler2D uSampler;
+    uniform sampler2D uSampler1;
+    uniform sampler2D uSampler2;
+    uniform sampler2D uSampler3;
+    uniform sampler2D uSampler4;
+    varying vec3 v_normal;
+    
+    ` + (typeof lightType !== 'undefined' && lightType == 'spot' ? generateSpotLightDefinitions1() : ``) + `
+
+    ` + (typeof lightType !== 'undefined' && lightType == 'specular' ? generateSpecularLightDefinitions1() : ``) + `
+
+    ` + (typeof lightType !== 'undefined' && lightType == 'lens' ? generateLensDefinitions1() : ``) + `
+
+    void main(void) {
+
+        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor3 = texture2D(uSampler3, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor4 = texture2D(uSampler4, vec2(vTextureCoord.s, vTextureCoord.t));
+
+        if (${numTextures} == 1) {
+          gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+          // gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) ,0 ,smoothstep(textureColor.r, textureColor.b,textureColor.g));
+        } else if (${numTextures} == 2) {
+          if ( ${mixOperand} == 0) {
+            gl_FragColor    = vec4( (textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
+          } else if (${mixOperand} == 1) {
+            gl_FragColor    = vec4( (textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
+          }
+        } else if (${numTextures} == 3) {
+          if (${mixOperand} == 0) {
+            gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
+          }
+          else if (${mixOperand} == 1) {
+            gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
+          }
+        } else if (${numTextures} == 4) {
+            if (${mixOperand} == 0) {
+              gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
+            }
+            else if (${mixOperand} == 1) {
+              gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
+            }
+        }
+
+    ` + (typeof lightType !== 'undefined' && lightType == 'spot' ? generateSpotLightMain1() : ``) + `
+
+    ` + (typeof lightType !== 'undefined' && lightType == 'specular' ? generateSpecularLightMain1() : ``) + `
+
+    ` + (typeof lightType !== 'undefined' && lightType == 'lens' ? generateLensMain1(numTextures) : ``) + `
+
+    }`;
+}
+
+function generateSpotLightDefinitions1() {
+  return `
+  // inject generateSpotLightDefinitions1
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+
+  uniform vec4 u_color;
+  uniform float u_shininess;
+  uniform vec3 u_lightDirection;
+  uniform float u_innerLimit;
+  uniform float u_outerLimit;
+  // inject generateSpotLightDefinitions1 end
+  `;
+}
+
+function generateSpotLightMain1() {
+  return `
+  vec3 normal = normalize(v_normal);
+
+  vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+  vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+  vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+  float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
+  float limitRange = u_innerLimit - u_outerLimit;
+  float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+  float light = inLight * dot(normal, surfaceToLightDirection);
+  float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+  gl_FragColor.rgb *= light;
+  gl_FragColor.rgb += specular;
+  `;
+}
+
+function generateSpecularLightDefinitions1() {
+  return `// Passed varying from the vertex shader.
+  uniform mat4 uMVMatrixINTER;
+  uniform mat3 uNMatrixINTER;
+  uniform mat4 uPMatrixINNTER;
+
+  uniform vec3 uLightPosition;
+  uniform vec3 uFogColor;
+  uniform vec2 uFogDist;
+
+  varying vec4 vColor;
+  varying vec3 vNormal;
+  varying vec4 vPosition;
+  varying float vDist;
+  `;
+}
+
+function generateSpecularLightMain1() {
+  return `
+  vec3 normal = normalize(v_normal);
+  vec3 lightPosition = vec3(uMVMatrixINTER * vec4(uLightPosition, 1) - vPosition);
+  vec3 lightDirection = normalize(lightPosition);
+
+  // The dot product of the light direction and the orientation of a surface (the normal)
+  // This will be the "diffuse factor"
+  float nDotL = max(dot(lightDirection, normal), 0.1);
+
+  // Specular vars to canculate
+  float specularPower = 0.1;
+  float specular = 0.0;
+
+  if (nDotL > 0.0) {
+    vec3 viewVec = vec3(0,0,1);
+    // reflective vector
+    vec3 reflectVec = reflect(-lightDirection, normal);
+    // determine the specularFactor based on the dot product of viewing and reflective,
+    // taking at least a minimum of 0.0
+    float specularFactor = max(dot(reflectVec, viewVec), 0.0);
+    specular = pow(specularFactor, specularPower);
+  }
+  gl_FragColor.rgb =  textureColor.rgb * vLightWeighting * nDotL - specular;
+  gl_FragColor.a = textureColor.a;
+  `;
+}
+
+function generateLensDefinitions11() {
+  return `// lens effect
+  uniform vec3 uLightPosition;
+  uniform vec3 uResolution;
+  uniform vec3 uControl;
+  `;
+}
+
+function generateLensMain11(numTextures) {
+  return `
+  vec2 rez = vec2(uResolution.x , uResolution.y );
+  vec2 uC = vec2(uControl.x, uControl.y);
+  vec3 pixel_color;
+  float lens_radius = min(0.3 * rez.x, 250.0);
+  vec2 mouse_direction = uC - gl_FragCoord.xy;
+  float mouse_distance = length(mouse_direction);
+  float exp = 1.0;
+  vec2 offset = (1.0 - pow(mouse_distance / lens_radius, exp)) * mouse_direction;
+  if (mouse_distance < lens_radius) {
+    pixel_color = texture(uSampler, vTextureCoord + offset / rez ).rgb;
+    pixel_color.rgb =  pixel_color.rgb * vLightWeighting;
+  } else {
+    pixel_color.rgb =  textureColor.rgb * vLightWeighting;
+  }
+  // todo
+  // if (${numTextures} == 1) { }
+  gl_FragColor = vec4(pixel_color, 1.0);
+  gl_FragColor.a = textureColor.a;
+  `;
+}
+
+function generateCubeMapShaderSrc1(numTextures, mixOperand, lightType) {
+  return `
+  precision mediump float;
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+  // The CubeMap texture test.
+  uniform samplerCube u_texture;
+  varying vec3 v_normal_cubemap;
+  uniform float numberOfsamplers; 
+  varying vec3 v_normal;
+  void main(void) {
+    vec3 normal = normalize(v_normal_cubemap);
+    vec4 textureColor = textureCube(u_texture, normal) * vec4(1,1,1,1);
+    gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+}`;
+}
+
+function generateCustomShaderSrc1(numTextures, mixOperand, code_) {
+  return `
+    // shader for ${numTextures} textures
+    precision mediump float;
+    precision highp float;
+
+    varying vec2 vTextureCoord;
+    varying vec3 vLightWeighting;
+
+    uniform float textureSamplerAmount[${numTextures}];
+    float TimeFor;
+
+    int MixOperandString = ${mixOperand};
+    int CODE = ${code_};
+
+    uniform sampler2D uSampler;
+    uniform sampler2D uSampler1;
+    uniform sampler2D uSampler2;
+    uniform sampler2D uSampler3;
+    uniform sampler2D uSampler4;
+    uniform sampler2D uSampler5;
+    uniform sampler2D uSampler6;
+    uniform sampler2D uSampler7;
+
+    void main(void) {
+
+        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor3 = texture2D(uSampler3, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor4 = texture2D(uSampler4, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor5 = texture2D(uSampler5, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor6 = texture2D(uSampler6, vec2(vTextureCoord.s, vTextureCoord.t));
+        vec4 textureColor7 = texture2D(uSampler7, vec2(vTextureCoord.s, vTextureCoord.t));
+
+        // MixOperandString  make it with eval todo task
+        if(${numTextures} == 1){
+            if(CODE == 0){
+              gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+            }
+            else if(CODE == 1){
+                gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) , 0 , 1 );
+            }
+            else if(CODE == 2){
+              gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b , textureColor.g ) , 1 , 0 , 1 );
+            }
+            else if(CODE == 3){
+              gl_FragColor = vec4( smoothstep( textureColor.g , textureColor.b , 0.5 ) , 1 , 0 , 1 );
+            }
+            else if(CODE == 4){
+              // textureColor
+              vec2 position =  vTextureCoord;
+              float color = 0.3;
+              gl_FragColor = vec4( vec3( color , color * 0.5, sin( color + TimeFor / 3.0 ) * 0.75 ), 1.0 );
+            }
+        }
+        else if(${numTextures} == 2){
+            if( ${mixOperand} == 0){
+              gl_FragColor = vec4((textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
+            }
+            else if (${mixOperand} == 1){
+              gl_FragColor = vec4((textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
+            }
+        }
+        else if (${numTextures} == 3) {
+            if (MixOperandString == 0){
+              gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
+            }
+            else if (MixOperandString == 1){
+              gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
+            }
+        }
+        else if (${numTextures} == 4) {
+            if (MixOperandString == 0){
+                gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
+            }
+            else if (MixOperandString == 1){
+                gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
+            }
+        }
+    }
+
+    // uniform sampler2D uSampler[${numTextures}];
+    // uniform float uMixAmount[${numTextures}];
+    /*
+     void main() {
+     vec4 color = vec4(0);
+     for (int i = 0; i < ${numTextures}; ++i) {
+     vec4 texColor = texture2D(uSampler[i], vTextureCoord);
+     color = mix(color, texColor, uMixAmount[i]);
+     }
+     gl_FragColor = color;
+     }
+     */
+    `;
+}
+
+function generateSpotLightShadowDefinitions1() {
+  return `// inject generateSpotLightShadowDefinitions
+  uniform sampler2D u_projectedTexture;
+  uniform sampler2D u_texture;
+  varying vec2 v_texcoord;
+  uniform float u_bias;
+  varying vec4 v_projectedTexcoord;
+  varying vec3 v_surfaceToLight;
+  varying vec3 v_surfaceToView;
+  uniform vec4 u_color;
+  uniform float u_shininess;
+  uniform vec3 u_lightDirection;
+  uniform float u_innerLimit;
+  uniform float u_outerLimit;
+  uniform mat4 u_projection;
+  uniform mat4 u_view;
+  uniform mat4 u_world;
+  uniform mat4 u_textureMatrix;
+  // inject generateSpotLightShadowDefinitions end
+  `;
+}
+
+function generateSpotLightShadowMain1() {
+  return `
+  // vec3 normal = normalize(v_normal);
+  vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+  vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+  vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+  float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
+  float limitRange = u_innerLimit - u_outerLimit;
+  float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+  float light = inLight * dot(normal, surfaceToLightDirection);
+  float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+
+  vec3 projectedTexcoord = v_projectedTexcoord.xyz / v_projectedTexcoord.w;
+  float currentDepth = projectedTexcoord.z + u_bias;
+
+  bool inRange =
+      projectedTexcoord.x >= 0.0 &&
+      projectedTexcoord.x <= 1.0 &&
+      projectedTexcoord.y >= 0.0 &&
+      projectedTexcoord.y <= 1.0;
+
+  // the 'r' channel has the depth values
+  float projectedDepth = texture(u_projectedTexture, projectedTexcoord.xy).r;
+  float shadowLight = (inRange && projectedDepth <= currentDepth) ? 0.0 : 1.0;
+  vec4 texColor = texture(u_texture, v_texcoord) * vec4(0.5, 0.5, 1, 1);
+  gl_FragColor = vec4(
+    texColor.rgb * light * shadowLight +
+    specular * shadowLight,
+    texColor.a);
+  `;
+}
+
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.generateShaderSrc3 = generateShaderSrc3;
-exports.generateShaderSrc = generateShaderSrc;
 exports.generateLensDefinitions = generateLensDefinitions;
 exports.generateLensMain = generateLensMain;
-exports.generateCubeMapShaderSrc = generateCubeMapShaderSrc;
+exports.generateCubeMapShaderSrc3 = generateCubeMapShaderSrc3;
 exports.generateCustomShaderSrc = generateCustomShaderSrc;
 exports.generateSpotLightShadowDefinitions = generateSpotLightShadowDefinitions;
 exports.generateSpotLightShadowMain = generateSpotLightShadowMain;
 
-/**
- * @description
- * Fragment shader CUBE SQUARETex - general/main
- * OPENGLES30  SQUARE !!!
- **/
+// OPENGLES 300
 function generateShaderSrc3(numTextures, mixOperand, lightType) {
   return `#version 300 es
-    // Matrix-engine 1.9.0 shader[300es] for ${numTextures} textures samples.
+    // Matrix-engine 1.9.40 shader[300es] for ${numTextures} textures samples.
     // With lightType: ${lightType}
+    // HOT FIX GLSL SWITCH
     precision highp float;
     in vec2 vTextureCoord;
     in vec3 vLightWeighting;
@@ -26337,11 +28105,9 @@ function generateShaderSrc3(numTextures, mixOperand, lightType) {
     in vec3 v_normal;
 
     out vec4 outColor;
-
     ` + (typeof lightType !== 'undefined' && lightType == 'spot' ? generateSpotLightDefinitions() : ``) + (typeof lightType !== 'undefined' && lightType == 'specular' ? generateSpecularLightDefinitions() : ``) + (typeof lightType !== 'undefined' && lightType == 'lens' ? generateLensDefinitions() : ``) + (typeof lightType !== 'undefined' && lightType == 'spot-shadow' ? generateSpotLightShadowDefinitions() : ``) + `
 
     void main(void) {
-
         vec4 textureColor = texture(uSampler, vTextureCoord) * vec4(1,1,1,1);
         vec4 textureColor1 = texture(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
         vec4 textureColor2 = texture(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
@@ -26381,113 +28147,10 @@ function generateShaderSrc3(numTextures, mixOperand, lightType) {
 
     }`;
 }
-/**
- * @description
- * Fragment shader CUBE SQUARETex - general/main
- **/
-
-
-function generateShaderSrc(numTextures, mixOperand, lightType) {
-  return `
-    // Matrix-engine shader for ${numTextures} textures samples.
-    precision mediump float;
-    precision highp float;
-    varying vec2 vTextureCoord;
-    varying vec3 vLightWeighting;
-
-    uniform float textureSamplerAmount[${numTextures}];
-    int MixOperandString = ${mixOperand};
-
-    uniform sampler2D uSampler;
-    uniform sampler2D uSampler1;
-    uniform sampler2D uSampler2;
-    uniform sampler2D uSampler3;
-    uniform sampler2D uSampler4;
-    varying vec3 v_normal;
-    
-    ` + (typeof lightType !== 'undefined' && lightType == 'spot' ? generateSpotLightDefinitions() : ``) + `
-
-    ` + (typeof lightType !== 'undefined' && lightType == 'specular' ? generateSpecularLightDefinitions() : ``) + `
-
-    ` + (typeof lightType !== 'undefined' && lightType == 'lens' ? generateLensDefinitions() : ``) + `
-
-    void main(void) {
-
-        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor3 = texture2D(uSampler3, vec2(vTextureCoord.s, vTextureCoord.t));
-        vec4 textureColor4 = texture2D(uSampler4, vec2(vTextureCoord.s, vTextureCoord.t));
-
-        if (${numTextures} == 1) {
-          gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
-          // gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) ,0 ,smoothstep(textureColor.r, textureColor.b,textureColor.g));
-        } else if (${numTextures} == 2) {
-          if ( ${mixOperand} == 0) {
-            gl_FragColor    = vec4( (textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
-          } else if (${mixOperand} == 1) {
-            gl_FragColor    = vec4( (textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
-          }
-        } else if (${numTextures} == 3) {
-          if (${mixOperand} == 0) {
-            gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
-          }
-          else if (${mixOperand} == 1) {
-            gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
-          }
-        } else if (${numTextures} == 4) {
-            if (${mixOperand} == 0) {
-              gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
-            }
-            else if (${mixOperand} == 1) {
-              gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
-            }
-        }
-
-    ` + (typeof lightType !== 'undefined' && lightType == 'spot' ? generateSpotLightMain() : ``) + `
-
-    ` + (typeof lightType !== 'undefined' && lightType == 'specular' ? generateSpecularLightMain() : ``) + `
-
-    ` + (typeof lightType !== 'undefined' && lightType == 'lens' ? generateLensMain(numTextures) : ``) + `
-
-    }`;
-} // export function generateShaderSimpleDirection() {
-//   return `
-//   precision mediump float;
-//   precision highp float;
-//   varying vec4 vColor;
-//   varying vec3 vLightWeighting;
-//   void main(void) {
-//     gl_FragColor      = vec4(vColor.rgb * vLightWeighting, vColor.a);
-//   }
-//   `;
-// }
-// export function generateVShaderSimpleDirectionLight() {
-//   return `
-//   attribute vec3 aVertexPosition;
-//   attribute vec4 aVertexColor;
-//   attribute vec3 aVertexNormal;
-//   uniform mat4 uMVMatrix;
-//   uniform mat4 uPMatrix;
-//   uniform mat3 uNMatrix;
-//   uniform vec3 uLightingDirection;
-//   uniform vec3 uDirectionalColor;
-//   uniform bool uUseLighting;
-//   varying vec3 vLightWeighting;
-//   varying vec4 vColor;
-//   void main(void) {
-//     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-//     vec3 transformedNormal          = uNMatrix * aVertexNormal;
-//     float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-//     vLightWeighting                 = uDirectionalColor * directionalLightWeighting;
-//     vColor      = aVertexColor;
-//   }
-//   `;
-// }
-
 
 function generateSpotLightDefinitions() {
-  return `// inject generateSpotLightDefinitions
+  return `// #version 300 es
+  // inject generateSpotLightDefinitions
   in vec3 v_surfaceToLight;
   in vec3 v_surfaceToView;
 
@@ -26501,44 +28164,19 @@ function generateSpotLightDefinitions() {
 }
 
 function generateSpotLightMain() {
-  return `
-  //
-  // because v_normal is a varying it's interpolated
-  // so it will not be a unit vector. Normalizing it
-  // will make it a unit vector again
-  vec3 normal = normalize(v_normal);
-
+  return `vec3 normal = normalize(v_normal);
   vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
   vec3 surfaceToViewDirection = normalize(v_surfaceToView);
   vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
-
-  float dotFromDirection = dot(surfaceToLightDirection,
-                               -u_lightDirection);
+  float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
   float limitRange = u_innerLimit - u_outerLimit;
   float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
   float light = inLight * dot(normal, surfaceToLightDirection);
   float specular = inLight * pow(dot(normal, halfVector), u_shininess);
-
-  // Lets multiply just the color portion (not the alpha)
-  // by the light
   outColor.rgb *= light;
-  // Just add in the specular
   outColor.rgb += specular;
-
-  // outColor = vec4(
-  //   texColor.rgb * light * shadowLight +
-  //   specular * shadowLight,
-  //   texColor.a);
-  //
-  `;
+`;
 }
-/**
- * @description
- * Specular lights.
- * Definition scope.
- * Global world scene position.
- */
-
 
 function generateSpecularLightDefinitions() {
   return `// Passed in from the vertex shader.
@@ -26556,13 +28194,6 @@ function generateSpecularLightDefinitions() {
   in float vDist;
   `;
 }
-/**
- * @description
- * Specular lights.
- * Main function.
- * Global world scene position.
- */
-
 
 function generateSpecularLightMain() {
   return `
@@ -26591,13 +28222,6 @@ function generateSpecularLightMain() {
   outColor.a = textureColor.a;
   `;
 }
-/**
- * @description
- * Lens effect.
- * Definition scope.
- * Global world scene position.
- */
-
 
 function generateLensDefinitions() {
   return `// lens effect
@@ -26606,12 +28230,6 @@ function generateLensDefinitions() {
   uniform vec3 uControl;
   `;
 }
-/**
- * @description
- * Lens effect.
- * Main function.
- */
-
 
 function generateLensMain(numTextures) {
   return `
@@ -26635,45 +28253,29 @@ function generateLensMain(numTextures) {
   outColor.a = textureColor.a;
   `;
 }
-/**
- * @description
- * Make cubeMap Fragment shader.
- */
 
-
-function generateCubeMapShaderSrc(numTextures, mixOperand, lightType) {
-  return `
-    // shader for opengles native 
-    // 'uniform samplerCube' CubeMap canvas2d textures.
-
-    precision mediump float;
-    precision highp float;
-
-    in vec3 vLightWeighting;
-
-    uniform float textureSamplerAmount[1];
-    int MixOperandString = ${mixOperand};
-    // The CubeMap texture.
-    uniform samplerCube u_texture;
-    in vec3 v_normal;
-    in vec3 v_normal_cubemap;
-
-    void main(void) {
-      // without light
-      // gl_FragColor = textureCube(u_texture, v_normal_cubemap);
-      vec4 lightMapColor = textureCube(u_texture, v_normal_cubemap);
-      outColor = vec4(lightMapColor.rgb * vLightWeighting, lightMapColor.a);
-    }
-    `;
+function generateCubeMapShaderSrc3(numTextures, mixOperand, lightType) {
+  return `#version 300 es
+  precision mediump float;
+  in vec2 vTextureCoord;
+  in vec3 vLightWeighting;
+  // The CubeMap texture test.
+  uniform samplerCube u_texture;
+  // cube map
+  in vec3 v_normal_cubemap;
+  uniform float numberOfsamplers; 
+  in vec3 v_normal;
+  out vec4 outColor;
+  void main(void) {
+    vec3 normal = normalize(v_normal_cubemap);
+    vec4 textureColor = texture(u_texture, normal) * vec4(1,1,1,1);
+    outColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+    // outColor.rgb += texture(u_texture, normal);
+}`;
 }
-/**
- * @description
- * Make Custom shader*/
-
 
 function generateCustomShaderSrc(numTextures, mixOperand, code_) {
   return `
-
     // shader for ${numTextures} textures
     precision mediump float;
     precision highp float;
@@ -26708,92 +28310,66 @@ function generateCustomShaderSrc(numTextures, mixOperand, code_) {
         vec4 textureColor7 = texture2D(uSampler7, vec2(vTextureCoord.s, vTextureCoord.t));
 
         // MixOperandString  make it with eval todo task
-
-        if (  ${numTextures} == 1)
-        {
-
-            if  ( CODE == 0 ) {
-
-                gl_FragColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
-
+        if(${numTextures} == 1){
+            if(CODE == 0){
+              gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
             }
-            else if (CODE == 1){
-
+            else if(CODE == 1){
                 gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b,textureColor.g ) , smoothstep(textureColor.r, textureColor.b,textureColor.g ) , 0 , 1 );
-
             }
-            else if (CODE == 2){
-
-                gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b , textureColor.g ) , 1 , 0 , 1 );
-
+            else if(CODE == 2){
+              gl_FragColor = vec4( smoothstep(textureColor.r, textureColor.b , textureColor.g ) , 1 , 0 , 1 );
             }
-            else if (CODE == 3){
-
-                gl_FragColor = vec4( smoothstep( textureColor.g , textureColor.b , 0.5 ) , 1 , 0 , 1 );
-
+            else if(CODE == 3){
+              gl_FragColor = vec4( smoothstep( textureColor.g , textureColor.b , 0.5 ) , 1 , 0 , 1 );
             }
-            else if (CODE == 4){
-
-                // textureColor
-                vec2 position =  vTextureCoord;
-                float color = 0.3;
-                gl_FragColor = vec4( vec3( color , color * 0.5, sin( color + TimeFor / 3.0 ) * 0.75 ), 1.0 );
-
+            else if(CODE == 4){
+              // textureColor
+              vec2 position =  vTextureCoord;
+              float color = 0.3;
+              gl_FragColor = vec4( vec3( color , color * 0.5, sin( color + TimeFor / 3.0 ) * 0.75 ), 1.0 );
             }
-
         }
-        else if (${numTextures} == 2)
-        {
-            if ( ${mixOperand} == 0){
-                gl_FragColor      = vec4( (textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
+        else if(${numTextures} == 2){
+            if( ${mixOperand} == 0){
+              gl_FragColor = vec4((textureColor.rgb * textureColor1.rgb) * vLightWeighting, textureColor.a);
             }
             else if (${mixOperand} == 1){
-                gl_FragColor      = vec4( (textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
+              gl_FragColor = vec4((textureColor.rgb / textureColor1.rgb) * vLightWeighting, textureColor.a);
             }
-
         }
-        else if (${numTextures} == 3)
-        {
+        else if (${numTextures} == 3) {
             if (MixOperandString == 0){
-                gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
+              gl_FragColor =vec4( (textureColor.rgb * textureColor1.rgb * textureColor2.rgb ) * vLightWeighting, textureColor.a);
             }
             else if (MixOperandString == 1){
-                gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
+              gl_FragColor = vec4( (textureColor.rgb * textureColor1.rgb / textureColor2.rgb ) * vLightWeighting, textureColor.a);
             }
-
         }
-        else if (${numTextures} == 4)
-        {
+        else if (${numTextures} == 4) {
             if (MixOperandString == 0){
                 gl_FragColor = textureColor * textureColor1 * textureColor2 * textureColor3;
             }
             else if (MixOperandString == 1){
                 gl_FragColor = textureColor / textureColor1 / textureColor2 /  textureColor3;
             }
-
         }
-
     }
 
     // uniform sampler2D uSampler[${numTextures}];
     // uniform float uMixAmount[${numTextures}];
-
     /*
      void main() {
      vec4 color = vec4(0);
-
      for (int i = 0; i < ${numTextures}; ++i) {
      vec4 texColor = texture2D(uSampler[i], vTextureCoord);
      color = mix(color, texColor, uMixAmount[i]);
      }
-
      gl_FragColor = color;
      }
      */
-
     `;
-} // OPENGLE30 !!!
-
+}
 
 function generateSpotLightShadowDefinitions() {
   return `// inject generateSpotLightShadowDefinitions
@@ -26819,16 +28395,11 @@ function generateSpotLightShadowDefinitions() {
 
 function generateSpotLightShadowMain() {
   return `
-  //
-  // because v_normal is a varying it's interpolated
-  // so it will not be a unit vector. Normalizing it
-  // will make it a unit vector again
   vec3 normal = normalize(v_normal);
   vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
   vec3 surfaceToViewDirection = normalize(v_surfaceToView);
   vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
-  float dotFromDirection = dot(surfaceToLightDirection,
-                               -u_lightDirection);
+  float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
   float limitRange = u_innerLimit - u_outerLimit;
   float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
   float light = inLight * dot(normal, surfaceToLightDirection);
@@ -26851,17 +28422,10 @@ function generateSpotLightShadowMain() {
     texColor.rgb * light * shadowLight +
     specular * shadowLight,
     texColor.a);
-
-  // Lets multiply just the color portion (not the alpha)
-  // by the light
-  // outColor.rgb *= light;
-  // Just add in the specular
-  // outColor.rgb += specular;
-  //
   `;
 }
 
-},{}],53:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26988,7 +28552,6 @@ class MatrixShadowSpot {
   }
 
   makeFlyArround() {
-    // console.log("TETS")
     this.lightPosition = (0, _utility.ORBIT_FROM_ARRAY)(this.centerX, this.centerY, this.o.UPDATE(), this.lightPosition, this.flyArroundByIndexs);
   }
 
@@ -27022,8 +28585,7 @@ class MatrixShadowSpecular {
     this.uLightPosition = new Float32Array([0.0, 0.0, 0.0]);
     this.specularDATA = new Float32Array([0.0, 0.0, 0.0]);
     this.uFogColor = new Float32Array([1.0, 0.0, 0.0, 0.2]);
-    this.uFogDist = new Float32Array([10, 10]);
-    console.log('SPECULAR LIGHT');
+    this.uFogDist = new Float32Array([10, 10]); // console.log('SPECULAR LIGHT')
 
     this.UPDATE = function () {};
 
@@ -27191,7 +28753,6 @@ class MatrixShadowSpotShadowTest {
   }
 
   makeFlyArround() {
-    // console.log("TETS")
     this.lightPosition = (0, _utility.ORBIT_FROM_ARRAY)(this.centerX, this.centerY, this.o.UPDATE(), this.lightPosition, this.flyArroundByIndexs);
   }
 
@@ -27219,7 +28780,7 @@ class MatrixShadowSpotShadowTest {
 
 exports.MatrixShadowSpotShadowTest = MatrixShadowSpotShadowTest;
 
-},{"../program/manifest":67,"./utility":65}],54:[function(require,module,exports){
+},{"../program/manifest":75,"./utility":71}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27235,7 +28796,7 @@ const standardStyle = `
   border-style: solid;
   text-align: center;
   outline: none;
-`;
+`; // not afirmated for now - but interest
 
 class MatrixInput extends HTMLElement {
   constructor(...args) {
@@ -27310,7 +28871,7 @@ class MatrixButton extends HTMLButtonElement {
 
 exports.MatrixButton = MatrixButton;
 
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
@@ -27322,8 +28883,6 @@ exports.default = exports.makeFBO = exports.cubeMapTextures = void 0;
 var _manifest = _interopRequireDefault(require("../program/manifest"));
 
 var _matrixWorld = require("./matrix-world");
-
-var _utility = require("./utility");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27337,8 +28896,7 @@ _manifest.default.tools.loadTextureImage = function (gl, src, params) {
   texture.image.crossOrigin = 'anonymous';
 
   texture.image.onload = () => {
-    console.log("params??? ", params);
-
+    // console.log("params tex: ", params)
     _matrixWorld.world.handleLoadedTexture(texture, gl, params);
   };
 
@@ -27473,20 +29031,17 @@ _manifest.default.tools.createPixelsTex = function (options) {
 
 
 const cubeMapTextures = async function (sources, callback) {
-  var cubeMapImgTex = [];
   var promiseMe = [];
   sources.forEach(src => {
     promiseMe.push(new Promise(resolve => {
       var image = new Image();
       image.addEventListener("load", () => {
-        cubeMapImgTex.push(image);
         resolve(image);
       });
       image.src = src;
     }));
   });
   await Promise.all([...promiseMe]).then(values => {
-    // console.log(values + ' promise all !');
     callback(values);
   });
 };
@@ -27494,68 +29049,77 @@ const cubeMapTextures = async function (sources, callback) {
  * @description
  * FBO textures
  */
+// test
+// gl.activeTexture(gl.TEXTURE0);
+// const checkerboardTexture = gl.createTexture();
+// gl.bindTexture(gl.TEXTURE_2D, checkerboardTexture);
+// gl.texImage2D(
+//   gl.TEXTURE_2D,
+//   0,                // mip level
+//   gl.LUMINANCE,     // internal format
+//   8,                // width
+//   8,                // height
+//   0,                // border
+//   gl.LUMINANCE,     // format
+//   gl.UNSIGNED_BYTE, // type
+//   new Uint8Array([  // data
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
+//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
+//   ]));
+// gl.generateMipmap(gl.TEXTURE_2D);
+// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+// // test depth
+// const depthTexture = gl.createTexture();
+// const depthTextureSize = 512;
+// gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+// {
+//   // define size and format of level 0
+//   const level = 0;
+//   const internalFormat = gl.RGBA;
+//   const border = 0;
+//   const format = gl.RGBA;
+//   const type = gl.UNSIGNED_BYTE;
+//   const data = null;
+//   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+//                 512, 512, border,
+//                 format, type, data);
+//   // set the filtering so we don't need mips
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+// }
+// const depthFramebuffer = gl.createFramebuffer();
+// gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
+// gl.framebufferTexture2D(
+//     gl.FRAMEBUFFER,       // target
+//     gl.COLOR_ATTACHMENT0, //  gl.DEPTH_ATTACHMENT,  // attachment point
+//     gl.TEXTURE_2D,        // texture target
+//     depthTexture,         // texture
+//     0);                   // mip level
+//////////////////////////////////////////////////////
+// TEST 2 Success for now just fbo
+// gl.getParameter(gl.MAX_DRAW_BUFFERS)
+//////////////////////////////////////////////////////
 
 
 exports.cubeMapTextures = cubeMapTextures;
 
-const makeFBO = (gl, object) => {
-  // test
-  // gl.activeTexture(gl.TEXTURE0);
-  // const checkerboardTexture = gl.createTexture();
-  // gl.bindTexture(gl.TEXTURE_2D, checkerboardTexture);
-  // gl.texImage2D(
-  //   gl.TEXTURE_2D,
-  //   0,                // mip level
-  //   gl.LUMINANCE,     // internal format
-  //   8,                // width
-  //   8,                // height
-  //   0,                // border
-  //   gl.LUMINANCE,     // format
-  //   gl.UNSIGNED_BYTE, // type
-  //   new Uint8Array([  // data
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-  //     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-  //   ]));
-  // gl.generateMipmap(gl.TEXTURE_2D);
-  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  // // test depth
-  // const depthTexture = gl.createTexture();
-  // const depthTextureSize = 512;
-  // gl.bindTexture(gl.TEXTURE_2D, depthTexture);
-  // {
-  //   // define size and format of level 0
-  //   const level = 0;
-  //   const internalFormat = gl.RGBA;
-  //   const border = 0;
-  //   const format = gl.RGBA;
-  //   const type = gl.UNSIGNED_BYTE;
-  //   const data = null;
-  //   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-  //                 512, 512, border,
-  //                 format, type, data);
-  //   // set the filtering so we don't need mips
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  // }
-  // const depthFramebuffer = gl.createFramebuffer();
-  // gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
-  // gl.framebufferTexture2D(
-  //     gl.FRAMEBUFFER,       // target
-  //     gl.COLOR_ATTACHMENT0, //  gl.DEPTH_ATTACHMENT,  // attachment point
-  //     gl.TEXTURE_2D,        // texture target
-  //     depthTexture,         // texture
-  //     0);                   // mip level
-  //////////////////////////////////////////////////////
-  // TEST 2 Success for now just fbo
-  //////////////////////////////////////////////////////
+const makeFBO = (gl, o) => {
   var framebuffer, texture, depthBuffer;
+
+  if (typeof o === 'undefined') {
+    var o = {
+      width: 512,
+      height: 512
+    };
+  } // console.log('FBO MAKE FUNC');
+
 
   var error = function () {
     console.log('Error in creating FBO!');
@@ -27577,8 +29141,8 @@ const makeFBO = (gl, object) => {
   } // local
 
 
-  var OFFSCREEN_WIDTH = 512;
-  var OFFSCREEN_HEIGHT = 512;
+  var OFFSCREEN_WIDTH = o.width;
+  var OFFSCREEN_HEIGHT = o.height;
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -27608,14 +29172,14 @@ const makeFBO = (gl, object) => {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.bindTexture(gl.TEXTURE_2D, null);
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-  return framebuffer; //////////////////////////////////////////////////////
+  return framebuffer;
 };
 
 exports.makeFBO = makeFBO;
 var _default = _manifest.default.tools;
 exports.default = _default;
 
-},{"../program/manifest":67,"./matrix-world":56,"./utility":65}],56:[function(require,module,exports){
+},{"../program/manifest":75,"./matrix-world":59}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27623,7 +29187,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.modifyFrames = modifyFrames;
 exports.defineworld = defineworld;
-exports.reDraw = exports.objListToDispose = exports.world = exports.frames = void 0;
+exports.reDraw = exports.objListToDispose = exports.world = exports.frames = exports.CS4 = exports.CS3 = exports.CS2 = exports.CS1 = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
 
@@ -27643,20 +29207,72 @@ var _physics = _interopRequireDefault(require("./physics"));
 
 var _matrixShadows = require("./matrix-shadows");
 
-var _matrixInitShaders = require("./matrix-init-shaders");
+var _matrixInitShaders = require("./matrix-init-shaders3");
+
+var _matrixInitShaders2 = require("./matrix-init-shaders1");
 
 var _loaderObj = require("./loader-obj");
 
 var _matrixTextures = require("./matrix-textures");
 
+var _overrideMatrixRender = require("./optimizer/override-matrix-render");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* eslint-disable no-unused-vars */
-// define shaders from code
-if (_manifest.default.openglesShaderVersion == '3') {}
+var CS1 = "font-family: stormfaze;color: #001100; font-size:58px;text-shadow: 2px 2px 4px #fff554, 4px 4px 4px gray, 2px 2px 4px lime, 6px 2px 0px lime;background: gray;";
+exports.CS1 = CS1;
+var CS2 = "font-family: stormfaze;color: #fd1233; font-size:20px;text-shadow: 2px 2px 2px #5321f5, 4px 4px 4px #d6fa16, 3px 0px 3px #c160a6, 6px 6px 4px #9a0de3;background: black;";
+exports.CS2 = CS2;
+var CS3 = "font-family: stormfaze;color: #f1f033; font-size:14px;text-shadow: 2px 2px 4px #f335f4, 4px 4px 4px #d64444, 2px 2px 4px #c160a6, 6px 2px 0px #123de3;background: black;";
+exports.CS3 = CS3;
+var CS4 = "font-family: verdana;color: #lime; font-size:16px;text-shadow: 2px 2px 4px orangered;background: black;";
+exports.CS4 = CS4;
+window.mat4 = glMatrix.mat4;
+window.mat2 = glMatrix.mat2;
+window.mat2d = glMatrix.mat2d;
+window.mat3 = glMatrix.mat3;
+window.mat4 = glMatrix.mat4;
+window.quat = glMatrix.quat;
+window.quat2 = glMatrix.quat2;
+window.vec2 = glMatrix.vec2;
+window.vec3 = glMatrix.vec3;
+window.vec4 = glMatrix.vec4;
+console.info(`%cMatrix-Engine %c 2.0.31 🛸`, CS1, CS1);
+var lastChanges = `
+[2.0.0] New networking based on kurento service and OpenVide web client
+[1.9.40] First version with both support opengles11/2 and opengles300
+ - Default : 1.3/opengles300
+ - Switch with URL param 'app.html?GLSL=1.3' for opengle300 and '?GLSL=1.1' for opengles1.1/2
+ - Implemented URL param for examples-build.html?GLSL=1.1 [Affect after first demo choose.
+ - [1.9.58] Improved timeline/globalAnimation feature]
+`;
+console.info(`%c ${lastChanges} `, CS3);
+console.info(`%c Render switch from 'requestAnimationFrame' to 'offScreen' with URLParams '?offScreen=true&offScreenSpeed=10'.
+ For now physics stuff not affected. `, CS3);
+console.info(`%c You can switch webGL ver 1/2 with ?GLSL=1.1 or ?GLSL=1.3 - EXPERIMENTAL`, CS3);
+console.info(`%c Used GL_MATRIX 3.4 ${glMatrix}`, CS3); // fbo
 
-(0, _matrixInitShaders.loadShaders2)();
+_manifest.default.makeFBO = _matrixTextures.makeFBO; // define shaders from code
+
+if (_utility.QueryString.GLSL && _utility.QueryString.GLSL == 1.3) {
+  // GLSL 1.30 -> opengles3
+  console.info(`%cActive cook ⚗️: GLSL 1.3. for OPENGLES30 %c webGL2`, CS3, CS3); // console.log('Active: GLSL 1.3. for OPENGLES30')
+
+  _manifest.default.openglesShaderVersion = 1.3;
+  (0, _matrixInitShaders.loadShaders300)();
+} else if (_utility.QueryString.GLSL && (_utility.QueryString.GLSL == 1.1 || _utility.QueryString.GLSL == 1.2)) {
+  // GLSL 1.10 -> opengles1.1 also 2
+  _manifest.default.openglesShaderVersion = 1.1;
+  console.info(`%cActive cook ⚗️: GLSL 1.1.-1.2 for OPENGLES1.1/2 %c webGL1`, CS3, CS3);
+  (0, _matrixInitShaders2.loadShaders11)();
+} else {
+  // GLSL 1.30 -> opengles3
+  _manifest.default.openglesShaderVersion = 1.3;
+  console.info(`%cActive: GLSL 1.3. for OPENGLES30 %c webGL2`, CS3, CS3);
+  (0, _matrixInitShaders.loadShaders300)();
+}
 /* Width and Height variables of the browser screen  */
+
 
 var frames = 0; // must be fixed
 
@@ -27676,10 +29292,9 @@ var updateFrames = 0;
 
 var objListToDispose = new Array();
 /* Need to stop the redraw when disposing            */
-// var reDrawID = 0;
 
 exports.objListToDispose = objListToDispose;
-var reDraw = 0;
+var reDraw;
 /**
  * @description
  * Define custom tags for new upgrade for light systems.
@@ -27691,7 +29306,7 @@ window.customElements.define('matrix-camera', _matrixTags.MatrixCameraController
 window.customElements.define('matrix-light', _matrixTags.MatrixLightComponent); // var X = Object.create(HTMLInputElement.prototype);
 // window.customElements.define('matrix-light', X);
 
-function defineworld(canvas) {
+function defineworld(canvas, renderType) {
   // define shaders from code
   // console.log("  Define the world");
   exports.world = world = new Object();
@@ -27781,6 +29396,8 @@ function defineworld(canvas) {
   /* Draw Square                              */
 
   world.drawSquare = _manifest.default.operation.draws.square;
+  /* Buffer obj format                        */
+
   world.bufferObj = _manifest.default.operation.obj_buffer_procedure;
   /* Buffer Cube                              */
 
@@ -27809,27 +29426,50 @@ function defineworld(canvas) {
   world.bufferSphere = _manifest.default.operation.sphere_buffer_procedure;
   world.FBOS = [];
   /* Repeated draw functionality            */
-  // eslint-disable-next-line no-global-assign
 
-  exports.reDraw = reDraw = _manifest.default.operation.reDrawGlobal;
+  if (typeof renderType === 'undefined') {
+    exports.reDraw = reDraw = _manifest.default.operation.reDrawGlobal;
+  } else if (renderType == 'simply') {
+    exports.reDraw = reDraw = _manifest.default.operation.simplyRender;
+  }
+
+  if (typeof _utility.QueryString.offScreenSpeed !== 'undefined') {
+    console.log("URL param offScreenSpeed is active: ", _utility.QueryString.offScreenSpeed);
+    _manifest.default.redrawInterval = _utility.QueryString.offScreenSpeed;
+  }
   /**
    * @MatrixAnimationLine
-   * @globalAnimCounter Counter  READONLY
+   * @globalAnimCounter Counter - READONLY
    * @globalAnimSequenceSize = 5000
-   * After globalAnimCounter reach globalAnimSequenceSize value will reset to the zero.
+   * After globalAnimCounter reach globalAnimSequenceSize value will
+   * reset to the zero.
    */
+
+
+  world.timeline = {};
 
   world.useAnimationLine = function (args) {
     world.animLine = true;
     world.globalAnimCounter = 0;
     world.globalAnimSequenceSize = args.sequenceSize;
+    if (typeof args.totalSequence === 'undefined') args.totalSequence = 1;
+    world.globalAnimTotalSequence = args.totalSequence;
     world.globalAnimCurSequence = 1;
+    world.timeline.commands = [];
     document.getElementById('globalAnimCurSequence').innerText = world.globalAnimCurSequence;
     document.getElementById('globalAnimCounter').innerText = world.globalAnimCounter;
     document.getElementById('timeline').value = world.globalAnimCounter;
     document.getElementById('timeline').setAttribute('max', world.globalAnimSequenceSize);
     document.getElementById('globalAnimSize').innerText = world.globalAnimSequenceSize;
     document.getElementById('matrixTimeLine').style.display = 'flex';
+  };
+
+  world.addCommandAtSeqIndex = function (COMMAND, INDEX) {
+    world.timeline.commands[INDEX] = COMMAND;
+  };
+
+  world.addSubCommand = function (COMMAND, INDEX) {// WIP
+    // world.timeline.subCommands[INDEX] = COMMAND
   };
   /**
    * @MatrixPhysics
@@ -27846,7 +29486,7 @@ function defineworld(canvas) {
   };
   /**
    * @description
-   *  TEST GLOBAL LIGHT PARAMS
+   * TEST GLOBAL LIGHT PARAMS
    * this.uLightPosition = new Float32Array([0.0,0.0,0.0]);
    */
 
@@ -27856,20 +29496,21 @@ function defineworld(canvas) {
 
   world.Add = function (filler, size, nameUniq, texturesPaths, mesh_, animationConstruct_) {
     /*
-      Common conventions to be followed across
-      Contents can contain any type of objects. Each object can be a triangle, cube etc.
-      object.visible        =  Avoid draw procedure
-      object.type           =  Contains the type of object namely triangle, cube
-      object.size           =  Contains the size of the object. 1 unit will be the same as how WEBGL assumes 1 as in an array
-      object.sides          =  Contains the number of sides. This needs to be first declared.  (To be built and used)
-      object.shaderProgram  =  Contains the fragment and vertex shader
-      object.rotation       =  Rotator
-      object.color          =  Will contain colors based on the sides clockwise. One vertice -> [R,G,B,alpha]
-      object.texture        =  If texture is present then this will be used.           (To be built and used)
-      object.vertexPositionBuffer =  allocated during buffering
-      object.vertexColorBuffer    =  allocated during buffering
-      object.vertexTexCoordBuffer =  allocated during buffering
-      object.vertexIndexBuffer    =  allocated during buffering
+    	Common conventions to be followed across
+    	Contents can contain any type of objects. Each object can be a triangle, cube etc.
+    	object.visible        =  Avoid draw procedure
+    	object.type           =  Contains the type of object namely triangle, cube
+    	object.size           =  Contains the size of the object. 1 unit will be the same as how WEBGL assumes 1 as in an array
+    	object.sides          =  Contains the number of sides. This needs to be first declared.  (To be built and used)
+    	object.shaderProgram  =  Contains the fragment and vertex shader
+    	object.rotation       =  Rotator
+    	object.color          =  Will contain colors based on the sides clockwise. One vertice -> [R,G,B,alpha]
+    	object.texture        =  If texture is present then this will be used.           (To be built and used)
+    	object.mesh           =  For objs and custom geometry - geometry buffers container
+    	object.vertexPositionBuffer =  allocated during buffering
+    	object.vertexColorBuffer    =  allocated during buffering
+    	object.vertexTexCoordBuffer =  allocated during buffering
+    	object.vertexIndexBuffer    =  allocated during buffering
     */
     // console.info("Fill world with:" + filler + " of size:" + size);
     if ('triangle' == filler) {
@@ -27890,8 +29531,10 @@ function defineworld(canvas) {
       triangleObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       triangleObject.position.nameUniq = nameUniq;
+      triangleObject.position.netObjId = nameUniq;
       triangleObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       triangleObject.rotation.nameUniq = nameUniq;
+      triangleObject.rotation.netObjId = nameUniq;
       triangleObject.color = new _matrixGeometry.GeoOfColor('triangle');
       triangleObject.mvMatrix = mat4.create();
       triangleObject.geometry = new _matrixGeometry.TriangleVertex(triangleObject);
@@ -27902,24 +29545,28 @@ function defineworld(canvas) {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(triangleObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(triangleObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(triangleObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(triangleObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      triangleObject.raycast = {
+        enabled: true
+      }; // Physics
 
       triangleObject.physics = {
         enabled: false
       };
       triangleObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       triangleObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27932,8 +29579,9 @@ function defineworld(canvas) {
         triangleObject.glDrawElements = new _utility._DrawElements(triangleObject.vertexColorBuffer.numItems);
         this.contentList[this.contentList.length] = triangleObject;
         _manifest.default.scene[triangleObject.name] = triangleObject; // console.log("Buffer the " + filler + ":Store at:" + this.contentList.length);
-      } else {// console.log("Triangle shader failure...");
-        }
+      } else {
+        console.warn("Triangle shader failure...");
+      }
     }
 
     if ('square' == filler) {
@@ -27953,8 +29601,10 @@ function defineworld(canvas) {
       squareObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       squareObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       squareObject.position.nameUniq = nameUniq;
+      squareObject.position.netObjId = nameUniq;
       squareObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       squareObject.rotation.nameUniq = nameUniq;
+      squareObject.rotation.netObjId = nameUniq;
       squareObject.color = true;
       squareObject.mvMatrix = mat4.create();
       squareObject.geometry = new _matrixGeometry.SquareVertex(squareObject);
@@ -27965,24 +29615,28 @@ function defineworld(canvas) {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(squareObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      squareObject.raycast = {
+        enabled: true
+      }; // Physics
 
       squareObject.physics = {
         enabled: false
       };
       squareObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       squareObject.instancedDraws = {
         numberOfInstance: 10,
@@ -27992,13 +29646,13 @@ function defineworld(canvas) {
 
       if (squareObject.shaderProgram) {
         // console.log("   Buffer the " + filler + ":Store at:" + this.contentList.length);
-        this.bufferSquare(squareObject); // LOOK BETTER
-
+        this.bufferSquare(squareObject);
         squareObject.glDrawElements = new _utility._DrawElements(squareObject.vertexColorBuffer.numItems);
         squareObject.glDrawElements.mode = 'TRIANGLE_STRIP';
         this.contentList[this.contentList.length] = squareObject;
         _manifest.default.scene[squareObject.name] = squareObject;
-      } else {// console.log("Square shader failure...");
+      } else {
+        console.warn("Square shader failure...");
       }
     }
 
@@ -28019,15 +29673,33 @@ function defineworld(canvas) {
       squareObject.sides = 4;
       squareObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       squareObject.position.nameUniq = nameUniq;
+      squareObject.position.netObjId = nameUniq;
       squareObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       squareObject.rotation.nameUniq = nameUniq;
+      squareObject.rotation.netObjId = nameUniq;
       squareObject.mvMatrix = mat4.create();
       squareObject.geometry = new _matrixGeometry.SquareVertex(squareObject);
       squareObject.geometry.nameUniq = nameUniq;
       squareObject.glBlend = new _utility._glBlend();
 
       squareObject.setFBO = function () {
-        squareObject.FBO = {};
+        console.log('cubeObject set fbo ... ');
+        squareObject.FBO = {
+          name: squareObject.name,
+          FB: (0, _matrixTextures.makeFBO)(world.GL.gl, {
+            width: 512,
+            height: 512
+          }),
+          settings: {
+            cameraX: typeof arg === 'undefined' || !arg.cameraX ? 6 : arg.cameraX,
+            cameraY: typeof arg === 'undefined' || !arg.cameraY ? 5 : arg.cameraY,
+            cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 5 : arg.cameraZ,
+            pitch: typeof arg === 'undefined' || !arg.pitch ? 2.5 : arg.pitch,
+            yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw
+          }
+        }; // for now
+
+        world.FBOS.push(squareObject.FBO);
       }; // destroy self
 
 
@@ -28035,24 +29707,29 @@ function defineworld(canvas) {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            // destroy me
+            var TEST = world.contentList[world.contentList.indexOf(squareObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(squareObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      squareObject.raycast = {
+        enabled: true
+      }; // Physics
 
       squareObject.physics = {
         enabled: false
       };
       squareObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       squareObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -28062,23 +29739,25 @@ function defineworld(canvas) {
       squareObject.useShadows = false;
 
       squareObject.activateShadows = t => {
-        if (typeof t === 'undefined' || t == 'spot') {
-          t = 'spot';
-          squareObject.useShadows = true;
-          squareObject.shadows = new _matrixShadows.MatrixShadowSpot();
-        } else if (t == 'specular') {
-          squareObject.useShadows = true;
-          squareObject.shadows = new _matrixShadows.MatrixShadowSpecular();
-        } else if (t == 'lens') {
-          squareObject.useShadows = true;
-          squareObject.shadows = new _matrixShadows.MatrixEffectLens();
-        } else if (t == 'spot-shadow') {
-          squareObject.useShadows = true;
-          squareObject.shadows = new _matrixShadows.MatrixShadowSpotShadowTest();
-        }
+        setTimeout(() => {
+          if (typeof t === 'undefined' || t == 'spot') {
+            t = 'spot';
+            squareObject.useShadows = true;
+            squareObject.shadows = new _matrixShadows.MatrixShadowSpot();
+          } else if (t == 'specular') {
+            squareObject.useShadows = true;
+            squareObject.shadows = new _matrixShadows.MatrixShadowSpecular();
+          } else if (t == 'lens') {
+            squareObject.useShadows = true;
+            squareObject.shadows = new _matrixShadows.MatrixEffectLens();
+          } else if (t == 'spot-shadow') {
+            squareObject.useShadows = true;
+            squareObject.shadows = new _matrixShadows.MatrixShadowSpotShadowTest();
+          }
 
-        (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, t);
-        squareObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
+          (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, t);
+          squareObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
+        }, 10);
       }; // gen tex
 
 
@@ -28108,7 +29787,7 @@ function defineworld(canvas) {
             squareObject.texParams = texturesPaths.params;
           }
 
-          (0, _engine.RegenerateShader)('' + filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles30');
+          (0, _engine.RegenerateShader)('' + filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles');
 
           for (var t = 0; t < texturesPaths.source.length; ++t) {
             squareObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t]));
@@ -28163,8 +29842,10 @@ function defineworld(canvas) {
       cubeObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       cubeObject.position.nameUniq = nameUniq;
+      cubeObject.position.netObjId = nameUniq;
       cubeObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       cubeObject.rotation.nameUniq = nameUniq;
+      cubeObject.rotation.netObjId = nameUniq;
       cubeObject.color = true;
       cubeObject.mvMatrix = mat4.create();
       cubeObject.geometry = new _matrixGeometry.CubeVertex(cubeObject);
@@ -28174,40 +29855,34 @@ function defineworld(canvas) {
         array_of_local_offset: [12, 0, 0],
         overrideDrawArraysInstance: function (object_) {}
       };
-      cubeObject.glBlend = new _utility._glBlend(); // ? NEXT
-      // cubeObject.useDirectionLight = false;
-      // cubeObject.activateDirLight = () => {
-      //   RegenerateShaderSimpleDirectionLight(
-      //     filler + '-shader-fs');
-      //   RegenerateVShaderSimpleDirectionLight(
-      //     filler + '-shader-vs');
-      //   cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
-      //   cubeObject.useDirectionLight = true;
-      // };
-      // destroy self
+      cubeObject.glBlend = new _utility._glBlend();
 
       cubeObject.selfDestroy = after => {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(cubeObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      cubeObject.raycast = {
+        enabled: true
+      }; // Physics
 
       cubeObject.physics = {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
 
       if (cubeObject.shaderProgram && cubeObject.geometry) {
@@ -28216,7 +29891,8 @@ function defineworld(canvas) {
         cubeObject.glDrawElements = new _utility._DrawElements(cubeObject.vertexIndexBuffer.numItems);
         this.contentList[this.contentList.length] = cubeObject;
         _manifest.default.scene[cubeObject.name] = cubeObject;
-      } else {// console.warn("   Cube shader failure");
+      } else {
+        console.warn("Cube shader failure");
       }
     }
 
@@ -28234,10 +29910,12 @@ function defineworld(canvas) {
       sphereObject.type = filler;
       sphereObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       sphereObject.position.nameUniq = nameUniq;
+      sphereObject.position.netObjId = nameUniq;
       sphereObject.size = size;
       sphereObject.sides = 12;
       sphereObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      sphereObject.rotation.nameUniq = nameUniq; //lights
+      sphereObject.rotation.nameUniq = nameUniq;
+      sphereObject.rotation.netObjId = nameUniq; //lights
 
       sphereObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -28249,25 +29927,31 @@ function defineworld(canvas) {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(sphereObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(sphereObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(sphereObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(sphereObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      sphereObject.raycast = {
+        enabled: true
+      }; // Physics
 
       sphereObject.physics = {
         enabled: false
       };
       sphereObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
+      sphereObject.custom = new Object();
+      sphereObject.custom.gl_texture = null;
       sphereObject.textures = [];
 
       if (typeof texturesPaths !== 'undefined') {
@@ -28289,7 +29973,7 @@ function defineworld(canvas) {
             sphereObject.texParams = texturesPaths.params;
           }
 
-          (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles30'); // eslint-disable-next-line no-redeclare
+          (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles'); // eslint-disable-next-line no-redeclare
 
           for (var t = 0; t < texturesPaths.source.length; ++t) {
             sphereObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t]));
@@ -28308,7 +29992,7 @@ function defineworld(canvas) {
       }
 
       sphereObject.changeMaterial = function (texturesPaths) {
-        (0, _engine.RegenerateShader)(this.type + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles30');
+        (0, _engine.RegenerateShader)(this.type + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles');
 
         for (var t = 0; t < texturesPaths.source.length; ++t) {
           this.textures.push(world.initTexture(world.GL.gl, texturesPaths.source[t], texturesPaths.params));
@@ -28327,8 +30011,7 @@ function defineworld(canvas) {
         this.shaderProgram = world.initShaders(world.GL.gl, this.type + '-shader-fs', this.type + '-shader-vs');
       };
 
-      sphereObject.mvMatrix = mat4.create(); //sphereObject.LightMap   = new GeoOfColor("cube light");
-
+      sphereObject.mvMatrix = mat4.create();
       sphereObject.LightMap = undefined;
 
       if (typeof mesh_ !== 'undefined') {
@@ -28357,7 +30040,8 @@ function defineworld(canvas) {
         sphereObject.glDrawElements = new _utility._DrawElements(sphereObject.vertexIndexBuffer.numItems);
         this.contentList[this.contentList.length] = sphereObject;
         _manifest.default.scene[sphereObject.name] = sphereObject;
-      } else {// console.warn("   Cube shader failure");
+      } else {
+        console.warn("Cube shader failure");
       }
     }
 
@@ -28378,8 +30062,10 @@ function defineworld(canvas) {
       pyramidObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       pyramidObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       pyramidObject.position.nameUniq = nameUniq;
+      pyramidObject.position.netObjId = nameUniq;
       pyramidObject.rotation = new _matrixGeometry.RotationVector(1, 0, 0);
       pyramidObject.rotation.nameUniq = nameUniq;
+      pyramidObject.rotation.netObjId = nameUniq;
       pyramidObject.mvMatrix = mat4.create();
       pyramidObject.geometry = new _matrixGeometry.PiramideVertex(pyramidObject);
       pyramidObject.geometry.nameUniq = nameUniq; // destroy self
@@ -28388,24 +30074,28 @@ function defineworld(canvas) {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(pyramidObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(pyramidObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(pyramidObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(pyramidObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      pyramidObject.raycast = {
+        enabled: true
+      }; // Physics
 
       pyramidObject.physics = {
         enabled: false
       };
       pyramidObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
       pyramidObject.instancedDraws = {
         numberOfInstance: 10,
@@ -28421,7 +30111,8 @@ function defineworld(canvas) {
 
         this.contentList[this.contentList.length] = pyramidObject;
         _manifest.default.scene[pyramidObject.name] = pyramidObject;
-      } else {// console.warn("   Pyramid shader failure");
+      } else {
+        console.warn("Pyramid shader failure");
       }
     } // no physics for now
 
@@ -28443,8 +30134,10 @@ function defineworld(canvas) {
       objObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       objObject.position = new _matrixGeometry.Position(0, -5, -8.0);
       objObject.position.nameUniq = nameUniq;
+      objObject.position.netObjId = nameUniq;
       objObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
       objObject.rotation.nameUniq = nameUniq;
+      objObject.rotation.netObjId = nameUniq;
       objObject.color = false; // new GeoOfColor('4x4');
       // custom textures
 
@@ -28456,30 +30149,34 @@ function defineworld(canvas) {
         directionLight: new _matrixGeometry.COLOR(5, 5, 5),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
         lightingDirection: new _matrixGeometry.COLOR(0, 1, 0)
-      }; // destroy self  MAy need more improve
+      }; // destroy self  MAy need more improve !!
 
       objObject.selfDestroy = after => {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(objObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      objObject.raycast = {
+        enabled: true
+      }; // Physics
 
       objObject.physics = {
         enabled: false
       };
       objObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       };
 
       objObject.setFBO = function () {
@@ -28517,7 +30214,6 @@ function defineworld(canvas) {
 
           objObject.textures[0] = objObject.texture;
         } else if (typeof texturesPaths == 'object') {
-          console.info("path is object FO R OBJ");
           objObject.textures = [];
           objObject.textures_texParameteri = []; //new
 
@@ -28539,7 +30235,7 @@ function defineworld(canvas) {
             objObject.texParams = texturesPaths.params;
           }
 
-          (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles30'); // eslint-disable-next-line no-redeclare
+          (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles'); // eslint-disable-next-line no-redeclare
 
           for (var t = 0; t < texturesPaths.source.length; ++t) {
             objObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t], texturesPaths.params));
@@ -28569,8 +30265,7 @@ function defineworld(canvas) {
         this.shaderProgram = world.initShaders(world.GL.gl, this.type + '-shader-fs', this.type + '-shader-vs');
       };
 
-      objObject.mvMatrix = mat4.create(); // eslint-disable-next-line valid-typeof
-      // update
+      objObject.mvMatrix = mat4.create(); // update
 
       objObject.meshList = {};
 
@@ -28591,7 +30286,14 @@ function defineworld(canvas) {
         } // no need for single test it in future
 
 
-        objObject.meshList = animationConstruct_.meshList;
+        objObject.meshList = animationConstruct_.meshList; // scale for all
+
+        objObject.scaleAll = function (s) {
+          for (var k in objObject.meshList) {
+            // console.log(objObject.meshList[k])
+            objObject.meshList[k].setScale(s);
+          }
+        };
       } // Stay like root or t pose data holder
 
 
@@ -28603,7 +30305,7 @@ function defineworld(canvas) {
         this.contentList[this.contentList.length] = objObject;
         _manifest.default.scene[objObject.name] = objObject;
       } else {
-        console.log('obj file shader failure');
+        console.warn('obj file shader failure');
       }
     }
 
@@ -28623,10 +30325,12 @@ function defineworld(canvas) {
       cubeObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       cubeObject.position.nameUniq = nameUniq;
+      cubeObject.position.netObjId = nameUniq;
       cubeObject.size = size;
       cubeObject.sides = 12;
       cubeObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      cubeObject.rotation.nameUniq = nameUniq; //lights
+      cubeObject.rotation.nameUniq = nameUniq;
+      cubeObject.rotation.netObjId = nameUniq; //lights
 
       cubeObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -28634,8 +30338,37 @@ function defineworld(canvas) {
         lightingDirection: new _matrixGeometry.COLOR((0, _utility.radToDeg)(0.3), (0, _utility.radToDeg)(-0.3), (0, _utility.radToDeg)(-1))
       };
 
-      cubeObject.setFBO = function () {
-        cubeObject.FBO = {};
+      cubeObject.setFBO = function (arg) {
+        // cubeObject.FBO = {};
+        // console.log('cubeObject set fbo ... ')
+        cubeObject.FBO = {
+          name: cubeObject.name,
+          FB: (0, _matrixTextures.makeFBO)(world.GL.gl, {
+            width: 512,
+            height: 512
+          }),
+          settings: {
+            cameraX: typeof arg === 'undefined' || !arg.cameraX ? 0 : arg.cameraX,
+            cameraY: typeof arg === 'undefined' || !arg.cameraY ? 0 : arg.cameraY,
+            cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 0 : arg.cameraZ,
+            pitch: typeof arg === 'undefined' || !arg.pitch ? 2.5 : arg.pitch,
+            yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw // posZ: (typeof arg === 'undefined' || !arg.posZ? 4.3 : arg.posZ),
+            // targetX: (typeof arg === 'undefined' || !arg.targetX? 2.5 : arg.targetX),
+            // targetY: (typeof arg === 'undefined'|| !arg.targetY ? 0 : arg.targetY),
+            // targetZ: (typeof arg === 'undefined' || !arg.targetZ? 3.5 : arg.targetZ),
+            // projWidth: (typeof arg === 'undefined' || !arg.projWidth? 1 : arg.projWidth),
+            // projHeight: (typeof arg === 'undefined'|| !arg.projHeight ? 1 : arg.projHeight),
+            // perspective:  (typeof arg === 'undefined' || !arg.perspective? true : arg.perspective),
+            // fieldOfView:  (typeof arg === 'undefined' || !arg.fieldOfView? 120 : arg.fieldOfView),
+            // bias: (typeof arg === 'undefined' || !arg.bias ? -0.006 : arg.bias),
+            // translate: (typeof arg === 'undefined' || !arg.translate ? [1.5, 1.5, 1.5] : [arg.translate[0], arg.translate[1], arg.translate[2]]),
+            // scale  : (typeof arg === 'undefined' || !arg.scale ? [0.5 ,0.5 ,0.5] : [arg.scale[0],arg.scale[1] ,arg.scale[2] ])
+
+          }
+        }; // for now
+        // world.FBOS[0] = cubeObject.FBO;
+
+        world.FBOS.push(cubeObject.FBO);
       }; // destroy self  MAy need more improve
 
 
@@ -28643,24 +30376,28 @@ function defineworld(canvas) {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(cubeObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      cubeObject.raycast = {
+        enabled: true
+      }; // Physics
 
       cubeObject.physics = {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
+        enable: false
       }; // Update others start
 
       cubeObject.useShadows = false;
@@ -28682,6 +30419,7 @@ function defineworld(canvas) {
         }
 
         (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, t);
+        console.log('REGEN');
         cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       };
 
@@ -28724,7 +30462,7 @@ function defineworld(canvas) {
             cubeObject.texParams = texturesPaths.params;
           }
 
-          (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles30'); // eslint-disable-next-line no-redeclare
+          (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles'); // eslint-disable-next-line no-redeclare
 
           for (var t = 0; t < texturesPaths.source.length; ++t) {
             cubeObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t]));
@@ -28732,7 +30470,7 @@ function defineworld(canvas) {
 
           cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
         } else {
-          console.warn("Exec add obj : cubeObject texturePaths : path is unknow !");
+          console.warn("Exec add obj : cubeObject wrong texturePaths!");
         }
       } else {
         // no textures , use default single textures
@@ -28743,7 +30481,7 @@ function defineworld(canvas) {
       }
 
       cubeObject.changeMaterial = function (texturesPaths) {
-        (0, _engine.RegenerateShader)(this.type + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles30');
+        (0, _engine.RegenerateShader)(this.type + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles');
 
         for (var t = 0; t < texturesPaths.source.length; ++t) {
           this.textures.push(world.initTexture(world.GL.gl, texturesPaths.source[t]));
@@ -28771,7 +30509,7 @@ function defineworld(canvas) {
         this.contentList[this.contentList.length] = cubeObject;
         _manifest.default.scene[cubeObject.name] = cubeObject;
       } else {
-        console.log('Cube shader failure');
+        console.warn('Cube shader failure');
       }
     }
 
@@ -28791,10 +30529,12 @@ function defineworld(canvas) {
       cubeObject.position = new _matrixGeometry.Position(0, 0, -5.0); // update
 
       cubeObject.position.nameUniq = nameUniq;
+      cubeObject.position.netObjId = nameUniq;
       cubeObject.size = size;
       cubeObject.sides = 12;
       cubeObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      cubeObject.rotation.nameUniq = nameUniq; //lights
+      cubeObject.rotation.nameUniq = nameUniq;
+      cubeObject.rotation.netObjId = nameUniq; //lights
 
       cubeObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -28806,25 +30546,30 @@ function defineworld(canvas) {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(cubeObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(cubeObject), 1)[0];
           _manifest.default.scene[objForDelete.name] = null;
         }
-      }; // Physics
+      };
 
+      cubeObject.raycast = {
+        enabled: true
+      }; // Physics
 
       cubeObject.physics = {
         enabled: false
       };
       cubeObject.net = {
-        enabled: false,
-        activate: () => {
-          _engine.net.activateDataStream();
-        }
-      }; // Update others start
+        enable: false
+      }; // Update others start NOT ACTIVE NOW
+      // Calling with no error
 
       cubeObject.useShadows = false;
 
@@ -28845,7 +30590,7 @@ function defineworld(canvas) {
           cubeObject.shadows = new _matrixShadows.MatrixShadowSpotShadowTest();
         }
 
-        (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, type);
+        (0, _engine.RegenerateCubeMapShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, t);
         cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       };
 
@@ -28866,24 +30611,25 @@ function defineworld(canvas) {
 
       if (typeof texturesPaths !== 'undefined') {
         if (typeof texturesPaths == 'string') {
-          alert('path is string');
+          console.log('tex path is string... use it...');
           cubeObject.texture = this.initTexture(this.GL.gl, texturesPaths);
           cubeObject.textures.push(cubeObject.texture);
         } else if (typeof texturesPaths == 'object') {
           cubeObject.textures = [];
-          cubeObject.texture = true; // cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler+"-shader-fs", filler+"-shader-vs");
+          cubeObject.texture = true;
 
-          (0, _engine.RegenerateCubeMapShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation); // eslint-disable-next-line no-redeclare
-
-          for (var t = 0; t < texturesPaths.source.length; ++t) {// cubeObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t], texturesPaths.params));
+          if (_manifest.default.openglesShaderVersion == 1.3) {
+            (0, _engine.RegenerateCubeMapShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'spot');
+          } else {
+            (0, _engine.RegenerateCubeMapShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation);
           }
 
           cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
-        } else {// console.warn("Exec add obj : texturePaths : path is unknow typeof");
+        } else {// console.warn(" error in texturesPaths arg ...");
         }
       } else {
         // no textures , use default single textures
-        console.log('Filter type : cubeMap load default texture !');
+        console.warn('Filter type : cubeMap not loaded!  Default texture used!');
         cubeObject.texture = this.initTexture(this.GL.gl, 'res/images/texture_spiral1.png');
         cubeObject.textures.push(cubeObject.texture);
         cubeObject.texture = true;
@@ -28945,8 +30691,7 @@ function defineworld(canvas) {
               for (let key in side) {
                 cubeObject.cubeMap.cubeMap2dCanvasSet[index][key] = side[key];
               }
-            }); // maybe no need ...
-
+            });
             cubeObject.cubeMap.images = texturesPaths.source;
           } else if (texturesPaths.cubeMap.type == 'images') {
             cubeObject.cubeMap.cubeMap2dCanvasSet = [{
@@ -29023,17 +30768,23 @@ function defineworld(canvas) {
       customObject.type = filler;
       customObject.position = new _matrixGeometry.Position(0, 0, -5.0);
       customObject.position.nameUniq = nameUniq;
+      customObject.position.netObjId = nameUniq;
       customObject.size = size;
       customObject.sides = 12;
       customObject.rotation = new _matrixGeometry.RotationVector(0, 1, 0);
-      customObject.rotation.nameUniq = nameUniq; // destroy self  MAy need more improve
+      customObject.rotation.nameUniq = nameUniq;
+      customObject.rotation.netObjId = nameUniq; // destroy self  MAy need more improve
 
       customObject.selfDestroy = after => {
         if (after) {
           setTimeout(() => {
             // destroy me
-            let objForDelete = world.contentList.splice(world.contentList.indexOf(customObject), 1)[0];
-            _manifest.default.scene[objForDelete.name] = null;
+            var TEST = world.contentList[world.contentList.indexOf(customObject)];
+
+            if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
+              let objForDelete = world.contentList.splice(world.contentList.indexOf(customObject), 1)[0];
+              _manifest.default.scene[objForDelete.name] = null;
+            }
           }, after);
         } else {
           let objForDelete = world.contentList.splice(world.contentList.indexOf(customObject), 1)[0];
@@ -29046,20 +30797,29 @@ function defineworld(canvas) {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
         lightingDirection: new _matrixGeometry.COLOR(1, 1, 0)
+      }; // Physics
+
+      customObject.physics = {
+        enabled: false
+      };
+      customObject.net = {
+        enable: false
+      };
+      customObject.instancedDraws = {
+        numberOfInstance: 10,
+        array_of_local_offset: [12, 0, 0],
+        overrideDrawArraysInstance: function (object_) {}
       };
       customObject.textures = [];
 
       if (typeof texturesPaths !== 'undefined') {
         if (typeof texturesPaths == 'string') {
-          //alert('path is string')
           customObject.texture = this.initTexture(this.GL.gl, texturesPaths);
           customObject.textures.push(customObject.texture);
         } else if (typeof texturesPaths == 'object') {
-          // console.log("path is object");
           customObject.textures = [];
-          customObject.texture = true; // cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler+"-shader-fs", filler+"-shader-vs");
-
-          (0, _engine.RegenerateShader)('sphereLightTex' + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation); // eslint-disable-next-line no-redeclare
+          customObject.texture = true;
+          (0, _engine.RegenerateShader)('sphereLightTex' + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles');
 
           for (var t = 0; t < texturesPaths.source.length; ++t) {
             customObject.textures.push(this.initTexture(this.GL.gl, texturesPaths.source[t]));
@@ -29070,7 +30830,7 @@ function defineworld(canvas) {
           alert('Exec add obj : texturePaths : path is unknow typeof');
         }
       } else {
-        // no textures , use default single textures
+        // no textures, use default single textures
         customObject.texture = this.initTexture(this.GL.gl, 'res/images/texture_spiral1.png');
         customObject.textures.push(customObject.texture);
         customObject.texture = true;
@@ -29082,25 +30842,46 @@ function defineworld(canvas) {
 
         for (var t = 0; t < texturesPaths.source.length; ++t) {
           this.textures.push(world.initTexture(world.GL.gl, texturesPaths.source[t]));
-        } //this.shaderProgram = world.initShaders(world.GL.gl, this.type +"-shader-fs", this.type + "-shader-vs");
-
+        }
 
         this.shaderProgram = world.initShaders(world.GL.gl, 'sphereLightTex' + '-shader-fs', 'sphereLightTex' + '-shader-vs');
       };
 
-      customObject.mvMatrix = mat4.create(); //sphereObject.LightMap   = new GeoOfColor("cube light");
-
+      customObject.mvMatrix = mat4.create();
       customObject.LightMap = undefined;
 
       if (typeof mesh_ !== 'undefined') {
         customObject.latitudeBands = mesh_.latitudeBands;
         customObject.longitudeBands = mesh_.longitudeBands;
         customObject.radius = mesh_.radius;
-        customObject.custom_type = mesh_.custom_type;
+        customObject.custom_type = mesh_.custom_type; // torus
+
+        if (mesh_.custom_type == 'torus') {
+          customObject.slices = mesh_.slices;
+          customObject.loops = mesh_.loops;
+          customObject.inner_rad = mesh_.inner_rad;
+          customObject.outerRad = mesh_.outerRad;
+        } else if (mesh_.custom_type == 'testConvex') {
+          // Little diff for this line 
+          // custom_geometry is geometry prepared for CANNONJS
+          customObject.custom_geometry = mesh_.custom_geometry;
+        } else {
+          // same for now DEFAULT
+          customObject.slices = mesh_.slices;
+          customObject.loops = mesh_.loops;
+          customObject.inner_rad = mesh_.inner_rad;
+          customObject.outerRad = mesh_.outerRad;
+        }
       } else {
         customObject.latitudeBands = 30;
         customObject.longitudeBands = 30;
         customObject.radius = 2;
+        customObject.custom_type = 'torus'; // torus is default
+
+        customObject.slices = 8;
+        customObject.loops = 20;
+        customObject.inner_rad = 0.5;
+        customObject.outerRad = 2;
       }
 
       customObject.geometry = new _matrixGeometry.customVertex(customObject); //draws params
@@ -29108,26 +30889,23 @@ function defineworld(canvas) {
       customObject.glBlend = new _utility._glBlend();
 
       if (customObject.shaderProgram) {
-        // console.log("   Buffer the " + filler + ":Store at:" + this.contentList.length);
+        // console.log("Buffer the " + filler + ":Store at:" + this.contentList.length);
         this.bufferSphere(customObject);
         customObject.glDrawElements = new _utility._DrawElements(customObject.vertexIndexBuffer.numItems);
         this.contentList[this.contentList.length] = customObject;
         _manifest.default.scene[customObject.name] = customObject;
-      } else {// console.log("   customObject shader failure");
+      } else {
+        console.log("customObject shader failure");
       }
     }
   };
 
-  world.callReDraw = _matrixRender.callReDraw_;
-  /**
-   * Destructor
-   */
-
+  world.callReDraw = reDraw;
   world.destroy = _manifest.default.operation.destroyWorld;
   return world;
 }
 
-},{"../program/manifest":67,"./engine":43,"./loader-obj":45,"./matrix-draws":48,"./matrix-geometry":49,"./matrix-init-shaders":50,"./matrix-render":51,"./matrix-shadows":53,"./matrix-tags":54,"./matrix-textures":55,"./physics":58,"./utility":65}],57:[function(require,module,exports){
+},{"../program/manifest":75,"./engine":44,"./loader-obj":46,"./matrix-draws":49,"./matrix-geometry":50,"./matrix-init-shaders1":51,"./matrix-init-shaders3":52,"./matrix-render":53,"./matrix-shadows":56,"./matrix-tags":57,"./matrix-textures":58,"./optimizer/override-matrix-render":63,"./physics":64,"./utility":71}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -29176,28 +30954,34 @@ class Broadcaster {
 
       init(rtcEvent) {
         console.log("rtcEvent add new net object -> ", rtcEvent.userid);
+        dispatchEvent(new CustomEvent('net-new-user', {
+          detail: {
+            data: rtcEvent
+          }
+        }));
       },
 
       update(e) {
         if (e.data.netPos) {
-          // console.log('INFO ZA UPDATE', e);
-          if (e.data.netPos.x) _manifest.default.scene[e.data.netObjId].position.SetX(e.data.netPos.x, 'noemit');
-          if (e.data.netPos.y) _manifest.default.scene[e.data.netObjId].position.SetY(e.data.netPos.y, 'noemit');
-          if (e.data.netPos.z) _manifest.default.scene[e.data.netObjId].position.SetZ(e.data.netPos.z, 'noemit');
+          // console.log('INFO UPDATE', e);
+          if (_manifest.default.scene[e.data.netObjId]) {
+            if (e.data.netPos.x) _manifest.default.scene[e.data.netObjId].position.SetX(e.data.netPos.x, 'noemit');
+            if (e.data.netPos.y) _manifest.default.scene[e.data.netObjId].position.SetY(e.data.netPos.y, 'noemit');
+            if (e.data.netPos.z) _manifest.default.scene[e.data.netObjId].position.SetZ(e.data.netPos.z, 'noemit');
+          }
         } else if (e.data.netRot) {
-          // console.log('ROT INFO ZA UPDATE', e);
-          if (e.data.netRot.x) _manifest.default.scene[e.data.netObjId].rotation.rotx = e.data.netRot.x; // , 'noemit');
-
+          // console.log('ROT INFO UPDATE', e);
+          if (e.data.netRot.x) _manifest.default.scene[e.data.netObjId].rotation.rotx = e.data.netRot.x;
           if (e.data.netRot.y) _manifest.default.scene[e.data.netObjId].rotation.roty = e.data.netRot.y;
           if (e.data.netRot.z) _manifest.default.scene[e.data.netObjId].rotation.rotz = e.data.netRot.z;
         } else if (e.data.netScale) {
-          // console.log('netScale INFO ZA UPDATE', e);
+          // console.log('netScale INFO UPDATE', e);
           if (e.data.netScale.x) _manifest.default.scene[e.data.netObjId].geometry.setScaleByX(e.data.netScale.x, 'noemit');
           if (e.data.netScale.y) _manifest.default.scene[e.data.netObjId].geometry.setScaleByY(e.data.netScale.y, 'noemit');
           if (e.data.netScale.z) _manifest.default.scene[e.data.netObjId].geometry.setScaleByZ(e.data.netScale.z, 'noemit');
           if (e.data.netScale.scale) _manifest.default.scene[e.data.netObjId].geometry.setScale(e.data.netScale.scale, 'noemit');
         } else if (e.data.texScaleFactor) {
-          // console.log('texScaleFactor INFO ZA UPDATE', e);
+          // console.log('texScaleFactor INFO UPDATE', e);
           if (e.data.texScaleFactor.newScaleFactror) {
             _manifest.default.scene[e.data.netObjId].geometry.setTexCoordScaleFactor(e.data.texScaleFactor.newScaleFactror, 'noemit');
           }
@@ -29215,9 +30999,15 @@ class Broadcaster {
        */
       leaveGamePlay(rtcEvent) {
         console.info("rtcEvent LEAVE GAME: ", rtcEvent.userid);
+        dispatchEvent(new CustomEvent('net.remove-user', {
+          detail: {
+            data: rtcEvent
+          }
+        }));
       }
 
-    };
+    }; // make it gloabal
+
     window.io = io;
     this.engineConfig = config;
 
@@ -29358,7 +31148,7 @@ class Broadcaster {
     };
 
     this.connection.onclose = function (dataStreamEvent) {
-      root.injector.leaveGamePlay(dataStreamEvent);
+      if (root.injector) root.injector.leaveGamePlay(dataStreamEvent);
 
       if (root.connection.getAllParticipants().length) {
         document.querySelector("#rtc3log").value = "You are still connected with:" + root.connection.getAllParticipants().join(", ");
@@ -29369,7 +31159,7 @@ class Broadcaster {
 
     this.connection.onUserStatusChanged = function (event) {
       if (event.status === "offline") {
-        root.injector.leaveGamePlay(event);
+        if (root.injector) root.injector.leaveGamePlay(event);
       }
     };
 
@@ -29613,7 +31403,1067 @@ class Broadcaster {
 
 exports.Broadcaster = Broadcaster;
 
-},{"../program/manifest.js":67,"./rtc-multi-connection/FileBufferReader.js":60,"./rtc-multi-connection/RTCMultiConnection3":61,"./rtc-multi-connection/getHTMLMediaElement":62,"./rtc-multi-connection/socket.io":63,"./utility":65}],58:[function(require,module,exports){
+},{"../program/manifest.js":75,"./rtc-multi-connection/FileBufferReader.js":66,"./rtc-multi-connection/RTCMultiConnection3":67,"./rtc-multi-connection/getHTMLMediaElement":68,"./rtc-multi-connection/socket.io":69,"./utility":71}],61:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.defineShader = defineShader;
+exports.defineShader1 = defineShader1;
+exports.buildinShaders = exports.standardMatrixEngineShader = void 0;
+
+var _ = require("../..");
+
+var _matrixWorld = require("../matrix-world");
+
+var _utility = require("../utility");
+
+/**
+ * @description
+ * Optimisation for custom FShaders parts
+ * GLSL 1.3 for now
+
+   Interest links for explore post shader example live: 
+   https://stackoverflow.com/questions/8166384/how-to-get-a-glow-shader-effect-in-opengl-es-2-0
+ */
+function defineShader() {
+  return `#version 300 es
+  // Standard Matrix-engine Shaders attr
+  precision highp float;
+  in vec2 vTextureCoord;
+  in vec3 vLightWeighting;
+  uniform sampler2D uSampler;
+
+  uniform vec2  uSIZE;
+  uniform float uDelta;
+  uniform vec2  uMouse;
+
+  out vec4 outColor;
+  `;
+}
+
+;
+
+function defineShader1() {
+  return `precision highp float;
+  // Standard Matrix-engine Shaders attr
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+  uniform sampler2D uSampler;
+
+  uniform vec2 uSIZE;
+  uniform float uDelta;
+  uniform vec2 uMouse;
+
+  `;
+}
+
+;
+
+var standardMatrixEngineShader = object => {
+  var lighting = true;
+  var localLooper = 0;
+  mat4.identity(object.mvMatrix);
+
+  _matrixWorld.world.mvPushMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
+
+  if (object.isHUD === true) {
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    if (_.raycaster.checkingProcedureCalc) _.raycaster.checkingProcedureCalc(object);
+  } else {
+    if (App.camera.FirstPersonController == true) {
+      camera.setCamera(object);
+    } else if (App.camera.SceneController == true) {
+      camera.setSceneCamera(object);
+    }
+
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    if (_.raycaster.checkingProcedureCalc && typeof ray === 'undefined') _.raycaster.checkingProcedureCalc(object);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+  } // V
+
+
+  if (object.vertexPositionBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
+
+    if (object.geometry.dynamicBuffer == true) {
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.geometry.vertices, _matrixWorld.world.GL.gl.STATIC_DRAW);
+    }
+
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+    _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
+
+    localLooper = localLooper + 1;
+  } // C
+
+
+  if (object.vertexColorBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
+
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+    _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
+
+    localLooper = localLooper + 1;
+  } // L
+
+
+  if (lighting && object.shaderProgram.useLightingUniform) {
+    _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
+    /* Set the normals */
+
+
+    if (object.vertexNormalBuffer) {
+      _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexNormalBuffer);
+
+      _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexNormalAttribute, object.vertexNormalBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexNormalAttribute);
+
+      localLooper = localLooper + 1;
+    }
+    /* Set the ambient light */
+
+
+    if (object.shaderProgram.ambientColorUniform) {
+      if ((0, _utility.E)('ambLightR')) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLightR').getAttribute('value')), parseFloat((0, _utility.E)('ambLightG').getAttribute('value')), parseFloat((0, _utility.E)('ambLightB').getAttribute('value'))); // console.log("LIGHTS UNIFORM AMB  B = ", parseFloat(E('ambLightB').value) )
+
+      } else {
+        // object.LightsData.ambientLight
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
+      }
+    }
+    /* Directional light */
+
+
+    if (object.shaderProgram.directionalColorUniform) {
+      if ((0, _utility.E)('dirLightR')) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat((0, _utility.E)('dirLightR').getAttribute('value')), parseFloat((0, _utility.E)('dirLightG').getAttribute('value')), parseFloat((0, _utility.E)('dirLightB').getAttribute('value')));
+      } else {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
+      }
+    }
+    /* Normalize the direction */
+
+
+    var lightingDirection = null;
+
+    if (object.shaderProgram.lightingDirectionUniform) {
+      if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
+        // console.log("LIGHTS UNIFORM AMB  B = ",  E('dirZ').value )
+        lightingDirection = [degToRad(parseFloat((0, _utility.E)('dirX').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirY').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirZ').getAttribute('value')))];
+      } else {
+        lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
+      }
+
+      var adjustedLD = vec3.create();
+      vec3.normalize(adjustedLD, lightingDirection);
+      vec3.scale(adjustedLD, adjustedLD, -1);
+
+      _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightingDirectionUniform, adjustedLD);
+    }
+  } else {
+    if (object.shaderProgram.useLightingUniform) {
+      if (object.shaderProgram.ambientColorUniform) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat(0.2), parseFloat(0.2), parseFloat(0.2));
+      }
+
+      if (object.shaderProgram.directionalColorUniform) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
+      }
+    }
+  } // T
+
+
+  if (object.vertexTexCoordBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
+
+    if (object.geometry.dynamicBuffer == true) {
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.geometry.texCoords, _matrixWorld.world.GL.gl.STATIC_DRAW);
+    }
+
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.textureCoordAttribute, object.vertexTexCoordBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+    _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
+
+    if (object.streamTextures != null) {
+      if (object.streamTextures.video) {
+        App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.video);
+      } else {
+        App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
+      }
+
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+    } else if (object.FBO) {
+      // test FBO
+      _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+      _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
+
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+    } else {
+      for (var t = 0; t < object.textures.length; t++) {
+        if (object.custom.gl_texture == null) {
+          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+
+          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
+
+          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+          if (object.texParams.MIPMAP == false) {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | _matrixWorld.world.GL.gl.REPEAT);
+
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | _matrixWorld.world.GL.gl.REPEAT); // -- Allocate storage for the texture
+            // world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
+            // world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0,512, 512, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, object.textures[t]);
+
+          } else {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+            _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
+          }
+
+          if (_matrixWorld.world.GL.extTFAnisotropic && object.texParams.ANISOTROPIC == true) {
+            _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+          } //console.log('TEST' , object.texParams)
+
+
+          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+        } else {
+          object.custom.gl_texture(object, t);
+        }
+      }
+    }
+
+    localLooper = localLooper + 1;
+  } else {
+    if (object.shaderProgram.samplerUniform) {
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+    } else if (object.shaderProgram.uCubeMapSampler) {
+      // CUBE MAP
+      _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE0']);
+
+      var gl = _matrixWorld.world.GL.gl;
+      if (!object.tex) object.tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, object.tex);
+
+      if (object.cubeMap.type == 'images') {
+        object.cubeMap.cubeMap2dCanvasSet.forEach((faceInfo, index) => {
+          const level = 0;
+          const internalFormat = gl.RGBA;
+          const format = gl.RGBA;
+          const type = gl.UNSIGNED_BYTE;
+          gl.texImage2D(faceInfo.target, level, internalFormat, format, type, object.cubeMap.images[index]);
+          gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+        });
+      } else {
+        object.cubeMap.cubeMap2dCanvasSet.forEach((faceInfo, index) => {
+          var args = [];
+
+          for (var key in faceInfo) {
+            if (key !== 'target') {
+              args.push(faceInfo[key]);
+            }
+          }
+
+          if (object.cubeMap.drawFunc) {
+            object.cubeMap.drawFunc(args);
+          } else {
+            const {
+              faceColor,
+              textColor,
+              text
+            } = faceInfo;
+            gen2DTextFace(object.cubeMap.cubeMap2dCtx, faceColor, textColor, text);
+          }
+
+          const level = 0;
+          const internalFormat = gl.RGBA;
+          const format = gl.RGBA;
+          const type = gl.UNSIGNED_BYTE;
+          gl.texImage2D(faceInfo.target, level, internalFormat, format, type, object.cubeMap.cubeMap2dCtx.canvas);
+          gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+        });
+      }
+
+      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+      gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.uCubeMapSampler, 0);
+    }
+  }
+
+  _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
+
+  _matrixWorld.world.setMatrixUniforms(object, _matrixWorld.world.pMatrix); // Shadows
+
+
+  if (object.shadows && object.shadows.type == 'spot' || object.shadows && object.shadows.type == 'spot-shadow') {
+    // set the light position
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.shadows.lightPosition);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess); // Set the spotlight uniforms
+
+
+    {
+      var target = [0, 0, 0]; // object.position.worldLocation;
+
+      var up = [0, 1, 0];
+      var lmat = m4.lookAt(object.shadows.lightPosition, target, up); // var lmat = m4.lookAt(object.position.worldLocation, target, up);
+
+      lmat = m4.multiply(m4.xRotation(object.shadows.lightRotationX), lmat);
+      lmat = m4.multiply(m4.yRotation(object.shadows.lightRotationY), lmat); // get the zAxis from the matrix
+      // negate it because lookAt looks down the -Z axis
+
+      object.shadows.lightDirection = [-lmat[8], -lmat[9], -lmat[10]]; // object.shadows.lightDirection = [-0, -0, -1];
+    }
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightDirectionLocation, object.shadows.lightDirection);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.innerLimitLocation, Math.cos(object.shadows.innerLimit));
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit));
+  } else if (object.shadows && object.shadows.type == 'spec') {
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.specularColor, object.shadows.specularDATA);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uLightPosition, _matrixWorld.world.uLightPosition);
+  } else if (object.shadows && object.shadows.type == 'lens') {
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uLightPosition, _matrixWorld.world.uLightPosition);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uControl, object.shadows.uControl);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uResolution, object.shadows.uResolution);
+  }
+
+  if (object.vertexNormalBuffer && object.shaderProgram.nMatrixUniform) {
+    var normalMatrix = mat3.create();
+    mat3.normalFromMat4(normalMatrix, object.mvMatrix);
+    mat3.transpose(normalMatrix, normalMatrix);
+
+    _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
+  }
+
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper);
+
+  if (object.glBlend.blendEnabled == true) {
+    if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
+      _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
+    }
+
+    _matrixWorld.world.GL.gl.blendFunc(_matrixWorld.world.GL.gl[object.glBlend.blendParamSrc], _matrixWorld.world.GL.gl[object.glBlend.blendParamDest]);
+  } else {
+    _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
+
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // world.GL.gl.enable(world.GL.gl.CULL_FACE);
+
+  } //
+
+
+  if (typeof object.addExtraDrawCode != 'undefined') object.addExtraDrawCode(_matrixWorld.world, object); //
+
+  _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
+
+  _matrixWorld.world.mvPopMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
+}; // Free shaders
+// Personal learning...
+
+
+exports.standardMatrixEngineShader = standardMatrixEngineShader;
+var buildinShaders = {};
+exports.buildinShaders = buildinShaders;
+
+buildinShaders.shaderTest = () => {
+  return `${defineShader()}
+
+  `;
+};
+
+},{"../..":43,"../matrix-world":59,"../utility":71}],62:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.toyShaderHeader = toyShaderHeader;
+exports.toyShader1 = toyShader1;
+exports.freeShadersToy = exports.standardMEShaderDrawer = void 0;
+
+var _ = require("../..");
+
+var _events = require("../events");
+
+var _matrixWorld = require("../matrix-world");
+
+var _utility = require("../utility");
+
+/**
+ * @description
+ * Optimisation for custom FShaders parts
+ * Open source shaders
+ * #pragma vscode_glsllint_stage : STAGE
+ */
+// var now = 0, then1 = 0, time1 = 0;
+function toyShaderHeader() {
+  return `#version 300 es
+  precision highp float;
+  // Standard matrix-engine params
+  in vec2 vTextureCoord;
+  in vec3 vLightWeighting;
+  uniform sampler2D uSampler;
+
+  uniform vec2 iResolution;
+  uniform float iTime;
+  uniform float iTimeDelta;
+  uniform int iFrame;
+  uniform vec3 iMouse;
+
+  out vec4 outColor;
+  `;
+}
+
+function toyShader1() {
+  return `precision highp float;
+  // Standard matrix-engine params
+  varying vec2 vTextureCoord;
+  varying vec3 vLightWeighting;
+  uniform sampler2D uSampler;
+
+  uniform vec2 iResolution;
+  uniform float iTime;
+  uniform float iTimeDelta;
+  uniform float iFrame;
+  // uniform float iChannelTime[4];
+  uniform vec2 iMouse;
+  // uniform vec4 iDate;
+  // uniform float iSampleRate;
+  // uniform vec3 iChannelResolution[4];
+  // uniform float iChanneli;
+
+  uniform sampler2D uSampler;          // input channel. XX = 2D/Cube;
+  uniform sampler2D iChannel1;          // input channel. XX = 2D/Cube;
+  uniform sampler2D iChannel2;          // input channel. XX = 2D/Cube;
+  // we need to declare an output for the fragment shader
+  // out vec4 outColor;
+  `;
+}
+
+const standardMEShaderDrawer = function (object) {
+  // Create a vertex array object (attribute state)
+  // var world = matrixWorld.world;
+  var lighting = true;
+  var localLooper = 0;
+  mat4.identity(object.mvMatrix);
+
+  _matrixWorld.world.mvPushMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
+
+  if (object.isHUD === true) {
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    if (_.raycaster.checkingProcedureCalc) _.raycaster.checkingProcedureCalc(object);
+  } else {
+    if (App.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (App.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
+
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    if (_.raycaster.checkingProcedureCalc && typeof ray === 'undefined') _.raycaster.checkingProcedureCalc(object);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(object.rotation.rz), object.rotation.getRotDirZ());
+  } // V
+
+
+  if (object.vertexPositionBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
+
+    if (object.geometry.dynamicBuffer == true) {
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.geometry.vertices, _matrixWorld.world.GL.gl.STATIC_DRAW);
+    }
+
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.vertexPositionBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+    _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute);
+
+    localLooper = localLooper + 1;
+  } // C
+
+
+  if (object.vertexColorBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexColorBuffer);
+
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexColorAttribute, object.vertexColorBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+    _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexColorAttribute);
+
+    localLooper = localLooper + 1;
+  } // L
+
+
+  if (lighting && object.shaderProgram.useLightingUniform) {
+    _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.useLightingUniform, lighting);
+    /* Set the normals */
+
+
+    if (object.vertexNormalBuffer) {
+      _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexNormalBuffer);
+
+      _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexNormalAttribute, object.vertexNormalBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexNormalAttribute);
+
+      localLooper = localLooper + 1;
+    }
+    /* Set the ambient light */
+
+
+    if (object.shaderProgram.ambientColorUniform) {
+      if ((0, _utility.E)('ambLightR')) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLightR').getAttribute('value')), parseFloat((0, _utility.E)('ambLightG').getAttribute('value')), parseFloat((0, _utility.E)('ambLightB').getAttribute('value'))); // console.log("LIGHTS UNIFORM AMB  B = ", parseFloat(E('ambLightB').value) )
+
+      } else {
+        // object.LightsData.ambientLight
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
+      }
+    }
+    /* Directional light */
+
+
+    if (object.shaderProgram.directionalColorUniform) {
+      if ((0, _utility.E)('dirLightR')) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat((0, _utility.E)('dirLightR').getAttribute('value')), parseFloat((0, _utility.E)('dirLightG').getAttribute('value')), parseFloat((0, _utility.E)('dirLightB').getAttribute('value')));
+      } else {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
+      }
+    }
+    /* Normalize the direction */
+
+
+    var lightingDirection = null;
+
+    if (object.shaderProgram.lightingDirectionUniform) {
+      if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
+        // console.log("LIGHTS UNIFORM AMB  B = ",  E('dirZ').value )
+        lightingDirection = [degToRad(parseFloat((0, _utility.E)('dirX').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirY').getAttribute('value'))), degToRad(parseFloat((0, _utility.E)('dirZ').getAttribute('value')))];
+      } else {
+        lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
+      }
+
+      var adjustedLD = vec3.create();
+      vec3.normalize(adjustedLD, lightingDirection);
+      vec3.scale(adjustedLD, adjustedLD, -1);
+
+      _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightingDirectionUniform, adjustedLD);
+    }
+  } else {
+    if (object.shaderProgram.useLightingUniform) {
+      if (object.shaderProgram.ambientColorUniform) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat(0.2), parseFloat(0.2), parseFloat(0.2));
+      }
+
+      if (object.shaderProgram.directionalColorUniform) {
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat(1), parseFloat(0), parseFloat(0));
+      }
+    }
+  } // T
+
+
+  if (object.vertexTexCoordBuffer) {
+    _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
+
+    if (object.geometry.dynamicBuffer == true) {
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.geometry.texCoords, _matrixWorld.world.GL.gl.STATIC_DRAW);
+    }
+
+    _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.textureCoordAttribute, object.vertexTexCoordBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+    _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
+
+    if (object.streamTextures != null) {
+      if (object.streamTextures.video) {
+        App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.video);
+      } else {
+        App.tools.loadVideoTexture('glVideoTexture', object.streamTextures.videoImage);
+      }
+
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+    } else if (object.FBO) {
+      // test FBO
+      _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+      _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
+
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+    } else {
+      for (var t = 0; t < object.textures.length; t++) {
+        if (object.custom.gl_texture == null) {
+          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+
+          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
+
+          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+          if (object.texParams.MIPMAP == false) {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | _matrixWorld.world.GL.gl.REPEAT);
+
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | _matrixWorld.world.GL.gl.REPEAT); // -- Allocate storage for the texture
+            // world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
+            // world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0,512, 512, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, object.textures[t]);
+
+          } else {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+            _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
+          }
+
+          if (_matrixWorld.world.GL.extTFAnisotropic && object.texParams.ANISOTROPIC == true) {
+            _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+          } //console.log('TEST' , object.texParams)
+
+
+          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+        } else {
+          object.custom.gl_texture(object, t);
+        }
+      }
+    }
+
+    localLooper = localLooper + 1;
+  } else {
+    if (object.shaderProgram.samplerUniform) {
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+    } else if (object.shaderProgram.uCubeMapSampler) {
+      // CUBE MAP
+      _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE0']);
+
+      var gl = _matrixWorld.world.GL.gl;
+      if (!object.tex) object.tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, object.tex);
+
+      if (object.cubeMap.type == 'images') {
+        object.cubeMap.cubeMap2dCanvasSet.forEach((faceInfo, index) => {
+          const level = 0;
+          const internalFormat = gl.RGBA;
+          const format = gl.RGBA;
+          const type = gl.UNSIGNED_BYTE;
+          gl.texImage2D(faceInfo.target, level, internalFormat, format, type, object.cubeMap.images[index]);
+          gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+        });
+      } else {
+        object.cubeMap.cubeMap2dCanvasSet.forEach((faceInfo, index) => {
+          var args = [];
+
+          for (var key in faceInfo) {
+            if (key !== 'target') {
+              args.push(faceInfo[key]);
+            }
+          }
+
+          if (object.cubeMap.drawFunc) {
+            object.cubeMap.drawFunc(args);
+          } else {
+            const {
+              faceColor,
+              textColor,
+              text
+            } = faceInfo;
+            gen2DTextFace(object.cubeMap.cubeMap2dCtx, faceColor, textColor, text);
+          }
+
+          const level = 0;
+          const internalFormat = gl.RGBA;
+          const format = gl.RGBA;
+          const type = gl.UNSIGNED_BYTE;
+          gl.texImage2D(faceInfo.target, level, internalFormat, format, type, object.cubeMap.cubeMap2dCtx.canvas);
+          gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+        });
+      }
+
+      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+      gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+
+      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.uCubeMapSampler, 0);
+    }
+  }
+
+  _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
+
+  _matrixWorld.world.setMatrixUniforms(object, _matrixWorld.world.pMatrix); // Shadows
+
+
+  if (object.shadows && object.shadows.type == 'spot' || object.shadows && object.shadows.type == 'spot-shadow') {
+    // set the light position
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.shadows.lightPosition);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess); // Set the spotlight uniforms
+
+
+    {
+      var target = [0, 0, 0]; // object.position.worldLocation;
+
+      var up = [0, 1, 0];
+      var lmat = m4.lookAt(object.shadows.lightPosition, target, up); // var lmat = m4.lookAt(object.position.worldLocation, target, up);
+
+      lmat = m4.multiply(m4.xRotation(object.shadows.lightRotationX), lmat);
+      lmat = m4.multiply(m4.yRotation(object.shadows.lightRotationY), lmat); // get the zAxis from the matrix
+      // negate it because lookAt looks down the -Z axis
+
+      object.shadows.lightDirection = [-lmat[8], -lmat[9], -lmat[10]]; // object.shadows.lightDirection = [-0, -0, -1];
+    }
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightDirectionLocation, object.shadows.lightDirection);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.innerLimitLocation, Math.cos(object.shadows.innerLimit));
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit));
+  } else if (object.shadows && object.shadows.type == 'spec') {
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.specularColor, object.shadows.specularDATA);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uLightPosition, _matrixWorld.world.uLightPosition);
+  } else if (object.shadows && object.shadows.type == 'lens') {
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uLightPosition, _matrixWorld.world.uLightPosition);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uControl, object.shadows.uControl);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.uResolution, object.shadows.uResolution);
+  }
+
+  if (object.vertexNormalBuffer && object.shaderProgram.nMatrixUniform) {
+    var normalMatrix = mat3.create();
+    mat3.normalFromMat4(normalMatrix, object.mvMatrix);
+    mat3.transpose(normalMatrix, normalMatrix);
+
+    _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
+  }
+
+  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper);
+
+  if (object.glBlend.blendEnabled == true) {
+    if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
+      _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
+    }
+
+    _matrixWorld.world.GL.gl.blendFunc(_matrixWorld.world.GL.gl[object.glBlend.blendParamSrc], _matrixWorld.world.GL.gl[object.glBlend.blendParamDest]);
+  } else {
+    _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
+
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // world.GL.gl.enable(world.GL.gl.CULL_FACE);
+
+  } //
+
+
+  if (typeof object.addExtraDrawCode != 'undefined') object.addExtraDrawCode(_matrixWorld.world, object); //
+
+  _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
+
+  _matrixWorld.world.mvPopMatrix(object.mvMatrix, _matrixWorld.world.mvMatrixStack);
+}; // Shaders from shadertoy web site.
+// ONLY MIT or similar licensed scripts.
+
+
+exports.standardMEShaderDrawer = standardMEShaderDrawer;
+var freeShadersToy = {};
+exports.freeShadersToy = freeShadersToy;
+
+freeShadersToy.shaderFractalAdvanced = () => {
+  return `${toyShaderHeader()}
+    // The MIT License
+    // Copyright © 2020 Inigo Quilez
+    // https://www.youtube.com/c/InigoQuilez
+    // https://iquilezles.org/
+    // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    
+    // A simple way to prevent aliasing of cosine functions (the color
+    // palette in this case is made of 8 layers) by attenuating them
+    // when their oscillations become smaller than a pixel. Left is
+    // direct use of cos(x), right is band-limited cos(x).
+    //
+    // Box-filtering of cos(x):
+    //
+    // (1/w)∫cos(t)dt with t ∈ (x-½w, x+½w)
+    // = [sin(x+½w) - sin(x-½w)]/w
+    // = cos(x)·sin(½w)/(½w)
+    //
+    // Can approximate smoothstep(2π,0,w) ≈ sin(w/2)/(w/2),
+    // which you can also see as attenuating cos(x) when it 
+    // oscilates more than once per pixel. More info:
+    //
+    // https://iquilezles.org/articles/bandlimiting
+    //
+    // Related Shader:
+    //   https://www.shadertoy.com/view/WtScDt
+    //   https://www.shadertoy.com/view/wtXfRH
+    //   https://www.shadertoy.com/view/3tScWd
+    
+    
+    // box-filted cos(x)
+    vec3 fcos( in vec3 x )
+    {
+        vec3 w = fwidth(x);
+      #if 1
+        return cos(x) * sin(0.5*w)/(0.5*w);       // exact
+      #else
+        return cos(x) * smoothstep(6.2832,0.0,w); // approx
+      #endif    
+    }
+    
+    // pick raw cosine, or band-limited cosine
+    bool  mode = false;
+    vec3  mcos( vec3 x){return mode?cos(x):fcos(x);}
+    
+    // color palette, made of 8 cos functions
+    // (see https://iquilezles.org/articles/palettes)
+    vec3 getColor( in float t )
+    {
+        vec3 col = vec3(0.6,0.5,0.4);
+        col += 0.14*mcos(6.2832*t*  1.0+vec3(0.0,0.5,0.6));
+        col += 0.13*mcos(6.2832*t*  3.1+vec3(0.5,0.6,1.0));
+        col += 0.12*mcos(6.2832*t*  5.1+vec3(0.1,0.7,1.1));
+        col += 0.11*mcos(6.2832*t*  9.1+vec3(0.1,0.5,1.2));
+        col += 0.10*mcos(6.2832*t* 17.1+vec3(0.0,0.3,0.9));
+        col += 0.09*mcos(6.2832*t* 31.1+vec3(0.1,0.5,1.3));
+        col += 0.08*mcos(6.2832*t* 65.1+vec3(0.1,0.5,1.3));
+        col += 0.07*mcos(6.2832*t*131.1+vec3(0.3,0.2,0.8));
+        return col;
+    }
+    
+    void mainImage(out vec4 outColor, in vec2 fragCoord )
+    {
+        // coordiantes
+      vec2 q = (2.0*fragCoord-iResolution.xy)/iResolution.y;
+    
+        // separation
+        // float th = (iMouse.z>0.001) ? (2.0*iMouse.x-iResolution.x)/iResolution.y : 1.8*sin(iTime);
+        float th = 1.8*sin(iTime);
+        mode = (q.x<th);
+        
+        // deformation
+        vec2 p = 2.0*q/dot(q,q);
+    
+        // animation
+        p.xy += 0.05*iTime;
+    
+        // texture
+        vec3 col = min(getColor(p.x),getColor(p.y));
+    
+        // vignetting
+        col *= 1.5 - 0.2*length(q);
+        
+        // separation
+        col *= smoothstep(0.005,0.010,abs(q.x-th));
+
+        // palette
+        if( q.y<-0.9 ) col = getColor( fragCoord.x/iResolution.x );
+        outColor = vec4( col, 1.0 );
+    }
+    void main() {
+      vec4 textureColor = texture(uSampler, vTextureCoord) * vec4(1,1,1,1);
+      // mainImage(outColor, vTextureCoord);
+      mainImage(outColor, gl_FragCoord.xy);
+      outColor.rgb *= vec3(textureColor.rgb * vLightWeighting);
+    }
+  `;
+};
+
+freeShadersToy.shaderCircle = () => {
+  return `${toyShaderHeader()}
+  // The MIT License
+  // Copyright © 2020 Inigo Quilez
+  // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+  //  documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+  //  the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
+  //  and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  //  The above copyright notice and this permission notice shall be included in all copies or substantial portions
+  //  of the Software. 
+  // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+  // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+  // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  // Signed distance to a disk
+  // List of some other 2D distances: 
+  // https://www.shadertoy.com/playlist/MXdSRf
+  // and iquilezles.org/articles/distfunctions2d
+  
+  float sdCircle( in vec2 p, in float r ) 
+  {
+      return length(p)-r;
+  }
+
+  void mainImage( out vec4 outColor, in vec2 fragCoord )
+  {
+    vec2 p = (2.0*fragCoord-iResolution.xy)/iResolution.y;
+    vec2 m = (2.0*iMouse.xy-iResolution.xy)/iResolution.y;
+  
+    float d = sdCircle(p,0.5);
+      
+    // coloring
+    vec3 col = (d>0.0) ? vec3(0.9,0.6,0.3) : vec3(0.65,0.85,1.0);
+    col *= 1.0 - exp(-6.0*abs(d));
+    col *= 0.8 + 0.2*cos(150.0*d);
+    col = mix( col, vec3(1.0), 1.0-smoothstep(0.0,0.01,abs(d)) );
+    if(iMouse.z>0.001) {
+      d = sdCircle(m,0.5);
+      col = mix(col, vec3(1.0,1.0,0.0), 1.0-smoothstep(0.0, 0.005, abs(length(p-m)-abs(d))-0.0025));
+      col = mix(col, vec3(1.0,1.0,0.0), 1.0-smoothstep(0.0, 0.005, length(p-m)-0.015));
+    }
+    outColor = vec4(col,1.0);
+  }
+
+  void main() {
+    vec4 textureColor = texture(uSampler, vTextureCoord) * vec4(1,1,1,1);
+    // mainImage(outColor, vTextureCoord);
+    mainImage(outColor, gl_FragCoord.xy);
+    outColor.rgb *= vec3(textureColor.rgb * vLightWeighting);
+  }
+  `;
+};
+
+freeShadersToy.shaderSpiral = () => {
+  return `${toyShaderHeader()}
+  // The MIT License
+  // Copyright © 2022 Inigo Quilez
+  // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  // Distance to a logarithmic spiral. It's inexact, mostly
+  // noticeable when the number of rotations is small.
+
+  // List of some other 2D distances: https://www.shadertoy.com/playlist/MXdSRf
+  //
+  // and iquilezles.org/articles/distfunctions2d
+  // w is the width / distance from center to tip
+  // k is the number of rotations
+  float sdSpiral( in vec2 p, float w, in float k )
+  {
+      // body
+      const float kTau = 6.283185307;
+      float r = length(p);
+      float a = atan(p.y,p.x);
+      float n = floor( 0.5/w + (log2(r/w)*k-a)/kTau );
+      float ra = w*exp2((a+kTau*(min(n+0.0,0.0)-0.5))/k);
+      float rb = w*exp2((a+kTau*(min(n+1.0,0.0)-0.5))/k);
+      float d = min( abs(r-ra), abs(r-rb) );
+
+      // tip
+      return min( d, length(p+vec2(w,0.0)) );
+  }
+
+  void mainImage( out vec4 outColor, in vec2 fragCoord )
+  {
+      // normalized pixel coordinates
+      vec2 p = (2.0*fragCoord-iResolution.xy)/iResolution.y;
+      vec2 m = (2.0*iMouse.xy-iResolution.xy)/iResolution.y;
+      float px = 2.0/iResolution.y;
+      
+      // recenter
+      p -= vec2(0.2,-0.09);
+      m -= vec2(0.2,-0.09);
+      
+      // animation
+      float sw = 1.0;
+      float sk = 1.0 + 10.0*(0.5-0.5*cos(iTime+1.5));
+      
+      // distance
+      float d = sdSpiral(p, sw, sk);
+      
+      // coloring
+      vec3 col = (d>0.0) ? vec3(0.9,0.6,0.3) : vec3(0.65,0.85,1.0);
+      col *= 1.0 - exp(-7.0*abs(d));
+      col *= 0.8 + 0.2*cos(160.0*abs(d));
+      col = mix( col, vec3(1.0), 1.0-smoothstep(-px,px,abs(d)-0.005) );
+
+      if( iMouse.z>0.001 )
+      {
+      d = sdSpiral(m, sw, sk);
+      col = mix(col, vec3(1.0,1.0,0.0), 1.0-smoothstep(-px, px, abs(length(p-m)-abs(d))-0.005));
+      col = mix(col, vec3(1.0,1.0,0.0), 1.0-smoothstep(-px, px, length(p-m)-0.015));
+      }
+
+      outColor = vec4(col, 1.0);
+  }
+  void main() {
+    vec4 textureColor = texture(uSampler, vTextureCoord) * vec4(1,1,1,1);
+    // mainImage(outColor, vTextureCoord);
+    mainImage(outColor, gl_FragCoord.xy);
+    outColor.rgb *= vec3(textureColor.rgb * vLightWeighting);
+  }
+  `;
+};
+
+freeShadersToy.shaderPalettes = () => {
+  return `${toyShaderHeader()}
+  // The MIT License
+// https://www.youtube.com/c/InigoQuilez
+// https://iquilezles.org/
+// Copyright © 2015 Inigo Quilez
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// A simple way to create color variation in a cheap way (yes, trigonometrics ARE cheap
+// in the GPU, don't try to be smart and use a triangle wave instead).
+
+// See https://iquilezles.org/articles/palettes for more information
+
+vec3 pal( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
+{
+    return a + b*cos( 6.28318*(c*t+d) );
+}
+
+void mainImage( out vec4 outColor, in vec2 fragCoord )
+{
+	vec2 p = fragCoord.xy / iResolution.xy;
+    
+    // animate
+    p.x += 0.01*iTime;
+    
+    // compute colors
+    vec3                col = pal( p.x, vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,1.0),vec3(0.0,0.33,0.67) );
+    if( p.y>(1.0/7.0) ) col = pal( p.x, vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,1.0),vec3(0.0,0.10,0.20) );
+    if( p.y>(2.0/7.0) ) col = pal( p.x, vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,1.0),vec3(0.3,0.20,0.20) );
+    if( p.y>(3.0/7.0) ) col = pal( p.x, vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,1.0,0.5),vec3(0.8,0.90,0.30) );
+    if( p.y>(4.0/7.0) ) col = pal( p.x, vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(1.0,0.7,0.4),vec3(0.0,0.15,0.20) );
+    if( p.y>(5.0/7.0) ) col = pal( p.x, vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(2.0,1.0,0.0),vec3(0.5,0.20,0.25) );
+    if( p.y>(6.0/7.0) ) col = pal( p.x, vec3(0.8,0.5,0.4),vec3(0.2,0.4,0.2),vec3(2.0,1.0,1.0),vec3(0.0,0.25,0.25) );
+    
+
+    // band
+    float f = fract(p.y*7.0);
+    // borders
+    col *= smoothstep( 0.49, 0.47, abs(f-0.5) );
+    // shadowing
+    col *= 0.5 + 0.5*sqrt(4.0*f*(1.0-f));
+
+    outColor = vec4( col, 1.0 );
+}
+void main() {
+  vec4 textureColor = texture(uSampler, vTextureCoord) * vec4(1,1,1,1);
+  // mainImage(outColor, vTextureCoord);
+  mainImage(outColor, gl_FragCoord.xy);
+  outColor.rgb *= vec3(textureColor.rgb * vLightWeighting);
+}
+  `;
+};
+
+},{"../..":43,"../events":45,"../matrix-world":59,"../utility":71}],63:[function(require,module,exports){
+
+/**
+ * @description
+ * Optimisation for draw function
+ * @simplyRender
+ * No FBO draw flow
+ */
+},{}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -29622,6 +32472,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 
 var CANNON = _interopRequireWildcard(require("cannon"));
+
+var _matrixWorld = require("./matrix-world");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -29632,11 +32484,11 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * Used cannon.js version 0.6 library.
  * Source code at:
  * https://schteppe.github.io/cannon.js/
+ * Integrated in matrix-engine.
  */
 class MatrixPhysics {
   constructor(gravityVector = [0, 0, -9.82]) {
-    console.log("MatrixPhysics [cannon.js] running =>", CANNON); // Setup our world
-
+    console.info(`%cMatrixPhysics [cannon.js] running. %c`, _matrixWorld.CS3, _matrixWorld.CS1);
     this.world = new CANNON.World();
     this.world.gravity.set(gravityVector[0], gravityVector[1], gravityVector[2]);
 
@@ -29672,9 +32524,9 @@ class MatrixPhysics {
 
   addGround(App, world, tex) {
     // Create a ground
+    // Makes the body static
     var groundBody = new CANNON.Body({
       mass: 0,
-      // mass == 0 makes the body static
       position: new CANNON.Vec3(0, -15, -2)
     });
     var groundShape = new CANNON.Plane();
@@ -29693,7 +32545,7 @@ class MatrixPhysics {
 
 exports.default = MatrixPhysics;
 
-},{"cannon":39}],59:[function(require,module,exports){
+},{"./matrix-world":59,"cannon":40}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -29709,7 +32561,8 @@ exports.touchCoordinate = void 0;
 
 /**
  * @author Nikola Lukic
- * @info maximumroulette.com
+ * @email zlatnaspirala@gmail.com
+ * @site https://maximumroulette.com
  * @Licence GPL v3
  * Inspired with original code from:
  * https://github.com/Necolo/raycaster
@@ -29722,7 +32575,8 @@ let touchCoordinate = {
   stopOnFirstDetectedHit: false
 };
 /**
- * Ray triangle intersection algorithm
+ * @description 
+ * Ray triangle intersection algorithm.
  * @param rayOrigin ray origin point
  * @param rayVector ray direction
  * @param triangle three points of triangle, should be ccw order
@@ -29733,10 +32587,10 @@ let touchCoordinate = {
 
 exports.touchCoordinate = touchCoordinate;
 
-function rayIntersectsTriangle(rayOrigin, // :vec3,
-rayVector, // :vec3,
-triangle, // :vec3[],
-out, // :vec3,
+function rayIntersectsTriangle(rayOrigin, // vec3,
+rayVector, // vec3,
+triangle, // vec3[],
+out, // vec3,
 objPos) {
   if (matrixEngine.Events.camera.zPos < objPos.z) {
     rayOrigin[2] = matrixEngine.Events.camera.zPos - objPos.z;
@@ -29789,8 +32643,8 @@ objPos) {
   return false;
 }
 /**
+ * @description
  * Unproject a 2D point into a 3D world.
- *
  * @param screenCoord [screenX, screenY]
  * @param viewport [left, top, width, height]
  * @param invProjection invert projection matrix
@@ -29799,12 +32653,11 @@ objPos) {
  */
 
 
-function unproject(screenCoord, // :[number, number],
-viewport, // :[number, number, number, number],
-invProjection, // :mat4,
-invView // :mat4,
-) {
-  // : vec3
+function unproject(screenCoord, // [number, number]
+viewport, // [number, number, number, number]
+invProjection, // mat4
+invView) {
+  // return vec3
   const [left, top, width, height] = viewport;
   const [x, y] = screenCoord;
   const out = vec4.fromValues(2 * x / width - 1 - left, 2 * (height - y - 1) / height - 1, 1, 1);
@@ -29814,7 +32667,8 @@ invView // :mat4,
   return vec3.normalize(vec3.create(), out);
 }
 /**
- * @description Fix local rotation raycast bug test.
+ * @description 
+ * Fix local rotation raycast bug test.
  */
 
 
@@ -29848,11 +32702,10 @@ function checkingProcedure(ev, customArg) {
 }
 
 function checkingProcedureCalc(object) {
+  if (object.raycast.enabled == false || touchCoordinate.enabled == false) return;
   var world = matrixEngine.matrixWorld.world;
-  if (touchCoordinate.enabled == false) return;
   let mvMatrix = [...object.mvMatrix];
-  let ray; // console.info('Raycast hits after test... -> ', mvMatrix)
-
+  let ray;
   let outp = mat4.create();
   let outv = mat4.create();
   let myRayOrigin = vec3.fromValues(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.yPos, matrixEngine.Events.camera.zPos);
@@ -29943,8 +32796,7 @@ function checkingProcedureCalc(object) {
           rez1 = rotate2dPlot(0, 0, triangleInZero[1][0], triangleInZero[1][1], object.rotation.rz);
           rez2 = rotate2dPlot(0, 0, triangleInZero[2][0], triangleInZero[2][1], object.rotation.rz);
           triangle = [[rez0[0] + object.position.worldLocation[0], rez0[1] + object.position.worldLocation[1], triangleInZero[0][2]], [rez1[0] + object.position.worldLocation[0], rez1[1] + object.position.worldLocation[1], triangleInZero[1][2]], [rez2[0] + object.position.worldLocation[0], rez2[1] + object.position.worldLocation[1], triangleInZero[2][2]]];
-        } else {
-          console.info('must be handled rz vs rx');
+        } else {// console.info('must be handled rz vs rx');
         }
       }
     } // no rot
@@ -29973,18 +32825,16 @@ function checkingProcedureCalc(object) {
 
       if (touchCoordinate.enabled == true && touchCoordinate.stopOnFirstDetectedHit == true) {
         touchCoordinate.enabled = false;
-      } // console.info('raycast hits for Object: ' + object.name + '  -> face[/3]  : ' + f + ' -> intersectionPoint: ' + intersectionPoint);
-
+      }
     }
   }
 }
 
 function checkingProcedureCalcObj(object) {
+  if (object.raycast.enabled == false || touchCoordinate.enabled == false) return;
   var world = matrixEngine.matrixWorld.world;
-  if (touchCoordinate.enabled == false) return;
   let mvMatrix = [...object.mvMatrix];
-  let ray; // console.info('Raycast hits after test... -> ', mvMatrix)
-
+  let ray;
   let outp = mat4.create();
   let outv = mat4.create();
   let myRayOrigin = vec3.fromValues(matrixEngine.Events.camera.xPos, matrixEngine.Events.camera.yPos, matrixEngine.Events.camera.zPos);
@@ -30009,7 +32859,7 @@ function checkingProcedureCalcObj(object) {
       rez0 = rotate2dPlot(0, 0, triangleInZero[0][1], triangleInZero[0][2], object.rotation.rx);
       rez1 = rotate2dPlot(0, 0, triangleInZero[1][1], triangleInZero[1][2], object.rotation.rx);
       rez2 = rotate2dPlot(0, 0, triangleInZero[2][1], triangleInZero[2][2], object.rotation.rx);
-      triangle = [[triangleInZero[0][0] + object.position.worldLocation[0], rez0[0] + object.position.worldLocation[1], rez0[1]], [triangleInZero[1][0] + object.position.worldLocation[0], rez1[0] + object.position.worldLocation[1], rez1[1]], [triangleInZero[2][0] + object.position.worldLocation[0], rez2[0] + object.position.worldLocation[1], rez2[1]]]; // console.log("only x rot => ", triangle);
+      triangle = [[triangleInZero[0][0] + object.position.worldLocation[0], rez0[0] + object.position.worldLocation[1], rez0[1]], [triangleInZero[1][0] + object.position.worldLocation[0], rez1[0] + object.position.worldLocation[1], rez1[1]], [triangleInZero[2][0] + object.position.worldLocation[0], rez2[0] + object.position.worldLocation[1], rez2[1]]];
     } // y z changed - rez0[1] is z
 
 
@@ -30075,8 +32925,8 @@ function checkingProcedureCalcObj(object) {
           rez1 = rotate2dPlot(0, 0, triangleInZero[1][0], triangleInZero[1][1], object.rotation.rz);
           rez2 = rotate2dPlot(0, 0, triangleInZero[2][0], triangleInZero[2][1], object.rotation.rz);
           triangle = [[rez0[0] + object.position.worldLocation[0], rez0[1] + object.position.worldLocation[1], triangleInZero[0][2]], [rez1[0] + object.position.worldLocation[0], rez1[1] + object.position.worldLocation[1], triangleInZero[1][2]], [rez2[0] + object.position.worldLocation[0], rez2[1] + object.position.worldLocation[1], triangleInZero[2][2]]];
-        } else {
-          var test; // console.info('must be handled rz vs rx');
+        } else {// var test;
+          // console.info('must be handled rz vs rx');
         }
       }
     } // no rot
@@ -30111,7 +32961,7 @@ function checkingProcedureCalcObj(object) {
   }
 }
 
-},{}],60:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 (function (Buffer){(function (){
 // Last time updated: 2017-08-27 5:48:35 AM UTC
 
@@ -31351,7 +34201,7 @@ function checkingProcedureCalcObj(object) {
 })();
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"buffer":36}],61:[function(require,module,exports){
+},{"buffer":37}],67:[function(require,module,exports){
 (function (process,global){(function (){
 'use strict';
 
@@ -31516,13 +34366,13 @@ var RTCMultiConnection3 = function(roomid, forceOptions) {
         }
 
         if (connection.socketURL.substr(connection.socketURL.length - 1, 1) != '/') {
-            // connection.socketURL = 'https://domain.com:9001/';
+            // connection.socketURL = 'https://domain.com:999/';
             throw '"socketURL" MUST end with a slash.';
         }
 
         if (connection.enableLogs) {
             if (connection.socketURL == '/') {
-                connection.socketURL = "http://localhost:9001/";
+                connection.socketURL = "https://localhost:999/";
             }
         }
 
@@ -37269,7 +40119,7 @@ if (typeof define === 'function' && define.amd) {
 }
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":68}],62:[function(require,module,exports){
+},{"_process":76}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37779,7 +40629,7 @@ function getAudioElement(mediaElement, config) {
   return mediaElementContainer;
 }
 
-},{}],63:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * Socket.IO v3.1.3
@@ -37789,7 +40639,7 @@ function getAudioElement(mediaElement, config) {
 !function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.io=e():t.io=e()}(self,(function(){return function(t){var e={};function n(r){if(e[r])return e[r].exports;var o=e[r]={i:r,l:!1,exports:{}};return t[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=t,n.c=e,n.d=function(t,e,r){n.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:r})},n.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},n.t=function(t,e){if(1&e&&(t=n(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var o in t)n.d(r,o,function(e){return t[e]}.bind(null,o));return r},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},n.p="",n(n.s=17)}([function(t,e,n){function r(t){if(t)return function(t){for(var e in r.prototype)t[e]=r.prototype[e];return t}(t)}t.exports=r,r.prototype.on=r.prototype.addEventListener=function(t,e){return this._callbacks=this._callbacks||{},(this._callbacks["$"+t]=this._callbacks["$"+t]||[]).push(e),this},r.prototype.once=function(t,e){function n(){this.off(t,n),e.apply(this,arguments)}return n.fn=e,this.on(t,n),this},r.prototype.off=r.prototype.removeListener=r.prototype.removeAllListeners=r.prototype.removeEventListener=function(t,e){if(this._callbacks=this._callbacks||{},0==arguments.length)return this._callbacks={},this;var n,r=this._callbacks["$"+t];if(!r)return this;if(1==arguments.length)return delete this._callbacks["$"+t],this;for(var o=0;o<r.length;o++)if((n=r[o])===e||n.fn===e){r.splice(o,1);break}return 0===r.length&&delete this._callbacks["$"+t],this},r.prototype.emit=function(t){this._callbacks=this._callbacks||{};for(var e=new Array(arguments.length-1),n=this._callbacks["$"+t],r=1;r<arguments.length;r++)e[r-1]=arguments[r];if(n){r=0;for(var o=(n=n.slice(0)).length;r<o;++r)n[r].apply(this,e)}return this},r.prototype.listeners=function(t){return this._callbacks=this._callbacks||{},this._callbacks["$"+t]||[]},r.prototype.hasListeners=function(t){return!!this.listeners(t).length}},function(t,e,n){var r=n(23),o=n(24),i=String.fromCharCode(30);t.exports={protocol:4,encodePacket:r,encodePayload:function(t,e){var n=t.length,o=new Array(n),s=0;t.forEach((function(t,c){r(t,!1,(function(t){o[c]=t,++s===n&&e(o.join(i))}))}))},decodePacket:o,decodePayload:function(t,e){for(var n=t.split(i),r=[],s=0;s<n.length;s++){var c=o(n[s],e);if(r.push(c),"error"===c.type)break}return r}}},function(t,e){t.exports="undefined"!=typeof self?self:"undefined"!=typeof window?window:Function("return this")()},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e){return(i=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function s(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=a(t);if(e){var o=a(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return c(this,n)}}function c(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function a(t){return(a=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var u=n(1),f=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&i(t,e)}(a,t);var e,n,r,c=s(a);function a(t){var e;return function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,a),(e=c.call(this)).opts=t,e.query=t.query,e.readyState="",e.socket=t.socket,e}return e=a,(n=[{key:"onError",value:function(t,e){var n=new Error(t);return n.type="TransportError",n.description=e,this.emit("error",n),this}},{key:"open",value:function(){return"closed"!==this.readyState&&""!==this.readyState||(this.readyState="opening",this.doOpen()),this}},{key:"close",value:function(){return"opening"!==this.readyState&&"open"!==this.readyState||(this.doClose(),this.onClose()),this}},{key:"send",value:function(t){if("open"!==this.readyState)throw new Error("Transport not open");this.write(t)}},{key:"onOpen",value:function(){this.readyState="open",this.writable=!0,this.emit("open")}},{key:"onData",value:function(t){var e=u.decodePacket(t,this.socket.binaryType);this.onPacket(e)}},{key:"onPacket",value:function(t){this.emit("packet",t)}},{key:"onClose",value:function(){this.readyState="closed",this.emit("close")}}])&&o(e.prototype,n),r&&o(e,r),a}(n(0));t.exports=f},function(t,e){e.encode=function(t){var e="";for(var n in t)t.hasOwnProperty(n)&&(e.length&&(e+="&"),e+=encodeURIComponent(n)+"="+encodeURIComponent(t[n]));return e},e.decode=function(t){for(var e={},n=t.split("&"),r=0,o=n.length;r<o;r++){var i=n[r].split("=");e[decodeURIComponent(i[0])]=decodeURIComponent(i[1])}return e}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e,n){return(o="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=a(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function i(t,e){return(i=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function s(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=a(t);if(e){var o=a(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return c(this,n)}}function c(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function a(t){return(a=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}function u(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function f(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function p(t,e,n){return e&&f(t.prototype,e),n&&f(t,n),t}Object.defineProperty(e,"__esModule",{value:!0}),e.Decoder=e.Encoder=e.PacketType=e.protocol=void 0;var l,h=n(0),y=n(29),d=n(15);e.protocol=5,function(t){t[t.CONNECT=0]="CONNECT",t[t.DISCONNECT=1]="DISCONNECT",t[t.EVENT=2]="EVENT",t[t.ACK=3]="ACK",t[t.CONNECT_ERROR=4]="CONNECT_ERROR",t[t.BINARY_EVENT=5]="BINARY_EVENT",t[t.BINARY_ACK=6]="BINARY_ACK"}(l=e.PacketType||(e.PacketType={}));var v=function(){function t(){u(this,t)}return p(t,[{key:"encode",value:function(t){return t.type!==l.EVENT&&t.type!==l.ACK||!d.hasBinary(t)?[this.encodeAsString(t)]:(t.type=t.type===l.EVENT?l.BINARY_EVENT:l.BINARY_ACK,this.encodeAsBinary(t))}},{key:"encodeAsString",value:function(t){var e=""+t.type;return t.type!==l.BINARY_EVENT&&t.type!==l.BINARY_ACK||(e+=t.attachments+"-"),t.nsp&&"/"!==t.nsp&&(e+=t.nsp+","),null!=t.id&&(e+=t.id),null!=t.data&&(e+=JSON.stringify(t.data)),e}},{key:"encodeAsBinary",value:function(t){var e=y.deconstructPacket(t),n=this.encodeAsString(e.packet),r=e.buffers;return r.unshift(n),r}}]),t}();e.Encoder=v;var b=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&i(t,e)}(n,t);var e=s(n);function n(){return u(this,n),e.call(this)}return p(n,[{key:"add",value:function(t){var e;if("string"==typeof t)(e=this.decodeString(t)).type===l.BINARY_EVENT||e.type===l.BINARY_ACK?(this.reconstructor=new m(e),0===e.attachments&&o(a(n.prototype),"emit",this).call(this,"decoded",e)):o(a(n.prototype),"emit",this).call(this,"decoded",e);else{if(!d.isBinary(t)&&!t.base64)throw new Error("Unknown type: "+t);if(!this.reconstructor)throw new Error("got binary data when not reconstructing a packet");(e=this.reconstructor.takeBinaryData(t))&&(this.reconstructor=null,o(a(n.prototype),"emit",this).call(this,"decoded",e))}}},{key:"decodeString",value:function(t){var e=0,r={type:Number(t.charAt(0))};if(void 0===l[r.type])throw new Error("unknown packet type "+r.type);if(r.type===l.BINARY_EVENT||r.type===l.BINARY_ACK){for(var o=e+1;"-"!==t.charAt(++e)&&e!=t.length;);var i=t.substring(o,e);if(i!=Number(i)||"-"!==t.charAt(e))throw new Error("Illegal attachments");r.attachments=Number(i)}if("/"===t.charAt(e+1)){for(var s=e+1;++e;){if(","===t.charAt(e))break;if(e===t.length)break}r.nsp=t.substring(s,e)}else r.nsp="/";var c=t.charAt(e+1);if(""!==c&&Number(c)==c){for(var a=e+1;++e;){var u=t.charAt(e);if(null==u||Number(u)!=u){--e;break}if(e===t.length)break}r.id=Number(t.substring(a,e+1))}if(t.charAt(++e)){var f=function(t){try{return JSON.parse(t)}catch(t){return!1}}(t.substr(e));if(!n.isPayloadValid(r.type,f))throw new Error("invalid payload");r.data=f}return r}},{key:"destroy",value:function(){this.reconstructor&&this.reconstructor.finishedReconstruction()}}],[{key:"isPayloadValid",value:function(t,e){switch(t){case l.CONNECT:return"object"===r(e);case l.DISCONNECT:return void 0===e;case l.CONNECT_ERROR:return"string"==typeof e||"object"===r(e);case l.EVENT:case l.BINARY_EVENT:return Array.isArray(e)&&e.length>0;case l.ACK:case l.BINARY_ACK:return Array.isArray(e)}}}]),n}(h);e.Decoder=b;var m=function(){function t(e){u(this,t),this.packet=e,this.buffers=[],this.reconPack=e}return p(t,[{key:"takeBinaryData",value:function(t){if(this.buffers.push(t),this.buffers.length===this.reconPack.attachments){var e=y.reconstructPacket(this.reconPack,this.buffers);return this.finishedReconstruction(),e}return null}},{key:"finishedReconstruction",value:function(){this.reconPack=null,this.buffers=[]}}]),t}()},function(t,e){var n=/^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/,r=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"];t.exports=function(t){var e=t,o=t.indexOf("["),i=t.indexOf("]");-1!=o&&-1!=i&&(t=t.substring(0,o)+t.substring(o,i).replace(/:/g,";")+t.substring(i,t.length));for(var s,c,a=n.exec(t||""),u={},f=14;f--;)u[r[f]]=a[f]||"";return-1!=o&&-1!=i&&(u.source=e,u.host=u.host.substring(1,u.host.length-1).replace(/;/g,":"),u.authority=u.authority.replace("[","").replace("]","").replace(/;/g,":"),u.ipv6uri=!0),u.pathNames=function(t,e){var n=e.replace(/\/{2,9}/g,"/").split("/");"/"!=e.substr(0,1)&&0!==e.length||n.splice(0,1);"/"==e.substr(e.length-1,1)&&n.splice(n.length-1,1);return n}(0,u.path),u.queryKey=(s=u.query,c={},s.replace(/(?:^|&)([^&=]*)=?([^&]*)/g,(function(t,e,n){e&&(c[e]=n)})),c),u}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e,n){return(i="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=u(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function s(t,e){return(s=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function c(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=u(t);if(e){var o=u(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return a(this,n)}}function a(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function u(t){return(u=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.Manager=void 0;var f=n(19),p=n(14),l=n(0),h=n(5),y=n(16),d=n(30),v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&s(t,e)}(v,t);var e,n,a,l=c(v);function v(t,e){var n;!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,v),(n=l.call(this)).nsps={},n.subs=[],t&&"object"===r(t)&&(e=t,t=void 0),(e=e||{}).path=e.path||"/socket.io",n.opts=e,n.reconnection(!1!==e.reconnection),n.reconnectionAttempts(e.reconnectionAttempts||1/0),n.reconnectionDelay(e.reconnectionDelay||1e3),n.reconnectionDelayMax(e.reconnectionDelayMax||5e3),n.randomizationFactor(e.randomizationFactor||.5),n.backoff=new d({min:n.reconnectionDelay(),max:n.reconnectionDelayMax(),jitter:n.randomizationFactor()}),n.timeout(null==e.timeout?2e4:e.timeout),n._readyState="closed",n.uri=t;var o=e.parser||h;return n.encoder=new o.Encoder,n.decoder=new o.Decoder,n._autoConnect=!1!==e.autoConnect,n._autoConnect&&n.open(),n}return e=v,(n=[{key:"reconnection",value:function(t){return arguments.length?(this._reconnection=!!t,this):this._reconnection}},{key:"reconnectionAttempts",value:function(t){return void 0===t?this._reconnectionAttempts:(this._reconnectionAttempts=t,this)}},{key:"reconnectionDelay",value:function(t){var e;return void 0===t?this._reconnectionDelay:(this._reconnectionDelay=t,null===(e=this.backoff)||void 0===e||e.setMin(t),this)}},{key:"randomizationFactor",value:function(t){var e;return void 0===t?this._randomizationFactor:(this._randomizationFactor=t,null===(e=this.backoff)||void 0===e||e.setJitter(t),this)}},{key:"reconnectionDelayMax",value:function(t){var e;return void 0===t?this._reconnectionDelayMax:(this._reconnectionDelayMax=t,null===(e=this.backoff)||void 0===e||e.setMax(t),this)}},{key:"timeout",value:function(t){return arguments.length?(this._timeout=t,this):this._timeout}},{key:"maybeReconnectOnOpen",value:function(){!this._reconnecting&&this._reconnection&&0===this.backoff.attempts&&this.reconnect()}},{key:"open",value:function(t){var e=this;if(~this._readyState.indexOf("open"))return this;this.engine=f(this.uri,this.opts);var n=this.engine,r=this;this._readyState="opening",this.skipReconnect=!1;var o=y.on(n,"open",(function(){r.onopen(),t&&t()})),s=y.on(n,"error",(function(n){r.cleanup(),r._readyState="closed",i(u(v.prototype),"emit",e).call(e,"error",n),t?t(n):r.maybeReconnectOnOpen()}));if(!1!==this._timeout){var c=this._timeout;0===c&&o();var a=setTimeout((function(){o(),n.close(),n.emit("error",new Error("timeout"))}),c);this.subs.push((function(){clearTimeout(a)}))}return this.subs.push(o),this.subs.push(s),this}},{key:"connect",value:function(t){return this.open(t)}},{key:"onopen",value:function(){this.cleanup(),this._readyState="open",i(u(v.prototype),"emit",this).call(this,"open");var t=this.engine;this.subs.push(y.on(t,"ping",this.onping.bind(this)),y.on(t,"data",this.ondata.bind(this)),y.on(t,"error",this.onerror.bind(this)),y.on(t,"close",this.onclose.bind(this)),y.on(this.decoder,"decoded",this.ondecoded.bind(this)))}},{key:"onping",value:function(){i(u(v.prototype),"emit",this).call(this,"ping")}},{key:"ondata",value:function(t){this.decoder.add(t)}},{key:"ondecoded",value:function(t){i(u(v.prototype),"emit",this).call(this,"packet",t)}},{key:"onerror",value:function(t){i(u(v.prototype),"emit",this).call(this,"error",t)}},{key:"socket",value:function(t,e){var n=this.nsps[t];return n||(n=new p.Socket(this,t,e),this.nsps[t]=n),n}},{key:"_destroy",value:function(t){for(var e=0,n=Object.keys(this.nsps);e<n.length;e++){var r=n[e];if(this.nsps[r].active)return}this._close()}},{key:"_packet",value:function(t){for(var e=this.encoder.encode(t),n=0;n<e.length;n++)this.engine.write(e[n],t.options)}},{key:"cleanup",value:function(){this.subs.forEach((function(t){return t()})),this.subs.length=0,this.decoder.destroy()}},{key:"_close",value:function(){this.skipReconnect=!0,this._reconnecting=!1,"opening"===this._readyState&&this.cleanup(),this.backoff.reset(),this._readyState="closed",this.engine&&this.engine.close()}},{key:"disconnect",value:function(){return this._close()}},{key:"onclose",value:function(t){this.cleanup(),this.backoff.reset(),this._readyState="closed",i(u(v.prototype),"emit",this).call(this,"close",t),this._reconnection&&!this.skipReconnect&&this.reconnect()}},{key:"reconnect",value:function(){var t=this;if(this._reconnecting||this.skipReconnect)return this;var e=this;if(this.backoff.attempts>=this._reconnectionAttempts)this.backoff.reset(),i(u(v.prototype),"emit",this).call(this,"reconnect_failed"),this._reconnecting=!1;else{var n=this.backoff.duration();this._reconnecting=!0;var r=setTimeout((function(){e.skipReconnect||(i(u(v.prototype),"emit",t).call(t,"reconnect_attempt",e.backoff.attempts),e.skipReconnect||e.open((function(n){n?(e._reconnecting=!1,e.reconnect(),i(u(v.prototype),"emit",t).call(t,"reconnect_error",n)):e.onreconnect()})))}),n);this.subs.push((function(){clearTimeout(r)}))}}},{key:"onreconnect",value:function(){var t=this.backoff.attempts;this._reconnecting=!1,this.backoff.reset(),i(u(v.prototype),"emit",this).call(this,"reconnect",t)}}])&&o(e.prototype,n),a&&o(e,a),v}(l);e.Manager=v},function(t,e,n){var r=n(9),o=n(22),i=n(26),s=n(27);e.polling=function(t){var e=!1,n=!1,s=!1!==t.jsonp;if("undefined"!=typeof location){var c="https:"===location.protocol,a=location.port;a||(a=c?443:80),e=t.hostname!==location.hostname||a!==t.port,n=t.secure!==c}if(t.xdomain=e,t.xscheme=n,"open"in new r(t)&&!t.forceJSONP)return new o(t);if(!s)throw new Error("JSONP disabled");return new i(t)},e.websocket=s},function(t,e,n){var r=n(21),o=n(2);t.exports=function(t){var e=t.xdomain,n=t.xscheme,i=t.enablesXDR;try{if("undefined"!=typeof XMLHttpRequest&&(!e||r))return new XMLHttpRequest}catch(t){}try{if("undefined"!=typeof XDomainRequest&&!n&&i)return new XDomainRequest}catch(t){}if(!e)try{return new(o[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(t){}}},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function i(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function s(t,e){return(s=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function c(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=u(t);if(e){var o=u(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return a(this,n)}}function a(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function u(t){return(u=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var f=n(3),p=n(4),l=n(1),h=n(12),y=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&s(t,e)}(u,t);var e,n,r,a=c(u);function u(){return o(this,u),a.apply(this,arguments)}return e=u,(n=[{key:"doOpen",value:function(){this.poll()}},{key:"pause",value:function(t){var e=this;function n(){e.readyState="paused",t()}if(this.readyState="pausing",this.polling||!this.writable){var r=0;this.polling&&(r++,this.once("pollComplete",(function(){--r||n()}))),this.writable||(r++,this.once("drain",(function(){--r||n()})))}else n()}},{key:"poll",value:function(){this.polling=!0,this.doPoll(),this.emit("poll")}},{key:"onData",value:function(t){var e=this;l.decodePayload(t,this.socket.binaryType).forEach((function(t,n,r){if("opening"===e.readyState&&"open"===t.type&&e.onOpen(),"close"===t.type)return e.onClose(),!1;e.onPacket(t)})),"closed"!==this.readyState&&(this.polling=!1,this.emit("pollComplete"),"open"===this.readyState&&this.poll())}},{key:"doClose",value:function(){var t=this;function e(){t.write([{type:"close"}])}"open"===this.readyState?e():this.once("open",e)}},{key:"write",value:function(t){var e=this;this.writable=!1,l.encodePayload(t,(function(t){e.doWrite(t,(function(){e.writable=!0,e.emit("drain")}))}))}},{key:"uri",value:function(){var t=this.query||{},e=this.opts.secure?"https":"http",n="";return!1!==this.opts.timestampRequests&&(t[this.opts.timestampParam]=h()),this.supportsBinary||t.sid||(t.b64=1),t=p.encode(t),this.opts.port&&("https"===e&&443!==Number(this.opts.port)||"http"===e&&80!==Number(this.opts.port))&&(n=":"+this.opts.port),t.length&&(t="?"+t),e+"://"+(-1!==this.opts.hostname.indexOf(":")?"["+this.opts.hostname+"]":this.opts.hostname)+n+this.opts.path+t}},{key:"name",get:function(){return"polling"}}])&&i(e.prototype,n),r&&i(e,r),u}(f);t.exports=y},function(t,e){var n=Object.create(null);n.open="0",n.close="1",n.ping="2",n.pong="3",n.message="4",n.upgrade="5",n.noop="6";var r=Object.create(null);Object.keys(n).forEach((function(t){r[n[t]]=t}));t.exports={PACKET_TYPES:n,PACKET_TYPES_REVERSE:r,ERROR_PACKET:{type:"error",data:"parser error"}}},function(t,e,n){"use strict";var r,o="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".split(""),i={},s=0,c=0;function a(t){var e="";do{e=o[t%64]+e,t=Math.floor(t/64)}while(t>0);return e}function u(){var t=a(+new Date);return t!==r?(s=0,r=t):t+"."+a(s++)}for(;c<64;c++)i[o[c]]=c;u.encode=a,u.decode=function(t){var e=0;for(c=0;c<t.length;c++)e=64*e+i[t.charAt(c)];return e},t.exports=u},function(t,e){t.exports.pick=function(t){for(var e=arguments.length,n=new Array(e>1?e-1:0),r=1;r<e;r++)n[r-1]=arguments[r];return n.reduce((function(e,n){return t.hasOwnProperty(n)&&(e[n]=t[n]),e}),{})}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){var n;if("undefined"==typeof Symbol||null==t[Symbol.iterator]){if(Array.isArray(t)||(n=function(t,e){if(!t)return;if("string"==typeof t)return i(t,e);var n=Object.prototype.toString.call(t).slice(8,-1);"Object"===n&&t.constructor&&(n=t.constructor.name);if("Map"===n||"Set"===n)return Array.from(t);if("Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))return i(t,e)}(t))||e&&t&&"number"==typeof t.length){n&&(t=n);var r=0,o=function(){};return{s:o,n:function(){return r>=t.length?{done:!0}:{done:!1,value:t[r++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var s,c=!0,a=!1;return{s:function(){n=t[Symbol.iterator]()},n:function(){var t=n.next();return c=t.done,t},e:function(t){a=!0,s=t},f:function(){try{c||null==n.return||n.return()}finally{if(a)throw s}}}}function i(t,e){(null==e||e>t.length)&&(e=t.length);for(var n=0,r=new Array(e);n<e;n++)r[n]=t[n];return r}function s(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function c(t,e,n){return(c="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=p(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function a(t,e){return(a=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function u(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=p(t);if(e){var o=p(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return f(this,n)}}function f(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function p(t){return(p=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.Socket=void 0;var l=n(5),h=n(0),y=n(16),d=Object.freeze({connect:1,connect_error:1,disconnect:1,disconnecting:1,newListener:1,removeListener:1}),v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&a(t,e)}(f,t);var e,n,r,i=u(f);function f(t,e,n){var r;return function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,f),(r=i.call(this)).receiveBuffer=[],r.sendBuffer=[],r.ids=0,r.acks={},r.flags={},r.io=t,r.nsp=e,r.ids=0,r.acks={},r.receiveBuffer=[],r.sendBuffer=[],r.connected=!1,r.disconnected=!0,r.flags={},n&&n.auth&&(r.auth=n.auth),r.io._autoConnect&&r.open(),r}return e=f,(n=[{key:"subEvents",value:function(){if(!this.subs){var t=this.io;this.subs=[y.on(t,"open",this.onopen.bind(this)),y.on(t,"packet",this.onpacket.bind(this)),y.on(t,"error",this.onerror.bind(this)),y.on(t,"close",this.onclose.bind(this))]}}},{key:"connect",value:function(){return this.connected||(this.subEvents(),this.io._reconnecting||this.io.open(),"open"===this.io._readyState&&this.onopen()),this}},{key:"open",value:function(){return this.connect()}},{key:"send",value:function(){for(var t=arguments.length,e=new Array(t),n=0;n<t;n++)e[n]=arguments[n];return e.unshift("message"),this.emit.apply(this,e),this}},{key:"emit",value:function(t){if(d.hasOwnProperty(t))throw new Error('"'+t+'" is a reserved event name');for(var e=arguments.length,n=new Array(e>1?e-1:0),r=1;r<e;r++)n[r-1]=arguments[r];n.unshift(t);var o={type:l.PacketType.EVENT,data:n,options:{}};o.options.compress=!1!==this.flags.compress,"function"==typeof n[n.length-1]&&(this.acks[this.ids]=n.pop(),o.id=this.ids++);var i=this.io.engine&&this.io.engine.transport&&this.io.engine.transport.writable,s=this.flags.volatile&&(!i||!this.connected);return s||(this.connected?this.packet(o):this.sendBuffer.push(o)),this.flags={},this}},{key:"packet",value:function(t){t.nsp=this.nsp,this.io._packet(t)}},{key:"onopen",value:function(){var t=this;"function"==typeof this.auth?this.auth((function(e){t.packet({type:l.PacketType.CONNECT,data:e})})):this.packet({type:l.PacketType.CONNECT,data:this.auth})}},{key:"onerror",value:function(t){this.connected||c(p(f.prototype),"emit",this).call(this,"connect_error",t)}},{key:"onclose",value:function(t){this.connected=!1,this.disconnected=!0,delete this.id,c(p(f.prototype),"emit",this).call(this,"disconnect",t)}},{key:"onpacket",value:function(t){if(t.nsp===this.nsp)switch(t.type){case l.PacketType.CONNECT:if(t.data&&t.data.sid){var e=t.data.sid;this.onconnect(e)}else c(p(f.prototype),"emit",this).call(this,"connect_error",new Error("It seems you are trying to reach a Socket.IO server in v2.x with a v3.x client, but they are not compatible (more information here: https://socket.io/docs/v3/migrating-from-2-x-to-3-0/)"));break;case l.PacketType.EVENT:case l.PacketType.BINARY_EVENT:this.onevent(t);break;case l.PacketType.ACK:case l.PacketType.BINARY_ACK:this.onack(t);break;case l.PacketType.DISCONNECT:this.ondisconnect();break;case l.PacketType.CONNECT_ERROR:var n=new Error(t.data.message);n.data=t.data.data,c(p(f.prototype),"emit",this).call(this,"connect_error",n)}}},{key:"onevent",value:function(t){var e=t.data||[];null!=t.id&&e.push(this.ack(t.id)),this.connected?this.emitEvent(e):this.receiveBuffer.push(Object.freeze(e))}},{key:"emitEvent",value:function(t){if(this._anyListeners&&this._anyListeners.length){var e,n=o(this._anyListeners.slice());try{for(n.s();!(e=n.n()).done;)e.value.apply(this,t)}catch(t){n.e(t)}finally{n.f()}}c(p(f.prototype),"emit",this).apply(this,t)}},{key:"ack",value:function(t){var e=this,n=!1;return function(){if(!n){n=!0;for(var r=arguments.length,o=new Array(r),i=0;i<r;i++)o[i]=arguments[i];e.packet({type:l.PacketType.ACK,id:t,data:o})}}}},{key:"onack",value:function(t){var e=this.acks[t.id];"function"==typeof e&&(e.apply(this,t.data),delete this.acks[t.id])}},{key:"onconnect",value:function(t){this.id=t,this.connected=!0,this.disconnected=!1,c(p(f.prototype),"emit",this).call(this,"connect"),this.emitBuffered()}},{key:"emitBuffered",value:function(){var t=this;this.receiveBuffer.forEach((function(e){return t.emitEvent(e)})),this.receiveBuffer=[],this.sendBuffer.forEach((function(e){return t.packet(e)})),this.sendBuffer=[]}},{key:"ondisconnect",value:function(){this.destroy(),this.onclose("io server disconnect")}},{key:"destroy",value:function(){this.subs&&(this.subs.forEach((function(t){return t()})),this.subs=void 0),this.io._destroy(this)}},{key:"disconnect",value:function(){return this.connected&&this.packet({type:l.PacketType.DISCONNECT}),this.destroy(),this.connected&&this.onclose("io client disconnect"),this}},{key:"close",value:function(){return this.disconnect()}},{key:"compress",value:function(t){return this.flags.compress=t,this}},{key:"onAny",value:function(t){return this._anyListeners=this._anyListeners||[],this._anyListeners.push(t),this}},{key:"prependAny",value:function(t){return this._anyListeners=this._anyListeners||[],this._anyListeners.unshift(t),this}},{key:"offAny",value:function(t){if(!this._anyListeners)return this;if(t){for(var e=this._anyListeners,n=0;n<e.length;n++)if(t===e[n])return e.splice(n,1),this}else this._anyListeners=[];return this}},{key:"listenersAny",value:function(){return this._anyListeners||[]}},{key:"active",get:function(){return!!this.subs}},{key:"volatile",get:function(){return this.flags.volatile=!0,this}}])&&s(e.prototype,n),r&&s(e,r),f}(h);e.Socket=v},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.hasBinary=e.isBinary=void 0;var o="function"==typeof ArrayBuffer,i=Object.prototype.toString,s="function"==typeof Blob||"undefined"!=typeof Blob&&"[object BlobConstructor]"===i.call(Blob),c="function"==typeof File||"undefined"!=typeof File&&"[object FileConstructor]"===i.call(File);function a(t){return o&&(t instanceof ArrayBuffer||function(t){return"function"==typeof ArrayBuffer.isView?ArrayBuffer.isView(t):t.buffer instanceof ArrayBuffer}(t))||s&&t instanceof Blob||c&&t instanceof File}e.isBinary=a,e.hasBinary=function t(e,n){if(!e||"object"!==r(e))return!1;if(Array.isArray(e)){for(var o=0,i=e.length;o<i;o++)if(t(e[o]))return!0;return!1}if(a(e))return!0;if(e.toJSON&&"function"==typeof e.toJSON&&1===arguments.length)return t(e.toJSON(),!0);for(var s in e)if(Object.prototype.hasOwnProperty.call(e,s)&&t(e[s]))return!0;return!1}},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.on=void 0,e.on=function(t,e,n){return t.on(e,n),function(){t.off(e,n)}}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.Socket=e.io=e.Manager=e.protocol=void 0;var o=n(18),i=n(7),s=n(14);Object.defineProperty(e,"Socket",{enumerable:!0,get:function(){return s.Socket}}),t.exports=e=a;var c=e.managers={};function a(t,e){"object"===r(t)&&(e=t,t=void 0),e=e||{};var n,s=o.url(t,e.path),a=s.source,u=s.id,f=s.path,p=c[u]&&f in c[u].nsps;return e.forceNew||e["force new connection"]||!1===e.multiplex||p?n=new i.Manager(a,e):(c[u]||(c[u]=new i.Manager(a,e)),n=c[u]),s.query&&!e.query&&(e.query=s.queryKey),n.socket(s.path,e)}e.io=a;var u=n(5);Object.defineProperty(e,"protocol",{enumerable:!0,get:function(){return u.protocol}}),e.connect=a;var f=n(7);Object.defineProperty(e,"Manager",{enumerable:!0,get:function(){return f.Manager}})},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.url=void 0;var r=n(6);e.url=function(t){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:"",n=arguments.length>2?arguments[2]:void 0,o=t;n=n||"undefined"!=typeof location&&location,null==t&&(t=n.protocol+"//"+n.host),"string"==typeof t&&("/"===t.charAt(0)&&(t="/"===t.charAt(1)?n.protocol+t:n.host+t),/^(https?|wss?):\/\//.test(t)||(t=void 0!==n?n.protocol+"//"+t:"https://"+t),o=r(t)),o.port||(/^(http|ws)$/.test(o.protocol)?o.port="80":/^(http|ws)s$/.test(o.protocol)&&(o.port="443")),o.path=o.path||"/";var i=-1!==o.host.indexOf(":"),s=i?"["+o.host+"]":o.host;return o.id=o.protocol+"://"+s+":"+o.port+e,o.href=o.protocol+"://"+s+(n&&n.port===o.port?"":":"+o.port),o}},function(t,e,n){var r=n(20);t.exports=function(t,e){return new r(t,e)},t.exports.Socket=r,t.exports.protocol=r.protocol,t.exports.Transport=n(3),t.exports.transports=n(8),t.exports.parser=n(1)},function(t,e,n){function r(){return(r=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n=arguments[e];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(t[r]=n[r])}return t}).apply(this,arguments)}function o(t){return(o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function c(t,e){return(c=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function a(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=f(t);if(e){var o=f(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return u(this,n)}}function u(t,e){return!e||"object"!==o(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function f(t){return(f=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var p=n(8),l=n(0),h=n(1),y=n(6),d=n(4),v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&c(t,e)}(l,t);var e,n,u,f=a(l);function l(t){var e,n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};return i(this,l),e=f.call(this),t&&"object"===o(t)&&(n=t,t=null),t?(t=y(t),n.hostname=t.host,n.secure="https"===t.protocol||"wss"===t.protocol,n.port=t.port,t.query&&(n.query=t.query)):n.host&&(n.hostname=y(n.host).host),e.secure=null!=n.secure?n.secure:"undefined"!=typeof location&&"https:"===location.protocol,n.hostname&&!n.port&&(n.port=e.secure?"443":"80"),e.hostname=n.hostname||("undefined"!=typeof location?location.hostname:"localhost"),e.port=n.port||("undefined"!=typeof location&&location.port?location.port:e.secure?443:80),e.transports=n.transports||["polling","websocket"],e.readyState="",e.writeBuffer=[],e.prevBufferLen=0,e.opts=r({path:"/engine.io",agent:!1,withCredentials:!1,upgrade:!0,jsonp:!0,timestampParam:"t",rememberUpgrade:!1,rejectUnauthorized:!0,perMessageDeflate:{threshold:1024},transportOptions:{}},n),e.opts.path=e.opts.path.replace(/\/$/,"")+"/","string"==typeof e.opts.query&&(e.opts.query=d.decode(e.opts.query)),e.id=null,e.upgrades=null,e.pingInterval=null,e.pingTimeout=null,e.pingTimeoutTimer=null,"function"==typeof addEventListener&&addEventListener("beforeunload",(function(){e.transport&&(e.transport.removeAllListeners(),e.transport.close())}),!1),e.open(),e}return e=l,(n=[{key:"createTransport",value:function(t){var e=function(t){var e={};for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);return e}(this.opts.query);e.EIO=h.protocol,e.transport=t,this.id&&(e.sid=this.id);var n=r({},this.opts.transportOptions[t],this.opts,{query:e,socket:this,hostname:this.hostname,secure:this.secure,port:this.port});return new p[t](n)}},{key:"open",value:function(){var t;if(this.opts.rememberUpgrade&&l.priorWebsocketSuccess&&-1!==this.transports.indexOf("websocket"))t="websocket";else{if(0===this.transports.length){var e=this;return void setTimeout((function(){e.emit("error","No transports available")}),0)}t=this.transports[0]}this.readyState="opening";try{t=this.createTransport(t)}catch(t){return this.transports.shift(),void this.open()}t.open(),this.setTransport(t)}},{key:"setTransport",value:function(t){var e=this;this.transport&&this.transport.removeAllListeners(),this.transport=t,t.on("drain",(function(){e.onDrain()})).on("packet",(function(t){e.onPacket(t)})).on("error",(function(t){e.onError(t)})).on("close",(function(){e.onClose("transport close")}))}},{key:"probe",value:function(t){var e=this.createTransport(t,{probe:1}),n=!1,r=this;function o(){if(r.onlyBinaryUpgrades){var t=!this.supportsBinary&&r.transport.supportsBinary;n=n||t}n||(e.send([{type:"ping",data:"probe"}]),e.once("packet",(function(t){if(!n)if("pong"===t.type&&"probe"===t.data){if(r.upgrading=!0,r.emit("upgrading",e),!e)return;l.priorWebsocketSuccess="websocket"===e.name,r.transport.pause((function(){n||"closed"!==r.readyState&&(f(),r.setTransport(e),e.send([{type:"upgrade"}]),r.emit("upgrade",e),e=null,r.upgrading=!1,r.flush())}))}else{var o=new Error("probe error");o.transport=e.name,r.emit("upgradeError",o)}})))}function i(){n||(n=!0,f(),e.close(),e=null)}function s(t){var n=new Error("probe error: "+t);n.transport=e.name,i(),r.emit("upgradeError",n)}function c(){s("transport closed")}function a(){s("socket closed")}function u(t){e&&t.name!==e.name&&i()}function f(){e.removeListener("open",o),e.removeListener("error",s),e.removeListener("close",c),r.removeListener("close",a),r.removeListener("upgrading",u)}l.priorWebsocketSuccess=!1,e.once("open",o),e.once("error",s),e.once("close",c),this.once("close",a),this.once("upgrading",u),e.open()}},{key:"onOpen",value:function(){if(this.readyState="open",l.priorWebsocketSuccess="websocket"===this.transport.name,this.emit("open"),this.flush(),"open"===this.readyState&&this.opts.upgrade&&this.transport.pause)for(var t=0,e=this.upgrades.length;t<e;t++)this.probe(this.upgrades[t])}},{key:"onPacket",value:function(t){if("opening"===this.readyState||"open"===this.readyState||"closing"===this.readyState)switch(this.emit("packet",t),this.emit("heartbeat"),t.type){case"open":this.onHandshake(JSON.parse(t.data));break;case"ping":this.resetPingTimeout(),this.sendPacket("pong"),this.emit("pong");break;case"error":var e=new Error("server error");e.code=t.data,this.onError(e);break;case"message":this.emit("data",t.data),this.emit("message",t.data)}}},{key:"onHandshake",value:function(t){this.emit("handshake",t),this.id=t.sid,this.transport.query.sid=t.sid,this.upgrades=this.filterUpgrades(t.upgrades),this.pingInterval=t.pingInterval,this.pingTimeout=t.pingTimeout,this.onOpen(),"closed"!==this.readyState&&this.resetPingTimeout()}},{key:"resetPingTimeout",value:function(){var t=this;clearTimeout(this.pingTimeoutTimer),this.pingTimeoutTimer=setTimeout((function(){t.onClose("ping timeout")}),this.pingInterval+this.pingTimeout)}},{key:"onDrain",value:function(){this.writeBuffer.splice(0,this.prevBufferLen),this.prevBufferLen=0,0===this.writeBuffer.length?this.emit("drain"):this.flush()}},{key:"flush",value:function(){"closed"!==this.readyState&&this.transport.writable&&!this.upgrading&&this.writeBuffer.length&&(this.transport.send(this.writeBuffer),this.prevBufferLen=this.writeBuffer.length,this.emit("flush"))}},{key:"write",value:function(t,e,n){return this.sendPacket("message",t,e,n),this}},{key:"send",value:function(t,e,n){return this.sendPacket("message",t,e,n),this}},{key:"sendPacket",value:function(t,e,n,r){if("function"==typeof e&&(r=e,e=void 0),"function"==typeof n&&(r=n,n=null),"closing"!==this.readyState&&"closed"!==this.readyState){(n=n||{}).compress=!1!==n.compress;var o={type:t,data:e,options:n};this.emit("packetCreate",o),this.writeBuffer.push(o),r&&this.once("flush",r),this.flush()}}},{key:"close",value:function(){var t=this;function e(){t.onClose("forced close"),t.transport.close()}function n(){t.removeListener("upgrade",n),t.removeListener("upgradeError",n),e()}function r(){t.once("upgrade",n),t.once("upgradeError",n)}return"opening"!==this.readyState&&"open"!==this.readyState||(this.readyState="closing",this.writeBuffer.length?this.once("drain",(function(){this.upgrading?r():e()})):this.upgrading?r():e()),this}},{key:"onError",value:function(t){l.priorWebsocketSuccess=!1,this.emit("error",t),this.onClose("transport error",t)}},{key:"onClose",value:function(t,e){"opening"!==this.readyState&&"open"!==this.readyState&&"closing"!==this.readyState||(clearTimeout(this.pingIntervalTimer),clearTimeout(this.pingTimeoutTimer),this.transport.removeAllListeners("close"),this.transport.close(),this.transport.removeAllListeners(),this.readyState="closed",this.id=null,this.emit("close",t,e),this.writeBuffer=[],this.prevBufferLen=0)}},{key:"filterUpgrades",value:function(t){for(var e=[],n=0,r=t.length;n<r;n++)~this.transports.indexOf(t[n])&&e.push(t[n]);return e}}])&&s(e.prototype,n),u&&s(e,u),l}(l);v.priorWebsocketSuccess=!1,v.protocol=h.protocol,t.exports=v},function(t,e){try{t.exports="undefined"!=typeof XMLHttpRequest&&"withCredentials"in new XMLHttpRequest}catch(e){t.exports=!1}},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(){return(o=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n=arguments[e];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(t[r]=n[r])}return t}).apply(this,arguments)}function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function c(t,e,n){return e&&s(t.prototype,e),n&&s(t,n),t}function a(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&u(t,e)}function u(t,e){return(u=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function f(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=l(t);if(e){var o=l(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return p(this,n)}}function p(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function l(t){return(l=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var h=n(9),y=n(10),d=n(0),v=n(13).pick,b=n(2);function m(){}var g=null!=new h({xdomain:!1}).responseType,k=function(t){a(n,t);var e=f(n);function n(t){var r;if(i(this,n),r=e.call(this,t),"undefined"!=typeof location){var o="https:"===location.protocol,s=location.port;s||(s=o?443:80),r.xd="undefined"!=typeof location&&t.hostname!==location.hostname||s!==t.port,r.xs=t.secure!==o}var c=t&&t.forceBase64;return r.supportsBinary=g&&!c,r}return c(n,[{key:"request",value:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};return o(t,{xd:this.xd,xs:this.xs},this.opts),new w(this.uri(),t)}},{key:"doWrite",value:function(t,e){var n=this.request({method:"POST",data:t}),r=this;n.on("success",e),n.on("error",(function(t){r.onError("xhr post error",t)}))}},{key:"doPoll",value:function(){var t=this.request(),e=this;t.on("data",(function(t){e.onData(t)})),t.on("error",(function(t){e.onError("xhr poll error",t)})),this.pollXhr=t}}]),n}(y),w=function(t){a(n,t);var e=f(n);function n(t,r){var o;return i(this,n),(o=e.call(this)).opts=r,o.method=r.method||"GET",o.uri=t,o.async=!1!==r.async,o.data=void 0!==r.data?r.data:null,o.create(),o}return c(n,[{key:"create",value:function(){var t=v(this.opts,"agent","enablesXDR","pfx","key","passphrase","cert","ca","ciphers","rejectUnauthorized");t.xdomain=!!this.opts.xd,t.xscheme=!!this.opts.xs;var e=this.xhr=new h(t),r=this;try{e.open(this.method,this.uri,this.async);try{if(this.opts.extraHeaders)for(var o in e.setDisableHeaderCheck&&e.setDisableHeaderCheck(!0),this.opts.extraHeaders)this.opts.extraHeaders.hasOwnProperty(o)&&e.setRequestHeader(o,this.opts.extraHeaders[o])}catch(t){}if("POST"===this.method)try{e.setRequestHeader("Content-type","text/plain;charset=UTF-8")}catch(t){}try{e.setRequestHeader("Accept","*/*")}catch(t){}"withCredentials"in e&&(e.withCredentials=this.opts.withCredentials),this.opts.requestTimeout&&(e.timeout=this.opts.requestTimeout),this.hasXDR()?(e.onload=function(){r.onLoad()},e.onerror=function(){r.onError(e.responseText)}):e.onreadystatechange=function(){4===e.readyState&&(200===e.status||1223===e.status?r.onLoad():setTimeout((function(){r.onError("number"==typeof e.status?e.status:0)}),0))},e.send(this.data)}catch(t){return void setTimeout((function(){r.onError(t)}),0)}"undefined"!=typeof document&&(this.index=n.requestsCount++,n.requests[this.index]=this)}},{key:"onSuccess",value:function(){this.emit("success"),this.cleanup()}},{key:"onData",value:function(t){this.emit("data",t),this.onSuccess()}},{key:"onError",value:function(t){this.emit("error",t),this.cleanup(!0)}},{key:"cleanup",value:function(t){if(void 0!==this.xhr&&null!==this.xhr){if(this.hasXDR()?this.xhr.onload=this.xhr.onerror=m:this.xhr.onreadystatechange=m,t)try{this.xhr.abort()}catch(t){}"undefined"!=typeof document&&delete n.requests[this.index],this.xhr=null}}},{key:"onLoad",value:function(){var t=this.xhr.responseText;null!==t&&this.onData(t)}},{key:"hasXDR",value:function(){return"undefined"!=typeof XDomainRequest&&!this.xs&&this.enablesXDR}},{key:"abort",value:function(){this.cleanup()}}]),n}(d);if(w.requestsCount=0,w.requests={},"undefined"!=typeof document)if("function"==typeof attachEvent)attachEvent("onunload",_);else if("function"==typeof addEventListener){addEventListener("onpagehide"in b?"pagehide":"unload",_,!1)}function _(){for(var t in w.requests)w.requests.hasOwnProperty(t)&&w.requests[t].abort()}t.exports=k,t.exports.Request=w},function(t,e,n){var r=n(11).PACKET_TYPES,o="function"==typeof Blob||"undefined"!=typeof Blob&&"[object BlobConstructor]"===Object.prototype.toString.call(Blob),i="function"==typeof ArrayBuffer,s=function(t,e){var n=new FileReader;return n.onload=function(){var t=n.result.split(",")[1];e("b"+t)},n.readAsDataURL(t)};t.exports=function(t,e,n){var c,a=t.type,u=t.data;return o&&u instanceof Blob?e?n(u):s(u,n):i&&(u instanceof ArrayBuffer||(c=u,"function"==typeof ArrayBuffer.isView?ArrayBuffer.isView(c):c&&c.buffer instanceof ArrayBuffer))?e?n(u instanceof ArrayBuffer?u:u.buffer):s(new Blob([u]),n):n(r[a]+(u||""))}},function(t,e,n){var r,o=n(11),i=o.PACKET_TYPES_REVERSE,s=o.ERROR_PACKET;"function"==typeof ArrayBuffer&&(r=n(25));var c=function(t,e){if(r){var n=r.decode(t);return a(n,e)}return{base64:!0,data:t}},a=function(t,e){switch(e){case"blob":return t instanceof ArrayBuffer?new Blob([t]):t;case"arraybuffer":default:return t}};t.exports=function(t,e){if("string"!=typeof t)return{type:"message",data:a(t,e)};var n=t.charAt(0);return"b"===n?{type:"message",data:c(t.substring(1),e)}:i[n]?t.length>1?{type:i[n],data:t.substring(1)}:{type:i[n]}:s}},function(t,e){!function(t){"use strict";e.encode=function(e){var n,r=new Uint8Array(e),o=r.length,i="";for(n=0;n<o;n+=3)i+=t[r[n]>>2],i+=t[(3&r[n])<<4|r[n+1]>>4],i+=t[(15&r[n+1])<<2|r[n+2]>>6],i+=t[63&r[n+2]];return o%3==2?i=i.substring(0,i.length-1)+"=":o%3==1&&(i=i.substring(0,i.length-2)+"=="),i},e.decode=function(e){var n,r,o,i,s,c=.75*e.length,a=e.length,u=0;"="===e[e.length-1]&&(c--,"="===e[e.length-2]&&c--);var f=new ArrayBuffer(c),p=new Uint8Array(f);for(n=0;n<a;n+=4)r=t.indexOf(e[n]),o=t.indexOf(e[n+1]),i=t.indexOf(e[n+2]),s=t.indexOf(e[n+3]),p[u++]=r<<2|o>>4,p[u++]=(15&o)<<4|i>>2,p[u++]=(3&i)<<6|63&s;return f}}("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e,n){return(i="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=f(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function s(t,e){return(s=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function c(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=f(t);if(e){var o=f(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return a(this,n)}}function a(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?u(t):e}function u(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}function f(t){return(f=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var p,l=n(10),h=n(2),y=/\n/g,d=/\\n/g,v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&s(t,e)}(l,t);var e,n,r,a=c(l);function l(t){var e;!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,l),(e=a.call(this,t)).query=e.query||{},p||(p=h.___eio=h.___eio||[]),e.index=p.length;var n=u(e);return p.push((function(t){n.onData(t)})),e.query.j=e.index,e}return e=l,(n=[{key:"doClose",value:function(){this.script&&(this.script.onerror=function(){},this.script.parentNode.removeChild(this.script),this.script=null),this.form&&(this.form.parentNode.removeChild(this.form),this.form=null,this.iframe=null),i(f(l.prototype),"doClose",this).call(this)}},{key:"doPoll",value:function(){var t=this,e=document.createElement("script");this.script&&(this.script.parentNode.removeChild(this.script),this.script=null),e.async=!0,e.src=this.uri(),e.onerror=function(e){t.onError("jsonp poll error",e)};var n=document.getElementsByTagName("script")[0];n?n.parentNode.insertBefore(e,n):(document.head||document.body).appendChild(e),this.script=e,"undefined"!=typeof navigator&&/gecko/i.test(navigator.userAgent)&&setTimeout((function(){var t=document.createElement("iframe");document.body.appendChild(t),document.body.removeChild(t)}),100)}},{key:"doWrite",value:function(t,e){var n,r=this;if(!this.form){var o=document.createElement("form"),i=document.createElement("textarea"),s=this.iframeId="eio_iframe_"+this.index;o.className="socketio",o.style.position="absolute",o.style.top="-1000px",o.style.left="-1000px",o.target=s,o.method="POST",o.setAttribute("accept-charset","utf-8"),i.name="d",o.appendChild(i),document.body.appendChild(o),this.form=o,this.area=i}function c(){a(),e()}function a(){if(r.iframe)try{r.form.removeChild(r.iframe)}catch(t){r.onError("jsonp polling iframe removal error",t)}try{var t='<iframe src="javascript:0" name="'+r.iframeId+'">';n=document.createElement(t)}catch(t){(n=document.createElement("iframe")).name=r.iframeId,n.src="javascript:0"}n.id=r.iframeId,r.form.appendChild(n),r.iframe=n}this.form.action=this.uri(),a(),t=t.replace(d,"\\\n"),this.area.value=t.replace(y,"\\n");try{this.form.submit()}catch(t){}this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===r.iframe.readyState&&c()}:this.iframe.onload=c}},{key:"supportsBinary",get:function(){return!1}}])&&o(e.prototype,n),r&&o(e,r),l}(l);t.exports=v},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e){return(i=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function s(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=a(t);if(e){var o=a(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return c(this,n)}}function c(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function a(t){return(a=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var u=n(3),f=n(1),p=n(4),l=n(12),h=n(13).pick,y=n(28),d=y.WebSocket,v=y.usingBrowserWebSocket,b=y.defaultBinaryType,m="undefined"!=typeof navigator&&"string"==typeof navigator.product&&"reactnative"===navigator.product.toLowerCase(),g=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&i(t,e)}(a,t);var e,n,r,c=s(a);function a(t){var e;return function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,a),(e=c.call(this,t)).supportsBinary=!t.forceBase64,e}return e=a,(n=[{key:"doOpen",value:function(){if(this.check()){var t=this.uri(),e=this.opts.protocols,n=m?{}:h(this.opts,"agent","perMessageDeflate","pfx","key","passphrase","cert","ca","ciphers","rejectUnauthorized","localAddress","protocolVersion","origin","maxPayload","family","checkServerIdentity");this.opts.extraHeaders&&(n.headers=this.opts.extraHeaders);try{this.ws=v&&!m?e?new d(t,e):new d(t):new d(t,e,n)}catch(t){return this.emit("error",t)}this.ws.binaryType=this.socket.binaryType||b,this.addEventListeners()}}},{key:"addEventListeners",value:function(){var t=this;this.ws.onopen=function(){t.onOpen()},this.ws.onclose=function(){t.onClose()},this.ws.onmessage=function(e){t.onData(e.data)},this.ws.onerror=function(e){t.onError("websocket error",e)}}},{key:"write",value:function(t){var e=this;this.writable=!1;for(var n=t.length,r=0,o=n;r<o;r++)!function(t){f.encodePacket(t,e.supportsBinary,(function(r){var o={};v||(t.options&&(o.compress=t.options.compress),e.opts.perMessageDeflate&&("string"==typeof r?Buffer.byteLength(r):r.length)<e.opts.perMessageDeflate.threshold&&(o.compress=!1));try{v?e.ws.send(r):e.ws.send(r,o)}catch(t){}--n||(e.emit("flush"),setTimeout((function(){e.writable=!0,e.emit("drain")}),0))}))}(t[r])}},{key:"onClose",value:function(){u.prototype.onClose.call(this)}},{key:"doClose",value:function(){void 0!==this.ws&&(this.ws.close(),this.ws=null)}},{key:"uri",value:function(){var t=this.query||{},e=this.opts.secure?"wss":"ws",n="";return this.opts.port&&("wss"===e&&443!==Number(this.opts.port)||"ws"===e&&80!==Number(this.opts.port))&&(n=":"+this.opts.port),this.opts.timestampRequests&&(t[this.opts.timestampParam]=l()),this.supportsBinary||(t.b64=1),(t=p.encode(t)).length&&(t="?"+t),e+"://"+(-1!==this.opts.hostname.indexOf(":")?"["+this.opts.hostname+"]":this.opts.hostname)+n+this.opts.path+t}},{key:"check",value:function(){return!(!d||"__initialize"in d&&this.name===a.prototype.name)}},{key:"name",get:function(){return"websocket"}}])&&o(e.prototype,n),r&&o(e,r),a}(u);t.exports=g},function(t,e,n){var r=n(2);t.exports={WebSocket:r.WebSocket||r.MozWebSocket,usingBrowserWebSocket:!0,defaultBinaryType:"arraybuffer"}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.reconstructPacket=e.deconstructPacket=void 0;var o=n(15);e.deconstructPacket=function(t){var e=[],n=t.data,i=t;return i.data=function t(e,n){if(!e)return e;if(o.isBinary(e)){var i={_placeholder:!0,num:n.length};return n.push(e),i}if(Array.isArray(e)){for(var s=new Array(e.length),c=0;c<e.length;c++)s[c]=t(e[c],n);return s}if("object"===r(e)&&!(e instanceof Date)){var a={};for(var u in e)e.hasOwnProperty(u)&&(a[u]=t(e[u],n));return a}return e}(n,e),i.attachments=e.length,{packet:i,buffers:e}},e.reconstructPacket=function(t,e){return t.data=function t(e,n){if(!e)return e;if(e&&e._placeholder)return n[e.num];if(Array.isArray(e))for(var o=0;o<e.length;o++)e[o]=t(e[o],n);else if("object"===r(e))for(var i in e)e.hasOwnProperty(i)&&(e[i]=t(e[i],n));return e}(t.data,e),t.attachments=void 0,t}},function(t,e){function n(t){t=t||{},this.ms=t.min||100,this.max=t.max||1e4,this.factor=t.factor||2,this.jitter=t.jitter>0&&t.jitter<=1?t.jitter:0,this.attempts=0}t.exports=n,n.prototype.duration=function(){var t=this.ms*Math.pow(this.factor,this.attempts++);if(this.jitter){var e=Math.random(),n=Math.floor(e*this.jitter*t);t=0==(1&Math.floor(10*e))?t-n:t+n}return 0|Math.min(t,this.max)},n.prototype.reset=function(){this.attempts=0},n.prototype.setMin=function(t){this.ms=t},n.prototype.setMax=function(t){this.max=t},n.prototype.setJitter=function(t){this.jitter=t}}])}));
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"buffer":36}],64:[function(require,module,exports){
+},{"buffer":37}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37822,8 +40672,7 @@ class MatrixSounds {
 
     if (typeof useClones !== 'undefined') {
       this.createClones(useClones, name, path);
-    } // a.play(); only for autoplay
-
+    }
   }
 
   play(name) {
@@ -37837,18 +40686,20 @@ class MatrixSounds {
   tryClone(name) {
     var cc = 1;
 
-    while (this.audios[name + cc].paused == false) {
-      cc++;
-    }
+    try {
+      while (this.audios[name + cc].paused == false) {
+        cc++;
+      }
 
-    this.audios[name + cc].play();
+      if (this.audios[name + cc]) this.audios[name + cc].play();
+    } catch (err) {}
   }
 
 }
 
 exports.MatrixSounds = MatrixSounds;
 
-},{}],65:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -37871,7 +40722,9 @@ exports._glBlend = _glBlend;
 exports._DrawElements = _DrawElements;
 exports._glTexParameteri = _glTexParameteri;
 exports.gen2DTextFace = gen2DTextFace;
-exports.BiquadFilterType = exports.ENUMERATORS = exports.QueryString = exports.byId = exports.E = exports.scriptManager = exports.loadImage = exports.htmlHeader = exports.jsonHeaders = exports.HeaderTypes = void 0;
+exports.showDomFPSController = showDomFPSController;
+exports.createDomFPSController = createDomFPSController;
+exports.notify = exports.BiquadFilterType = exports.ENUMERATORS = exports.QueryString = exports.byId = exports.E = exports.scriptManager = exports.loadImage = exports.supportsTouch = exports.htmlHeader = exports.jsonHeaders = exports.HeaderTypes = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
 
@@ -37974,7 +40827,7 @@ window.DETECTBROWSER = function () {
     }
   } else {
     // eslint-disable-next-line no-undef
-    NOMOBILE = 1;
+    mobile = 1;
   } // FIREFOX za android
 
 
@@ -38039,7 +40892,7 @@ window.DETECTBROWSER = function () {
     HREFTXT = 'chrome_browser';
   }
 
-  if (navMozilla && NOMOBILE == 1 && gecko && navFirefox) {
+  if (navMozilla && mobile == 1 && gecko && navFirefox) {
     HREFF = '#';
     HREFTXT = 'firefox_desktop';
   }
@@ -38050,10 +40903,14 @@ window.DETECTBROWSER = function () {
   }
 
   this.NAME = HREFTXT;
-  this.NOMOBILE = NOMOBILE;
+  this.NOMOBILE = mobile;
 };
 
+var supportsTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints;
+exports.supportsTouch = supportsTouch;
+
 function isMobile() {
+  if (supportsTouch == true) return true;
   const toMatch = [/Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i];
   return toMatch.some(toMatchItem => {
     return navigator.userAgent.match(toMatchItem);
@@ -38081,24 +40938,18 @@ window.BROWSER = new window.DETECTBROWSER();
  */
 
 function LOG() {
-  this.ENABLE = true;
+  this.ENABLE = false;
 
   this.LOG = function (data) {
-    if (this.ENABLE == true) {
-      console.log('%c' + data, 'background: #333; color: lime');
-    }
+    if (this.ENABLE == true) console.log('%c' + data, 'background: #333; color: lime');
   };
 
   this.WARNING = function (data) {
-    if (this.ENABLE == true) {
-      console.log('%c Warning : ' + data, 'background: #333; color: yellow');
-    }
+    if (this.ENABLE == true) console.log('%c Warning : ' + data, 'background: #333; color: yellow');
   };
 
   this.CRITICAL = function (data) {
-    if (this.ENABLE == true) {
-      console.log('%c Critical : ' + data, 'background: #333; color: red');
-    }
+    if (this.ENABLE == true) console.log('%c Critical : ' + data, 'background: #333; color: red');
   };
 
   this.NETWORK_LOG = function (data) {
@@ -38115,12 +40966,10 @@ function LOG() {
 
 var scriptManager = {
   SCRIPT_ID: 0,
-  // SINHRO_LOAD: {},
-  LOAD: function addScript(src, id, type, parent) {
+  LOAD: function addScript(src, id, type, parent, callback) {
     var s = document.createElement('script');
 
-    s.onload = function () {//SCRIPT.SCRIPT_ID++;
-      //console.log('Script id loaded : ' + SCRIPT.SCRIPT_ID + ' with src: ' + this.src);
+    s.onload = function () {// console.log('Script id loaded [src]: ' + this.src);
     };
 
     if (typeof type !== 'undefined') {
@@ -38136,8 +40985,10 @@ var scriptManager = {
 
     if (typeof parent !== 'undefined') {
       document.getElementById(parent).appendChild(s);
+      if (typeof callback != 'undefined') callback();
     } else {
       document.body.appendChild(s);
+      if (typeof callback != 'undefined') callback();
     }
   },
   loadModule: function addScript(src, id, type, parent) {
@@ -38167,6 +41018,13 @@ var scriptManager = {
     } else {
       document.body.appendChild(s);
     }
+  },
+  loadGLSL: function (src) {
+    return new Promise(resolve => {
+      fetch(src).then(data => {
+        resolve(data.text());
+      });
+    });
   }
 }; // GET PULSE VALUES IN REAL TIME
 
@@ -38307,29 +41165,29 @@ _manifest.default.audioSystem.Assets = {};
 _manifest.default.audioSystem.createVideoAsset = function (name_, path_) {
   return new Promise((resolve, reject) => {
     var videoAudioAsset = {};
-    videoAudioAsset.video = document.createElement('video'); // videoAudioAsset.video = document.getElementById("ultimateroulette");
-
+    videoAudioAsset.video = document.createElement('video');
     videoAudioAsset.video.controls = true;
-    videoAudioAsset.video.autoplay = true; // videoAudioAsset.video.setAttribute("mute", true);
-    // videoAudioAsset.video.load();
-
+    videoAudioAsset.video.autoplay = true;
     E('HOLDER_STREAMS').appendChild(videoAudioAsset.video);
     videoAudioAsset.video.setAttribute('playsInline', true);
     videoAudioAsset.video.setAttribute('src', 'res/videos/' + path_);
 
     try {
-      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      window.AudioContext = window.AudioContext || window.AudioContext;
       videoAudioAsset.context = new AudioContext();
     } catch (e) {
       alert('Web Audio API is not supported in this browser');
+      reject(e);
     }
 
-    videoAudioAsset.gainNode = videoAudioAsset.context.createGain();
-    videoAudioAsset.gainNode.gain.value = 1; // Change Gain Value to test
+    videoAudioAsset.gainNode = videoAudioAsset.context.createGain(); // Change Gain Value to test
 
-    videoAudioAsset.filter = videoAudioAsset.context.createBiquadFilter(); // videoAudioAsset.filter.type = 2; // Change Filter type to test // ENUM from UTILITY
+    videoAudioAsset.gainNode.gain.value = 1;
+    videoAudioAsset.filter = videoAudioAsset.context.createBiquadFilter(); // Change Filter type to test // ENUM from UTILITY
+    // videoAudioAsset.filter.type = 2;
+    // Change frequency to test
 
-    videoAudioAsset.filter.frequency.value = 5040; // Change frequency to test
+    videoAudioAsset.filter.frequency.value = 5040;
 
     if (typeof name_ !== 'undefined' && typeof name_ === 'string') {
       _manifest.default.audioSystem.Assets[name_] = videoAudioAsset;
@@ -38341,11 +41199,11 @@ _manifest.default.audioSystem.createVideoAsset = function (name_, path_) {
 
     if (promise !== undefined) {
       promise.then(_ => {
-        console.info('intromotocooliano autoplay started');
+        console.info('Autoplay started.');
         resolve(true);
       }).catch(error => {
-        console.warn('No autoplay ', error);
-        reject(); // Autoplay was prevented.
+        console.warn('No autoplay:', error);
+        reject();
       });
     }
   });
@@ -38356,26 +41214,22 @@ _manifest.default.audioSystem.createMusicAsset = function (name_, path_) {
     var videoAudioAsset = {};
     videoAudioAsset.video = document.createElement('audio');
     videoAudioAsset.video.controls = true;
-    videoAudioAsset.video.autoplay = true; // videoAudioAsset.video.setAttribute("mute", true);
-    // videoAudioAsset.video.load();
-
+    videoAudioAsset.video.autoplay = true;
     E('HOLDER_STREAMS').appendChild(videoAudioAsset.video);
     videoAudioAsset.video.setAttribute('playsInline', true);
     videoAudioAsset.video.setAttribute('src', 'res/music/' + path_);
 
     try {
-      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      window.AudioContext = window.AudioContext || window.AudioContext;
       videoAudioAsset.context = new AudioContext();
     } catch (e) {
       alert('Web Audio API is not supported in this browser');
     }
 
     videoAudioAsset.gainNode = videoAudioAsset.context.createGain();
-    videoAudioAsset.gainNode.gain.value = 1; // Change Gain Value to test
-
-    videoAudioAsset.filter = videoAudioAsset.context.createBiquadFilter(); // videoAudioAsset.filter.type = 2; // Change Filter type to test // ENUM from UTILITY
-
-    videoAudioAsset.filter.frequency.value = 5040; // Change frequency to test
+    videoAudioAsset.gainNode.gain.value = 1;
+    videoAudioAsset.filter = videoAudioAsset.context.createBiquadFilter();
+    videoAudioAsset.filter.frequency.value = 5040;
 
     if (typeof name_ !== 'undefined' && typeof name_ === 'string') {
       _manifest.default.audioSystem.Assets[name_] = videoAudioAsset;
@@ -38391,7 +41245,7 @@ _manifest.default.audioSystem.createMusicAsset = function (name_, path_) {
         resolve(true);
       }).catch(error => {
         console.warn('No autoplay ', error);
-        reject(); // Autoplay was prevented.
+        reject();
       });
     }
   });
@@ -38615,9 +41469,238 @@ function gen2DTextFace(ctx, faceColor, textColor, text) {
   ctx.textBaseline = 'middle';
   ctx.fillStyle = textColor;
   ctx.fillText(text, width / 2, height / 2);
-}
+} // Create DOM elements for FPS template.
 
-},{"../program/manifest":67,"./events":44}],66:[function(require,module,exports){
+
+function showDomFPSController() {
+  byId('mobSpace').style.display = 'grid';
+  byId('mobRight').style.display = 'grid';
+  byId('mobLeft').style.display = 'grid';
+  byId('mobUp').style.display = 'grid';
+  byId('mobDown').style.display = 'grid';
+  byId('domAngleAxis').style.display = 'grid';
+  byId('mobFire').style.display = 'grid';
+} // Create DOM elements for FPS template.
+
+
+function createDomFPSController() {
+  var domSpace = document.createElement('div');
+  domSpace.id = 'mobSpace';
+  domSpace.classList.add('noselect');
+  domSpace.setAttribute('style', `
+      text-align: center;
+      display: none;
+      position:absolute;
+      left: 74%;
+      top: 79%;
+      width: 23%;
+      height: 5%;
+      background: rgba(255,255,255,0.2);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domSpace.innerText = `JUMP`; // domSpace.addEventListener('touchstart', (e) => {})
+
+  document.body.append(domSpace);
+  var domRight = document.createElement('div');
+  domRight.id = 'mobRight';
+  domRight.classList.add('noselect');
+  domRight.setAttribute('style', `
+      text-align: center;
+      display: none;
+      position:absolute;
+      left: 74%;
+      top: 89%;
+      width: 23%;
+      height: 5%;
+      background: rgba(255,255,255,0.2);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domRight.innerText = `RIGHT`; // domRight.addEventListener('touchstart', (e) => {console.log('TEST RIGHT')})
+  // domRight.addEventListener('touchend', (e) => {	})
+
+  document.body.append(domRight);
+  var domLeft = document.createElement('div');
+  domLeft.id = 'mobLeft';
+  domLeft.classList.add('noselect');
+  domLeft.setAttribute('style', `
+      text-align: center;
+      display: none;
+      position:absolute;
+      left: 51%;
+      top: 89%;
+      width: 23%;
+      height: 5%;
+      background: rgba(255,255,255,0.2);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domLeft.innerText = `LEFT`; // domLeft.addEventListener('touchstart', (e) => {})
+  // domLeft.addEventListener('touchend', (e) => {})
+
+  document.body.append(domLeft);
+  var domUp = document.createElement('div');
+  domUp.id = 'mobUp';
+  domUp.classList.add('noselect');
+  domUp.setAttribute('style', `
+      text-align: center;
+      display: none;
+      position:absolute;
+      left: 62%;
+      top: 84%;
+      width: 23%;
+      height: 5%;
+      background: rgba(255,255,255,0.2);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domUp.innerText = `UP`; // domUp.addEventListener('touchstart', (e) => {})
+  // domUp.addEventListener('touchend', (e) => {})
+
+  document.body.append(domUp);
+  var domFire = document.createElement('div');
+  domFire.id = 'mobFire';
+  domFire.classList.add('noselect');
+  domFire.setAttribute('style', `
+      text-align: center;
+      display: grid;
+      position:absolute;
+      left: 51%;
+      top: 79%;
+      width: 23%;
+      height: 5%;
+      background: rgba(255,255,255,0.2);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domFire.innerText = `FIRE`; // domFire.addEventListener('touchstart', (e) => {})
+  // domFire.addEventListener('touchend', (e) => {})
+
+  document.body.append(domFire);
+  var domDown = document.createElement('div');
+  domDown.id = 'mobDown';
+  domDown.classList.add('noselect');
+  domDown.setAttribute('style', `
+      text-align: center;
+      display: none;
+      position:absolute;
+      left: 62%;
+      top: 94%;
+      width: 23%;
+      height: 5%;
+      background: rgba(255,255,255,0.1);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domDown.innerText = `DOWN`; // domDown.addEventListener('touchstart', (e) => {})
+  // domDown.addEventListener('touchend', (e) => {})
+
+  document.body.append(domDown);
+  var domAngleAxis = document.createElement('div');
+  domAngleAxis.id = 'domAngleAxis';
+  domAngleAxis.classList.add('noselect');
+  domAngleAxis.setAttribute('style', `
+      text-align: center;
+      display: none;
+      position:absolute;
+      left: 3%;
+      top: 69%;
+      width: 47%;
+      height: 28%;
+      background: rgba(255,255,255,0.2);
+      margin: auto;
+      align-items: center;
+      cursor: default;
+    `);
+  domAngleAxis.innerHTML = `    `; // domAngleAxis.addEventListener('touchstart', (e) => {})
+
+  document.body.append(domAngleAxis);
+  showDomFPSController();
+} // DOM Notifi msg
+
+
+let notify = {
+  root: () => byId('msgBox'),
+  pContent: () => byId('not-content'),
+  copy: function () {
+    navigator.clipboard.writeText(notify.root().children[0].innerText);
+  },
+  singleDom: true,
+  showTime: 3000,
+  hideTime: 1000,
+  c: 0,
+  ic: 0,
+  t: {},
+  setContent: function (content, t) {
+    if (byId(`msgbox-loc-${notify.c}`) != null) {
+      byId(`msgbox-loc-${notify.c}`).innerHTML = content;
+      return;
+    }
+
+    var iMsg = document.createElement('div');
+    iMsg.innerHTML = content;
+    iMsg.id = `msgbox-loc-${notify.c}`;
+    notify.root().appendChild(iMsg);
+    iMsg.classList.add('animate1');
+
+    if (t == 'ok') {
+      iMsg.style = 'font-family: stormfaze;color:white;padding:7px;margin:2px';
+    } else {
+      iMsg.style = 'font-family: stormfaze;color:white;padding:7px;margin:2px';
+    }
+  },
+  kill: function () {
+    notify.root().remove();
+  },
+  show: function (content, t) {
+    notify.setContent(content, t);
+    notify.root().style.display = "block";
+    var loc2 = notify.c;
+    setTimeout(function () {
+      byId(`msgbox-loc-${loc2}`).classList.remove("fadeInDown");
+      byId(`msgbox-loc-${loc2}`).classList.add("fadeOut");
+      setTimeout(function () {
+        byId(`msgbox-loc-${loc2}`).classList.remove("fadeOut");
+
+        if (this.singleDom == false) {
+          byId(`msgbox-loc-${loc2}`).style.display = "none";
+          byId(`msgbox-loc-${loc2}`).remove();
+          notify.ic++;
+        }
+
+        if (notify.c == notify.ic) {
+          notify.root().style.display = 'none';
+        }
+      }, this.hideTime);
+    }, this.showTime);
+
+    if (this.singleDom == true) {} else {
+      notify.c++;
+    }
+  },
+  error: function (content) {
+    notify.root().classList.remove("success");
+    notify.root().classList.add("error");
+    notify.root().classList.add("fadeInDown");
+    notify.show(content, 'err');
+  },
+  success: function (content) {
+    notify.root().classList.remove("error");
+    notify.root().classList.add("success");
+    notify.root().classList.add("fadeInDown");
+    notify.show(content, 'ok');
+  }
+};
+exports.notify = notify;
+
+},{"../program/manifest":75,"./events":45}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38654,33 +41737,6 @@ exports.WebGLUtils = void 0;
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/**
- * @fileoverview This file contains functions every webgl program will need
- * a version of one way or another.
- *
- * Instead of setting up a context manually it is recommended to
- * use. This will check for success or failure. On failure it
- * will attempt to present an approriate message to the user.
- *
- *       gl = WebGLUtils.setupWebGL(canvas);
- *
- * For animated WebGL apps use of setTimeout or setInterval are
- * discouraged. It is recommended you structure your rendering
- * loop like this.
- *
- *       function render() {
- *         window.requestAnimationFrame(render, canvas);
- *
- *         // do rendering
- *         ...
- *       }
- *       render();
- *
- * This will call your rendering function up to the refresh rate
- * of your display but will stop rendering if your app is not
- * visible.
  */
 var WebGLUtils = function () {
   /**
@@ -38721,24 +41777,23 @@ var WebGLUtils = function () {
 
   var setupWebGL = function (canvas, opt_attribs, opt_onError) {
     function handleCreationError(msg) {
-      var container = document.getElementsByTagName("body")[0]; //var container = canvas.parentNode;
+      var container = document.getElementsByTagName('body')[0]; //var container = canvas.parentNode;
 
       if (container) {
         var str = window.WebGLRenderingContext ? OTHER_PROBLEM : GET_A_WEBGL_BROWSER;
 
         if (msg) {
-          str += "<br/><br/>Status: " + msg;
+          str += '<br/><br/>Status: ' + msg;
         }
 
         container.innerHTML = makeFailHTML(str);
       }
     }
 
-    ;
     opt_onError = opt_onError || handleCreationError;
 
     if (canvas.addEventListener) {
-      canvas.addEventListener("webglcontextcreationerror", function (event) {
+      canvas.addEventListener('webglcontextcreationerror', function (event) {
         opt_onError(event.statusMessage);
       }, false);
     }
@@ -38747,9 +41802,9 @@ var WebGLUtils = function () {
 
     if (!context) {
       if (!window.WebGLRenderingContext) {
-        opt_onError("");
+        opt_onError('');
       } else {
-        opt_onError("");
+        opt_onError('');
       }
     }
 
@@ -38758,14 +41813,21 @@ var WebGLUtils = function () {
   /**
    * Creates a webgl context.
    * @param {!Canvas} canvas The canvas tag to get context
-   *     from. If one is not passed in one will be created.
+   * from. If one is not passed in one will be created.
    * @return {!WebGLContext} The created context.
    */
 
 
   var create3DContext = function (canvas, opt_attribs) {
-    //var names = [  "webgl" , "experimental-webgl", "webkit-3d", "moz-webgl"];
-    var names = ["webgl2"];
+    // [  "webgl" , "experimental-webgl", "webkit-3d", "moz-webgl"]
+    var names;
+
+    if (App.openglesShaderVersion == 1.3) {
+      var names = ['webgl2', 'experimental-webgl', 'webgl2'];
+    } else {
+      var names = ['experimental-webgl', 'webgl'];
+    }
+
     var context = null;
 
     for (var ii = 0; ii < names.length; ++ii) {
@@ -38806,24 +41868,679 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],67:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MatrixStream = void 0;
+
+var _utility = require("../lib/utility");
+
+var _matrixStream = require("./matrix-stream");
+
+/**
+ * Main instance for matrix-stream
+ * version 1.0.0 beta
+ */
+class MatrixStream {
+  connection = null;
+  session = null;
+
+  constructor(arg) {
+    if (typeof arg === 'undefined') {
+      throw console.error('MatrixStream constructor must have argument : { domain: <DOMAIN_NAME> , port: <NUMBER> }');
+    }
+
+    _matrixStream.netConfig.NETWORKING_DOMAIN = arg.domain;
+    _matrixStream.netConfig.NETWORKING_PORT = arg.port;
+    _matrixStream.netConfig.sessionName = arg.sessionName;
+    _matrixStream.netConfig.resolution = arg.resolution;
+
+    _utility.scriptManager.LOAD('openvidu-browser-2.20.0.js', undefined, undefined, undefined, () => {
+      this.loadNetHTML();
+    });
+  }
+
+  loadNetHTML() {
+    fetch("./broadcaster2.html", {
+      headers: _utility.htmlHeader
+    }).then(res => {
+      return res.text();
+    }).then(html => {
+      var popupUI = (0, _matrixStream.byId)("matrix-net");
+      popupUI.style = 'display: block;';
+      popupUI.innerHTML = html;
+      this.joinSessionUI = (0, _matrixStream.byId)("join-btn");
+      this.buttonCloseSession = (0, _matrixStream.byId)('buttonCloseSession');
+      this.buttonLeaveSession = (0, _matrixStream.byId)('buttonLeaveSession');
+      (0, _matrixStream.byId)("sessionName").value = _matrixStream.netConfig.sessionName;
+      this.sessionName = (0, _matrixStream.byId)("sessionName");
+      console.log('[CHANNEL]' + this.sessionName.value);
+      this.attachEvents();
+      console.log(`%c MatrixStream constructed.`, _matrixStream.BIGLOG);
+    });
+  }
+
+  attachEvents() {
+    addEventListener(`LOCAL-STREAM-READY`, e => {
+      console.log('LOCAL-STREAM-READY ', e.detail.connection);
+      this.connection = e.detail.connection;
+      var CHANNEL = _matrixStream.netConfig.sessionName; // console.log("ONLY ONES CHANNEL =>", CHANNEL);
+
+      this.connection.send = netArg => {
+        this.session.signal({
+          data: JSON.stringify(netArg),
+          to: [],
+          type: CHANNEL
+        }).then(() => {// console.log('emit all successfully');
+        }).catch(error => {
+          console.error("Erro signal => ", error);
+        });
+      };
+    });
+    addEventListener('setupSessionObject', e => {
+      console.log("setupSessionObject=>", e.detail);
+      this.session = e.detail;
+      this.session.on(`signal:${_matrixStream.netConfig.sessionName}`, e => {
+        if (this.connection.connectionId == e.from.connectionId) {//
+        } else {
+          this.multiPlayer.update(e);
+        }
+      });
+    });
+    this.joinSessionUI.addEventListener('click', () => {
+      console.log(`%c JOIN SESSION [${_matrixStream.netConfig.resolution}] `, _matrixStream.REDLOG);
+      (0, _matrixStream.joinSession)({
+        resolution: _matrixStream.netConfig.resolution
+      });
+    });
+    this.buttonCloseSession.addEventListener('click', _matrixStream.closeSession);
+    this.buttonLeaveSession.addEventListener('click', () => {
+      console.log(`%c LEAVE SESSION`, _matrixStream.REDLOG);
+      (0, _matrixStream.removeUser)();
+      (0, _matrixStream.leaveSession)();
+    });
+    (0, _matrixStream.byId)('netHeaderTitle').addEventListener('click', this.domManipulation.hideNetPanel);
+    setTimeout(() => dispatchEvent(new CustomEvent('net-ready', {})), 500);
+  }
+
+  multiPlayer = {
+    root: this,
+
+    init(rtcEvent) {
+      console.log("rtcEvent add new net object -> ", rtcEvent);
+      dispatchEvent(new CustomEvent('net-new-user', {
+        detail: {
+          data: rtcEvent
+        }
+      }));
+    },
+
+    update(e) {
+      e.data = JSON.parse(e.data);
+      dispatchEvent(new CustomEvent('network-data', {
+        detail: e.data
+      })); // console.log('INFO UPDATE', e);
+
+      if (e.data.netPos) {
+        if (App.scene[e.data.netObjId]) {
+          if (e.data.netPos.x) App.scene[e.data.netObjId].position.SetX(e.data.netPos.x, 'noemit');
+          if (e.data.netPos.y) App.scene[e.data.netObjId].position.SetY(e.data.netPos.y, 'noemit');
+          if (e.data.netPos.z) App.scene[e.data.netObjId].position.SetZ(e.data.netPos.z, 'noemit');
+        }
+      } else if (e.data.netRot) {
+        // console.log('ROT INFO UPDATE', e);
+        if (e.data.netRot.x) App.scene[e.data.netObjId].rotation.rotx = e.data.netRot.x;
+        if (e.data.netRot.y) App.scene[e.data.netObjId].rotation.roty = e.data.netRot.y;
+        if (e.data.netRot.z) App.scene[e.data.netObjId].rotation.rotz = e.data.netRot.z;
+      } else if (e.data.netScale) {
+        // console.log('netScale INFO UPDATE', e);
+        if (e.data.netScale.x) App.scene[e.data.netObjId].geometry.setScaleByX(e.data.netScale.x, 'noemit');
+        if (e.data.netScale.y) App.scene[e.data.netObjId].geometry.setScaleByY(e.data.netScale.y, 'noemit');
+        if (e.data.netScale.z) App.scene[e.data.netObjId].geometry.setScaleByZ(e.data.netScale.z, 'noemit');
+        if (e.data.netScale.scale) App.scene[e.data.netObjId].geometry.setScale(e.data.netScale.scale, 'noemit');
+      } else if (e.data.texScaleFactor) {
+        // console.log('texScaleFactor INFO UPDATE', e);
+        if (e.data.texScaleFactor.newScaleFactror) {
+          App.scene[e.data.netObjId].geometry.setTexCoordScaleFactor(e.data.texScaleFactor.newScaleFactror, 'noemit');
+        }
+      } else if (e.data.spitz) {
+        if (e.data.spitz.newValueFloat) {
+          App.scene[e.data.netObjId].geometry.setSpitz(e.data.spitz.newValueFloat, 'noemit');
+        }
+      }
+    },
+
+    /**
+     * If someone leaves all client actions is here
+     * - remove from scene
+     * - clear object from netObject_x
+     */
+    leaveGamePlay(rtcEvent) {
+      console.info("rtcEvent LEAVE GAME: ", rtcEvent.userid);
+      dispatchEvent(new CustomEvent('net.remove-user', {
+        detail: {
+          data: rtcEvent
+        }
+      }));
+    }
+
+  };
+  domManipulation = {
+    hideNetPanel: () => {
+      if ((0, _matrixStream.byId)('matrix-net').classList.contains('hide-by-vertical')) {
+        (0, _matrixStream.byId)('matrix-net').classList.remove('hide-by-vertical');
+        (0, _matrixStream.byId)('matrix-net').classList.add('show-by-vertical');
+        (0, _matrixStream.byId)('netHeaderTitle').innerText = 'HIDE';
+      } else {
+        (0, _matrixStream.byId)('matrix-net').classList.remove('show-by-vertical');
+        (0, _matrixStream.byId)('matrix-net').classList.add('hide-by-vertical');
+        (0, _matrixStream.byId)('netHeaderTitle').innerText = 'SHOW';
+      }
+    }
+  };
+}
+
+exports.MatrixStream = MatrixStream;
+
+},{"../lib/utility":71,"./matrix-stream":74}],74:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.byId = byId;
+exports.joinSession = joinSession;
+exports.leaveSession = leaveSession;
+exports.enableBtn = enableBtn;
+exports.getToken = getToken;
+exports.removeUser = removeUser;
+exports.closeSession = closeSession;
+exports.fetchInfo = fetchInfo;
+exports.fetchAll = fetchAll;
+exports.forceDisconnect = forceDisconnect;
+exports.forceUnpublish = forceUnpublish;
+exports.httpRequest = httpRequest;
+exports.startRecording = startRecording;
+exports.stopRecording = stopRecording;
+exports.deleteRecording = deleteRecording;
+exports.getRecording = getRecording;
+exports.listRecordings = listRecordings;
+exports.updateNumVideos = updateNumVideos;
+exports.checkBtnsForce = checkBtnsForce;
+exports.checkBtnsRecordings = checkBtnsRecordings;
+exports.pushEvent = pushEvent;
+exports.clearHttpTextarea = clearHttpTextarea;
+exports.clearEventsTextarea = clearEventsTextarea;
+exports.events = exports.session = exports.ANYLOG = exports.NETLOG = exports.REDLOG = exports.BIGLOG = exports.netConfig = void 0;
+const netConfig = {
+  NETWORKING_DOMAIN: '',
+  NETWORKING_PORT: '2020'
+};
+exports.netConfig = netConfig;
+
+function byId(d) {
+  return document.getElementById(d);
+}
+
+;
+var BIGLOG = "color: #55fd53;font-size:20px;text-shadow: 0px 0px 5px #f4fd63, -1px -1px 5px orange";
+exports.BIGLOG = BIGLOG;
+var REDLOG = "color: lime;font-size:15px;text-shadow: 0px 0px 5px red, -2px -2px 5px orangered";
+exports.REDLOG = REDLOG;
+var NETLOG = "color: orange;font-size:15px;text-shadow: 0px 0px 1px red, 0px 0px 5px orangered";
+exports.NETLOG = NETLOG;
+var ANYLOG = "color: yellow;font-size:15px;text-shadow: 1px 1px 4px red, 0px 0px 2px orangered";
+exports.ANYLOG = ANYLOG;
+var OV;
+var numVideos = 0;
+var sessionName;
+var token;
+var session;
+exports.session = session;
+
+function joinSession(options) {
+  if (typeof options === 'undefined') {
+    options = {
+      resolution: '320x240'
+    };
+  }
+
+  console.log('resolution:', options.resolution);
+  document.getElementById("join-btn").disabled = true;
+  document.getElementById("join-btn").innerHTML = "Joining...";
+  getToken(function () {
+    OV = new OpenVidu();
+    window.OV = OV;
+    exports.session = session = OV.initSession();
+    session.on('connectionCreated', event => {
+      console.log(`connectionCreated ${event.connection.connectionId}`);
+      dispatchEvent(new CustomEvent('onConnectionCreated', {
+        detail: event
+      }));
+      pushEvent(event);
+    });
+    session.on('connectionDestroyed', e => {
+      console.log(`Connection destroyed ${e.connection.connectionId}`);
+      dispatchEvent(new CustomEvent('connectionDestroyed', {
+        detail: {
+          connectionId: e.connection.connectionId,
+          event: e
+        }
+      })); // byId("pwa-container-2").style.display = "none";
+
+      pushEvent(e);
+    }); // On every new Stream received...
+
+    session.on('streamCreated', event => {
+      pushEvent(event);
+      console.log(`%c [onStreamCreated] ${event.stream.streamId}`);
+      setTimeout(() => {
+        console.log(`%c REMOTE STREAM READY [] ${byId("remote-video-" + event.stream.streamId)}`, BIGLOG);
+      }, 2000);
+      dispatchEvent(new CustomEvent('onStreamCreated', {
+        detail: {
+          event: event,
+          msg: `[connectionId][${event.stream.connection.connectionId}]`
+        }
+      })); // Subscribe to the Stream to receive it
+      // HTML video will be appended to element with 'video-container' id
+
+      var subscriber = session.subscribe(event.stream, 'video-container'); // When the HTML video has been appended to DOM...
+
+      subscriber.on('videoElementCreated', event => {
+        dispatchEvent(new CustomEvent(`videoElementCreatedSubscriber`, {
+          detail: event
+        })); // Add a new HTML element for the user's name and nickname over its video
+
+        updateNumVideos(1);
+      }); // When the HTML video has been appended to DOM...
+
+      subscriber.on('videoElementDestroyed', event => {
+        pushEvent(event); // Add a new HTML element for the user's name and nickname over its video
+
+        updateNumVideos(-1);
+      }); // When the subscriber stream has started playing media...
+
+      subscriber.on('streamPlaying', event => {
+        dispatchEvent(new CustomEvent('streamPlaying', {
+          detail: event
+        }));
+      });
+    });
+    session.on('streamDestroyed', event => {
+      // alert(event);
+      pushEvent(event);
+    });
+    session.on('sessionDisconnected', event => {
+      console.log("Session Disconected", event); // byId("pwa-container-2").style.display = "none";
+
+      pushEvent(event);
+
+      if (event.reason !== 'disconnect') {
+        removeUser();
+      }
+
+      if (event.reason !== 'sessionClosedByServer') {
+        exports.session = session = null;
+        numVideos = 0; // $('#join').show();
+
+        byId('join').style.display = 'block';
+        byId('session').style.display = 'none';
+      }
+    });
+    session.on('recordingStarted', event => {
+      pushEvent(event);
+    });
+    session.on('recordingStopped', event => {
+      pushEvent(event);
+    }); // On every asynchronous exception...
+
+    session.on('exception', exception => {
+      console.warn(exception);
+    });
+    dispatchEvent(new CustomEvent(`setupSessionObject`, {
+      detail: session
+    }));
+    session.connect(token).then(() => {
+      byId('session-title').innerText = sessionName;
+      byId('join').style.display = 'none';
+      byId('session').style.display = 'block';
+      var publisher = OV.initPublisher('video-container', {
+        audioSource: undefined,
+        // The source of audio. If undefined default microphone
+        videoSource: undefined,
+        // The source of video. If undefined default webcam
+        publishAudio: true,
+        // Whether you want to start publishing with your audio unmuted or not
+        publishVideo: true,
+        // Whether you want to start publishing with your video enabled or not
+        resolution: options.resolution,
+        // The resolution of your video
+        frameRate: 30,
+        // The frame rate of your video
+        insertMode: 'APPEND',
+        // How the video is inserted in the target element 'video-container'
+        mirror: false // Whether to mirror your local video or not
+
+      });
+      publisher.on('accessAllowed', event => {
+        pushEvent({
+          type: 'accessAllowed'
+        });
+      });
+      publisher.on('accessDenied', event => {
+        pushEvent(event);
+      });
+      publisher.on('accessDialogOpened', event => {
+        pushEvent({
+          type: 'accessDialogOpened'
+        });
+      });
+      publisher.on('accessDialogClosed', event => {
+        pushEvent({
+          type: 'accessDialogClosed'
+        });
+      }); // When the publisher stream has started playing media...
+
+      publisher.on('streamCreated', event => {
+        dispatchEvent(new CustomEvent(`LOCAL-STREAM-READY`, {
+          detail: event.stream
+        }));
+        console.log(`%c LOCAL STREAM READY ${event.stream.connection.connectionId}`, BIGLOG); // if(document.getElementById("pwa-container-1").style.display != 'none') {
+        // 	document.getElementById("pwa-container-1").style.display = 'none';
+        // }
+
+        pushEvent(event);
+      }); // When our HTML video has been added to DOM...
+
+      publisher.on('videoElementCreated', event => {
+        dispatchEvent(new CustomEvent(`videoElementCreated`, {
+          detail: event
+        }));
+        updateNumVideos(1);
+        console.log('NOT FIXED MUTE event.element, ', event.element);
+        event.element.mute = true; // $(event.element).prop('muted', true); // Mute local video
+      }); // When the HTML video has been appended to DOM...
+
+      publisher.on('videoElementDestroyed', event => {
+        dispatchEvent(new CustomEvent(`videoElementDestroyed`, {
+          detail: event
+        }));
+        pushEvent(event);
+        updateNumVideos(-1);
+      }); // When the publisher stream has started playing media...
+
+      publisher.on('streamPlaying', event => {
+        console.log("publisher.on streamPlaying"); // if(document.getElementById("pwa-container-1").style.display != 'none') {
+        // 	document.getElementById("pwa-container-1").style.display = 'none';
+        // }
+        // pushEvent(event);
+      });
+      session.publish(publisher); // console.log('SESSION CREATE NOW ', session)
+    }).catch(error => {
+      console.warn('Error connecting to the session:', error.code, error.message);
+      enableBtn();
+    });
+    return false;
+  });
+}
+
+function leaveSession() {
+  session.disconnect();
+  enableBtn();
+}
+/* OPENVIDU METHODS */
+
+
+function enableBtn() {
+  document.getElementById("join-btn").disabled = false;
+  document.getElementById("join-btn").innerHTML = "Join!";
+}
+/* APPLICATION REST METHODS */
+
+
+function getToken(callback) {
+  sessionName = byId("sessionName").value;
+  httpRequest('POST', 'https://' + netConfig.NETWORKING_DOMAIN + ':' + netConfig.NETWORKING_PORT + '/api/get-token', {
+    sessionName: sessionName
+  }, 'Request of TOKEN gone WRONG:', res => {
+    token = res[0];
+    console.log('Excellent (TOKEN:' + token + ')');
+    callback(token);
+  });
+}
+
+function removeUser() {
+  httpRequest('POST', 'https://' + netConfig.NETWORKING_DOMAIN + ':' + netConfig.NETWORKING_PORT + '/api/remove-user', {
+    sessionName: sessionName,
+    token: token
+  }, 'User couldn\'t be removed from session', res => {
+    console.warn("You have been removed from session " + sessionName);
+  });
+}
+
+function closeSession() {
+  httpRequest('DELETE', 'https://' + netConfig.NETWORKING_DOMAIN + ':' + netConfig.NETWORKING_PORT + '/api/close-session', {
+    sessionName: sessionName
+  }, 'Session couldn\'t be closed', res => {
+    console.warn("Session " + sessionName + " has been closed");
+  });
+}
+
+function fetchInfo() {
+  httpRequest('POST', 'https://' + netConfig.NETWORKING_DOMAIN + ':' + netConfig.NETWORKING_PORT + '/api/fetch-info', {
+    sessionName: sessionName
+  }, 'Session couldn\'t be fetched', res => {
+    console.warn("Session fetched");
+    byId('textarea-http').innerText = JSON.stringify(res, null, "\t");
+  });
+}
+
+function fetchAll() {
+  httpRequest('GET', 'https://' + netConfig.NETWORKING_DOMAIN + ':' + netConfig.NETWORKING_PORT + '/api/fetch-all', {}, 'All session info couldn\'t be fetched', res => {
+    console.warn("All session fetched");
+    byId('textarea-http').innerText = JSON.stringify(res, null, "\t");
+  });
+}
+
+function forceDisconnect() {
+  httpRequest('DELETE', 'https://' + netConfig.NETWORKING_DOMAIN + ':' + netConfig.NETWORKING_PORT + '/api/force-disconnect', {
+    sessionName: sessionName,
+    connectionId: document.getElementById('forceValue').value
+  }, 'Connection couldn\'t be closed', res => {
+    console.warn("Connection has been closed");
+  });
+}
+
+function forceUnpublish() {
+  httpRequest('DELETE', 'https://' + netConfig.NETWORKING_DOMAIN + ':' + netConfig.NETWORKING_PORT + '/api/force-unpublish', {
+    sessionName: sessionName,
+    streamId: document.getElementById('forceValue').value
+  }, 'Stream couldn\'t be closed', res => {
+    console.warn("Stream has been closed");
+  });
+}
+
+function httpRequest(method, url, body, errorMsg, callback) {
+  byId('textarea-http').innerText = '';
+  var http = new XMLHttpRequest();
+  http.open(method, url, true);
+  http.setRequestHeader('Content-type', 'application/json');
+  http.addEventListener('readystatechange', processRequest, false);
+  http.send(JSON.stringify(body));
+
+  function processRequest() {
+    if (http.readyState == 4) {
+      if (http.status == 200) {
+        try {
+          callback(JSON.parse(http.responseText));
+        } catch (e) {
+          callback(e);
+        }
+      } else {
+        console.warn(errorMsg + ' (' + http.status + ')');
+        console.warn(http.responseText);
+        byId('textarea-http').innerText = errorMsg + ": HTTP " + http.status + " (" + http.responseText + ")";
+      }
+    }
+  }
+}
+
+function startRecording() {
+  // not fixed 
+  var outputMode = $('input[name=outputMode]:checked').val();
+  var hasAudio = $('#has-audio-checkbox').prop('checked');
+  var hasVideo = $('#has-video-checkbox').prop('checked');
+  httpRequest('POST', 'api/recording/start', {
+    session: session.sessionId,
+    outputMode: outputMode,
+    hasAudio: hasAudio,
+    hasVideo: hasVideo
+  }, 'Start recording WRONG', res => {
+    console.log(res);
+    document.getElementById('forceRecordingId').value = res.id;
+    checkBtnsRecordings();
+    byId('textarea-http').innerText = JSON.stringify(res, null, "\t");
+  });
+}
+
+function stopRecording() {
+  var forceRecordingId = document.getElementById('forceRecordingId').value;
+  httpRequest('POST', 'api/recording/stop', {
+    recording: forceRecordingId
+  }, 'Stop recording WRONG', res => {
+    console.log(res);
+    $('#textarea-http').text(JSON.stringify(res, null, "\t"));
+  });
+}
+
+function deleteRecording() {
+  var forceRecordingId = document.getElementById('forceRecordingId').value;
+  httpRequest('DELETE', 'api/recording/delete', {
+    recording: forceRecordingId
+  }, 'Delete recording WRONG', res => {
+    console.log("DELETE ok");
+    byId('textarea-http').innerText = "DELETE ok";
+  });
+}
+
+function getRecording() {
+  var forceRecordingId = document.getElementById('forceRecordingId').value;
+  httpRequest('GET', 'api/recording/get/' + forceRecordingId, {}, 'Get recording WRONG', res => {
+    console.log(res);
+    byId('textarea-http').innerText = JSON.stringify(res, null, "\t");
+  });
+}
+
+function listRecordings() {
+  httpRequest('GET', 'api/recording/list', {}, 'List recordings WRONG', res => {
+    console.log(res);
+    byId('textarea-http').innerText = JSON.stringify(res, null, "\t");
+  });
+}
+/* APPLICATION REST METHODS */
+
+/* APPLICATION BROWSER METHODS */
+
+
+var events = '';
+exports.events = events;
+
+window.onbeforeunload = function () {
+  if (session) {
+    removeUser();
+    leaveSession();
+  }
+};
+
+function updateNumVideos(i) {
+  numVideos += i;
+  var coll = document.getElementsByTagName('video');
+
+  for (var x = 0; x < coll.length; x++) {
+    coll.classList = '';
+  }
+
+  for (var x = 0; x < coll.length; x++) {
+    coll.classList = '';
+
+    switch (numVideos) {
+      case 1:
+        coll[x].classList.add('two');
+        break;
+
+      case 2:
+        coll[x].classList.add('two');
+        break;
+
+      case 3:
+        coll[x].classList.add('three');
+        break;
+
+      case 4:
+        coll[x].classList.add('four');
+        break;
+    }
+  }
+}
+
+function checkBtnsForce() {
+  if (document.getElementById("forceValue").value === "") {
+    document.getElementById('buttonForceUnpublish').disabled = true;
+    document.getElementById('buttonForceDisconnect').disabled = true;
+  } else {
+    document.getElementById('buttonForceUnpublish').disabled = false;
+    document.getElementById('buttonForceDisconnect').disabled = false;
+  }
+}
+
+function checkBtnsRecordings() {
+  if (document.getElementById("forceRecordingId").value === "") {
+    document.getElementById('buttonGetRecording').disaevents$bled = true;
+    document.getElementById('buttonStopRecording').disabled = true;
+    document.getElementById('buttonDeleteRecording').disabled = true;
+  } else {
+    document.getElementById('buttonGetRecording').disabled = false;
+    document.getElementById('buttonStopRecording').disabled = false;
+    document.getElementById('buttonDeleteRecording').disabled = false;
+  }
+}
+
+function pushEvent(event) {
+  exports.events = events = events + ((!events ? '' : '\n') + event.type);
+  byId('textarea-events').innerText = events; // console.info("EVENT: ", events)
+}
+
+function clearHttpTextarea() {
+  byId('textarea-http').innerText = '';
+}
+
+function clearEventsTextarea() {
+  byId('textarea-events').innerText = '';
+  exports.events = events = '';
+}
+
+},{}],75:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
-/* eslint-disable no-unused-vars */
 var App = {
   name: "Matrix Engine Manifest",
-  version: "1.0.9",
+  version: "1.1.1",
   events: true,
   sounds: true,
   logs: false,
   draw_interval: 10,
   antialias: false,
-  openglesShaderVersion: '3',
+  openglesShaderVersion: 1.3,
+  offScreenCanvas: false,
+  redrawInterval: 10,
   camera: {
     viewAngle: 45,
     nearViewpoint: 0.1,
@@ -38833,10 +42550,11 @@ var App = {
     SceneController: false,
     sceneControllerDragAmp: 0.1,
     sceneControllerDragAmp: 0.1,
+    sceneControllerEdgeCameraYawRate: 3,
+    sceneControllerWASDKeysAmp: 0.1,
     speedAmp: 0.5,
     yawRate: 1,
-    sceneControllerEdgeCameraYawRate: 3,
-    sceneControllerWASDKeysAmp: 0.1
+    yawRateOnEdge: 0.2
   },
   raycast: true,
   net: true,
@@ -38873,6 +42591,7 @@ var App = {
   updateBeforeDraw: [],
   audioSystem: {},
   // readOnly in manifest
+  printDevicesInfo: false,
   pwa: {
     addToHomePage: true
   },
@@ -38882,7 +42601,7 @@ var App = {
 var _default = App;
 exports.default = _default;
 
-},{}],68:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
