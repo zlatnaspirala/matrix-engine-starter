@@ -41,7 +41,7 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.05;//ori 0.02
+	App.camera.speedAmp = 0.15;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 2; //ori 3
 	App.camera.yawRate = 4; // 1
@@ -361,7 +361,7 @@ export var runHang3d = (world) => {
 				mass: 7,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(0, 24, 0),
-				shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2))
+				shape: new CANNON.Box(new CANNON.Vec3(1.75, 1.75, 2))
 			});
 			// This is custom param added.
 			collisionBox._name = 'collisionBox';

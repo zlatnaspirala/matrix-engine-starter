@@ -22830,9 +22830,7 @@ class customVertex {
       }
     } else if (this.root.custom_type == "testTrimesh") {
       if (this.root.custom_geometry) {
-        this.indexData = []; // console.log('[CUSTOM-GEO][from cannonjs trimesh]', this.root.custom_geometry)
-        // try to convert direct from CANNON geometry - can be reused for diff stuff.
-        // FOr trimesh is little dif cannonjs role
+        this.indexData = []; // FOr trimesh is little dif cannonjs role
 
         this.vertexPositionData = this.root.custom_geometry.vertices;
 
@@ -28402,14 +28400,13 @@ function defineworld(canvas, renderType) {
           // Little diff for this line 
           // custom_geometry is geometry prepared for CANNONJS
           customObject.custom_geometry = mesh_.custom_geometry;
-        } // Trimesh
-        else {
-            // same for now DEFAULT
-            customObject.slices = mesh_.slices;
-            customObject.loops = mesh_.loops;
-            customObject.inner_rad = mesh_.inner_rad;
-            customObject.outerRad = mesh_.outerRad;
-          }
+        } else {
+          // same for now DEFAULT
+          customObject.slices = mesh_.slices;
+          customObject.loops = mesh_.loops;
+          customObject.inner_rad = mesh_.inner_rad;
+          customObject.outerRad = mesh_.outerRad;
+        }
       } else {
         customObject.latitudeBands = 30;
         customObject.longitudeBands = 30;
@@ -40437,13 +40434,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.map2 = void 0;
 let map2 = {
   staticCubes: [{
-    name: "wall_gen8_23",
+    name: "wall_gen7_9",
     position: {
-      x: 33.6,
+      x: 1.4,
       y: 1,
-      z: 96.6
+      z: -6.8
     },
-    scale: [1, 1, 14],
+    scale: [2, 1, 1],
     rotation: {
       rotx: 0,
       roty: 0,
@@ -40598,7 +40595,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.05; //ori 0.02
+  App.camera.speedAmp = 0.15; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
   App.camera.yawRateOnEdge = 2; //ori 3
@@ -40935,7 +40932,7 @@ var runHang3d = world => {
         mass: 7,
         linearDamping: 0.01,
         position: new CANNON.Vec3(0, 24, 0),
-        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 2))
+        shape: new CANNON.Box(new CANNON.Vec3(1.75, 1.75, 2))
       }); // This is custom param added.
 
       collisionBox._name = 'collisionBox';
@@ -41682,7 +41679,7 @@ const meMapLoader = {
   load: function (map, physics) {
     this.physics = physics;
     map.staticCubes.forEach(item => {
-      matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
       App.scene[item.name].geometry.setScaleByX(item.scale[0]);
       App.scene[item.name].geometry.setScaleByY(item.scale[1]);
       App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
@@ -41690,7 +41687,7 @@ const meMapLoader = {
         mass: 0,
         linearDamping: 0.01,
         position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
-        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0], item.scale[2], item.scale[1]))
+        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 1.7, item.scale[2] * 1.7, item.scale[1] * 1.7))
       });
       physics.world.addBody(b);
       App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);

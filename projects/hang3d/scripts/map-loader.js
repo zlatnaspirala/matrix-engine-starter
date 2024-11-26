@@ -6,7 +6,7 @@ export const meMapLoader = {
 	load: function(map, physics) {
 		this.physics = physics;
 		map.staticCubes.forEach(item => {
-			matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+			matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
 			App.scene[item.name].geometry.setScaleByX(item.scale[0]);
 			App.scene[item.name].geometry.setScaleByY(item.scale[1]);
 			App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
@@ -14,7 +14,7 @@ export const meMapLoader = {
 				mass: 0,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
-				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0], item.scale[2], item.scale[1]))
+				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0]*1.7, item.scale[2]*1.7, item.scale[1]*1.7))
 			});
 			physics.world.addBody(b);
 			App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
