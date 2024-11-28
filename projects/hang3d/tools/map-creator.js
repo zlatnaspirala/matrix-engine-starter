@@ -1,9 +1,19 @@
+/**
+ * @license MIT Licence Nikola Lukic 
+ * maximumroulette.com
+ * @param {[width, height]}
+ * Standard Size of map
+ * @returns 
+ * Prepared visual DOM Map fileds.
+ */
+
 var byId = (id) => {
 	return document.getElementById(id)
 }
 
 var mapCreator = {
 	isMousePressed: false,
+	getLiteral: {},
 	clear: () => {
 		location.reload()
 	},
@@ -17,6 +27,14 @@ var mapCreator = {
 	},
 	copyToStorage: () => {
 		localStorage.setItem('map', JSON.stringify(mapCreator.map))
+	},
+	download: (name, type) => {
+		var a = document.getElementById("saveMap");
+		let __ = JSON.stringify(mapCreator.map)
+		__ = "export let map = " + __;
+		var file = new Blob([__], {type: type});
+		a.href = URL.createObjectURL(file);
+		a.download = name;
 	},
 	createMap: function(size) {
 		window.addEventListener('contextmenu', (event) => {
@@ -33,9 +51,11 @@ var mapCreator = {
 				var field = document.createElement('div');
 				field.style = `width:${innerWidth / size[0]}`;
 				field.classList.add('field')
-				field.id = 'field' + i;
+				field.id = 'field' + i + j;
 				field.setAttribute("data-z", j)
 				field.setAttribute("data-x", i)
+				field.setAttribute("data-levelY", parseFloat(byId('levelY').value))
+
 				const _add = (e) => {mapCreator.isMousePressed = true}
 				field.addEventListener("mousedown", _add)
 				field.addEventListener("mouseup", () => {mapCreator.isMousePressed = false})
@@ -54,6 +74,7 @@ var mapCreator = {
 
 					if(byId('tinput').selectedOptions[0].value == "ME Cube") {
 
+						console.log('e.target.id SAVE PROCEDURE ', e.target.id)
 						this.map.staticCubes.push(
 							{
 								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
@@ -64,6 +85,11 @@ var mapCreator = {
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
+								},
+								targetDom: {
+									id: e.target.id,
+									x: parseFloat(e.target.getAttribute('data-x')),
+									y: parseFloat(e.target.getAttribute('data-z')),
 								}
 							})
 					} else if(byId('tinput').selectedOptions[0].value == "Static Floor") {
@@ -77,6 +103,11 @@ var mapCreator = {
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
+								},
+								targetDom: {
+									id: e.target.id,
+									x: parseFloat(e.target.getAttribute('data-x')),
+									y: parseFloat(e.target.getAttribute('data-z')),
 								}
 							})
 					} else if(byId('tinput').selectedOptions[0].value == "NOPHYSICS Cube") {
@@ -90,6 +121,11 @@ var mapCreator = {
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
+								},
+								targetDom: {
+									id: e.target.id,
+									x: parseFloat(e.target.getAttribute('data-x')),
+									y: parseFloat(e.target.getAttribute('data-z')),
 								}
 							})
 					} else {
@@ -104,6 +140,11 @@ var mapCreator = {
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
+								},
+								targetDom: {
+									id: e.target.id,
+									x: parseFloat(e.target.getAttribute('data-x')),
+									y: parseFloat(e.target.getAttribute('data-z')),
 								}
 							})
 					}
@@ -129,13 +170,117 @@ var mapCreator = {
 	},
 	loadMap: (arg) => {
 		// make inverse - load map from file. wip
-		console.log('TEST LOAD MAP , ', arg)
+		console.log('MatrixEngine load map:', arg)
 		if(byId('mapForLoad').files.length == 1) {
-			console.log("File selected: ", byId('mapForLoad').files[0]);
 			var reader = new FileReader();
 			reader.readAsText(byId('mapForLoad').files[0], "UTF-8");
 			reader.onload = function(evt) {
-				console.log(evt.target.result)
+				let mapCode;
+				let getLiteral = evt.target.result.toString().split('=')[1];
+				getLiteral = getLiteral.replace(';', '')
+				if(getLiteral) {
+					mapCode = eval("(" + getLiteral + ")");
+				}
+
+				mapCode.staticCubes.forEach((item) => {
+					console.log("Field is" + item.targetDom.id)
+					console.log("Field pos x is" + item.targetDom.x)
+					console.log("Field pos y/z is" + item.targetDom.y)
+					console.log("Field tex source is" + item.texture.source)
+					var targetField = byId(item.targetDom.id)
+					// PROCEDURE INVERT
+					targetField.setAttribute('data-status', 'used')
+					targetField.style.background = `url(${'../' + item.texture.source[0]})`
+					var X = 4.2 * parseFloat(item.targetDom.x);
+					var Z = 4.2 * parseFloat(item.targetDom.y);
+					var Y = item.position.y;
+					mapCreator.map.staticCubes.push(
+						{
+							name: "wall_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
+							position: {x: X, y: Y, z: Z},
+							scale: item.scale,
+							rotation: item.rotation,
+							activeRotation: item.activeRotation,
+							texture: item.texture,
+							targetDom: {
+								id: item.targetDom.id,
+								x: parseFloat(item.targetDom.x),
+								y: parseFloat(item.targetDom.y),
+							}
+						})
+				})
+
+				mapCode.staticFloors.forEach((item) => {
+					var targetField = byId(item.targetDom.id)
+					// PROCEDURE INVERT
+					targetField.setAttribute('data-status', 'used')
+					targetField.style.background = `url(${'../' + item.texture.source[0]})`
+					var X = 4.2 * parseFloat(item.targetDom.x);
+					var Z = 4.2 * parseFloat(item.targetDom.y);
+					var Y = item.position.y;
+					mapCreator.map.staticFloors.push(
+						{
+							name: "sf_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
+							position: {x: X, y: Y, z: Z},
+							scale: item.scale,
+							rotation: item.rotation,
+							activeRotation: item.activeRotation,
+							texture: item.texture,
+							targetDom: {
+								id: item.targetDom.id,
+								x: parseFloat(item.targetDom.x),
+								y: parseFloat(item.targetDom.y),
+							}
+						})
+				})
+
+				mapCode.noPhysics.forEach((item) => {
+					var targetField = byId(item.targetDom.id)
+					// PROCEDURE INVERT
+					targetField.setAttribute('data-status', 'used')
+					targetField.style.background = `url(${'../' + item.texture.source[0]})`
+					var X = 4.2 * parseFloat(item.targetDom.x);
+					var Z = 4.2 * parseFloat(item.targetDom.y);
+					var Y = item.position.y;
+					mapCreator.map.noPhysics.push(
+						{
+							name: "sf_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
+							position: {x: X, y: Y, z: Z},
+							scale: item.scale,
+							rotation: item.rotation,
+							activeRotation: item.activeRotation,
+							texture: item.texture,
+							targetDom: {
+								id: item.targetDom.id,
+								x: parseFloat(item.targetDom.x),
+								y: parseFloat(item.targetDom.y),
+							}
+						})
+				})
+
+				mapCode.staticObjs.forEach((item) => {
+					var targetField = byId(item.targetDom.id)
+					// PROCEDURE INVERT
+					targetField.setAttribute('data-status', 'used')
+					targetField.style.background = `url(${'../' + item.texture.source[0]})`
+					var X = 4.2 * parseFloat(item.targetDom.x);
+					var Z = 4.2 * parseFloat(item.targetDom.y);
+					var Y = item.position.y;
+					mapCreator.map.staticObjs.push(
+						{
+							name: "sf_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
+							position: {x: X, y: Y, z: Z},
+							scale: item.scale,
+							rotation: item.rotation,
+							activeRotation: item.activeRotation,
+							texture: item.texture,
+							targetDom: {
+								id: item.targetDom.id,
+								x: parseFloat(item.targetDom.x),
+								y: parseFloat(item.targetDom.y),
+							}
+						})
+				})
 			}
 			reader.onerror = function(err) {console.log(err)}
 		}

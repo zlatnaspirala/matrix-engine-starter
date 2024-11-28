@@ -81,6 +81,9 @@
 					<option class="btnOpt">res/images/diffuse.png</option>
 					<option class="btnOpt">res/images/n-stone.png</option>
 					<option class="btnOpt">res/images/RustPaint.jpg</option>
+					<option class="btnOpt">res/images/center.png</option>
+					<option class="btnOpt">res/images/tablefeet.png</option>
+					<option class="btnOpt">res/images/nidzaborder21.png</option>
 				</select>
 			</div>
 
@@ -90,11 +93,14 @@
 				<div>
 					<p>Select & open map from file</p>
 					<input id="mapForLoad" type="file" onchange="mapCreator.loadMap(this)"/>
+					<p>----------------</p>
+					<button onclick="mapCreator.download('matrixEngineMap.js', 'text/javascript')">Prepare for export</button>
+					<p><a href="#" id="saveMap">Export map</a></p>
 				</div>
 			</div>
 		</div>
 
-		<a href="https://github.com/zlatnaspirala/matrix-engine-starter">SourceCode</a>
+		<a style="margin-top: 10px;" href="https://github.com/zlatnaspirala/matrix-engine-starter">OpenSource project: SourceCode</a>
 	</div>
 	<script src="map-creator.js"></script>
 </body>

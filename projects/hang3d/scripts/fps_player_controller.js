@@ -17,7 +17,7 @@ import {RCSAccount} from "./rocket-crafting-account";
 import {SYS} from "matrix-engine/lib/events";
 import {meMapLoader} from "./map-loader";
 import {map1} from "../maps/map1";
-import {map2} from "../maps/map2";
+import {map} from "../maps/map2";
 
 const useRCSAccount = true;
 const RCSAccountDomain = 'https://maximumroulette.com';
@@ -41,10 +41,10 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.15;//ori 0.02
+	App.camera.speedAmp = 0.004;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 2; //ori 3
-	App.camera.yawRate = 4; // 1
+	App.camera.yawRate = 1; // 1
 
 	App.myAccounts = {};
 
@@ -744,7 +744,7 @@ export var runHang3d = (world) => {
 	// App.scene['FLOOR3'].physics.enabled = true;
 
 	// MAP LOADER
-	meMapLoader.load(map2, physics);
+	meMapLoader.load(map, physics);
 	// Still not work...
 	// meMapLoader.load(meMapLoader.geminiMap(10 , 150, 1), physics)
 	window.meMapLoader = meMapLoader;

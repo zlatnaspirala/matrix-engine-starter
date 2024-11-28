@@ -12,7 +12,7 @@
 /* Scroll bars */
 /* width */
 ::-webkit-scrollbar {
-	width: 10px;
+	width: 5px;
 }
 
 /* Track */
@@ -24,7 +24,7 @@
 /* Handle */
 ::-webkit-scrollbar-thumb {
 	background: silver;
-	border-radius: 10px;
+	border-radius: 5px;
 }
 
 /* Handle on hover */
@@ -36,6 +36,7 @@ a:link {
   color: rgb(29, 185, 199);
   background-color: transparent;
   text-decoration: none;
+	font-size: smaller;
 }
 
 body {
@@ -94,6 +95,7 @@ body {
 }
 
 .btn {
+	cursor: pointer;
 	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%);
 	margin: 5px;
 	padding: 5px 45px;
