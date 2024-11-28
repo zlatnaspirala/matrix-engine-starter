@@ -94,6 +94,12 @@ body {
 	border-radius: 2px;
 }
 
+.fieldMid {
+	width: 100%;
+	border: solid #d1d1cb54 1px;
+	border-radius: 2px;
+}
+
 .btn {
 	cursor: pointer;
 	background-image: linear-gradient(to right, #1A2980 0%, #26D0CE 51%, #1A2980 100%);

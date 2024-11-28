@@ -14,7 +14,7 @@ export const meMapLoader = {
 				mass: 0,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
-				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0]*1.7, item.scale[2]*1.7, item.scale[1]*1.7))
+				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 1.7, item.scale[2] * 1.7, item.scale[1] * 1.7))
 			});
 			physics.world.addBody(b);
 			App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
@@ -26,11 +26,11 @@ export const meMapLoader = {
 			App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z)
 			App.scene[item.name].physics.currentBody = b;
 			App.scene[item.name].physics.enabled = true;
-			App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx,item.rotation.rotz,item.rotation.roty) 
+			App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx, item.rotation.rotz, item.rotation.roty)
 		});
 
 		// platform angle
-		if (map.staticFloors) map.staticFloors.forEach(item => {
+		if(map.staticFloors) map.staticFloors.forEach(item => {
 			matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
 			const b = new CANNON.Body({
 				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0], item.scale[2], 0.1)),
@@ -53,30 +53,30 @@ export const meMapLoader = {
 			App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z)
 			App.scene[item.name].physics.currentBody = b;
 			App.scene[item.name].physics.enabled = true;
-			App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx * Math.PI/180,0,0) 
+			App.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx * Math.PI / 180, 0, 0)
 			physics.world.addBody(b);
 		});
 		//
-		if (map.staticObjs) map.staticObjs.forEach(item => {
+		if(map.staticObjs) map.staticObjs.forEach(item => {
 			// matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
 			// App.scene[item.name].geometry.setScaleByX(item.scale[0]);
 			// App.scene[item.name].geometry.setScaleByY(item.scale[1]);
 			// App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
-				this.loadObjStatic({
-					name: item.name,
-					mass: 0,
-					path: item.path,
-					position: [item.position.x, item.position.y, item.position.z],
-					activeRotation: item.activeRotation,
-					rotation: item.rotation,
-					scale: item.scale,
-					textures: item.texture.source,
-					shadows: false,
-					gamePlayItem: 'STATIC_rock'
-				}, physics)
+			this.loadObjStatic({
+				name: item.name,
+				mass: 0,
+				path: item.path,
+				position: [item.position.x, item.position.y, item.position.z],
+				activeRotation: item.activeRotation,
+				rotation: item.rotation,
+				scale: item.scale,
+				textures: item.texture.source,
+				shadows: false,
+				gamePlayItem: 'STATIC_rock'
+			}, physics)
 		});
 
-		if (map.noPhysics && map.noPhysics.cubes.length > 0) map.noPhysics.cubes.forEach((item) => {
+		if(map.noPhysics && map.noPhysics.cubes.length > 0) map.noPhysics.cubes.forEach((item) => {
 			matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
 			App.scene[item.name].geometry.setScaleByX(item.scale[0]);
 			App.scene[item.name].geometry.setScaleByY(item.scale[1]);
@@ -94,7 +94,7 @@ export const meMapLoader = {
 		const map = {staticCubes: []};
 		for(let i = 0;i < numObjects;i++) {
 			const object = {
-				name : "wall" + i,
+				name: "wall" + i,
 				texture: {
 					source: ["res/images/diffuse.png"],
 					mix_operation: "multiply"
@@ -129,26 +129,25 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
 
-			// MUST BE FIXED ---------------------->>
-			App.scene[n.name].mesh.setScale(n.scale[0])
+			// MUST BE FIXED ---------------------->><<---
+			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
 			var b44 = new CANNON.Body({
 				mass: n.mass,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
-				shape: new CANNON.Box(new CANNON.Vec3(n.scale[0], n.scale[1], n.scale[2]))
+				shape: new CANNON.Box(new CANNON.Vec3(n.scale[0]*0.5, n.scale[1]*0.5, n.scale[2]*0.5))
 			});
 			b44._name = n.gamePlayItem;
 			physics.world.addBody(b44);
 			App.scene[n.name].physics.currentBody = b44;
 			App.scene[n.name].physics.enabled = true;
-			// console.log('????????????????????????????????')
 			App.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
 			App.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
 			App.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
-			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx,n.rotation.rotz,n.rotation.roty) 
-			if(n.shadows == true) setTimeout(() => {
+			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty)
+			if(n.shadows == true) {
 				App.scene[n.name].activateShadows('spot')
-			}, 100)
+			}
 		}
 		var arg = {};
 		arg[n.name] = n.path;

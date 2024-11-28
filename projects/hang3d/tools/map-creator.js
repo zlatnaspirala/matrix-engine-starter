@@ -45,12 +45,20 @@ var mapCreator = {
 		for(var j = 0;j < size[0];j++) {
 			var vertical = document.createElement('div');
 			vertical.style = `width:90%;height:${innerHeight / size[1]}px;`;
+			vertical.id = 'vertical'+j;
 			vertical.classList.add('vertical')
-			vertical.id = 'vertical';
 			for(var i = 0;i < size[1];i++) {
 				var field = document.createElement('div');
 				field.style = `width:${innerWidth / size[0]}`;
-				field.classList.add('field')
+				// field.classList.add('field')
+
+				if (j == size[0]/2 || (j > (size[0]+1)/2 && j < (size[0]+2)/2)) {
+					// fieldMid
+					field.classList.add('fieldMid')
+				} else {
+					field.classList.add('field')
+				}
+
 				field.id = 'field' + i + j;
 				field.setAttribute("data-z", j)
 				field.setAttribute("data-x", i)
