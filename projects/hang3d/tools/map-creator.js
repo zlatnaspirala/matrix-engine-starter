@@ -30,15 +30,13 @@ var mapCreator = {
 		mapCreator.lastItem.push(typeItem);
 	},
 	undo: () => {
-
 		var __ = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]];
-		 
 			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]][__.length-1];
 			console.log("Last item is : " + lastItem)
 			byId(lastItem.targetDom.id).removeAttribute('data-status')
 			byId(lastItem.targetDom.id).style.background = `unset`;
-
 			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].pop()
+			mapCreator.copyToStorage()
 	},
 	copyToStorage: () => {
 		localStorage.setItem('map', JSON.stringify(mapCreator.map))

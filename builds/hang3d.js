@@ -40441,81 +40441,32 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map = void 0;
 let map = {
-  staticCubes: [],
-  staticFloors: [],
-  staticObjs: [{
-    name: "mapobjs_5_6",
-    path: "res/3d-objects/env/rock1.obj",
+  staticCubes: [{
+    name: "wall_gen10_11",
     position: {
-      x: 21,
+      x: 42,
       y: 1,
-      z: 25.2
+      z: 46.2
     },
+    scale: [1, 1, 1],
     rotation: {
       rotx: 0,
       roty: 0,
       rotz: 0
     },
-    activeRotation: ["0", "0", "0"],
-    scale: [10, 4, 1],
+    activeRotation: [0, 0, 0],
     texture: {
-      source: ["res/images/n-stone.png"],
+      source: ["res/images/diffuse.png"],
       mix_operation: "multiply"
     },
     targetDom: {
-      id: "field56",
-      x: 5,
-      y: 6
-    }
-  }, {
-    name: "mapobjs_5_18",
-    path: "res/3d-objects/env/rock1.obj",
-    position: {
-      x: 21,
-      y: 1,
-      z: 75.6
-    },
-    rotation: {
-      rotx: 0,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: ["0", "0", "0"],
-    scale: [10, 4, 1],
-    texture: {
-      source: ["res/images/n-stone.png"],
-      mix_operation: "multiply"
-    },
-    targetDom: {
-      id: "field518",
-      x: 5,
-      y: 18
-    }
-  }, {
-    name: "mapobjs_5_16",
-    path: "res/3d-objects/env/rock1.obj",
-    position: {
-      x: 21,
-      y: 1,
-      z: 67.2
-    },
-    rotation: {
-      rotx: 0,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: ["0", "0", "0"],
-    scale: [10, 4, 1],
-    texture: {
-      source: ["res/images/n-stone.png"],
-      mix_operation: "multiply"
-    },
-    targetDom: {
-      id: "field516",
-      x: 5,
-      y: 16
+      id: "field1011",
+      x: 10,
+      y: 11
     }
   }],
+  staticFloors: [],
+  staticObjs: [],
   noPhysics: {
     cubes: []
   }
