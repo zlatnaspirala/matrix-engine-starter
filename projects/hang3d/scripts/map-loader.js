@@ -135,7 +135,7 @@ export const meMapLoader = {
 				mass: n.mass,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
-				shape: new CANNON.Box(new CANNON.Vec3(n.scale[0]*0.5, n.scale[1]*0.5, n.scale[2]*0.5))
+				shape: new CANNON.Box(new CANNON.Vec3(n.scale[0]*0.95, n.scale[1]*0.95, n.scale[2]*0.95))
 			});
 			b44._name = n.gamePlayItem;
 			physics.world.addBody(b44);

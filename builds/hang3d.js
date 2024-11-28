@@ -40441,34 +40441,586 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map = void 0;
 let map = {
-  staticCubes: [{
-    name: "wall_gen10_11",
-    position: {
-      x: 42,
-      y: 1,
-      z: 46.2
+  "staticCubes": [{
+    "name": "wall_gen47_0",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 0
     },
-    scale: [1, 1, 1],
-    rotation: {
-      rotx: 0,
-      roty: 0,
-      rotz: 0
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
     },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/diffuse.png"],
-      mix_operation: "multiply"
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
     },
-    targetDom: {
-      id: "field1011",
-      x: 10,
-      y: 11
+    "targetDom": {
+      "id": "field470",
+      "x": 47,
+      "y": 0
+    }
+  }, {
+    "name": "wall_gen47_49",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field4749",
+      "x": 47,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen47_31",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 130.2
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field4731",
+      "x": 47,
+      "y": 31
+    }
+  }, {
+    "name": "wall_gen47_20",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 84
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field4720",
+      "x": 47,
+      "y": 20
+    }
+  }, {
+    "name": "wall_gen47_11",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 46.2
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field4711",
+      "x": 47,
+      "y": 11
+    }
+  }, {
+    "name": "wall_gen47_5",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 21
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field475",
+      "x": 47,
+      "y": 5
+    }
+  }, {
+    "name": "wall_gen41_0",
+    "position": {
+      "x": 172.2,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field410",
+      "x": 41,
+      "y": 0
+    }
+  }, {
+    "name": "wall_gen47_37",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 155.4
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field4737",
+      "x": 47,
+      "y": 37
+    }
+  }, {
+    "name": "wall_gen47_44",
+    "position": {
+      "x": 197.4,
+      "y": 1,
+      "z": 184.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field4744",
+      "x": 47,
+      "y": 44
+    }
+  }, {
+    "name": "wall_gen41_49",
+    "position": {
+      "x": 172.2,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field4149",
+      "x": 41,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen36_49",
+    "position": {
+      "x": 151.2,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field3649",
+      "x": 36,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen31_49",
+    "position": {
+      "x": 130.2,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field3149",
+      "x": 31,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen25_49",
+    "position": {
+      "x": 105,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field2549",
+      "x": 25,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen19_49",
+    "position": {
+      "x": 79.8,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field1949",
+      "x": 19,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen12_49",
+    "position": {
+      "x": 50.4,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field1249",
+      "x": 12,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen7_49",
+    "position": {
+      "x": 29.4,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field749",
+      "x": 7,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen0_49",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 205.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field049",
+      "x": 0,
+      "y": 49
+    }
+  }, {
+    "name": "wall_gen0_43",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 180.6
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field043",
+      "x": 0,
+      "y": 43
+    }
+  }, {
+    "name": "wall_gen0_36",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 151.2
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field036",
+      "x": 0,
+      "y": 36
+    }
+  }, {
+    "name": "wall_gen0_29",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 121.8
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field029",
+      "x": 0,
+      "y": 29
+    }
+  }, {
+    "name": "wall_gen0_21",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 88.2
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field021",
+      "x": 0,
+      "y": 21
+    }
+  }, {
+    "name": "wall_gen0_13",
+    "position": {
+      "x": 0,
+      "y": 1,
+      "z": 54.6
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field013",
+      "x": 0,
+      "y": 13
+    }
+  }, {
+    "name": "wall_gen33_0",
+    "position": {
+      "x": 138.6,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field330",
+      "x": 33,
+      "y": 0
+    }
+  }, {
+    "name": "wall_gen25_0",
+    "position": {
+      "x": 105,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field250",
+      "x": 25,
+      "y": 0
+    }
+  }, {
+    "name": "wall_gen15_0",
+    "position": {
+      "x": 63,
+      "y": 1,
+      "z": 0
+    },
+    "scale": [15, 15, 15],
+    "rotation": {
+      "rotx": 0,
+      "roty": 0,
+      "rotz": 0
+    },
+    "activeRotation": [0, 0, 0],
+    "texture": {
+      "source": ["res/images/n-stone.png"],
+      "mix_operation": "multiply"
+    },
+    "targetDom": {
+      "id": "field150",
+      "x": 15,
+      "y": 0
     }
   }],
-  staticFloors: [],
-  staticObjs: [],
-  noPhysics: {
-    cubes: []
+  "staticFloors": [],
+  "staticObjs": [],
+  "noPhysics": {
+    "cubes": []
   }
 };
 exports.map = map;
@@ -40608,7 +41160,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.14; //ori 0.02
+  App.camera.speedAmp = 0.02; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
   App.camera.yawRateOnEdge = 2; //ori 3
@@ -41828,7 +42380,7 @@ const meMapLoader = {
         mass: n.mass,
         linearDamping: 0.01,
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
-        shape: new CANNON.Box(new CANNON.Vec3(n.scale[0] * 0.5, n.scale[1] * 0.5, n.scale[2] * 0.5))
+        shape: new CANNON.Box(new CANNON.Vec3(n.scale[0] * 0.95, n.scale[1] * 0.95, n.scale[2] * 0.95))
       });
       b44._name = n.gamePlayItem;
       physics.world.addBody(b44);
