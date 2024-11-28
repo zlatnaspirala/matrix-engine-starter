@@ -25,6 +25,21 @@ var mapCreator = {
 			cubes: []
 		}
 	},
+	lastItem: [],
+	lastUpdate: (typeItem) => {
+		mapCreator.lastItem.push(typeItem);
+	},
+	undo: () => {
+
+		var __ = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]];
+		 
+			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]][__.length-1];
+			console.log("Last item is : " + lastItem)
+			byId(lastItem.targetDom.id).removeAttribute('data-status')
+			byId(lastItem.targetDom.id).style.background = `unset`;
+
+			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].pop()
+	},
 	copyToStorage: () => {
 		localStorage.setItem('map', JSON.stringify(mapCreator.map))
 	},
@@ -81,7 +96,7 @@ var mapCreator = {
 					var Y = parseFloat(byId('levelY').value);
 
 					if(byId('tinput').selectedOptions[0].value == "ME Cube") {
-
+						this.lastUpdate('staticCubes')
 						console.log('e.target.id SAVE PROCEDURE ', e.target.id)
 						this.map.staticCubes.push(
 							{
@@ -101,6 +116,7 @@ var mapCreator = {
 								}
 							})
 					} else if(byId('tinput').selectedOptions[0].value == "Static Floor") {
+						this.lastUpdate('staticFloors')
 						this.map.staticFloors.push(
 							{
 								name: "sf_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
@@ -119,6 +135,7 @@ var mapCreator = {
 								}
 							})
 					} else if(byId('tinput').selectedOptions[0].value == "NOPHYSICS Cube") {
+						this.lastUpdate('noPhysics')
 						this.map.noPhysics.cubes.push(
 							{
 								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
@@ -137,6 +154,7 @@ var mapCreator = {
 								}
 							})
 					} else {
+						this.lastUpdate('staticObjs')
 						this.map.staticObjs.push(
 							{
 								name: "mapobjs_" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
