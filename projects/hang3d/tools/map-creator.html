@@ -45,9 +45,17 @@
 
 			<div>
 				<p>Scale:</p>
-				<div>X:<input class="btn" id="scaleX" type="number" value="1" min="1" max="100" /></div>
-				<div>Y:<input class="btn" id="scaleY" type="number" value="1" min="1" max="100" /></div>
-				<div>Z:<input class="btn" id="scaleZ" type="number" value="1" min="1" max="100" /></div>
+				<div>X:<input onchange="mapCreator.checkScale(this)" class="btn" id="scaleX" type="number" value="1" min="1" max="100" /></div>
+				<div>Y:<input onchange="mapCreator.checkScale(this)" class="btn" id="scaleY" type="number" value="1" min="1" max="100" /></div>
+				<div>Z:<input onchange="mapCreator.checkScale(this)" class="btn" id="scaleZ" type="number" value="1" min="1" max="100" /></div>
+			</div>
+
+			<div>
+				<p>Scale collider:</p>
+				<span style="font-size: x-small;">Same like visual scale  <input checked onchange="mapCreator.checkSameScale(this)" type="checkbox" id="sameScale"></span>
+				<div>X:<input class="btn" id="scaleColliderX" type="number" value="1" min="1" max="100" /></div>
+				<div>Y:<input class="btn" id="scaleColliderY" type="number" value="1" min="1" max="100" /></div>
+				<div>Z:<input class="btn" id="scaleColliderZ" type="number" value="1" min="1" max="100" /></div>
 			</div>
 
 			<div>

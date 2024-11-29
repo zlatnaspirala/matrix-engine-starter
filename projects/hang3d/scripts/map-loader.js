@@ -14,7 +14,7 @@ export const meMapLoader = {
 				mass: 0,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
-				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 1.7, item.scale[2] * 1.7, item.scale[1] * 1.7))
+				shape: new CANNON.Box(new CANNON.Vec3(item.scaleCollider[0], item.scaleCollider[2], item.scaleCollider[1]))
 			});
 			physics.world.addBody(b);
 			App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
@@ -33,7 +33,7 @@ export const meMapLoader = {
 		if(map.staticFloors) map.staticFloors.forEach(item => {
 			matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
 			const b = new CANNON.Body({
-				shape: new CANNON.Box(new CANNON.Vec3(item.scale[0], item.scale[2], 0.1)),
+				shape: new CANNON.Box(new CANNON.Vec3(item.scaleCollider[0], item.scaleCollider[2], 0.1)),
 				type: CANNON.Body.STATIC,
 				position: new CANNON.Vec3(0, 0, 0)
 			})
@@ -70,6 +70,7 @@ export const meMapLoader = {
 				activeRotation: item.activeRotation,
 				rotation: item.rotation,
 				scale: item.scale,
+				scaleCollider: item.scaleCollider,
 				textures: item.texture.source,
 				shadows: false,
 				gamePlayItem: 'STATIC_rock'
@@ -130,12 +131,13 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
 
 			// MUST BE FIXED ---------------------->><<---
+			console.log('>>>>>>>>>>>>>', n)
 			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
 			var b44 = new CANNON.Body({
 				mass: n.mass,
 				linearDamping: 0.01,
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
-				shape: new CANNON.Box(new CANNON.Vec3(n.scale[0]*0.95, n.scale[1]*0.95, n.scale[2]*0.95))
+				shape: new CANNON.Box(new CANNON.Vec3(n.scaleCollider[0], n.scaleCollider[2], n.scaleCollider[1]))
 			});
 			b44._name = n.gamePlayItem;
 			physics.world.addBody(b44);

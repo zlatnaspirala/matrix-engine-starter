@@ -40441,586 +40441,1411 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.map = void 0;
 let map = {
-  "staticCubes": [{
-    "name": "wall_gen47_0",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 0
+  staticCubes: [],
+  staticFloors: [],
+  staticObjs: [{
+    name: "mapobjs_6_8",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 33.6
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field470",
-      "x": 47,
-      "y": 0
+    targetDom: {
+      id: "field68",
+      x: 6,
+      y: 8
     }
   }, {
-    "name": "wall_gen47_49",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_6_10",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 42
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field4749",
-      "x": 47,
-      "y": 49
+    targetDom: {
+      id: "field610",
+      x: 6,
+      y: 10
     }
   }, {
-    "name": "wall_gen47_31",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 130.2
+    name: "mapobjs_6_12",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 50.4
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field4731",
-      "x": 47,
-      "y": 31
+    targetDom: {
+      id: "field612",
+      x: 6,
+      y: 12
     }
   }, {
-    "name": "wall_gen47_20",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 84
+    name: "mapobjs_6_14",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 58.8
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field4720",
-      "x": 47,
-      "y": 20
+    targetDom: {
+      id: "field614",
+      x: 6,
+      y: 14
     }
   }, {
-    "name": "wall_gen47_11",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 46.2
+    name: "mapobjs_6_16",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 67.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field4711",
-      "x": 47,
-      "y": 11
+    targetDom: {
+      id: "field616",
+      x: 6,
+      y: 16
     }
   }, {
-    "name": "wall_gen47_5",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 21
+    name: "mapobjs_6_18",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 75.6
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field475",
-      "x": 47,
-      "y": 5
+    targetDom: {
+      id: "field618",
+      x: 6,
+      y: 18
     }
   }, {
-    "name": "wall_gen41_0",
-    "position": {
-      "x": 172.2,
-      "y": 1,
-      "z": 0
+    name: "mapobjs_6_21",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 25.2,
+      y: 1,
+      z: 88.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field410",
-      "x": 41,
-      "y": 0
+    targetDom: {
+      id: "field621",
+      x: 6,
+      y: 21
     }
   }, {
-    "name": "wall_gen47_37",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 155.4
+    name: "mapobjs_8_21",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 33.6,
+      y: 1,
+      z: 88.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field4737",
-      "x": 47,
-      "y": 37
+    targetDom: {
+      id: "field821",
+      x: 8,
+      y: 21
     }
   }, {
-    "name": "wall_gen47_44",
-    "position": {
-      "x": 197.4,
-      "y": 1,
-      "z": 184.8
+    name: "mapobjs_7_19",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 29.4,
+      y: 1,
+      z: 79.8
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field4744",
-      "x": 47,
-      "y": 44
+    targetDom: {
+      id: "field719",
+      x: 7,
+      y: 19
     }
   }, {
-    "name": "wall_gen41_49",
-    "position": {
-      "x": 172.2,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_7_10",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 29.4,
+      y: 1,
+      z: 42
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field4149",
-      "x": 41,
-      "y": 49
+    targetDom: {
+      id: "field710",
+      x: 7,
+      y: 10
     }
   }, {
-    "name": "wall_gen36_49",
-    "position": {
-      "x": 151.2,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_9_23",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 37.8,
+      y: 1,
+      z: 96.6
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field3649",
-      "x": 36,
-      "y": 49
+    targetDom: {
+      id: "field923",
+      x: 9,
+      y: 23
     }
   }, {
-    "name": "wall_gen31_49",
-    "position": {
-      "x": 130.2,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_11_25",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 46.2,
+      y: 1,
+      z: 105
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field3149",
-      "x": 31,
-      "y": 49
+    targetDom: {
+      id: "field1125",
+      x: 11,
+      y: 25
     }
   }, {
-    "name": "wall_gen25_49",
-    "position": {
-      "x": 105,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_12_25",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 50.4,
+      y: 1,
+      z: 105
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field2549",
-      "x": 25,
-      "y": 49
+    targetDom: {
+      id: "field1225",
+      x: 12,
+      y: 25
     }
   }, {
-    "name": "wall_gen19_49",
-    "position": {
-      "x": 79.8,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_12_26",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 50.4,
+      y: 1,
+      z: 109.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field1949",
-      "x": 19,
-      "y": 49
+    targetDom: {
+      id: "field1226",
+      x: 12,
+      y: 26
     }
   }, {
-    "name": "wall_gen12_49",
-    "position": {
-      "x": 50.4,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_13_26",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 54.6,
+      y: 1,
+      z: 109.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field1249",
-      "x": 12,
-      "y": 49
+    targetDom: {
+      id: "field1326",
+      x: 13,
+      y: 26
     }
   }, {
-    "name": "wall_gen7_49",
-    "position": {
-      "x": 29.4,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_16_6",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 67.2,
+      y: 1,
+      z: 25.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field749",
-      "x": 7,
-      "y": 49
+    targetDom: {
+      id: "field166",
+      x: 16,
+      y: 6
     }
   }, {
-    "name": "wall_gen0_49",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 205.8
+    name: "mapobjs_19_6",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 79.8,
+      y: 1,
+      z: 25.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field049",
-      "x": 0,
-      "y": 49
+    targetDom: {
+      id: "field196",
+      x: 19,
+      y: 6
     }
   }, {
-    "name": "wall_gen0_43",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 180.6
+    name: "mapobjs_20_6",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 84,
+      y: 1,
+      z: 25.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field043",
-      "x": 0,
-      "y": 43
+    targetDom: {
+      id: "field206",
+      x: 20,
+      y: 6
     }
   }, {
-    "name": "wall_gen0_36",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 151.2
+    name: "mapobjs_23_8",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 96.6,
+      y: 1,
+      z: 33.6
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field036",
-      "x": 0,
-      "y": 36
+    targetDom: {
+      id: "field238",
+      x: 23,
+      y: 8
     }
   }, {
-    "name": "wall_gen0_29",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 121.8
+    name: "mapobjs_23_9",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 96.6,
+      y: 1,
+      z: 37.8
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field029",
-      "x": 0,
-      "y": 29
+    targetDom: {
+      id: "field239",
+      x: 23,
+      y: 9
     }
   }, {
-    "name": "wall_gen0_21",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 88.2
+    name: "mapobjs_24_9",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 100.8,
+      y: 1,
+      z: 37.8
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field021",
-      "x": 0,
-      "y": 21
+    targetDom: {
+      id: "field249",
+      x: 24,
+      y: 9
     }
   }, {
-    "name": "wall_gen0_13",
-    "position": {
-      "x": 0,
-      "y": 1,
-      "z": 54.6
+    name: "mapobjs_26_14",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 109.2,
+      y: 1,
+      z: 58.8
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field013",
-      "x": 0,
-      "y": 13
+    targetDom: {
+      id: "field2614",
+      x: 26,
+      y: 14
     }
   }, {
-    "name": "wall_gen33_0",
-    "position": {
-      "x": 138.6,
-      "y": 1,
-      "z": 0
+    name: "mapobjs_27_15",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 113.4,
+      y: 1,
+      z: 63
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field330",
-      "x": 33,
-      "y": 0
+    targetDom: {
+      id: "field2715",
+      x: 27,
+      y: 15
     }
   }, {
-    "name": "wall_gen25_0",
-    "position": {
-      "x": 105,
-      "y": 1,
-      "z": 0
+    name: "mapobjs_27_20",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 113.4,
+      y: 1,
+      z: 84
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field250",
-      "x": 25,
-      "y": 0
+    targetDom: {
+      id: "field2720",
+      x: 27,
+      y: 20
     }
   }, {
-    "name": "wall_gen15_0",
-    "position": {
-      "x": 63,
-      "y": 1,
-      "z": 0
+    name: "mapobjs_27_21",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 113.4,
+      y: 1,
+      z: 88.2
     },
-    "scale": [15, 15, 15],
-    "rotation": {
-      "rotx": 0,
-      "roty": 0,
-      "rotz": 0
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
     },
-    "activeRotation": [0, 0, 0],
-    "texture": {
-      "source": ["res/images/n-stone.png"],
-      "mix_operation": "multiply"
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
     },
-    "targetDom": {
-      "id": "field150",
-      "x": 15,
-      "y": 0
+    targetDom: {
+      id: "field2721",
+      x: 27,
+      y: 21
+    }
+  }, {
+    name: "mapobjs_27_22",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 113.4,
+      y: 1,
+      z: 92.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2722",
+      x: 27,
+      y: 22
+    }
+  }, {
+    name: "mapobjs_24_27",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 100.8,
+      y: 1,
+      z: 113.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2427",
+      x: 24,
+      y: 27
+    }
+  }, {
+    name: "mapobjs_24_28",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 100.8,
+      y: 1,
+      z: 117.6
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2428",
+      x: 24,
+      y: 28
+    }
+  }, {
+    name: "mapobjs_19_29",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 79.8,
+      y: 1,
+      z: 121.8
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1929",
+      x: 19,
+      y: 29
+    }
+  }, {
+    name: "mapobjs_18_29",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 75.6,
+      y: 1,
+      z: 121.8
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1829",
+      x: 18,
+      y: 29
+    }
+  }, {
+    name: "mapobjs_17_29",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 71.4,
+      y: 1,
+      z: 121.8
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1729",
+      x: 17,
+      y: 29
+    }
+  }, {
+    name: "mapobjs_15_27",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 63,
+      y: 1,
+      z: 113.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1527",
+      x: 15,
+      y: 27
+    }
+  }, {
+    name: "mapobjs_15_28",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 63,
+      y: 1,
+      z: 117.6
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1528",
+      x: 15,
+      y: 28
+    }
+  }, {
+    name: "mapobjs_24_11",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 100.8,
+      y: 1,
+      z: 46.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2411",
+      x: 24,
+      y: 11
+    }
+  }, {
+    name: "mapobjs_25_11",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 105,
+      y: 1,
+      z: 46.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2511",
+      x: 25,
+      y: 11
+    }
+  }, {
+    name: "mapobjs_25_12",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 105,
+      y: 1,
+      z: 50.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2512",
+      x: 25,
+      y: 12
+    }
+  }, {
+    name: "mapobjs_13_6",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 54.6,
+      y: 1,
+      z: 25.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field136",
+      x: 13,
+      y: 6
+    }
+  }, {
+    name: "mapobjs_15_6",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 63,
+      y: 1,
+      z: 25.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field156",
+      x: 15,
+      y: 6
+    }
+  }, {
+    name: "mapobjs_11_6",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 46.2,
+      y: 1,
+      z: 25.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field116",
+      x: 11,
+      y: 6
+    }
+  }, {
+    name: "mapobjs_10_6",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 42,
+      y: 1,
+      z: 25.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field106",
+      x: 10,
+      y: 6
+    }
+  }, {
+    name: "mapobjs_9_7",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 37.8,
+      y: 1,
+      z: 29.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [12, 12, 12],
+    scaleCollider: [5, 5, 5],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field97",
+      x: 9,
+      y: 7
+    }
+  }, {
+    name: "mapobjs_22_30",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 92.4,
+      y: 1,
+      z: 126
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2230",
+      x: 22,
+      y: 30
+    }
+  }, {
+    name: "mapobjs_25_17",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 105,
+      y: 1,
+      z: 71.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2517",
+      x: 25,
+      y: 17
+    }
+  }, {
+    name: "mapobjs_26_17",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 109.2,
+      y: 1,
+      z: 71.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2617",
+      x: 26,
+      y: 17
+    }
+  }, {
+    name: "mapobjs_22_20",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 92.4,
+      y: 1,
+      z: 84
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2220",
+      x: 22,
+      y: 20
+    }
+  }, {
+    name: "mapobjs_17_12",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 71.4,
+      y: 1,
+      z: 50.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1712",
+      x: 17,
+      y: 12
+    }
+  }, {
+    name: "mapobjs_18_12",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 75.6,
+      y: 1,
+      z: 50.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1812",
+      x: 18,
+      y: 12
+    }
+  }, {
+    name: "mapobjs_13_18",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 54.6,
+      y: 1,
+      z: 75.6
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1318",
+      x: 13,
+      y: 18
+    }
+  }, {
+    name: "mapobjs_17_22",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 71.4,
+      y: 1,
+      z: 92.4
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1722",
+      x: 17,
+      y: 22
+    }
+  }, {
+    name: "mapobjs_17_23",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 71.4,
+      y: 1,
+      z: 96.6
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1723",
+      x: 17,
+      y: 23
+    }
+  }, {
+    name: "mapobjs_15_14",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 63,
+      y: 1,
+      z: 58.8
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1514",
+      x: 15,
+      y: 14
+    }
+  }, {
+    name: "mapobjs_15_15",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 63,
+      y: 1,
+      z: 63
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1515",
+      x: 15,
+      y: 15
+    }
+  }, {
+    name: "mapobjs_20_15",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 84,
+      y: 1,
+      z: 63
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2015",
+      x: 20,
+      y: 15
+    }
+  }, {
+    name: "mapobjs_20_16",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 84,
+      y: 1,
+      z: 67.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2016",
+      x: 20,
+      y: 16
+    }
+  }, {
+    name: "mapobjs_21_16",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 88.2,
+      y: 1,
+      z: 67.2
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field2116",
+      x: 21,
+      y: 16
+    }
+  }, {
+    name: "mapobjs_15_20",
+    path: "res/3d-objects/env/rock1.obj",
+    position: {
+      x: 63,
+      y: 1,
+      z: 84
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: ["0", "0", "0"],
+    scale: [24, 24, 24],
+    scaleCollider: [10, 10, 10],
+    texture: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field1520",
+      x: 15,
+      y: 20
     }
   }],
-  "staticFloors": [],
-  "staticObjs": [],
-  "noPhysics": {
-    "cubes": []
+  noPhysics: {
+    cubes: []
   }
 };
 exports.map = map;
@@ -41160,10 +41985,10 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.02; //ori 0.02
+  App.camera.speedAmp = 0.01; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
-  App.camera.yawRateOnEdge = 2; //ori 3
+  App.camera.yawRateOnEdge = 1; //ori 3
 
   App.camera.yawRate = 1; // 1
 
@@ -42252,7 +43077,7 @@ const meMapLoader = {
         mass: 0,
         linearDamping: 0.01,
         position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
-        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 1.7, item.scale[2] * 1.7, item.scale[1] * 1.7))
+        shape: new CANNON.Box(new CANNON.Vec3(item.scaleCollider[0], item.scaleCollider[2], item.scaleCollider[1]))
       });
       physics.world.addBody(b);
       App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
@@ -42270,7 +43095,7 @@ const meMapLoader = {
     if (map.staticFloors) map.staticFloors.forEach(item => {
       matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
       const b = new CANNON.Body({
-        shape: new CANNON.Box(new CANNON.Vec3(item.scale[0], item.scale[2], 0.1)),
+        shape: new CANNON.Box(new CANNON.Vec3(item.scaleCollider[0], item.scaleCollider[2], 0.1)),
         type: CANNON.Body.STATIC,
         position: new CANNON.Vec3(0, 0, 0)
       });
@@ -42307,6 +43132,7 @@ const meMapLoader = {
         activeRotation: item.activeRotation,
         rotation: item.rotation,
         scale: item.scale,
+        scaleCollider: item.scaleCollider,
         textures: item.texture.source,
         shadows: false,
         gamePlayItem: 'STATIC_rock'
@@ -42371,6 +43197,7 @@ const meMapLoader = {
       App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
       App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2]; // MUST BE FIXED ---------------------->><<---
 
+      console.log('>>>>>>>>>>>>>', n);
       App.scene[n.name].mesh.setScale({
         x: n.scale[0],
         y: n.scale[1],
@@ -42380,7 +43207,7 @@ const meMapLoader = {
         mass: n.mass,
         linearDamping: 0.01,
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
-        shape: new CANNON.Box(new CANNON.Vec3(n.scale[0] * 0.95, n.scale[1] * 0.95, n.scale[2] * 0.95))
+        shape: new CANNON.Box(new CANNON.Vec3(n.scaleCollider[0], n.scaleCollider[2], n.scaleCollider[1]))
       });
       b44._name = n.gamePlayItem;
       physics.world.addBody(b44);

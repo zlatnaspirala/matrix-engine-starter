@@ -29,6 +29,24 @@ var mapCreator = {
 	lastUpdate: (typeItem) => {
 		mapCreator.lastItem.push(typeItem);
 	},
+	isSameScale: true,
+	checkSameScale: (e) => {
+		console.log("e.checked:" , e.checked)
+		mapCreator.isSameScale = e.checked;
+	},
+	checkScale: (e) => {
+		if (mapCreator.isSameScale == false) return;
+		if (e.id == "scaleX") {
+			byId('scaleColliderX').value = e.value;
+			console.log("CHECK X")
+		}else if (e.id == "scaleY") {
+			byId('scaleColliderY').value = e.value;
+			console.log("CHECK Y")
+		}else if (e.id == "scaleZ") {
+			byId('scaleColliderZ').value = e.value;
+			console.log("CHECK Z")
+		}
+	},
 	undo: () => {
 		var __ = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]];
 			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]][__.length-1];
@@ -101,6 +119,7 @@ var mapCreator = {
 								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 								position: {x: X, y: Y, z: Z},
 								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
+								scaleCollider: [parseFloat(byId('scaleColliderX').value), parseFloat(byId('scaleColliderY').value), parseFloat(byId('scaleColliderZ').value)],
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
 								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								texture: {
@@ -120,6 +139,7 @@ var mapCreator = {
 								name: "sf_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 								position: {x: X, y: Y, z: Z},
 								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
+								scaleCollider: [parseFloat(byId('scaleColliderX').value), parseFloat(byId('scaleColliderY').value), parseFloat(byId('scaleColliderZ').value)],
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
 								// activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								texture: {
@@ -139,6 +159,7 @@ var mapCreator = {
 								name: "wall_gen" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
 								position: {x: X, y: Y, z: Z},
 								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
+								scaleCollider: [parseFloat(byId('scaleColliderX').value), parseFloat(byId('scaleColliderY').value), parseFloat(byId('scaleColliderZ').value)],
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
 								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								texture: {
@@ -159,8 +180,9 @@ var mapCreator = {
 								path: byId('tinput').selectedOptions[0].value,
 								position: {x: X, y: Y, z: Z},
 								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
-								activeRotation: [byId('arotX').value, byId('arotY').value, byId('arotZ').value],
+								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
 								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
+								scaleCollider: [parseFloat(byId('scaleColliderX').value), parseFloat(byId('scaleColliderY').value), parseFloat(byId('scaleColliderZ').value)],
 								texture: {
 									source: [byId('texinput').selectedOptions[0].value],
 									mix_operation: "multiply"
@@ -258,7 +280,7 @@ var mapCreator = {
 						})
 				})
 
-				mapCode.noPhysics.forEach((item) => {
+				mapCode.noPhysics.cubes.forEach((item) => {
 					var targetField = byId(item.targetDom.id)
 					// PROCEDURE INVERT
 					targetField.setAttribute('data-status', 'used')
@@ -266,7 +288,7 @@ var mapCreator = {
 					var X = 4.2 * parseFloat(item.targetDom.x);
 					var Z = 4.2 * parseFloat(item.targetDom.y);
 					var Y = item.position.y;
-					mapCreator.map.noPhysics.push(
+					mapCreator.map.noPhysics.cubes.push(
 						{
 							name: "sf_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
 							position: {x: X, y: Y, z: Z},
