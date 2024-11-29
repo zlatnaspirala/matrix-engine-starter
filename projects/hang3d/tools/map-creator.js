@@ -86,6 +86,7 @@ var mapCreator = {
 			tinput: byId('tinput').selectedOptions[0].value,
 			texinput: byId('texinput').selectedOptions[0].value
 		})
+		localStorage.setItem('inputParamsSaved', JSON.stringify(mapCreator.inputParamsSaved))
 		mapCreator.getNamesOfInputParams()
 	},
 	onSelectSavedInputParams: (e) => {
@@ -112,14 +113,14 @@ var mapCreator = {
 	},
 	getNamesOfInputParams: () => {
 		byId('savedInputParams').innerHTML = ``;
+		var getFromStorage = JSON.parse(localStorage.getItem('inputParamsSaved'))
+		console.log('getFromStorage -', getFromStorage)
+		mapCreator.inputParamsSaved = getFromStorage;
 		mapCreator.inputParamsSaved.forEach((i) => {
 			var newOption = document.createElement('option')
 			newOption.classList.add("btnOpt")
 			newOption.innerText = i.name;
-			byId('savedInputParams').appendChild(
-				newOption
-			)
-
+			byId('savedInputParams').appendChild(newOption)
 		})
 	},
 	download: (name, type) => {
@@ -134,6 +135,8 @@ var mapCreator = {
 		window.addEventListener('contextmenu', (event) => {
 			event.preventDefault()
 		})
+		//
+		mapCreator.getNamesOfInputParams()
 
 		var root = document.getElementById('root');
 		for(var j = 0;j < size[0];j++) {

@@ -108,8 +108,11 @@
 				<select onchange="mapCreator.onSelectSavedInputParams(this)" class="selecteElement" id="savedInputParams">
 					<option class="btnOpt">DEFAULT</option>
 				</select>
-				<input id="newNameForSavedInputParams" type="text" value="test1"/>
-				<button class="btn" onclick="mapCreator.saveInputParams()">Save current input</button>
+				<input id="newNameForSavedInputParams" type="text" value="MyInputs1"/>
+				<button class="btn tooltip" onclick="mapCreator.saveInputParams()">
+					<span class="tooltiptext">Save all current inputs fields values. Saved intro localstorage.</span>
+					Save current input
+				</button>
 				<div>----Output----</div>
 				<button class="btn" onclick="mapCreator.clear()">Clear Map⚠️</button>
 				<button class="btn" onclick="mapCreator.undo()">UNDO</button>
