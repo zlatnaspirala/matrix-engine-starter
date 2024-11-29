@@ -131,7 +131,7 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
 
 			// MUST BE FIXED ---------------------->><<---
-			console.log('>>>>>>>>>>>>>', n)
+			// console.log('>>>>>>>>>>>>>', n)
 			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
 			var b44 = new CANNON.Body({
 				mass: n.mass,

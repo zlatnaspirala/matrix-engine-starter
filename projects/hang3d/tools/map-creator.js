@@ -290,7 +290,7 @@ var mapCreator = {
 					var Y = item.position.y;
 					mapCreator.map.noPhysics.cubes.push(
 						{
-							name: "sf_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
+							name: "noPCube_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
 							position: {x: X, y: Y, z: Z},
 							scale: item.scale,
 							rotation: item.rotation,
@@ -314,7 +314,7 @@ var mapCreator = {
 					var Y = item.position.y;
 					mapCreator.map.staticObjs.push(
 						{
-							name: "sf_gen" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
+							name: "mapobjs_" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
 							position: {x: X, y: Y, z: Z},
 							scale: item.scale,
 							rotation: item.rotation,
