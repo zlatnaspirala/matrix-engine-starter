@@ -25,8 +25,9 @@
 	<div id="root" class="root"></div>
 
 	<div id="paramsPopup">
-		<h2>MatrixEngine MapCreator</h2>
-		<div>v1.0.0</div>
+		<h2 style="margin-top: 1px;margin-bottom: 0;">MatrixEngine MapCreator</h2>
+		<div style="margin-top: 0px;margin-bottom: 10px;" >v1.1.0</div>
+
 		<div id="createMapDom" style="display: block;">
 			<p>Size of map:</p>
 			<div>X:<input class="btn" id="sizeX" type="number" value="50" min="10" max="1000" /></div>
@@ -38,6 +39,9 @@
 		</div>
 
 		<div id="mapDom" style="display: none;">
+
+			<div>-------inputs-------</div>
+
 			<div>
 				<p>Layout Y level:</p>
 				<div>Y:<input class="btn" id="levelY" type="number" value="1" min="0" max="1000" /></div>
@@ -100,6 +104,13 @@
 			</div>
 
 			<div>
+				<div>----Save current inputs----</div>
+				<select onchange="mapCreator.onSelectSavedInputParams(this)" class="selecteElement" id="savedInputParams">
+					<option class="btnOpt">DEFAULT</option>
+				</select>
+				<input id="newNameForSavedInputParams" type="text" value="test1"/>
+				<button class="btn" onclick="mapCreator.saveInputParams()">Save current input</button>
+				<div>----Output----</div>
 				<button class="btn" onclick="mapCreator.clear()">Clear Map⚠️</button>
 				<button class="btn" onclick="mapCreator.undo()">UNDO</button>
 				<button class="btn" onclick="mapCreator.copyMap()">Copy Map</button>

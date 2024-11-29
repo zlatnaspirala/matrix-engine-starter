@@ -26,44 +26,101 @@ var mapCreator = {
 		}
 	},
 	lastItem: [],
+	inputParamsSaved: [],
 	lastUpdate: (typeItem) => {
 		mapCreator.lastItem.push(typeItem);
 	},
 	isSameScale: true,
 	checkSameScale: (e) => {
-		console.log("e.checked:" , e.checked)
+		console.log("e.checked:", e.checked)
 		mapCreator.isSameScale = e.checked;
 	},
 	checkScale: (e) => {
-		if (mapCreator.isSameScale == false) return;
-		if (e.id == "scaleX") {
+		if(mapCreator.isSameScale == false) return;
+		if(e.id == "scaleX") {
 			byId('scaleColliderX').value = e.value;
 			console.log("CHECK X")
-		}else if (e.id == "scaleY") {
+		} else if(e.id == "scaleY") {
 			byId('scaleColliderY').value = e.value;
 			console.log("CHECK Y")
-		}else if (e.id == "scaleZ") {
+		} else if(e.id == "scaleZ") {
 			byId('scaleColliderZ').value = e.value;
 			console.log("CHECK Z")
 		}
 	},
 	undo: () => {
-		var __ = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]];
-		if (__.cubes) {
-			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].cubes[__.cubes.length-1];
-			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].cubes.pop()
+		var __ = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length - 1]];
+		if(__.cubes) {
+			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length - 1]].cubes[__.cubes.length - 1];
+			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length - 1]].cubes.pop()
 		} else {
-			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]][__.length-1];
-			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].pop()
+			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length - 1]][__.length - 1];
+			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length - 1]].pop()
 		}
-			console.log("Last item is : " + lastItem)
-			byId(lastItem.targetDom.id).removeAttribute('data-status')
-			byId(lastItem.targetDom.id).style.background = `unset`;
-			
-			mapCreator.copyToStorage()
+		console.log("Last item is : " + lastItem)
+		byId(lastItem.targetDom.id).removeAttribute('data-status')
+		byId(lastItem.targetDom.id).style.background = `unset`;
+
+		mapCreator.copyToStorage()
 	},
 	copyToStorage: () => {
 		localStorage.setItem('map', JSON.stringify(mapCreator.map))
+	},
+	saveInputParams: () => {
+		// save current inputs
+		mapCreator.inputParamsSaved.push({
+			name: byId('newNameForSavedInputParams').value,
+			levelY: byId('levelY').value,
+			scaleX: byId('scaleX').value,
+			scaleY: byId('scaleY').value,
+			scaleZ: byId('scaleZ').value,
+			scaleColliderX: byId('scaleColliderX').value,
+			scaleColliderY: byId('scaleColliderY').value,
+			scaleColliderZ: byId('scaleColliderZ').value,
+			rotX: byId('rotX').value,
+			rotY: byId('rotY').value,
+			rotZ: byId('rotZ').value,
+			arotX: byId('arotX').value,
+			arotY: byId('arotY').value,
+			arotZ: byId('arotZ').value,
+			tinput: byId('tinput').selectedOptions[0].value,
+			texinput: byId('texinput').selectedOptions[0].value
+		})
+		mapCreator.getNamesOfInputParams()
+	},
+	onSelectSavedInputParams: (e) => {
+		mapCreator.inputParamsSaved.forEach((item) => {
+			if(e.selectedOptions[0].value == item.name) {
+				console.log("SETUP FROM SAVED INPUT PARAMS", e.selectedOptions[0].value)
+				byId('levelY').value = item.levelY
+				byId('scaleX').value = item.scaleX
+				byId('scaleY').value = item.scaleY
+				byId('scaleZ').value = item.scaleZ
+				byId('scaleColliderX').value = item.scaleColliderX
+				byId('scaleColliderY').value = item.scaleColliderY
+				byId('scaleColliderZ').value = item.scaleColliderZ
+				byId('rotX').value = item.rotX
+				byId('rotY').value = item.rotY
+				byId('rotZ').value = item.rotZ
+				byId('arotX').value = item.arotX
+				byId('arotY').value = item.arotY
+				byId('arotZ').value = item.arotZ
+				byId('tinput').selectedOptions[0].value = item.tinput
+				byId('texinput').selectedOptions[0].value = item.texinput
+			}
+		})
+	},
+	getNamesOfInputParams: () => {
+		byId('savedInputParams').innerHTML = ``;
+		mapCreator.inputParamsSaved.forEach((i) => {
+			var newOption = document.createElement('option')
+			newOption.classList.add("btnOpt")
+			newOption.innerText = i.name;
+			byId('savedInputParams').appendChild(
+				newOption
+			)
+
+		})
 	},
 	download: (name, type) => {
 		var a = document.getElementById("saveMap");
@@ -82,14 +139,14 @@ var mapCreator = {
 		for(var j = 0;j < size[0];j++) {
 			var vertical = document.createElement('div');
 			vertical.style = `width:90%;height:${innerHeight / size[1]}px;`;
-			vertical.id = 'vertical'+j;
+			vertical.id = 'vertical' + j;
 			vertical.classList.add('vertical')
 			for(var i = 0;i < size[1];i++) {
 				var field = document.createElement('div');
 				field.style = `width:${innerWidth / size[0]}`;
 				// field.classList.add('field')
 
-				if (j == size[0]/2 || (j > (size[0]+1)/2 && j < (size[0]+2)/2)) {
+				if(j == size[0] / 2 || (j > (size[0] + 1) / 2 && j < (size[0] + 2) / 2)) {
 					// fieldMid
 					field.classList.add('fieldMid')
 				} else {
