@@ -49,11 +49,17 @@ var mapCreator = {
 	},
 	undo: () => {
 		var __ = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]];
+		if (__.cubes) {
+			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].cubes[__.cubes.length-1];
+			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].cubes.pop()
+		} else {
 			var lastItem = mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]][__.length-1];
+			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].pop()
+		}
 			console.log("Last item is : " + lastItem)
 			byId(lastItem.targetDom.id).removeAttribute('data-status')
 			byId(lastItem.targetDom.id).style.background = `unset`;
-			mapCreator.map[mapCreator.lastItem[mapCreator.lastItem.length-1]].pop()
+			
 			mapCreator.copyToStorage()
 	},
 	copyToStorage: () => {

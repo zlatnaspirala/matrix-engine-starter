@@ -41,7 +41,7 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.002;//ori 0.02
+	App.camera.speedAmp = 0.12;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 1; //ori 3
 	App.camera.yawRate = 1; // 1
@@ -744,9 +744,15 @@ export var runHang3d = (world) => {
 	// App.scene['FLOOR3'].physics.enabled = true;
 
 	// MAP LOADER
-	meMapLoader.load(map, physics);
-	// Still not work...
-	// meMapLoader.load(meMapLoader.geminiMap(10 , 150, 1), physics)
+
+	if (localStorage.getItem('map') != null) {
+		var t = localStorage.getItem('map');
+		t = JSON.parse(t)
+		meMapLoader.load(t, physics);
+	} else {
+		meMapLoader.load(map, physics);
+	}
+
 	window.meMapLoader = meMapLoader;
 
 	// Big wall
