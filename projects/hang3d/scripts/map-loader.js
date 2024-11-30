@@ -90,6 +90,24 @@ export const meMapLoader = {
 			App.scene[item.name].rotation.rotationSpeed.z = item.activeRotation[2];
 			App.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z)
 		});
+
+		if(map.staticObjsGroup) map.staticObjsGroup.forEach(item => {
+
+			this.loadObjStaticGroup({
+				name: item.name,
+				mass: 0,
+				path: item.path,
+				position: [item.position.x, item.position.y, item.position.z],
+				activeRotation: item.activeRotation,
+				rotation: item.rotation,
+				scale: item.scale,
+				scaleCollider: item.scaleCollider,
+				textures: item.texture.source,
+				shadows: false,
+				gamePlayItem: 'STATIC_rock'
+			}, physics)
+		});
+
 	},
 	geminiMap: function(numObjects, positionRange, scaleRange) {
 		const map = {staticCubes: []};
@@ -147,6 +165,86 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
 			App.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
 			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty)
+			if(n.shadows == true) {
+				App.scene[n.name].activateShadows('spot')
+			}
+		}
+		var arg = {};
+		arg[n.name] = n.path;
+		matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS)
+	},
+	loadObjStaticGroup(n, physics) {
+		function onLoadObjS(meshes) {
+			var tex = {source: n.textures, mix_operation: "multiply"}
+			for(let key in meshes) {
+				matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[key])
+				matrixEngine.matrixWorld.world.Add("obj", n.scale, n.name, tex, meshes[key]);
+			}
+			App.scene[n.name].position.x = n.position[0];
+			App.scene[n.name].position.y = n.position[1];
+			App.scene[n.name].position.z = n.position[2];
+			App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+
+			// MUST BE FIXED ---------------------->><
+			// console.log('>>>>>App.scene[n.name].>>>>>>>>', App.scene[n.name].mesh.groups)
+			var body = new CANNON.Body({
+				mass: 0,
+				position: new CANNON.Vec3(0, 0, 0)
+			});
+			App.scene[n.name].mesh.groups.forEach((group, indexGroup) => {
+				// We can add the same shape several times to position child shapes within the Compound.
+				console.log( '>>>>>GROUP>SUB VERTS>>>>>>>', group)
+				var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
+				group.groupVert.forEach((vert, index) => {
+					// console.log(index , '>>>>>GROUP>SUB VERTS>>>>>>>', vert)
+					if(index == 0) {
+						collectX0 = vert[0]
+						collectY0 = vert[1]
+						collectZ0 = vert[2]
+					}else if (index == 1) {
+						collectY1 = vert[1]
+					}else if (index == 2) {
+						collectZ2 = vert[2]
+					}	else if(index == 4){
+						 collectX4 = vert[0]
+					}
+					// index 0 vs 4 MAKE X SCALE NARUTE VERT VALUES
+				})
+
+				// X
+				// Probable cube one be always - other + 90%
+				// -.55 0.55 ~ 1.1
+				var calcX = Math.abs(collectX0) + Math.abs(collectX4)
+				var calcY = Math.abs(collectY0) + Math.abs(collectY1)
+				var calcZ = Math.abs(collectZ0) + Math.abs(collectZ2)
+				var shape = new CANNON.Box(new CANNON.Vec3(calcX,calcY,calcX));
+				// OFFSET 
+				// calc from center 0,0,0 probably
+				// calcX / 2 HALF to find center of cube then distance from 0,0,0 relative OBJ center...
+				//  -4 -2 
+			  var offsetX =  calcX/2
+				body.addShape(shape,  new CANNON.Vec3(0, 0, 0))
+			})
+
+			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
+			// var b44 = new CANNON.Body({
+			// 	mass: n.mass,
+			// 	linearDamping: 0.01,
+			// 	position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
+			// 	shape: new CANNON.Box(new CANNON.Vec3(n.scaleCollider[0], n.scaleCollider[2], n.scaleCollider[1]))
+			// });
+			// b44._name = n.gamePlayItem;
+			physics.world.addBody(body);
+			App.scene[n.name].physics.currentBody = body;
+			App.scene[n.name].physics.enabled = true;
+
+			App.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
+			App.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
+			App.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
+			// App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty)
+
 			if(n.shadows == true) {
 				App.scene[n.name].activateShadows('spot')
 			}

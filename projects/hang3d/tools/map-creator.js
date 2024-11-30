@@ -21,6 +21,7 @@ var mapCreator = {
 		staticCubes: [],
 		staticFloors: [],
 		staticObjs: [],
+		staticObjsGroup: [],
 		noPhysics: {
 			cubes: []
 		}
@@ -238,6 +239,30 @@ var mapCreator = {
 									y: parseFloat(e.target.getAttribute('data-z')),
 								}
 							})
+					} else if(byId('tinput').selectedOptions[0].value.toString().indexOf("Obj group") != -1) {
+						this.lastUpdate('staticObjsGroup')
+						// path
+						var p = byId('tinput').selectedOptions[0].value.toString().split(":")[1]
+						p = "res/3d-objects/env/" + p + ".obj";
+						this.map.staticObjsGroup.push(
+							{
+								name: "mapobjsgroup_" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
+								path: p,
+								position: {x: X, y: Y, z: Z},
+								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
+								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
+								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
+								scaleCollider: [parseFloat(byId('scaleColliderX').value), parseFloat(byId('scaleColliderY').value), parseFloat(byId('scaleColliderZ').value)],
+								texture: {
+									source: [byId('texinput').selectedOptions[0].value],
+									mix_operation: "multiply"
+								},
+								targetDom: {
+									id: e.target.id,
+									x: parseFloat(e.target.getAttribute('data-x')),
+									y: parseFloat(e.target.getAttribute('data-z')),
+								}
+							})
 					} else {
 						this.lastUpdate('staticObjs')
 						this.map.staticObjs.push(
@@ -381,6 +406,30 @@ var mapCreator = {
 					mapCreator.map.staticObjs.push(
 						{
 							name: "mapobjs_" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
+							position: {x: X, y: Y, z: Z},
+							scale: item.scale,
+							rotation: item.rotation,
+							activeRotation: item.activeRotation,
+							texture: item.texture,
+							targetDom: {
+								id: item.targetDom.id,
+								x: parseFloat(item.targetDom.x),
+								y: parseFloat(item.targetDom.y),
+							}
+						})
+				})
+
+				mapCode.staticObjsGroup.forEach((item) => {
+					var targetField = byId(item.targetDom.id)
+					// PROCEDURE INVERT
+					targetField.setAttribute('data-status', 'used')
+					targetField.style.background = `url(${'../' + item.texture.source[0]})`
+					var X = 4.2 * parseFloat(item.targetDom.x);
+					var Z = 4.2 * parseFloat(item.targetDom.y);
+					var Y = item.position.y;
+					mapCreator.map.staticObjsGroup.push(
+						{
+							name: "mapobjsgroup_" + parseFloat(item.targetDom.x) + "_" + parseFloat(item.targetDom.y),
 							position: {x: X, y: Y, z: Z},
 							scale: item.scale,
 							rotation: item.rotation,
