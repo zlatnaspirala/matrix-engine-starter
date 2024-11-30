@@ -90,7 +90,7 @@ var mapCreator = {
 		mapCreator.getNamesOfInputParams()
 	},
 	onSelectSavedInputParams: (e) => {
-		mapCreator.inputParamsSaved.forEach((item) => {
+		if(mapCreator.inputParamsSaved) mapCreator.inputParamsSaved.forEach((item) => {
 			if(e.selectedOptions[0].value == item.name) {
 				console.log("SETUP FROM SAVED INPUT PARAMS", e.selectedOptions[0].value)
 				byId('levelY').value = item.levelY
@@ -116,7 +116,7 @@ var mapCreator = {
 		var getFromStorage = JSON.parse(localStorage.getItem('inputParamsSaved'))
 		console.log('getFromStorage -', getFromStorage)
 		mapCreator.inputParamsSaved = getFromStorage;
-		mapCreator.inputParamsSaved.forEach((i) => {
+		if(mapCreator.inputParamsSaved) mapCreator.inputParamsSaved.forEach((i) => {
 			var newOption = document.createElement('option')
 			newOption.classList.add("btnOpt")
 			newOption.innerText = i.name;
