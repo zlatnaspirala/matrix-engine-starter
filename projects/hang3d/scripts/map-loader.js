@@ -228,7 +228,7 @@ export const meMapLoader = {
 				console.log('calcX pos ', calcXWorldPos)
 				console.log('calcY pos ', calcYWorldPox)
 				console.log('calcZ pos ', calcZWorldPos)
-				body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcYWorldPox, calcZWorldPos));
+				body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox ));
 			})
 
 			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
