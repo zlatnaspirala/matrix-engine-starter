@@ -41,10 +41,10 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.15;//ori 0.02
+	App.camera.speedAmp = 0.65;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
-	App.camera.yawRateOnEdge = 3; //ori 3
-	App.camera.yawRate = 3; // 1
+	App.camera.yawRateOnEdge = 5; //ori 3
+	App.camera.yawRate = 5; // 1
 
 	App.myAccounts = {};
 

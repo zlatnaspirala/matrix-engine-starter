@@ -219,7 +219,15 @@ export const meMapLoader = {
 				var calcZ = collectZ2 - collectZ0;
 				var calcZWorldPos = (collectZ2 + collectZ0) / 2;
 				calcZ = calcZ / 2;
-				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX),Math.abs(calcY), Math.abs(calcZ)));
+
+				console.log('calcX', calcX)
+				console.log('calcY', calcY)
+				console.log('calcZ', calcZ)
+				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX),Math.abs(calcZ),Math.abs(calcY)));
+
+				console.log('calcX pos ', calcXWorldPos)
+				console.log('calcY pos ', calcYWorldPox)
+				console.log('calcZ pos ', calcZWorldPos)
 				body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcYWorldPox, calcZWorldPos));
 			})
 

@@ -40467,7 +40467,7 @@ let map = {
     scale: [1, 1, 1],
     scaleCollider: [1, 1, 1],
     texture: {
-      source: ["res/images/diffuse.png"],
+      source: ["res/images/n-stone.png", "res/images/RustPaint.jpg"],
       mix_operation: "multiply"
     },
     targetDom: {
@@ -40617,12 +40617,12 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.15; //ori 0.02
+  App.camera.speedAmp = 0.65; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
-  App.camera.yawRateOnEdge = 3; //ori 3
+  App.camera.yawRateOnEdge = 5; //ori 3
 
-  App.camera.yawRate = 3; // 1
+  App.camera.yawRate = 5; // 1
 
   App.myAccounts = {}; // Keyboard event
 
@@ -41930,7 +41930,13 @@ const meMapLoader = {
         var calcZ = collectZ2 - collectZ0;
         var calcZWorldPos = (collectZ2 + collectZ0) / 2;
         calcZ = calcZ / 2;
-        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcY), Math.abs(calcZ)));
+        console.log('calcX', calcX);
+        console.log('calcY', calcY);
+        console.log('calcZ', calcZ);
+        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
+        console.log('calcX pos ', calcXWorldPos);
+        console.log('calcY pos ', calcYWorldPox);
+        console.log('calcZ pos ', calcZWorldPos);
         body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcYWorldPox, calcZWorldPos));
       });
       App.scene[n.name].mesh.setScale({
