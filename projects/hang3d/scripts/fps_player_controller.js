@@ -680,12 +680,12 @@ export var runHang3d = (world) => {
 	physics.world.addBody(groundBody);
 	// Matrix engine visual scene object
 	world.Add("squareTex", 1, "FLOOR_STATIC", tex);
-	App.scene.FLOOR_STATIC.geometry.setScaleByX(200);
-	App.scene.FLOOR_STATIC.geometry.setScaleByY(200);
+	App.scene.FLOOR_STATIC.geometry.setScaleByX(500);
+	App.scene.FLOOR_STATIC.geometry.setScaleByY(500);
 	App.scene.FLOOR_STATIC.position.SetY(-2);
 	App.scene.FLOOR_STATIC.position.SetZ(-15);
 	App.scene.FLOOR_STATIC.rotation.rotx = 90;
-	App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(20);
+	App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(40);
 	// Target x-ray AIM
 	// See through the objects.
 	// In webGL context it is object how was drawn before others.
