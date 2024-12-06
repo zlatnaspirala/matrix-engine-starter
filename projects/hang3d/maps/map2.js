@@ -11,7 +11,7 @@ export let map = {
       activeRotation: [0, 0, 0],
       scale: [1, 1, 1],
       scaleCollider: [1, 1, 1],
-      texture: {source: ["res/images/n-stone.png", "res/images/RustPaint.jpg"], mix_operation: "multiply"},
+      texture: {source: ["res/images/map-1.png"], mix_operation: "multiply"},
       targetDom: {id: "field12", x: 1, y: 2},
     },
   ],

@@ -1,6 +1,6 @@
 import * as matrixEngine from "matrix-engine";
 import * as CANNON from 'cannon';
-
+// @version 1.0.0
 export const meMapLoader = {
 	physics: {},
 	load: function(map, physics) {
@@ -109,31 +109,6 @@ export const meMapLoader = {
 		});
 
 	},
-	geminiMap: function(numObjects, positionRange, scaleRange) {
-		const map = {staticCubes: []};
-		for(let i = 0;i < numObjects;i++) {
-			const object = {
-				name: "wall" + i,
-				texture: {
-					source: ["res/images/diffuse.png"],
-					mix_operation: "multiply"
-				},
-				position: {
-					x: Math.random() * positionRange * 2 - positionRange,
-					y: 1,
-					// y: Math.random() * positionRange * 2 - positionRange,
-					z: Math.random() * positionRange * 2 - positionRange
-				},
-				scale: [
-					Math.random() * scaleRange + 1,
-					Math.random() * scaleRange + 1,
-					Math.random() * scaleRange + 1
-				]
-			};
-			map.staticCubes.push(object);
-		}
-		return map;
-	},
 	loadObjStatic(n, physics) {
 		function onLoadObjS(meshes) {
 			var tex = {source: n.textures, mix_operation: "multiply"}
@@ -210,6 +185,7 @@ export const meMapLoader = {
 						collectX4 = parseFloat(vert[0])
 					}
 				})
+				// / 2 because elementar cube is -1 1 it is 2 in sum
 				var calcX = collectX4 - collectX0;
 				var calcXWorldPos = (collectX4 + collectX0) / 2;
 				calcX = calcX / 2;
@@ -219,16 +195,28 @@ export const meMapLoader = {
 				var calcZ = collectZ2 - collectZ0;
 				var calcZWorldPos = (collectZ2 + collectZ0) / 2;
 				calcZ = calcZ / 2;
+				// console.log('calcX', calcX)// console.log('calcY', calcY)// console.log('calcZ', calcZ)
+				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
+				// console.log('calcX pos ', calcXWorldPos)
+				// console.log('calcY pos ', calcYWorldPox)
+				// console.log('calcZ pos ', calcZWorldPos)
+				console.log('G NAME ', group.groupName.toString())
+				if(group.groupName.toString().indexOf('.RotX.') != -1) {
+					var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""))
+					var rotLocal = new CANNON.Quaternion(0, 0, 0, 1)
+					console.log('getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180)
+					rotLocal.setFromEuler((getValueX * Math.PI / 180), 0, 0)
+					// body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
+					body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox),
+						rotLocal
+					);
 
-				console.log('calcX', calcX)
-				console.log('calcY', calcY)
-				console.log('calcZ', calcZ)
-				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX),Math.abs(calcZ),Math.abs(calcY)));
-
-				console.log('calcX pos ', calcXWorldPos)
-				console.log('calcY pos ', calcYWorldPox)
-				console.log('calcZ pos ', calcZWorldPos)
-				body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox ));
+					console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE', 
+						body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices
+					)
+				} else {
+					body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
+				}
 			})
 
 			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
@@ -238,7 +226,17 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
 			App.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
 			App.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
+			// This is general rot if map loaded then whole map usualy 0 0 0 
 			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty)
+
+			// if(group.groupName.toString().indexOf('.RotX.') != -1) {
+			// 	//App.scene[n.name].physics.currentBody.
+			// 	// App.scene.mapobjsgroup_1_2.physics.currentBody.shapes[24].convexPolyhedronRepresentation.vertices
+
+				
+
+			// }
+
 			if(n.shadows == true) {
 				App.scene[n.name].activateShadows('spot')
 			}
@@ -319,7 +317,7 @@ export const meMapLoader = {
 				var calcZWorldPos = (collectZ2 + collectZ0) / 2;
 				calcZ = calcZ / 2;
 				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX),
-				 Math.abs(calcY * App.scene[n.name].instancedDraws.numberOfInstance * 3.5), Math.abs(calcZ)));
+					Math.abs(calcY * App.scene[n.name].instancedDraws.numberOfInstance * 3.5), Math.abs(calcZ)));
 				body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcYWorldPox *
 					App.scene[n.name].instancedDraws.numberOfInstance / 2, calcZWorldPos))
 			})

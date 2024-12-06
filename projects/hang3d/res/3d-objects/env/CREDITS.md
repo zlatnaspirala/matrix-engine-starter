@@ -13,3 +13,6 @@ https://www.freepik.com/free-photo/dirty-metal-texture_1025232.htm#fromView=sear
 
 Designed by Freepik
 www.freepik.com
+
+
+Outher stuff in this folder is absolute free - my work in blender ;)

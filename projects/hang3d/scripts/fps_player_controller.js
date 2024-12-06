@@ -360,7 +360,7 @@ export var runHang3d = (world) => {
 			var collisionBox = new CANNON.Body({
 				mass: 7,
 				linearDamping: 0.01,
-				position: new CANNON.Vec3(0, 24, 0),
+				position: new CANNON.Vec3(-50, 24, 0),
 				shape: new CANNON.Box(new CANNON.Vec3(1.75, 1.75, 2))
 			});
 			// This is custom param added.
@@ -647,7 +647,7 @@ export var runHang3d = (world) => {
 	// });
 	// Add ground for physics bodies.
 	var tex = {
-		source: ["res/images/diffuse.png"],
+		source: ["res/images/old-tex/floor.gif"],
 		mix_operation: "multiply",
 		params: {
 			TEXTURE_MAG_FILTER: world.GL.gl.NEAREST,
