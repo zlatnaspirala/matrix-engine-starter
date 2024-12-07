@@ -156,6 +156,39 @@ Implemented skeletal system ~ 20mb data
 
 https://github.com/zlatnaspirala/matrix-engine
 
+
+
+### About BVH animator
+
+You can change manual content intro bvh file:
+
+
+Shema for position `XZY`
+```bvh
+ROOT Bone
+{
+	OFFSET 0.000000 0.000000 0.000000
+	CHANNELS 6 Xposition Zposition Yposition Xrotation Yrotation Zrotation
+	End Site
+	{
+		OFFSET 0.000000 0.000000 1.000000
+	}
+}
+```
+Shema for position `XYZ`
+```js
+ROOT Bone
+{
+	OFFSET 0.000000 0.000000 0.000000
+	CHANNELS 6 Xposition Yposition Zposition Xrotation Yrotation Zrotation
+	End Site
+	{
+		OFFSET 0.000000 0.000000 1.000000
+	}
+}
+```
+
+
 ### Credits
 
 - https://www.wildtextures.com

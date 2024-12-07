@@ -18,6 +18,7 @@ import {SYS} from "matrix-engine/lib/events";
 import {meMapLoader} from "./map-loader";
 import {map1} from "../maps/map1";
 import {map} from "../maps/map2";
+import {loadDoorsBVH} from "./env";
 
 const useRCSAccount = true;
 const RCSAccountDomain = 'https://maximumroulette.com';
@@ -754,6 +755,8 @@ export var runHang3d = (world) => {
 	}
 
 	window.meMapLoader = meMapLoader;
+
+	loadDoorsBVH(world)
 
 	// Big wall
 	// world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);

@@ -40791,7 +40791,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/fps_player_controller":47,"matrix-engine":8}],44:[function(require,module,exports){
+},{"./scripts/fps_player_controller":48,"matrix-engine":8}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40974,6 +40974,55 @@ exports.ROCK_RANK = ROCK_RANK;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.loadDoorsBVH = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+const loadDoorsBVH = world => {
+  const options = {
+    world: world,
+    // [Required]
+    autoPlay: true,
+    // [Optimal]
+    showOnLoad: false,
+    // [Optimal] if autoPLay is true then showOnLoad is inactive.
+    type: 'ANIMATION',
+    // [Optimal] 'ANIMATION' | "TPOSE'
+    loop: 'playInverse',
+    // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
+    globalOffset: [-100, 2, 5],
+    // [Optimal]
+    skeletalBoneScale: 1,
+    // [Optimal]
+
+    /*skeletalBlend: {                // [Optimal] remove arg for no blend
+      paramDest: 4,
+      paramSrc: 4
+    },*/
+    boneTex: {
+      source: ["res/images/n-stone.png"],
+      mix_operation: "multiply"
+    },
+    drawTypeBone: "cubeLightTex" // pyramid | triangle | cube | square | squareTex | cubeLightTex | sphereLightTex
+
+  };
+  const filePath = "res/3d-objects/env/door-mesh.bvh";
+  var myFirstBvhAnimation = new matrixEngine.MEBvhAnimation(filePath, options);
+  window.myFirstBvhAnimation = myFirstBvhAnimation;
+};
+
+exports.loadDoorsBVH = loadDoorsBVH;
+
+},{"matrix-engine":8}],48:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.runHang3d = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
@@ -40991,6 +41040,8 @@ var _mapLoader = require("./map-loader");
 var _map = require("../maps/map1");
 
 var _map2 = require("../maps/map2");
+
+var _env = require("./env");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -41755,7 +41806,8 @@ var runHang3d = world => {
     _mapLoader.meMapLoader.load(_map2.map, physics);
   }
 
-  window.meMapLoader = _mapLoader.meMapLoader; // Big wall
+  window.meMapLoader = _mapLoader.meMapLoader;
+  (0, _env.loadDoorsBVH)(world); // Big wall
   // world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
   // var b5 = new CANNON.Body({
   // 	mass: 0,
@@ -42097,7 +42149,7 @@ const createNetworkPlayerCharacter = objName => {
   }), onLoadObj);
 };
 
-},{"../maps/map1":44,"../maps/map2":45,"./dom":46,"./map-loader":48,"./rocket-crafting-account":49,"cannon":5,"matrix-engine":8,"matrix-engine/lib/events":10}],48:[function(require,module,exports){
+},{"../maps/map1":44,"../maps/map2":45,"./dom":46,"./env":47,"./map-loader":49,"./rocket-crafting-account":50,"cannon":5,"matrix-engine":8,"matrix-engine/lib/events":10}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42469,7 +42521,7 @@ const meMapLoader = {
 };
 exports.meMapLoader = meMapLoader;
 
-},{"cannon":5,"matrix-engine":8}],49:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":8}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
