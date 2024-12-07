@@ -756,7 +756,9 @@ export var runHang3d = (world) => {
 
 	window.meMapLoader = meMapLoader;
 
-	loadDoorsBVH(world)
+	//
+	App.myCustomEnvItems = {};
+	App.myCustomEnvItems['door1'] = loadDoorsBVH(world)
 
 	// Big wall
 	// world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);

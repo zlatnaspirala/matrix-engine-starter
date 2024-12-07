@@ -19932,6 +19932,7 @@ class MEBvhAnimation {
 
   playAnimation() {
     if (this.animationTimer == null) {
+      // Must be update before draw not timer any more - optimisation <<
       this.animationTimer = setInterval(() => {
         for (var x = 0; x < this.tPosition.length; x++) {
           var b = this.options.boneNameBasePrefix + this.skeletalKeys[x]; // catch if not exist possible!
@@ -19957,8 +19958,13 @@ class MEBvhAnimation {
           }
         }
 
-        if (this.options.loop == 'playInverse') {
+        if (this.options.loop == 'playInverse' || this.options.loop == 'playInverseAndStop') {
           this.actualFrame = this.loopInverse.UPDATE();
+
+          if (this.actualFrame <= 0 && this.options.loop == 'playInverseAndStop') {
+            this.stopAnimation();
+            return;
+          }
         } else {
           this.actualFrame++;
         }
@@ -41015,20 +41021,20 @@ const loadDoorsBVH = world => {
     // [Required]
     autoPlay: false,
     // [Optimal]
-    showOnLoad: false,
+    showOnLoad: true,
     // [Optimal] if autoPLay is true then showOnLoad is inactive.
     type: 'ANIMATION',
     // [Optimal] 'ANIMATION' | "TPOSE'
-    loop: 'playInverse',
+    loop: 'playInverseAndStop',
     // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
     globalOffset: [-100, 2, 5],
     // [Optimal]
     skeletalBoneScale: 1,
     // [Optimal]
 
-    /*skeletalBlend: {                // [Optimal] remove arg for no blend
-      paramDest: 4,
-      paramSrc: 4
+    /*skeletalBlend: {              // [Optimal] remove arg for no blend
+    	paramDest: 4,
+    	paramSrc: 4
     },*/
     boneTex: {
       source: ["res/images/n-stone.png"],
@@ -41038,8 +41044,22 @@ const loadDoorsBVH = world => {
 
   };
   const filePath = "res/3d-objects/env/door-mesh.bvh";
-  var myFirstBvhAnimation = new matrixEngine.MEBvhAnimation(filePath, options);
-  window.myFirstBvhAnimation = myFirstBvhAnimation;
+  var door1 = new matrixEngine.MEBvhAnimation(filePath, options);
+  window.door1 = door1;
+
+  door1['openDoor'] = () => {
+    // playInverseAndStop
+    App.myCustomEnvItems['door1'].options.loop = "stopOnEnd";
+    App.myCustomEnvItems['door1'].playAnimation();
+  };
+
+  door1['closeDoor'] = () => {
+    // playInverseAndStop
+    App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop";
+    App.myCustomEnvItems['door1'].playAnimation();
+  };
+
+  return door1;
 };
 
 exports.loadDoorsBVH = loadDoorsBVH;
@@ -41833,8 +41853,10 @@ var runHang3d = world => {
     _mapLoader.meMapLoader.load(_map2.map, physics);
   }
 
-  window.meMapLoader = _mapLoader.meMapLoader;
-  (0, _env.loadDoorsBVH)(world); // Big wall
+  window.meMapLoader = _mapLoader.meMapLoader; //
+
+  App.myCustomEnvItems = {};
+  App.myCustomEnvItems['door1'] = (0, _env.loadDoorsBVH)(world); // Big wall
   // world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
   // var b5 = new CANNON.Body({
   // 	mass: 0,
