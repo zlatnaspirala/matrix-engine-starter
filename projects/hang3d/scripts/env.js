@@ -5,7 +5,7 @@ export const loadDoorsBVH = (world) => {
 
 	const options = {
     world: world,                   // [Required]
-    autoPlay: true,                 // [Optimal]
+    autoPlay: false,                 // [Optimal]
     showOnLoad: false,              // [Optimal] if autoPLay is true then showOnLoad is inactive.
     type: 'ANIMATION',              // [Optimal] 'ANIMATION' | "TPOSE'
     loop: 'playInverse',            // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
