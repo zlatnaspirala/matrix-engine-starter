@@ -19818,11 +19818,22 @@ class MEBvhAnimation {
       }
     });
     return onlyMine;
-  } // cleanNames = (name) => {
-  //   const arrondissements = ['mixamorig'];
-  //   return arrondissements.reduce((acc, cur) => acc.replace(cur, ''), name);
-  // };
+  }
 
+  getInfoAboutJoints = () => {
+    let allNames = [];
+    let allEndBones = [];
+
+    for (var k in this.anim.joints) {
+      allNames.push(this.anim.joints[k].name);
+      if (this.anim.joints[k].name.indexOf('_end') != -1) allEndBones.push(this.anim.joints[k].name);
+    }
+
+    return {
+      names: allNames,
+      allEndBones: allEndBones
+    };
+  };
 
   async constructSkeletal(options) {
     this.skeletalKeys = this.skeletalKeys.map(item => item.replace('mixamorig:', ''));
@@ -40985,7 +40996,7 @@ let map = {
     path: "res/3d-objects/env/door-mesh.obj",
     position: {
       x: -90,
-      y: 1,
+      y: 0,
       z: 5
     },
     rotation: {
@@ -41123,7 +41134,7 @@ const loadDoorsBVH = world => {
     	paramSrc: 4
     },*/
     boneTex: {
-      source: ["res/images/RustPaint.jpg"],
+      source: ["res/images/old-tex/floor.gif"],
       mix_operation: "multiply"
     },
     drawTypeBone: "cubeLightTex" // pyramid | triangle | cube | square | squareTex | cubeLightTex | sphereLightTex
@@ -41137,9 +41148,17 @@ const loadDoorsBVH = world => {
   setTimeout(() => {
     door1.accessBonesObject().forEach((item, index) => {
       console.log("Bones : " + door1.accessBonesObject()[index].name);
-      console.log("Bones : " + door1.accessBonesObject()[index].position);
-    }); // door1.accessBonesObject()[1].selfDestroy(1)
-    // door1.accessBonesObject()[3].selfDestroy(1)
+      door1.getInfoAboutJoints().allEndBones.forEach(endBone => {
+        // endBone
+        var test = door1.options.boneNameBasePrefix + endBone;
+        var testRoot = door1.options.boneNameBasePrefix + '__0';
+
+        if (test == item.name || item.name == testRoot) {
+          console.log("END OBJ DESTROY NOW  [or root in me scene]: ");
+          door1.accessBonesObject()[index].selfDestroy(10);
+        }
+      });
+    });
   }, 1000);
 
   door1['openDoor'] = () => {

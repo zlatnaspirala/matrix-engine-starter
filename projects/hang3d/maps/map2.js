@@ -16,7 +16,7 @@ export let map = {
     {
       name: "mapobjsgroup_3_9",
       path: "res/3d-objects/env/door-mesh.obj",
-      position: {x: -90, y: 1, z: 5},
+      position: {x: -90, y: 0, z: 5},
       rotation: {rotx: 0, roty: 0, rotz: 0},
       activeRotation: [0, 0, 0],
       scale: [1, 1, 1],

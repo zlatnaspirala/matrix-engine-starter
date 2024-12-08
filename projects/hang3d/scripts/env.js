@@ -1,4 +1,3 @@
-
 import * as matrixEngine from "matrix-engine";
 
 export const loadDoorsBVH = (world) => {
@@ -17,7 +16,7 @@ export const loadDoorsBVH = (world) => {
 		},*/
 		boneTex: {
 			source: [
-				"res/images/RustPaint.jpg",
+				"res/images/old-tex/floor.gif",
 			],
 			mix_operation: "multiply",
 		},
@@ -34,15 +33,17 @@ export const loadDoorsBVH = (world) => {
 
 		door1.accessBonesObject().forEach((item, index) => {
 			console.log("Bones : " + door1.accessBonesObject()[index].name)
-			console.log("Bones : " + door1.accessBonesObject()[index].position)
+			door1.getInfoAboutJoints().allEndBones.forEach((endBone)=>{
+				// endBone
+				var test = door1.options.boneNameBasePrefix+endBone;
+				var testRoot = door1.options.boneNameBasePrefix+'__0';
+				if (test == item.name || item.name == testRoot) {
+					console.log("END OBJ DESTROY NOW  [or root in me scene]: ")
+					door1.accessBonesObject()[index].selfDestroy(10)
+				}
+			})
 		})
-		
-		// door1.accessBonesObject()[1].selfDestroy(1)
-		// door1.accessBonesObject()[3].selfDestroy(1)
 	},1000)
-
-
-	
 
 	door1['openDoor'] = () => {
 		App.myCustomEnvItems['door1'].options.loop = "stopOnEnd"
