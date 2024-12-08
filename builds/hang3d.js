@@ -19993,6 +19993,65 @@ class MEBvhAnimation {
     this.animationTimer = null;
   }
 
+  playAnimationFromKeyframes() {
+    if (this.animationTimer == null) {
+      // Must be update before draw not timer any more - optimisation <<
+      this.animationTimer = setInterval(() => {
+        for (var x = 0; x < this.anim.joints.__0.children.length; x++) {
+          var b = this.options.boneNameBasePrefix + this.anim.joints.__0.children[x].name; //this.skeletalKeys[x];
+          // catch if not exist possible!
+
+          if (App.scene[b]) {
+            // 2.1.13
+            if (App.scene[b] && this.anim.keyframes[this.actualFrame]) {
+              App.scene[b].position.SetX(this.anim.keyframes[this.actualFrame][0 + x * 6] + this.globalOffset[0]);
+              App.scene[b].position.SetZ(this.anim.keyframes[this.actualFrame][1 + x * 6] + this.globalOffset[1]);
+              App.scene[b].position.SetY(this.anim.keyframes[this.actualFrame][2 + x * 6] + this.globalOffset[2]);
+              App.scene[b].rotation.rotateX(this.anim.keyframes[this.actualFrame][3 + x * 6] + this.globalRotation[0]);
+              App.scene[b].rotation.rotateY(this.anim.keyframes[this.actualFrame][4 + x * 6] + this.globalRotation[1]);
+              App.scene[b].rotation.rotateZ(this.anim.keyframes[this.actualFrame][5 + x * 6] + this.globalRotation[2]);
+            } else {
+              // for non t pose
+              App.scene[b].position.SetX(this.anim.keyframes[this.actualFrame][0] + this.globalOffset[0]);
+              App.scene[b].position.SetY(this.anim.keyframes[this.actualFrame][1] + this.globalOffset[1]);
+              App.scene[b].position.SetZ(this.anim.keyframes[this.actualFrame][2] + this.globalOffset[2]);
+              App.scene[b].rotation.rotateX(this.anim.keyframes[this.actualFrame][3] + this.globalRotation[0]);
+              App.scene[b].rotation.rotateY(this.anim.keyframes[this.actualFrame][4] + this.globalRotation[1]);
+              App.scene[b].rotation.rotateZ(this.anim.keyframes[this.actualFrame][5] + this.globalRotation[2]);
+            }
+          }
+        }
+
+        if (this.options.loop == 'playInverse' || this.options.loop == 'playInverseAndStop') {
+          this.actualFrame = -this.loopInverse.UPDATE();
+
+          if (this.actualFrame <= 1 && this.options.loop == 'playInverseAndStop') {
+            this.stopAnimation();
+            return;
+          }
+
+          return;
+        } else {
+          this.actualFrame++;
+        }
+
+        if (this.actualFrame >= this.animation[0].length - 1) {
+          if (this.options.loop == true) {
+            this.actualFrame = 1;
+          } else if (this.options.loop == 'stopOnEnd') {
+            this.stopAnimation();
+          } else if (this.options.loop == 'stopAndReset') {
+            this.constructFirstFrame();
+            this.actualFrame = 1;
+            this.stopAnimation();
+          }
+        }
+      }, this.options.myFrameRate);
+    } else {
+      console.warn('MEBvhAnimation: Animation already play.');
+    }
+  }
+
 }
 
 exports.default = MEBvhAnimation;
@@ -40925,7 +40984,7 @@ let map = {
     name: "mapobjsgroup_3_9",
     path: "res/3d-objects/env/door-mesh.obj",
     position: {
-      x: -100,
+      x: -90,
       y: 1,
       z: 5
     },
@@ -40938,7 +40997,7 @@ let map = {
     scale: [1, 1, 1],
     scaleCollider: [1, 1, 1],
     texture: {
-      source: ["res/images/diffuse.png"],
+      source: ["res/images/RustPaint.jpg"],
       mix_operation: "multiply"
     },
     targetDom: {
@@ -41053,11 +41112,11 @@ const loadDoorsBVH = world => {
     // [Optimal] 'ANIMATION' | "TPOSE'
     loop: 'playInverseAndStop',
     // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
-    globalOffset: [-100, 2, 5],
+    globalOffset: [-90, 5, 0],
     // [Optimal]
     skeletalBoneScale: 1,
     // [Optimal]
-    skeletalBoneScaleXYZ: [2, 4, 1],
+    skeletalBoneScaleXYZ: [2, 4, 0.1],
 
     /*skeletalBlend: {              // [Optimal] remove arg for no blend
     	paramDest: 4,
@@ -41072,11 +41131,20 @@ const loadDoorsBVH = world => {
   };
   const filePath = "res/3d-objects/env/door-mesh.bvh";
   var door1 = new matrixEngine.MEBvhAnimation(filePath, options);
-  window.door1 = door1;
+  window.door1 = door1; // If i use single bone BVH there is bone root and bone end detected like bones in my parser
+  // Solution destroy object
+
+  setTimeout(() => {
+    door1.accessBonesObject().forEach((item, index) => {
+      console.log("Bones : " + door1.accessBonesObject()[index].name);
+      console.log("Bones : " + door1.accessBonesObject()[index].position);
+    }); // door1.accessBonesObject()[1].selfDestroy(1)
+    // door1.accessBonesObject()[3].selfDestroy(1)
+  }, 1000);
 
   door1['openDoor'] = () => {
     App.myCustomEnvItems['door1'].options.loop = "stopOnEnd";
-    App.myCustomEnvItems['door1'].playAnimation();
+    App.myCustomEnvItems['door1'].playAnimationFromKeyframes();
   };
 
   door1['closeDoor'] = () => {
@@ -41092,7 +41160,7 @@ const loadDoorsBVH = world => {
     };
 
     App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop";
-    App.myCustomEnvItems['door1'].playAnimation();
+    App.myCustomEnvItems['door1'].playAnimationFromKeyframes();
   };
 
   return door1;

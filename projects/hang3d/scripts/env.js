@@ -8,9 +8,9 @@ export const loadDoorsBVH = (world) => {
 		showOnLoad: true,               // [Optimal] if autoPLay is true then showOnLoad is inactive.
 		type: 'ANIMATION',              // [Optimal] 'ANIMATION' | "TPOSE'
 		loop: 'playInverseAndStop',     // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
-		globalOffset: [-100, 2, 5],     // [Optimal]
+		globalOffset: [-90, 5, 0],     // [Optimal]
 		skeletalBoneScale: 1,           // [Optimal]
-		skeletalBoneScaleXYZ : [2,4,1],
+		skeletalBoneScaleXYZ : [2,4,0.1],
 		/*skeletalBlend: {              // [Optimal] remove arg for no blend
 			paramDest: 4,
 			paramSrc: 4
@@ -28,9 +28,25 @@ export const loadDoorsBVH = (world) => {
 	var door1 = new matrixEngine.MEBvhAnimation(filePath, options);
 	window.door1 = door1
 
+	// If i use single bone BVH there is bone root and bone end detected like bones in my parser
+	// Solution destroy object
+	setTimeout(() => {
+
+		door1.accessBonesObject().forEach((item, index) => {
+			console.log("Bones : " + door1.accessBonesObject()[index].name)
+			console.log("Bones : " + door1.accessBonesObject()[index].position)
+		})
+		
+		// door1.accessBonesObject()[1].selfDestroy(1)
+		// door1.accessBonesObject()[3].selfDestroy(1)
+	},1000)
+
+
+	
+
 	door1['openDoor'] = () => {
 		App.myCustomEnvItems['door1'].options.loop = "stopOnEnd"
-		App.myCustomEnvItems['door1'].playAnimation()
+		App.myCustomEnvItems['door1'].playAnimationFromKeyframes()
 	}
 
 	door1['closeDoor'] = () => {
@@ -44,7 +60,7 @@ export const loadDoorsBVH = (world) => {
 			door1.stopAnimation()
 		}
 		App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop"
-		App.myCustomEnvItems['door1'].playAnimation()
+		App.myCustomEnvItems['door1'].playAnimationFromKeyframes()
 	}
 
 	return door1;
