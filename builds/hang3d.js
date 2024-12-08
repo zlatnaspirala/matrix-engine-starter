@@ -19720,7 +19720,7 @@ class MEBvhAnimation {
     if (typeof options.globalOffset === 'undefined') options.globalOffset = [0, 0, 0];
     if (typeof options.globalRotation === 'undefined') options.globalRotation = [0, 0, 0];
     if (typeof options.myFrameRate === 'undefined') options.myFrameRate = 125;
-    if (typeof options.speed === 'undefined') options.speed = 5;
+    if (typeof options.speed === 'undefined') options.speed = 1;
     if (typeof options.matrixSkeletalObjScale === 'undefined') options.matrixSkeletalObjScale = 1;
     if (typeof options.ifNotExistDrawType === 'undefined') options.ifNotExistDrawType = 'cubeLightTex'; // passed
 
@@ -19742,7 +19742,7 @@ class MEBvhAnimation {
       this.skeletalKeys = this.anim.joint_names();
       this.animation = this.anim.all_frame_poses();
       this.sumOfFrames = this.animation[0].length - 1;
-      this.loopInverse = new _utility.OSCILLATOR(1, this.sumOfFrames, options.speed);
+      this.loopInverse = new _utility.OSCILLATOR(-this.sumOfFrames, -1, options.speed);
       if (this.isConstructed == false) this.constructSkeletal(this.options);
     }).catch(err => {
       console.warn('Bvh-loader error: ', err);
@@ -19959,12 +19959,14 @@ class MEBvhAnimation {
         }
 
         if (this.options.loop == 'playInverse' || this.options.loop == 'playInverseAndStop') {
-          this.actualFrame = this.loopInverse.UPDATE();
+          this.actualFrame = -this.loopInverse.UPDATE();
 
-          if (this.actualFrame <= 0 && this.options.loop == 'playInverseAndStop') {
+          if (this.actualFrame <= 1 && this.options.loop == 'playInverseAndStop') {
             this.stopAnimation();
             return;
           }
+
+          return;
         } else {
           this.actualFrame++;
         }
@@ -40899,9 +40901,33 @@ let map = {
     name: "mapobjsgroup_1_2",
     path: "res/3d-objects/env/door1.obj",
     position: {
-      x: -250,
+      x: -104.2,
       y: 0,
-      z: -200
+      z: 8.4
+    },
+    scale: [1, 1, 1],
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    texture: {
+      source: ["res/images/map-1.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field12",
+      x: 1,
+      y: 2
+    }
+  }, {
+    name: "mapobjsgroup_3_9",
+    path: "res/3d-objects/env/door-mesh.obj",
+    position: {
+      x: -100,
+      y: 1,
+      z: 5
     },
     rotation: {
       rotx: 0,
@@ -40912,13 +40938,13 @@ let map = {
     scale: [1, 1, 1],
     scaleCollider: [1, 1, 1],
     texture: {
-      source: ["res/images/map-1.png"],
+      source: ["res/images/diffuse.png"],
       mix_operation: "multiply"
     },
     targetDom: {
-      id: "field12",
-      x: 1,
-      y: 2
+      id: "field39",
+      x: 3,
+      y: 9
     }
   }],
   noPhysics: {
@@ -41031,13 +41057,14 @@ const loadDoorsBVH = world => {
     // [Optimal]
     skeletalBoneScale: 1,
     // [Optimal]
+    skeletalBoneScaleXYZ: [2, 4, 1],
 
     /*skeletalBlend: {              // [Optimal] remove arg for no blend
     	paramDest: 4,
     	paramSrc: 4
     },*/
     boneTex: {
-      source: ["res/images/n-stone.png"],
+      source: ["res/images/RustPaint.jpg"],
       mix_operation: "multiply"
     },
     drawTypeBone: "cubeLightTex" // pyramid | triangle | cube | square | squareTex | cubeLightTex | sphereLightTex
@@ -41048,13 +41075,22 @@ const loadDoorsBVH = world => {
   window.door1 = door1;
 
   door1['openDoor'] = () => {
-    // playInverseAndStop
     App.myCustomEnvItems['door1'].options.loop = "stopOnEnd";
     App.myCustomEnvItems['door1'].playAnimation();
   };
 
   door1['closeDoor'] = () => {
-    // playInverseAndStop
+    door1.loopInverse.step = 1;
+    door1.loopInverse.value_ = -door1.sumOfFrames;
+    door1.actualFrame = door1.sumOfFrames;
+    door1.loopInverse.status = 0;
+    console.log('....door1.actualFrame....', door1.actualFrame);
+
+    door1.loopInverse.on_maximum_value = () => {
+      console.log('....door1.actualFrame..STOP..', door1.actualFrame);
+      door1.stopAnimation();
+    };
+
     App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop";
     App.myCustomEnvItems['door1'].playAnimation();
   };
@@ -41127,7 +41163,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.65; //ori 0.02
+  App.camera.speedAmp = 0.1; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
   App.camera.yawRateOnEdge = 5; //ori 3
@@ -41485,7 +41521,7 @@ var runHang3d = world => {
       collisionBox.addEventListener("collide", function (e) {
         // const contactNormal = new CANNON.Vec3();
         // var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
-        // console.log("playerCollisonBox collide with", e);
+        console.log("playerCollisonBox collide with", e);
         preventDoubleJump = null;
 
         if (e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
@@ -41851,9 +41887,9 @@ var runHang3d = world => {
     _mapLoader.meMapLoader.load(t, physics);
   } else {
     _mapLoader.meMapLoader.load(_map2.map, physics);
-  }
+  } // window.meMapLoader = meMapLoader;
+  // Access for doors for dev 
 
-  window.meMapLoader = _mapLoader.meMapLoader; //
 
   App.myCustomEnvItems = {};
   App.myCustomEnvItems['door1'] = (0, _env.loadDoorsBVH)(world); // Big wall

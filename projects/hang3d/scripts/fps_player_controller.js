@@ -42,7 +42,7 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.65;//ori 0.02
+	App.camera.speedAmp = 0.1;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 5; //ori 3
 	App.camera.yawRate = 5; // 1
@@ -383,7 +383,9 @@ export var runHang3d = (world) => {
 			collisionBox.addEventListener("collide", function(e) {
 				// const contactNormal = new CANNON.Vec3();
 				// var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
-				// console.log("playerCollisonBox collide with", e);
+				
+				console.log("playerCollisonBox collide with", e);
+
 				preventDoubleJump = null;
 				if(e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
 					preventDoubleJump = null;
@@ -753,12 +755,11 @@ export var runHang3d = (world) => {
 	} else {
 		meMapLoader.load(map, physics);
 	}
+	// window.meMapLoader = meMapLoader;
 
-	window.meMapLoader = meMapLoader;
-
-	//
+	// Access for doors for dev 
 	App.myCustomEnvItems = {};
-	App.myCustomEnvItems['door1'] = loadDoorsBVH(world)
+	App.myCustomEnvItems['door1'] = loadDoorsBVH(world);
 
 	// Big wall
 	// world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);

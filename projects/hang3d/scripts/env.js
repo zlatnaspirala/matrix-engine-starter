@@ -10,13 +10,14 @@ export const loadDoorsBVH = (world) => {
 		loop: 'playInverseAndStop',     // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
 		globalOffset: [-100, 2, 5],     // [Optimal]
 		skeletalBoneScale: 1,           // [Optimal]
+		skeletalBoneScaleXYZ : [2,4,1],
 		/*skeletalBlend: {              // [Optimal] remove arg for no blend
 			paramDest: 4,
 			paramSrc: 4
 		},*/
 		boneTex: {
 			source: [
-				"res/images/n-stone.png",
+				"res/images/RustPaint.jpg",
 			],
 			mix_operation: "multiply",
 		},
@@ -28,17 +29,23 @@ export const loadDoorsBVH = (world) => {
 	window.door1 = door1
 
 	door1['openDoor'] = () => {
-		// playInverseAndStop
 		App.myCustomEnvItems['door1'].options.loop = "stopOnEnd"
 		App.myCustomEnvItems['door1'].playAnimation()
 	}
 
 	door1['closeDoor'] = () => {
-		// playInverseAndStop
+		door1.loopInverse.step = 1;
+		door1.loopInverse.value_ = -door1.sumOfFrames;
+		door1.actualFrame = door1.sumOfFrames;
+		door1.loopInverse.status = 0;
+		console.log('....door1.actualFrame....', door1.actualFrame)
+		door1.loopInverse.on_maximum_value = () => {
+			console.log('....door1.actualFrame..STOP..', door1.actualFrame)
+			door1.stopAnimation()
+		}
 		App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop"
 		App.myCustomEnvItems['door1'].playAnimation()
 	}
-
 
 	return door1;
 }
