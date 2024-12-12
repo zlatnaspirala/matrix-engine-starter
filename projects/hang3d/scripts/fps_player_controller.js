@@ -383,14 +383,23 @@ export var runHang3d = (world) => {
 			collisionBox.addEventListener("collide", function(e) {
 				// const contactNormal = new CANNON.Vec3();
 				// var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
-				
-				console.log("playerCollisonBox collide with", e);
-
 				preventDoubleJump = null;
 				if(e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
 					preventDoubleJump = null;
 					return;
 				}
+
+				// Procedure for trigerering is manual for now.
+				if(e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
+					//
+					console.log("TrigerAction[door1]:")
+					preventDoubleJump = null;
+					return;
+				}
+				// name
+				
+				console.log("playerCollisonBox collide with", e.contact.bi._name , " WITH " ,  e.contact.bj._name);
+
 				if(e.contact.bi._name == 'damage') {
 					console.log("Trigger damage!");
 					//. 4x fix
@@ -749,9 +758,10 @@ export var runHang3d = (world) => {
 	// MAP LOADER
 
 	if (localStorage.getItem('map') != null) {
-		var t = localStorage.getItem('map');
-		t = JSON.parse(t)
-		meMapLoader.load(t, physics);
+		meMapLoader.load(map, physics);
+		// var t = localStorage.getItem('map');
+		// t = JSON.parse(t)
+		// meMapLoader.load(t, physics);
 	} else {
 		meMapLoader.load(map, physics);
 	}
@@ -759,7 +769,7 @@ export var runHang3d = (world) => {
 
 	// Access for doors for dev 
 	App.myCustomEnvItems = {};
-	App.myCustomEnvItems['door1'] = loadDoorsBVH(world);
+	App.myCustomEnvItems['door1'] = loadDoorsBVH(world, physics);
 
 	// Big wall
 	// world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);

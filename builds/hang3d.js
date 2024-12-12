@@ -19698,10 +19698,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @async Yes
  */
 class MEBvhAnimation {
-  constructor(path_, options) {
+  constructor(path_, options, callback) {
     if (typeof options === 'undefined' || typeof options.world === 'undefined') {
       console.error('MEBvhAnimation class error: No second argument options || possible world is not passed.');
       return;
+    }
+
+    if (typeof callback === 'undefined') {
+      options.callback = () => {};
+    } else {
+      options.callback = callback;
     }
 
     if (typeof options.skeletalBoneScale === 'undefined') {
@@ -19744,6 +19750,7 @@ class MEBvhAnimation {
       this.sumOfFrames = this.animation[0].length - 1;
       this.loopInverse = new _utility.OSCILLATOR(-this.sumOfFrames, -1, options.speed);
       if (this.isConstructed == false) this.constructSkeletal(this.options);
+      if (this.options.callback) this.options.callback();
     }).catch(err => {
       console.warn('Bvh-loader error: ', err);
     });
@@ -19813,7 +19820,6 @@ class MEBvhAnimation {
     let onlyMine = [];
     matrixWorld.objListToDispose[0].contentList.forEach(MEObject => {
       if (MEObject.name.indexOf(this.options.boneNameBasePrefix) != -1) {
-        // console.log(MEObject)
         onlyMine.push(MEObject);
       }
     });
@@ -40968,36 +40974,12 @@ let map = {
   staticFloors: [],
   staticObjs: [],
   staticObjsGroup: [{
-    name: "mapobjsgroup_1_2",
-    path: "res/3d-objects/env/door1.obj",
+    name: "mapobjsgroup_5_10",
+    path: "res/3d-objects/env/map-1.obj",
     position: {
-      x: -104.2,
-      y: 0,
-      z: 8.4
-    },
-    scale: [1, 1, 1],
-    rotation: {
-      rotx: 0,
-      roty: 0,
-      rotz: 0
-    },
-    activeRotation: [0, 0, 0],
-    texture: {
-      source: ["res/images/map-1.png"],
-      mix_operation: "multiply"
-    },
-    targetDom: {
-      id: "field12",
-      x: 1,
-      y: 2
-    }
-  }, {
-    name: "mapobjsgroup_3_9",
-    path: "res/3d-objects/env/door-mesh.obj",
-    position: {
-      x: -90,
-      y: 0,
-      z: 5
+      x: -250,
+      y: 1,
+      z: 42
     },
     rotation: {
       rotx: 0,
@@ -41008,18 +40990,81 @@ let map = {
     scale: [1, 1, 1],
     scaleCollider: [1, 1, 1],
     texture: {
-      source: ["res/images/RustPaint.jpg"],
+      source: ["res/images/map-1.png"],
       mix_operation: "multiply"
     },
     targetDom: {
-      id: "field39",
+      id: "field510",
+      x: 5,
+      y: 10
+    }
+  }, // {
+  //   name: "mapobjsgroup_10_10",
+  //   path: "res/3d-objects/env/cube-scifi.obj",
+  //   position: {x: -230, y: 1, z: 42},
+  //   rotation: {rotx: 0, roty: 0, rotz: 0},
+  //   activeRotation: [0, 0, 0],
+  //   scale: [1, 1, 1],
+  //   scaleCollider: [1, 1, 1],
+  //   texture: {source: ["res/3d-objects/env/textures/cube-scifi.png"], mix_operation: "multiply"},
+  //   targetDom: {id: "field510", x: 10, y: 10},
+  // },
+  {
+    name: "mapobjsgroup_3_4",
+    path: "res/3d-objects/env/door-mesh.obj",
+    position: {
+      x: -142,
+      y: 0,
+      z: 350
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    scale: [1, 1, 1],
+    scaleCollider: [1, 1, 1],
+    texture: {
+      source: ["res/3d-objects/env/metal1.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field34",
       x: 3,
-      y: 9
+      y: 4
     }
   }],
   noPhysics: {
     cubes: []
-  }
+  },
+  staticInstancedDraws: [{
+    name: "mapobjsgroup_10_4",
+    path: "res/3d-objects/env/corridor1.obj",
+    position: {
+      x: -142,
+      y: 0,
+      z: 150
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    scale: [3, 3, 3],
+    scaleCollider: [2, 73, 2],
+    offsetCollider: [[10, 90, 0], [-10, 90, 0]],
+    texture: {
+      source: ["res/3d-objects/env/metal1.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field104",
+      x: 10,
+      y: 4
+    }
+  }]
 };
 exports.map = map;
 
@@ -41107,11 +41152,13 @@ exports.loadDoorsBVH = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
 
+var CANNON = _interopRequireWildcard(require("cannon"));
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-const loadDoorsBVH = world => {
+const loadDoorsBVH = (world, physics) => {
   const options = {
     world: world,
     // [Required]
@@ -41123,11 +41170,11 @@ const loadDoorsBVH = world => {
     // [Optimal] 'ANIMATION' | "TPOSE'
     loop: 'playInverseAndStop',
     // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
-    globalOffset: [-90, 5, 0],
+    globalOffset: [-142, 350, 0],
     // [Optimal]
     skeletalBoneScale: 1,
     // [Optimal]
-    skeletalBoneScaleXYZ: [2, 4, 0.1],
+    skeletalBoneScaleXYZ: [2, 4, -0.9],
 
     /*skeletalBlend: {              // [Optimal] remove arg for no blend
     	paramDest: 4,
@@ -41141,11 +41188,8 @@ const loadDoorsBVH = world => {
 
   };
   const filePath = "res/3d-objects/env/door-mesh.bvh";
-  var door1 = new matrixEngine.MEBvhAnimation(filePath, options);
-  window.door1 = door1; // If i use single bone BVH there is bone root and bone end detected like bones in my parser
-  // Solution destroy object
-
-  setTimeout(() => {
+  var door1 = new matrixEngine.MEBvhAnimation(filePath, options, () => {
+    console.log('TETS');
     door1.accessBonesObject().forEach((item, index) => {
       console.log("Bones : " + door1.accessBonesObject()[index].name);
       door1.getInfoAboutJoints().allEndBones.forEach(endBone => {
@@ -41154,16 +41198,45 @@ const loadDoorsBVH = world => {
         var testRoot = door1.options.boneNameBasePrefix + '__0';
 
         if (test == item.name || item.name == testRoot) {
-          console.log("END OBJ DESTROY NOW  [or root in me scene]: ");
-          door1.accessBonesObject()[index].selfDestroy(10);
+          console.log("ENDBONES OBJ DESTROY NOW - NONEED HERE [or root in __0 scene object]!");
+          door1.accessBonesObject()[index].selfDestroy(1);
         }
       });
     });
-  }, 1000);
+    setTimeout(() => {
+      // This mechanics must be integrated in matrix-engine. In future.
+      // scale input !?
+      door1.accessBonesObject().forEach(isCollider => {
+        isCollider;
+        console.log("what   options.isCollider.position.x[0] !", isCollider.position.x);
+
+        if (isCollider.name.indexOf('COLLIDER') != -1) {
+          var b5 = new CANNON.Body({
+            mass: 0,
+            linearDamping: 0.01,
+            position: new CANNON.Vec3(isCollider.position.x, isCollider.position.z, isCollider.position.y),
+            shape: new CANNON.Box(new CANNON.Vec3(4, 2, 4))
+          });
+          b5.name = 'TRIGER-BOX1';
+          physics.world.addBody(b5);
+          isCollider.physics.currentBody = b5;
+          isCollider.physics.enabled = true;
+          console.log("ADDED COLLIDER  !", isCollider.position.y);
+          console.log("ADDED COLLIDER  !", isCollider.position.z);
+          isCollider.physics.currentBody.position.set(isCollider.position.x, isCollider.position.z, isCollider.position.y - 5);
+        }
+      });
+    }, 550); // FIX for now 
+
+    door1.closeDoor();
+  });
+  window.door1 = door1;
 
   door1['openDoor'] = () => {
     App.myCustomEnvItems['door1'].options.loop = "stopOnEnd";
     App.myCustomEnvItems['door1'].playAnimationFromKeyframes();
+    var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
+    App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z + 5);
   };
 
   door1['closeDoor'] = () => {
@@ -41171,15 +41244,16 @@ const loadDoorsBVH = world => {
     door1.loopInverse.value_ = -door1.sumOfFrames;
     door1.actualFrame = door1.sumOfFrames;
     door1.loopInverse.status = 0;
-    console.log('....door1.actualFrame....', door1.actualFrame);
 
     door1.loopInverse.on_maximum_value = () => {
-      console.log('....door1.actualFrame..STOP..', door1.actualFrame);
+      console.log('door closed. ', door1.actualFrame);
       door1.stopAnimation();
     };
 
     App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop";
     App.myCustomEnvItems['door1'].playAnimationFromKeyframes();
+    var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
+    App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z - 5);
   };
 
   return door1;
@@ -41187,7 +41261,7 @@ const loadDoorsBVH = world => {
 
 exports.loadDoorsBVH = loadDoorsBVH;
 
-},{"matrix-engine":8}],48:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":8}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41608,13 +41682,23 @@ var runHang3d = world => {
       collisionBox.addEventListener("collide", function (e) {
         // const contactNormal = new CANNON.Vec3();
         // var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
-        console.log("playerCollisonBox collide with", e);
         preventDoubleJump = null;
 
         if (e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
           preventDoubleJump = null;
           return;
-        }
+        } // Procedure for trigerering is manual for now.
+
+
+        if (e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
+          //
+          console.log("TrigerAction[door1]:");
+          preventDoubleJump = null;
+          return;
+        } // name
+
+
+        console.log("playerCollisonBox collide with", e.contact.bi._name, " WITH ", e.contact.bj._name);
 
         if (e.contact.bi._name == 'damage') {
           console.log("Trigger damage!"); //. 4x fix
@@ -41968,10 +42052,10 @@ var runHang3d = world => {
   // MAP LOADER
 
   if (localStorage.getItem('map') != null) {
-    var t = localStorage.getItem('map');
-    t = JSON.parse(t);
+    _mapLoader.meMapLoader.load(_map2.map, physics); // var t = localStorage.getItem('map');
+    // t = JSON.parse(t)
+    // meMapLoader.load(t, physics);
 
-    _mapLoader.meMapLoader.load(t, physics);
   } else {
     _mapLoader.meMapLoader.load(_map2.map, physics);
   } // window.meMapLoader = meMapLoader;
@@ -41979,7 +42063,7 @@ var runHang3d = world => {
 
 
   App.myCustomEnvItems = {};
-  App.myCustomEnvItems['door1'] = (0, _env.loadDoorsBVH)(world); // Big wall
+  App.myCustomEnvItems['door1'] = (0, _env.loadDoorsBVH)(world, physics); // Big wall
   // world.Add("cubeLightTex", 5, "WALL_BLOCK", tex);
   // var b5 = new CANNON.Body({
   // 	mass: 0,
@@ -42440,6 +42524,22 @@ const meMapLoader = {
         gamePlayItem: 'STATIC_rock'
       }, physics);
     });
+    if (map.staticInstancedDraws) map.staticInstancedDraws.forEach(item => {
+      this.loadObjCorridorOPTIMISED({
+        name: item.name,
+        mass: 0,
+        path: item.path,
+        position: [item.position.x, item.position.y, item.position.z],
+        activeRotation: item.activeRotation,
+        rotation: item.rotation,
+        scale: item.scale,
+        scaleCollider: item.scaleCollider,
+        offsetCollider: item.offsetCollider,
+        textures: item.texture.source,
+        shadows: false,
+        gamePlayItem: 'STATIC cube'
+      }, physics);
+    });
   },
 
   loadObjStatic(n, physics) {
@@ -42612,19 +42712,19 @@ const meMapLoader = {
       // info abot modifiers i am not sure ...
       // collider !! must be added - no need for new   bodies 
 
-      App.scene[n.name].instancedDraws.numberOfInstance = 5;
+      App.scene[n.name].instancedDraws.numberOfInstance = 10;
       var S1 = new matrixEngine.utility.SWITCHER(); // colleders visible false must be - from code 
 
       App.scene[n.name].instancedDraws.array_of_local_offset = [0, 0, 0];
 
       App.scene[n.name].instancedDraws.overrideDrawArraysInstance = function (object) {
-        for (var i = -5; i < object.instancedDraws.numberOfInstance; i++) {
-          if (i == -5) {
-            object.instancedDraws.array_of_local_offset = [0, 0, i * 7];
+        for (var i = 0; i < object.instancedDraws.numberOfInstance; i++) {
+          if (i == 0) {
+            object.instancedDraws.array_of_local_offset = [0, 0, i * 19];
             mat4.translate(object.mvMatrix, object.mvMatrix, object.instancedDraws.array_of_local_offset);
           }
 
-          object.instancedDraws.array_of_local_offset = [0, 0, 7];
+          object.instancedDraws.array_of_local_offset = [0, 0, 19];
           mat4.translate(object.mvMatrix, object.mvMatrix, object.instancedDraws.array_of_local_offset);
           matrixEngine.matrixWorld.world.setMatrixUniforms(object, matrixEngine.matrixWorld.world.pMatrix, object.mvMatrix);
           matrixEngine.matrixWorld.world.GL.gl.drawElements(matrixEngine.matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, matrixEngine.matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
@@ -42636,7 +42736,7 @@ const meMapLoader = {
         mass: 0,
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
       });
-      App.scene[n.name].mesh.groups.forEach(group => {
+      App.scene[n.name].mesh.groups.forEach((group, index) => {
         // We can add the same shape several times to position child shapes within the Compound.
         // tHIS WORKS ONLY FOR SIMPLY CUBE
         // i dont know who to hide collider 
@@ -42664,8 +42764,8 @@ const meMapLoader = {
         var calcZ = collectZ2 - collectZ0;
         var calcZWorldPos = (collectZ2 + collectZ0) / 2;
         calcZ = calcZ / 2;
-        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcY * App.scene[n.name].instancedDraws.numberOfInstance * 3.5), Math.abs(calcZ)));
-        body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcYWorldPox * App.scene[n.name].instancedDraws.numberOfInstance / 2, calcZWorldPos));
+        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX * n.scaleCollider[0]), Math.abs(calcY * n.scaleCollider[1]), Math.abs(calcZ * n.scaleCollider[2])));
+        body.addShape(shape, new CANNON.Vec3(calcXWorldPos + n.offsetCollider[index][0], calcYWorldPox + n.offsetCollider[index][1], calcZWorldPos + n.offsetCollider[index][2]));
       });
       App.scene[n.name].mesh.setScale({
         x: n.scale[0],
@@ -42688,7 +42788,8 @@ const meMapLoader = {
     var arg = {};
     arg[n.name] = n.path;
     matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS);
-  }
+  } // test BVH 
+
 
 };
 exports.meMapLoader = meMapLoader;

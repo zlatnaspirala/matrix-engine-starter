@@ -24,7 +24,8 @@ var mapCreator = {
 		staticObjsGroup: [],
 		noPhysics: {
 			cubes: []
-		}
+		},
+		staticInstancedDraws: []
 	},
 	lastItem: [],
 	inputParamsSaved: [],
@@ -263,7 +264,33 @@ var mapCreator = {
 									y: parseFloat(e.target.getAttribute('data-z')),
 								}
 							})
+					}else if(byId('tinput').selectedOptions[0].value.toString().indexOf("Obj instanced") != -1) {
+						this.lastUpdate('staticInstancedDraws')
+						// path
+						var p = byId('tinput').selectedOptions[0].value.toString().split(":")[1]
+						p = "res/3d-objects/env/" + p + ".obj";
+						this.map.staticInstancedDraws.push(
+							{
+								name: "mapobjsgroup_" + parseFloat(e.target.getAttribute('data-x')) + "_" + parseFloat(e.target.getAttribute('data-z')),
+								path: p,
+								position: {x: X, y: Y, z: Z},
+								rotation: {rotx: parseFloat(byId('rotX').value), roty: parseFloat(byId('rotY').value), rotz: parseFloat(byId('rotZ').value)},
+								activeRotation: [parseFloat(byId('arotX').value), parseFloat(byId('arotY').value), parseFloat(byId('arotZ').value)],
+								scale: [parseFloat(byId('scaleX').value), parseFloat(byId('scaleY').value), parseFloat(byId('scaleZ').value)],
+								scaleCollider: [parseFloat(byId('scaleColliderX').value), parseFloat(byId('scaleColliderY').value), parseFloat(byId('scaleColliderZ').value)],
+								offsetCollider: [parseFloat(byId('offsetColliderX').value), parseFloat(byId('offsetColliderY').value), parseFloat(byId('offsetColliderZ').value)],
+								texture: {
+									source: [byId('texinput').selectedOptions[0].value],
+									mix_operation: "multiply"
+								},
+								targetDom: {
+									id: e.target.id,
+									x: parseFloat(e.target.getAttribute('data-x')),
+									y: parseFloat(e.target.getAttribute('data-z')),
+								}
+							})
 					} else {
+						// default
 						this.lastUpdate('staticObjs')
 						this.map.staticObjs.push(
 							{

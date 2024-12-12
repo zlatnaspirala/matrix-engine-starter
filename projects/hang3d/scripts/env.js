@@ -1,15 +1,16 @@
 import * as matrixEngine from "matrix-engine";
+import * as CANNON from 'cannon';
 
-export const loadDoorsBVH = (world) => {
+export const loadDoorsBVH = (world, physics) => {
 	const options = {
 		world: world,                   // [Required]
 		autoPlay: false,                // [Optimal]
 		showOnLoad: true,               // [Optimal] if autoPLay is true then showOnLoad is inactive.
 		type: 'ANIMATION',              // [Optimal] 'ANIMATION' | "TPOSE'
 		loop: 'playInverseAndStop',     // [Optimal] true | 'stopOnEnd' | 'playInverse' | 'stopAndReset'
-		globalOffset: [-90, 5, 0],     // [Optimal]
+		globalOffset: [-142, 350, 0],     // [Optimal]
 		skeletalBoneScale: 1,           // [Optimal]
-		skeletalBoneScaleXYZ : [2,4,0.1],
+		skeletalBoneScaleXYZ: [2, 4, -0.9],
 		/*skeletalBlend: {              // [Optimal] remove arg for no blend
 			paramDest: 4,
 			paramSrc: 4
@@ -24,30 +25,61 @@ export const loadDoorsBVH = (world) => {
 	};
 
 	const filePath = "res/3d-objects/env/door-mesh.bvh";
-	var door1 = new matrixEngine.MEBvhAnimation(filePath, options);
-	window.door1 = door1
-
-	// If i use single bone BVH there is bone root and bone end detected like bones in my parser
-	// Solution destroy object
-	setTimeout(() => {
+	var door1 = new matrixEngine.MEBvhAnimation(filePath, options, () => {
+		console.log('TETS')
 
 		door1.accessBonesObject().forEach((item, index) => {
 			console.log("Bones : " + door1.accessBonesObject()[index].name)
-			door1.getInfoAboutJoints().allEndBones.forEach((endBone)=>{
+			door1.getInfoAboutJoints().allEndBones.forEach((endBone) => {
 				// endBone
-				var test = door1.options.boneNameBasePrefix+endBone;
-				var testRoot = door1.options.boneNameBasePrefix+'__0';
-				if (test == item.name || item.name == testRoot) {
-					console.log("END OBJ DESTROY NOW  [or root in me scene]: ")
-					door1.accessBonesObject()[index].selfDestroy(10)
+				var test = door1.options.boneNameBasePrefix + endBone;
+				var testRoot = door1.options.boneNameBasePrefix + '__0';
+				if(test == item.name || item.name == testRoot) {
+					console.log("ENDBONES OBJ DESTROY NOW - NONEED HERE [or root in __0 scene object]!")
+					door1.accessBonesObject()[index].selfDestroy(1)
 				}
 			})
 		})
-	},1000)
+
+		setTimeout(() => {
+			// This mechanics must be integrated in matrix-engine. In future.
+			// scale input !?
+			door1.accessBonesObject().forEach((isCollider) => {
+				isCollider 
+				console.log("what   options.isCollider.position.x[0] !", isCollider.position.x)
+				if(isCollider.name.indexOf('COLLIDER') != -1) {
+					var b5 = new CANNON.Body({
+						mass: 0,
+						linearDamping: 0.01,
+						position: new CANNON.Vec3(isCollider.position.x,
+							isCollider.position.z,
+							isCollider.position.y),
+						shape: new CANNON.Box(new CANNON.Vec3(4, 2, 4))
+					});
+					b5.name = 'TRIGER-BOX1';
+					physics.world.addBody(b5);
+					isCollider.physics.currentBody = b5;
+					isCollider.physics.enabled = true;
+					console.log("ADDED COLLIDER  !", isCollider.position.y)
+					console.log("ADDED COLLIDER  !", isCollider.position.z)
+					isCollider.physics.currentBody.position.set(isCollider.position.x,
+						isCollider.position.z,
+						isCollider.position.y - 5)
+
+				}
+			})
+		}, 550)
+
+		// FIX for now 
+		door1.closeDoor()
+	});
+	window.door1 = door1
 
 	door1['openDoor'] = () => {
 		App.myCustomEnvItems['door1'].options.loop = "stopOnEnd"
 		App.myCustomEnvItems['door1'].playAnimationFromKeyframes()
+		var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
+		App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y , P.z + 5)
 	}
 
 	door1['closeDoor'] = () => {
@@ -55,13 +87,14 @@ export const loadDoorsBVH = (world) => {
 		door1.loopInverse.value_ = -door1.sumOfFrames;
 		door1.actualFrame = door1.sumOfFrames;
 		door1.loopInverse.status = 0;
-		console.log('....door1.actualFrame....', door1.actualFrame)
 		door1.loopInverse.on_maximum_value = () => {
-			console.log('....door1.actualFrame..STOP..', door1.actualFrame)
+			console.log('door closed. ', door1.actualFrame)
 			door1.stopAnimation()
 		}
 		App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop"
 		App.myCustomEnvItems['door1'].playAnimationFromKeyframes()
+		var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
+		App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y , P.z - 5)
 	}
 
 	return door1;

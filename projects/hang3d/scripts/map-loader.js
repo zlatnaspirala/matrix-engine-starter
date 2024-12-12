@@ -108,6 +108,24 @@ export const meMapLoader = {
 			}, physics)
 		});
 
+		if(map.staticInstancedDraws) map.staticInstancedDraws.forEach(item => {
+
+			this.loadObjCorridorOPTIMISED({
+				name: item.name,
+				mass: 0,
+				path: item.path,
+				position: [item.position.x, item.position.y, item.position.z],
+				activeRotation: item.activeRotation,
+				rotation: item.rotation,
+				scale: item.scale,
+				scaleCollider: item.scaleCollider,
+				offsetCollider: item.offsetCollider,
+				textures: item.texture.source,
+				shadows: false,
+				gamePlayItem: 'STATIC cube'
+			}, physics)
+		});
+
 	},
 	loadObjStatic(n, physics) {
 		function onLoadObjS(meshes) {
@@ -211,7 +229,7 @@ export const meMapLoader = {
 						rotLocal
 					);
 
-					console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE', 
+					console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE',
 						body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices
 					)
 				} else {
@@ -233,7 +251,7 @@ export const meMapLoader = {
 			// 	//App.scene[n.name].physics.currentBody.
 			// 	// App.scene.mapobjsgroup_1_2.physics.currentBody.shapes[24].convexPolyhedronRepresentation.vertices
 
-				
+
 
 			// }
 
@@ -258,27 +276,23 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
 			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
-
-
 			// matrixEngine already have array - good for buffers optimisation 
 			// same buffer just draw with diff position - possible in opengles1.1
 			// test numberOfInstance is 10 by my memory - It is good to collect from blender file obj export 
 			// info abot modifiers i am not sure ...
 			// collider !! must be added - no need for new   bodies 
-			App.scene[n.name].instancedDraws.numberOfInstance = 5
+			App.scene[n.name].instancedDraws.numberOfInstance = 10
 			var S1 = new matrixEngine.utility.SWITCHER();
 			// colleders visible false must be - from code 
 			App.scene[n.name].instancedDraws.array_of_local_offset = [0, 0, 0];
 			App.scene[n.name].instancedDraws.overrideDrawArraysInstance = function(object) {
-				for(var i = -5;i < object.instancedDraws.numberOfInstance;i++) {
-					if(i == -5) {
-						object.instancedDraws.array_of_local_offset = [0, 0, i * 7];
+				for(var i = 0;i < object.instancedDraws.numberOfInstance;i++) {
+					if(i == 0) {
+						object.instancedDraws.array_of_local_offset = [0, 0, i * 19];
 						mat4.translate(object.mvMatrix, object.mvMatrix, object.instancedDraws.array_of_local_offset);
 					}
-
-					object.instancedDraws.array_of_local_offset = [0, 0, 7];
+					object.instancedDraws.array_of_local_offset = [0, 0, 19];
 					mat4.translate(object.mvMatrix, object.mvMatrix, object.instancedDraws.array_of_local_offset);
-
 					matrixEngine.matrixWorld.world.setMatrixUniforms(object, matrixEngine.matrixWorld.world.pMatrix, object.mvMatrix);
 					matrixEngine.matrixWorld.world.GL.gl.drawElements(matrixEngine.matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, matrixEngine.matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 				}
@@ -288,7 +302,7 @@ export const meMapLoader = {
 				mass: 0,
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
 			});
-			App.scene[n.name].mesh.groups.forEach((group) => {
+			App.scene[n.name].mesh.groups.forEach((group, index) => {
 				// We can add the same shape several times to position child shapes within the Compound.
 				// tHIS WORKS ONLY FOR SIMPLY CUBE
 				// i dont know who to hide collider 
@@ -316,10 +330,12 @@ export const meMapLoader = {
 				var calcZ = collectZ2 - collectZ0;
 				var calcZWorldPos = (collectZ2 + collectZ0) / 2;
 				calcZ = calcZ / 2;
-				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX),
-					Math.abs(calcY * App.scene[n.name].instancedDraws.numberOfInstance * 3.5), Math.abs(calcZ)));
-				body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcYWorldPox *
-					App.scene[n.name].instancedDraws.numberOfInstance / 2, calcZWorldPos))
+				var shape = new CANNON.Box(new CANNON.Vec3(
+					Math.abs(calcX * n.scaleCollider[0]),
+					Math.abs(calcY * n.scaleCollider[1]), Math.abs(calcZ * n.scaleCollider[2])));
+				body.addShape(shape, new CANNON.Vec3(calcXWorldPos + n.offsetCollider[index][0],
+					calcYWorldPox + n.offsetCollider[index][1],
+					calcZWorldPos + n.offsetCollider[index][2]))
 			})
 
 			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
@@ -338,4 +354,8 @@ export const meMapLoader = {
 		arg[n.name] = n.path;
 		matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS)
 	}
+
+	// test BVH 
+
+
 };

@@ -15,4 +15,7 @@ Designed by Freepik
 www.freepik.com
 
 
+Corridor download from : 
+https://www.blenderkit.com/asset-gallery-detail/7e8ce7fe-855a-4af0-a48a-853b203b90bd/
+
 Outher stuff in this folder is absolute free - my work in blender ;)

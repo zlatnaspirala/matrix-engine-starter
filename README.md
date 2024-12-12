@@ -160,7 +160,10 @@ https://github.com/zlatnaspirala/matrix-engine
 
 ### About BVH animator
 
-You can change manual content intro bvh file:
+- BVH automatic scene elements dont have a physics by default.
+- Sometime there is a error in decimals like 0,10000 become 0.33000 or similar.
+You can easy fix direct in bvh file.
+- You can change manual content intro bvh file:
 
 
 Shema for position `XZY`
