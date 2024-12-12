@@ -41053,7 +41053,7 @@ let map = {
     },
     activeRotation: [0, 0, 0],
     scale: [3, 3, 3],
-    scaleCollider: [2, 73, 2],
+    scaleCollider: [2, 75, 2],
     offsetCollider: [[10, 90, 0], [-10, 90, 0]],
     texture: {
       source: ["res/3d-objects/env/metal1.png"],

@@ -49,7 +49,7 @@ export let map = {
       rotation: {rotx: 0, roty: 0, rotz: 0},
       activeRotation: [0, 0, 0],
       scale: [3, 3, 3],
-      scaleCollider: [2, 73, 2],
+      scaleCollider: [2, 75, 2],
 			offsetCollider: [
 				[10, 90, 0],
 				[-10, 90, 0]
