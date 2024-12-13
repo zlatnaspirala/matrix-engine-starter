@@ -295,8 +295,8 @@ export var runHang3d = (world) => {
 		if(ev.detail.hitObject.name.indexOf('con_') == -1) {
 			// funny shoots 
 			console.log('....',ev.detail.hitObject.physics.currentBody)
-			App.lastHit = ev.detail.hitObject.physics.currentBody
-			App.lastHit.velocity.set(5,5,30)
+			App.lastHit = ev.detail.hitObject.physics.currentBody;
+			if (App.lastHit) App.lastHit.velocity.set(5,5,30)
 			return;
 		}
 		if(preventFlagDouble == false) {
