@@ -49,6 +49,9 @@ https://huggingface.co/spaces/black-forest-labs/FLUX.1-dev
 https://huggingface.co/spaces/JeffreyXiang/TRELLIS
 //
 
+https://stackoverflow.com/questions/3057576/how-to-launch-an-application-from-a-browser
+
+
 /////////////////////////////////////////////////////////
 TEST THIS  blender py
 

@@ -103,6 +103,7 @@ export const meMapLoader = {
 				scale: item.scale,
 				scaleCollider: item.scaleCollider,
 				textures: item.texture.source,
+				textureRepeat: (item.textureRepeat ? item.textureRepeat : undefined),
 				shadows: false,
 				gamePlayItem: 'STATIC_rock'
 			}, physics)
@@ -140,8 +141,6 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
 			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
-
-			// MUST BE FIXED ---------------------->><<---
 			// console.log('>>>>>>>>>>>>>', n)
 			App.scene[n.name].mesh.setScale({x: n.scale[0], y: n.scale[1], z: n.scale[2]})
 			var b44 = new CANNON.Body({
@@ -179,6 +178,29 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
 			App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
 			App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+
+			// Texture REPEAT
+			if(typeof n.textureRepeat != -1 && n.textureRepeat == true) {
+				console.log('[Custom tex]')
+				// Texture REPEAT
+				let world = matrixEngine.matrixWorld.world;
+				App.scene[n.name].custom.gl_texture = function(object, t) {
+					for(var t = 0;t < object.textures.length;t++) {
+						world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
+						world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MAG_FILTER, world.GL.gl.LINEAR);
+						world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MIN_FILTER, world.GL.gl.LINEAR);
+						// world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, world.GL.gl.MIRRORED_REPEAT);
+						// world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, world.GL.gl.MIRRORED_REPEAT);
+						world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, world.GL.gl.REPEAT);
+						world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, world.GL.gl.REPEAT);
+						// world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_SWIZZLE_R, world.GL.gl.ZERO);
+						// world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_SWIZZLE_G, world.GL.gl.RED);
+						// world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_SWIZZLE_B, world.GL.gl.ZERO);
+						world.GL.gl.texImage2D(world.GL.gl.TEXTURE_2D, 0, world.GL.gl.RGBA, world.GL.gl.RGBA, world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+						world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
+					}
+				};
+			}
 
 			var body = new CANNON.Body({
 				mass: 0,
@@ -246,13 +268,9 @@ export const meMapLoader = {
 			App.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
 			// This is general rot if map loaded then whole map usualy 0 0 0 
 			App.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty)
-
 			// if(group.groupName.toString().indexOf('.RotX.') != -1) {
 			// 	//App.scene[n.name].physics.currentBody.
 			// 	// App.scene.mapobjsgroup_1_2.physics.currentBody.shapes[24].convexPolyhedronRepresentation.vertices
-
-
-
 			// }
 
 			if(n.shadows == true) {
@@ -354,8 +372,5 @@ export const meMapLoader = {
 		arg[n.name] = n.path;
 		matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS)
 	}
-
-	// test BVH 
-
-
+	// test BVH
 };

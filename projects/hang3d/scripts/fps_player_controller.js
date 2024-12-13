@@ -288,10 +288,15 @@ export var runHang3d = (world) => {
 		}
 	})
 
+	App.lastHit = {};
 	var preventFlagDouble = false;
 	addEventListener('ray.hit.event', (ev) => {
 		// console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
 		if(ev.detail.hitObject.name.indexOf('con_') == -1) {
+			// funny shoots 
+			console.log('....',ev.detail.hitObject.physics.currentBody)
+			App.lastHit = ev.detail.hitObject.physics.currentBody
+			App.lastHit.velocity.set(5,5,30)
 			return;
 		}
 		if(preventFlagDouble == false) {
@@ -635,9 +640,9 @@ export var runHang3d = (world) => {
 				setTimeout(() => {
 					world.Add("cubeLightTex", 1, "CUBE" + j, texStone);
 					var b2 = new CANNON.Body({
-						mass: 0.1,
+						mass: 0.5,
 						linearDamping: 0.01,
-						position: new CANNON.Vec3(1, -14.5, 15),
+						position: new CANNON.Vec3(-10, 14.5, 15),
 						shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
 					});
 					physics.world.addBody(b2);
@@ -648,8 +653,11 @@ export var runHang3d = (world) => {
 			}));
 		}
 	}
-	// objGenerator(2);
+
+	objGenerator(20);
+
 	createObjSequence('player');
+
 	// Promise.all(promiseAllGenerated).then((what) => {
 	// 	// console.info(`Waiting for runtime generation of scene objects,
 	// 	//               then swap scene array index for scene draw-index -> 

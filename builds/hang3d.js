@@ -20922,26 +20922,30 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
         // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
 
       } else {
-        for (var t = 0; t < object.textures.length; t++) {
-          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+        if (object.custom.gl_texture == null) {
+          for (var t = 0; t < object.textures.length; t++) {
+            _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
 
-          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
+            _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
 
-          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
 
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
 
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.NEAREST);
 
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE);
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE);
 
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE); // -- Allocate storage for the texture
-          //world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-          //world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, image);
-          //world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE); // -- Allocate storage for the texture
+            //world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
+            //world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, image);
+            //world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
 
 
-          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+            _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+          }
+        } else {
+          object.custom.gl_texture(object, t);
         }
       } // world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
 
@@ -41026,9 +41030,10 @@ let map = {
     scale: [1, 1, 1],
     scaleCollider: [1, 1, 1],
     texture: {
-      source: ["res/3d-objects/env/metal1.png"],
+      source: ["res/images/old-tex/floor.gif"],
       mix_operation: "multiply"
     },
+    textureRepeat: true,
     targetDom: {
       id: "field34",
       x: 3,
@@ -41223,12 +41228,12 @@ const loadDoorsBVH = (world, physics) => {
           isCollider.physics.enabled = true;
           console.log("ADDED COLLIDER  !", isCollider.position.y);
           console.log("ADDED COLLIDER  !", isCollider.position.z);
-          isCollider.physics.currentBody.position.set(isCollider.position.x, isCollider.position.z, isCollider.position.y - 5);
+          isCollider.physics.currentBody.position.set(isCollider.position.x, isCollider.position.y, isCollider.position.z + 5);
         }
-      });
-    }, 550); // FIX for now 
+      }); // FIX for now 
 
-    door1.closeDoor();
+      door1.closeDoor();
+    }, 550);
   });
   window.door1 = door1;
 
@@ -41236,7 +41241,7 @@ const loadDoorsBVH = (world, physics) => {
     App.myCustomEnvItems['door1'].options.loop = "stopOnEnd";
     App.myCustomEnvItems['door1'].playAnimationFromKeyframes();
     var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
-    App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z + 5);
+    App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z + 6);
   };
 
   door1['closeDoor'] = () => {
@@ -41253,7 +41258,7 @@ const loadDoorsBVH = (world, physics) => {
     App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop";
     App.myCustomEnvItems['door1'].playAnimationFromKeyframes();
     var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
-    App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z - 5);
+    App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z - 6);
   };
 
   return door1;
@@ -41581,10 +41586,15 @@ var runHang3d = world => {
       }
     }
   });
+  App.lastHit = {};
   var preventFlagDouble = false;
   addEventListener('ray.hit.event', ev => {
     // console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
     if (ev.detail.hitObject.name.indexOf('con_') == -1) {
+      // funny shoots 
+      console.log('....', ev.detail.hitObject.physics.currentBody);
+      App.lastHit = ev.detail.hitObject.physics.currentBody;
+      App.lastHit.velocity.set(5, 5, 30);
       return;
     }
 
@@ -41937,9 +41947,9 @@ var runHang3d = world => {
         setTimeout(() => {
           world.Add("cubeLightTex", 1, "CUBE" + j, texStone);
           var b2 = new CANNON.Body({
-            mass: 0.1,
+            mass: 0.5,
             linearDamping: 0.01,
-            position: new CANNON.Vec3(1, -14.5, 15),
+            position: new CANNON.Vec3(-10, 14.5, 15),
             shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
           });
           physics.world.addBody(b2);
@@ -41949,9 +41959,9 @@ var runHang3d = world => {
         }, 1000 * j);
       }));
     }
-  }; // objGenerator(2);
+  };
 
-
+  objGenerator(20);
   createObjSequence('player'); // Promise.all(promiseAllGenerated).then((what) => {
   // 	// console.info(`Waiting for runtime generation of scene objects,
   // 	//               then swap scene array index for scene draw-index -> 
@@ -42520,6 +42530,7 @@ const meMapLoader = {
         scale: item.scale,
         scaleCollider: item.scaleCollider,
         textures: item.texture.source,
+        textureRepeat: item.textureRepeat ? item.textureRepeat : undefined,
         shadows: false,
         gamePlayItem: 'STATIC_rock'
       }, physics);
@@ -42559,8 +42570,7 @@ const meMapLoader = {
       App.scene[n.name].position.z = n.position[2];
       App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
       App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
-      App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2]; // MUST BE FIXED ---------------------->><<---
-      // console.log('>>>>>>>>>>>>>', n)
+      App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2]; // console.log('>>>>>>>>>>>>>', n)
 
       App.scene[n.name].mesh.setScale({
         x: n.scale[0],
@@ -42609,7 +42619,31 @@ const meMapLoader = {
       App.scene[n.name].position.z = n.position[2];
       App.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
       App.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
-      App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+      App.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2]; // Texture REPEAT
+
+      if (typeof n.textureRepeat != -1 && n.textureRepeat == true) {
+        console.log('[Custom tex]'); // Texture REPEAT
+
+        let world = matrixEngine.matrixWorld.world;
+
+        App.scene[n.name].custom.gl_texture = function (object, t) {
+          for (var t = 0; t < object.textures.length; t++) {
+            world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
+            world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MAG_FILTER, world.GL.gl.LINEAR);
+            world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MIN_FILTER, world.GL.gl.LINEAR); // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, world.GL.gl.MIRRORED_REPEAT);
+            // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, world.GL.gl.MIRRORED_REPEAT);
+
+            world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, world.GL.gl.REPEAT);
+            world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, world.GL.gl.REPEAT); // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_SWIZZLE_R, world.GL.gl.ZERO);
+            // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_SWIZZLE_G, world.GL.gl.RED);
+            // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_SWIZZLE_B, world.GL.gl.ZERO);
+
+            world.GL.gl.texImage2D(world.GL.gl.TEXTURE_2D, 0, world.GL.gl.RGBA, world.GL.gl.RGBA, world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+            world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
+          }
+        };
+      }
+
       var body = new CANNON.Body({
         mass: 0,
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
@@ -42788,7 +42822,7 @@ const meMapLoader = {
     var arg = {};
     arg[n.name] = n.path;
     matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS);
-  } // test BVH 
+  } // test BVH
 
 
 };

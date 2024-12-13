@@ -45,7 +45,7 @@ export const loadDoorsBVH = (world, physics) => {
 			// This mechanics must be integrated in matrix-engine. In future.
 			// scale input !?
 			door1.accessBonesObject().forEach((isCollider) => {
-				isCollider 
+				isCollider
 				console.log("what   options.isCollider.position.x[0] !", isCollider.position.x)
 				if(isCollider.name.indexOf('COLLIDER') != -1) {
 					var b5 = new CANNON.Body({
@@ -63,15 +63,14 @@ export const loadDoorsBVH = (world, physics) => {
 					console.log("ADDED COLLIDER  !", isCollider.position.y)
 					console.log("ADDED COLLIDER  !", isCollider.position.z)
 					isCollider.physics.currentBody.position.set(isCollider.position.x,
-						isCollider.position.z,
-						isCollider.position.y - 5)
+						isCollider.position.y,
+						isCollider.position.z+5)
 
 				}
 			})
+			// FIX for now 
+			door1.closeDoor()
 		}, 550)
-
-		// FIX for now 
-		door1.closeDoor()
 	});
 	window.door1 = door1
 
@@ -79,7 +78,7 @@ export const loadDoorsBVH = (world, physics) => {
 		App.myCustomEnvItems['door1'].options.loop = "stopOnEnd"
 		App.myCustomEnvItems['door1'].playAnimationFromKeyframes()
 		var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
-		App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y , P.z + 5)
+		App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z + 6)
 	}
 
 	door1['closeDoor'] = () => {
@@ -94,7 +93,7 @@ export const loadDoorsBVH = (world, physics) => {
 		App.myCustomEnvItems['door1'].options.loop = "playInverseAndStop"
 		App.myCustomEnvItems['door1'].playAnimationFromKeyframes()
 		var P = App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position;
-		App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y , P.z - 5)
+		App.scene['MSBone.UP.COLLIDER'].physics.currentBody.position.set(P.x, P.y, P.z-6)
 	}
 
 	return door1;
