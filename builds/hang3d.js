@@ -41221,11 +41221,7 @@ const loadDoorsBVH = (world, physics) => {
     });
     setTimeout(() => {
       // This mechanics must be integrated in matrix-engine. In future.
-      // scale input !?
       door1.accessBonesObject().forEach(isCollider => {
-        isCollider;
-        console.log("what   options.isCollider.position.x[0] !", isCollider.position.x);
-
         if (isCollider.name.indexOf('COLLIDER') != -1) {
           var b5 = new CANNON.Body({
             mass: 0,
@@ -41233,17 +41229,15 @@ const loadDoorsBVH = (world, physics) => {
             position: new CANNON.Vec3(isCollider.position.x, isCollider.position.z, isCollider.position.y),
             shape: new CANNON.Box(new CANNON.Vec3(4, 2, 4))
           });
-          b5.name = 'TRIGER-BOX1';
+          b5._name = 'TRIGER-BOX1';
           physics.world.addBody(b5);
           isCollider.physics.currentBody = b5;
           isCollider.physics.enabled = true;
-          console.log("ADDED COLLIDER  !", isCollider.position.y);
-          console.log("ADDED COLLIDER  !", isCollider.position.z);
-          isCollider.physics.currentBody.position.set(isCollider.position.x, isCollider.position.y, isCollider.position.z);
+          isCollider.physics.currentBody.position.set(isCollider.position.x, isCollider.position.y, isCollider.position.z + 6);
         }
       }); // FIX for now 
 
-      door1.openDoor();
+      door1.closeDoor();
     }, 550);
   });
   window.door1 = door1;
@@ -41341,7 +41335,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.02; //ori 0.02
+  App.camera.speedAmp = 0.5; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
   App.camera.yawRateOnEdge = 3; //ori 3
@@ -41701,6 +41695,7 @@ var runHang3d = world => {
       App.scene.playerCollisonBox.iamInCollideRegime = false; // simple logic but also not perfect
 
       App.scene.playerCollisonBox.pingpong = true;
+      var preventDoubleTrigger = null;
       collisionBox.addEventListener("collide", function (e) {
         // const contactNormal = new CANNON.Vec3();
         // var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
@@ -41714,10 +41709,20 @@ var runHang3d = world => {
 
         if (e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
           //
+          if (preventDoubleTrigger == null) {
+            preventDoubleTrigger = setTimeout(() => {
+              App.myCustomEnvItems.door1.openDoor();
+              setTimeout(() => {
+                clearTimeout(preventDoubleTrigger);
+                preventDoubleTrigger = null;
+                App.myCustomEnvItems.door1.closeDoor();
+              }, 5000);
+            }, 100);
+          }
+
           console.log("TrigerAction[door1]:");
           return;
-        } // name
-
+        }
 
         console.log("playerCollisonBox collide with", e.contact.bi._name, " WITH ", e.contact.bj._name);
 
@@ -42080,7 +42085,7 @@ var runHang3d = world => {
   } else {
     _mapLoader.meMapLoader.load(_map2.map, physics);
   } // window.meMapLoader = meMapLoader;
-  // Access for doors for dev 
+  // Access for doors for dev.
 
 
   App.myCustomEnvItems = {};

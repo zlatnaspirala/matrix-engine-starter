@@ -44,7 +44,7 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.02;//ori 0.02
+	App.camera.speedAmp = 0.5;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 3; //ori 3
 	App.camera.yawRate = 3; // 1
@@ -387,10 +387,12 @@ export var runHang3d = (world) => {
 			App.scene.playerCollisonBox.iamInCollideRegime = false;
 			// simple logic but also not perfect
 			App.scene.playerCollisonBox.pingpong = true;
+			var preventDoubleTrigger = null;
 			collisionBox.addEventListener("collide", function(e) {
 				// const contactNormal = new CANNON.Vec3();
 				// var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
 				preventDoubleJump = null;
+				
 				if(e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
 					preventDoubleJump = null;
 					return;
@@ -399,13 +401,20 @@ export var runHang3d = (world) => {
 				// Procedure for trigerering is manual for now.
 				if(e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
 					//
+					if (preventDoubleTrigger == null) {
+						preventDoubleTrigger = setTimeout(() => {
+							App.myCustomEnvItems.door1.openDoor()
+							setTimeout( () => {
+								clearTimeout(preventDoubleTrigger)
+								preventDoubleTrigger = null;
+								App.myCustomEnvItems.door1.closeDoor()
+							} , 5000)
+						},100)
+					}
 					console.log("TrigerAction[door1]:")
 					return;
 				}
-				// name
-				
 				console.log("playerCollisonBox collide with", e.contact.bi._name , " WITH " ,  e.contact.bj._name);
-
 				if(e.contact.bi._name == 'damage') {
 					console.log("Trigger damage!");
 					//. 4x fix
@@ -777,7 +786,7 @@ export var runHang3d = (world) => {
 	}
 	// window.meMapLoader = meMapLoader;
 
-	// Access for doors for dev 
+	// Access for doors for dev.
 	App.myCustomEnvItems = {};
 	App.myCustomEnvItems['door1'] = loadDoorsBVH(world, physics);
 

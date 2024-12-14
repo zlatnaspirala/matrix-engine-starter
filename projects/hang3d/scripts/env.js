@@ -43,10 +43,7 @@ export const loadDoorsBVH = (world, physics) => {
 
 		setTimeout(() => {
 			// This mechanics must be integrated in matrix-engine. In future.
-			// scale input !?
 			door1.accessBonesObject().forEach((isCollider) => {
-				isCollider
-				console.log("what   options.isCollider.position.x[0] !", isCollider.position.x)
 				if(isCollider.name.indexOf('COLLIDER') != -1) {
 					var b5 = new CANNON.Body({
 						mass: 0,
@@ -56,20 +53,17 @@ export const loadDoorsBVH = (world, physics) => {
 							isCollider.position.y),
 						shape: new CANNON.Box(new CANNON.Vec3(4, 2, 4))
 					});
-					b5.name = 'TRIGER-BOX1';
+					b5._name = 'TRIGER-BOX1';
 					physics.world.addBody(b5);
 					isCollider.physics.currentBody = b5;
 					isCollider.physics.enabled = true;
-					console.log("ADDED COLLIDER  !", isCollider.position.y)
-					console.log("ADDED COLLIDER  !", isCollider.position.z)
 					isCollider.physics.currentBody.position.set(isCollider.position.x,
 						isCollider.position.y,
-						isCollider.position.z)
-
+						isCollider.position.z + 6)
 				}
 			})
 			// FIX for now 
-			door1.openDoor()
+			door1.closeDoor()
 		}, 550)
 	});
 	window.door1 = door1
