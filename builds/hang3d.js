@@ -41335,7 +41335,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.5; //ori 0.02
+  App.camera.speedAmp = 0.02; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
   App.camera.yawRateOnEdge = 3; //ori 3
