@@ -204,9 +204,10 @@ export const meMapLoader = {
 
 			var body = new CANNON.Body({
 				mass: 0,
+				linearDamping: 0.01,
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
 			});
-			App.scene[n.name].mesh.groups.forEach((group) => {
+			if (App.scene[n.name].mesh.groups) App.scene[n.name].mesh.groups.forEach((group) => {
 				// We can add the same shape several times to position child shapes within the Compound.
 				// tHIS WORKS ONLY FOR SIMPLY CUBE
 				// i dont know who to hide collider 

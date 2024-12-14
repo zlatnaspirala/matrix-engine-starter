@@ -29,7 +29,9 @@ export var runHang3d = (world) => {
 	})
 	// You can use import also.
 	matrixEngine.utility.notify.hideTime = 100;
-	matrixEngine.utility.notify.showTime = 2100;
+	matrixEngine.utility.notify.showTime = 2600;
+	matrixEngine.utility.notify.show('FirstPersonShooter MultiPlayer Template Based on Matrix-Engine 2.x.xx')
+
 	let notify = matrixEngine.utility.notify;
 	let byId = matrixEngine.utility.byId;
 	let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
@@ -42,7 +44,7 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.1;//ori 0.02
+	App.camera.speedAmp = 0.02;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 5; //ori 3
 	App.camera.yawRate = 5; // 1
@@ -398,7 +400,6 @@ export var runHang3d = (world) => {
 				if(e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
 					//
 					console.log("TrigerAction[door1]:")
-					preventDoubleJump = null;
 					return;
 				}
 				// name
@@ -630,7 +631,8 @@ export var runHang3d = (world) => {
 	const objGenerator = (n) => {
 		var texStone = {
 			source: [
-				"res/images/n-stone.png",
+				"res/images/RustPaint.jpg",
+				"res/images/old-tex/floor.gif"
 			],
 			mix_operation: "multiply",
 		};

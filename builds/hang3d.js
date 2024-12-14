@@ -40994,7 +40994,7 @@ let map = {
     scale: [1, 1, 1],
     scaleCollider: [1, 1, 1],
     texture: {
-      source: ["res/images/map-1.png"],
+      source: ["res/images/map-1.png", "res/images/old-tex/floor.gif"],
       mix_operation: "multiply"
     },
     targetDom: {
@@ -41003,6 +41003,17 @@ let map = {
       y: 10
     }
   }, // {
+  // 	name: "mapobjsgroup_125_10",
+  // 	path: "res/3d-objects/env/teleport.obj",
+  // 	position: {x: -50, y: 50, z: 42},
+  // 	rotation: {rotx: 0, roty: 0, rotz: 0},
+  // 	activeRotation: [0, 0, 0],
+  // 	scale: [1, 1, 1],
+  // 	scaleCollider: [1, 1, 1],
+  // 	texture: {source: ["res/3d-objects/env/textures/teleport.png"], mix_operation: "multiply"},
+  // 	targetDom: {id: "field510", x: 125, y: 10},
+  // },
+  // {
   //   name: "mapobjsgroup_10_10",
   //   path: "res/3d-objects/env/cube-scifi.obj",
   //   position: {x: -230, y: 1, z: 42},
@@ -41228,11 +41239,11 @@ const loadDoorsBVH = (world, physics) => {
           isCollider.physics.enabled = true;
           console.log("ADDED COLLIDER  !", isCollider.position.y);
           console.log("ADDED COLLIDER  !", isCollider.position.z);
-          isCollider.physics.currentBody.position.set(isCollider.position.x, isCollider.position.y, isCollider.position.z + 5);
+          isCollider.physics.currentBody.position.set(isCollider.position.x, isCollider.position.y, isCollider.position.z);
         }
       }); // FIX for now 
 
-      door1.closeDoor();
+      door1.openDoor();
     }, 550);
   });
   window.door1 = door1;
@@ -41316,7 +41327,8 @@ var runHang3d = world => {
   }); // You can use import also.
 
   matrixEngine.utility.notify.hideTime = 100;
-  matrixEngine.utility.notify.showTime = 2100;
+  matrixEngine.utility.notify.showTime = 2600;
+  matrixEngine.utility.notify.show('FirstPersonShooter MultiPlayer Template Based on Matrix-Engine 2.x.xx');
   let notify = matrixEngine.utility.notify;
   let byId = matrixEngine.utility.byId;
   let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
@@ -41329,7 +41341,7 @@ var runHang3d = world => {
   App.camera.FirstPersonController = true;
   matrixEngine.Events.camera.fly = false; // CPU~
 
-  App.camera.speedAmp = 0.1; //ori 0.02
+  App.camera.speedAmp = 0.02; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
   App.camera.yawRateOnEdge = 5; //ori 3
@@ -41703,7 +41715,6 @@ var runHang3d = world => {
         if (e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
           //
           console.log("TrigerAction[door1]:");
-          preventDoubleJump = null;
           return;
         } // name
 
@@ -41938,7 +41949,7 @@ var runHang3d = world => {
 
   const objGenerator = n => {
     var texStone = {
-      source: ["res/images/n-stone.png"],
+      source: ["res/images/RustPaint.jpg", "res/images/old-tex/floor.gif"],
       mix_operation: "multiply"
     };
 
@@ -42646,9 +42657,10 @@ const meMapLoader = {
 
       var body = new CANNON.Body({
         mass: 0,
+        linearDamping: 0.01,
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
       });
-      App.scene[n.name].mesh.groups.forEach(group => {
+      if (App.scene[n.name].mesh.groups) App.scene[n.name].mesh.groups.forEach(group => {
         // We can add the same shape several times to position child shapes within the Compound.
         // tHIS WORKS ONLY FOR SIMPLY CUBE
         // i dont know who to hide collider 

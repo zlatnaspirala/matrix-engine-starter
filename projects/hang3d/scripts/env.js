@@ -64,12 +64,12 @@ export const loadDoorsBVH = (world, physics) => {
 					console.log("ADDED COLLIDER  !", isCollider.position.z)
 					isCollider.physics.currentBody.position.set(isCollider.position.x,
 						isCollider.position.y,
-						isCollider.position.z+5)
+						isCollider.position.z)
 
 				}
 			})
 			// FIX for now 
-			door1.closeDoor()
+			door1.openDoor()
 		}, 550)
 	});
 	window.door1 = door1
