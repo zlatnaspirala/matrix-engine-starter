@@ -41344,9 +41344,9 @@ var runHang3d = world => {
   App.camera.speedAmp = 0.02; //ori 0.02
 
   matrixEngine.Events.camera.yPos = 10;
-  App.camera.yawRateOnEdge = 5; //ori 3
+  App.camera.yawRateOnEdge = 3; //ori 3
 
-  App.camera.yawRate = 5; // 1
+  App.camera.yawRate = 3; // 1
 
   App.myAccounts = {}; // Keyboard event
 
@@ -42013,7 +42013,7 @@ var runHang3d = world => {
 
   world.Add("squareTex", 1, "FLOOR_STATIC", tex);
   App.scene.FLOOR_STATIC.geometry.setScaleByX(500);
-  App.scene.FLOOR_STATIC.geometry.setScaleByY(500);
+  App.scene.FLOOR_STATIC.geometry.setScaleByY(550);
   App.scene.FLOOR_STATIC.position.SetY(-2);
   App.scene.FLOOR_STATIC.position.SetZ(-15);
   App.scene.FLOOR_STATIC.rotation.rotx = 90;
