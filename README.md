@@ -61,6 +61,17 @@ Link : https://maximumroulette.com/apps/matrix-engine-starter/projects/hang3d/
 Under hang3d project you can find in folder `tools/` Map Creator. [Will be part of MatrixEngine or ME-plugins]
 <img src="https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/map-creator.png" >
 
+Big map comes from object (OBJ format) with groups.
+If you wanna platform for player walking then add cube from blender and give similar name:
+
+Collider will tell MartixEngine to add physics body cube.
+floor will break jumping effect.
+
+```
+Cube.COLLIDER.floor
+```
+
+
 ## Matrix Roulette - 3d physics roulette
 
 TODO:
