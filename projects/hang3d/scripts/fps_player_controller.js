@@ -44,7 +44,7 @@ export var runHang3d = (world) => {
 	App.camera.FirstPersonController = true;
 	matrixEngine.Events.camera.fly = false;
 	// CPU~
-	App.camera.speedAmp = 0.02;//ori 0.02
+	App.camera.speedAmp = 0.1;//ori 0.02
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 3; //ori 3
 	App.camera.yawRate = 3; // 1
@@ -408,8 +408,8 @@ export var runHang3d = (world) => {
 								clearTimeout(preventDoubleTrigger)
 								preventDoubleTrigger = null;
 								App.myCustomEnvItems.door1.closeDoor()
-							} , 5000)
-						},100)
+							} , 6000)
+						},1000)
 					}
 					console.log("TrigerAction[door1]:")
 					return;
@@ -665,7 +665,7 @@ export var runHang3d = (world) => {
 		}
 	}
 
-	objGenerator(20);
+	// objGenerator(1);
 
 	createObjSequence('player');
 
@@ -773,6 +773,30 @@ export var runHang3d = (world) => {
 	// App.scene['FLOOR3'].position.setPosition(0, 0, -19)
 	// App.scene['FLOOR3'].physics.currentBody = b3;
 	// App.scene['FLOOR3'].physics.enabled = true;
+
+	loadObj({
+		name: "armor",
+		path: "res/3d-objects/armor.obj",
+		position: [-10, 0, -10],
+		activeRotation: [0, 20, 0],
+		rotation: [0, 0, 0],
+		scale: 1.1,
+		textures: ["res/images/armor.webp"],
+		shadows: false,
+		gamePlayItem: 'item-armor'
+	})
+
+	loadObj({
+		name: "munition",
+		path: "res/3d-objects/env/ammo.obj",
+		position: [-10, 0, -20],
+		activeRotation: [0, 20, 0],
+		rotation: [0, 0, 0],
+		scale: 1.1,
+		textures: ["res/images/complex_texture_1/normalmap.webp"],
+		shadows: false,
+		gamePlayItem: 'item-munition'
+	})
 
 	// MAP LOADER
 
