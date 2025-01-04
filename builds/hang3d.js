@@ -41730,10 +41730,12 @@ var runHang3d = world => {
       collisionBox.addEventListener("collide", function (e) {
         // const contactNormal = new CANNON.Vec3();
         // var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
-        preventDoubleJump = null;
+        preventDoubleJump = null; // console.log("[", e.contact.bi._name, "][", e.contact.bj._name);
 
-        if (e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
-          preventDoubleJump = null;
+        if ( // e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor' ||
+        e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 || e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1 || e.contact.si && e.contact.si._name.indexOf('floor') != -1 && e.contact.sj && e.contact.sj._name.indexOf('floor') != -1) {
+          preventDoubleJump = null; // console.log("", e.contact.bi._name, " WITH ", e.contact.bj._name);
+
           return;
         } // Procedure for trigerering is manual for now.
 
@@ -41754,8 +41756,6 @@ var runHang3d = world => {
           console.log("TrigerAction[door1]:");
           return;
         }
-
-        console.log("playerCollisonBox collide with", e.contact.bi._name, " WITH ", e.contact.bj._name);
 
         if (e.contact.bi._name == 'damage') {
           console.log("Trigger damage!"); //. 4x fix
@@ -42125,7 +42125,7 @@ var runHang3d = world => {
     activeRotation: [0, 20, 0],
     rotation: [0, 0, 0],
     scale: 1.1,
-    textures: ["res/images/complex_texture_1/normalmap.webp"],
+    textures: ["res/images/old-tex/sky3.gif"],
     shadows: false,
     gamePlayItem: 'item-munition'
   }); // MAP LOADER
@@ -42352,7 +42352,8 @@ var runHang3d = world => {
         linearDamping: 0.01,
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
         shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
-      });
+      }); // console.log('SET NAME _ ', n.gamePlayItem)
+
       b44._name = n.gamePlayItem;
       physics.world.addBody(b44); // App.scene.LAVA.geometry.setScaleByX(1);
 
@@ -42750,8 +42751,9 @@ const meMapLoader = {
 
         var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY))); // console.log('calcX pos ', calcXWorldPos)
         // console.log('calcY pos ', calcYWorldPox)
-        // console.log('calcZ pos ', calcZWorldPos)
 
+        shape._name = group.groupName;
+        console.log('GIVE NAME FOR EVERY GROUP ', shape._name);
         console.log('G NAME ', group.groupName.toString());
 
         if (group.groupName.toString().indexOf('.RotX.') != -1) {

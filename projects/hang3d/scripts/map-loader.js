@@ -240,7 +240,9 @@ export const meMapLoader = {
 				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
 				// console.log('calcX pos ', calcXWorldPos)
 				// console.log('calcY pos ', calcYWorldPox)
-				// console.log('calcZ pos ', calcZWorldPos)
+
+				shape._name = group.groupName
+				console.log('GIVE NAME FOR EVERY GROUP ', shape._name)
 				console.log('G NAME ', group.groupName.toString())
 				if(group.groupName.toString().indexOf('.RotX.') != -1) {
 					var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""))

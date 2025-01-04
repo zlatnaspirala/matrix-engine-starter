@@ -296,9 +296,9 @@ export var runHang3d = (world) => {
 		// console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
 		if(ev.detail.hitObject.name.indexOf('con_') == -1) {
 			// funny shoots 
-			console.log('....',ev.detail.hitObject.physics.currentBody)
+			console.log('....', ev.detail.hitObject.physics.currentBody)
 			App.lastHit = ev.detail.hitObject.physics.currentBody;
-			if (App.lastHit) App.lastHit.velocity.set(5,5,30)
+			if(App.lastHit) App.lastHit.velocity.set(5, 5, 30)
 			return;
 		}
 		if(preventFlagDouble == false) {
@@ -388,33 +388,40 @@ export var runHang3d = (world) => {
 			// simple logic but also not perfect
 			App.scene.playerCollisonBox.pingpong = true;
 			var preventDoubleTrigger = null;
+
 			collisionBox.addEventListener("collide", function(e) {
 				// const contactNormal = new CANNON.Vec3();
 				// var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
 				preventDoubleJump = null;
-				
-				if(e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor') {
+
+				// console.log("[", e.contact.bi._name, "][", e.contact.bj._name);
+
+				if( // e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor' ||
+					(e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 ||
+					e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1) || 
+					(e.contact.si && e.contact.si._name.indexOf('floor') != -1 &&
+						e.contact.sj && e.contact.sj._name.indexOf('floor') != -1)) {
 					preventDoubleJump = null;
+					// console.log("", e.contact.bi._name, " WITH ", e.contact.bj._name);
 					return;
 				}
 
 				// Procedure for trigerering is manual for now.
 				if(e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
 					//
-					if (preventDoubleTrigger == null) {
+					if(preventDoubleTrigger == null) {
 						preventDoubleTrigger = setTimeout(() => {
 							App.myCustomEnvItems.door1.openDoor()
-							setTimeout( () => {
+							setTimeout(() => {
 								clearTimeout(preventDoubleTrigger)
 								preventDoubleTrigger = null;
 								App.myCustomEnvItems.door1.closeDoor()
-							} , 6000)
-						},1000)
+							}, 6000)
+						}, 1000)
 					}
 					console.log("TrigerAction[door1]:")
 					return;
 				}
-				console.log("playerCollisonBox collide with", e.contact.bi._name , " WITH " ,  e.contact.bj._name);
 				if(e.contact.bi._name == 'damage') {
 					console.log("Trigger damage!");
 					//. 4x fix
@@ -793,14 +800,14 @@ export var runHang3d = (world) => {
 		activeRotation: [0, 20, 0],
 		rotation: [0, 0, 0],
 		scale: 1.1,
-		textures: ["res/images/complex_texture_1/normalmap.webp"],
+		textures: ["res/images/old-tex/sky3.gif"],
 		shadows: false,
 		gamePlayItem: 'item-munition'
 	})
 
 	// MAP LOADER
 
-	if (localStorage.getItem('map') != null) {
+	if(localStorage.getItem('map') != null) {
 		meMapLoader.load(map, physics);
 		// var t = localStorage.getItem('map');
 		// t = JSON.parse(t)
@@ -1031,6 +1038,7 @@ export var runHang3d = (world) => {
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
 				shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
 			});
+			// console.log('SET NAME _ ', n.gamePlayItem)
 			b44._name = n.gamePlayItem;
 			physics.world.addBody(b44);
 			// App.scene.LAVA.geometry.setScaleByX(1);
