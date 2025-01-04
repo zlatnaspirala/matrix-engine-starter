@@ -396,7 +396,7 @@ export var runHang3d = (world) => {
 				// console.log("[", e.contact.bi._name, "][", e.contact.bj._name);
 				if((e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 ||
 					e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1) ||
-					(e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 &&
+					(e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 ||
 						e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1)) {
 					preventDoubleJump = null;
 					return;
@@ -651,17 +651,22 @@ export var runHang3d = (world) => {
 			promiseAllGenerated.push(new Promise((resolve) => {
 				setTimeout(() => {
 					var gname =  "CUBE" + j;
+					var gscale = 3;
 					world.Add("cubeLightTex", 1, gname, texStone);
 					var b2 = new CANNON.Body({
 						mass: 0.5,
 						linearDamping: 0.01,
 						position: new CANNON.Vec3(-10, 14.5, 15),
-						shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
+						shape: new CANNON.Box(new CANNON.Vec3(gscale, gscale, gscale))
 					});
 					physics.world.addBody(b2);
 					App.scene[gname].physics.currentBody = b2;
 					App.scene[gname].physics.enabled = true;
 					App.scene[gname].activateShadows('spot-shadow')
+					App.scene[gname].geometry.setScale(gscale)
+
+					App.scene[gname].shadows.activeUpdate()
+					App.scene[gname].shadows.animatePositionY()
 					resolve();
 				}, 1000 * j);
 			}));

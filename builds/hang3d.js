@@ -27775,8 +27775,8 @@ function defineworld(canvas, renderType) {
           height: 512
         });
 
-        cubeObject.FBO = {
-          name: cubeObject.name,
+        squareObject.FBO = {
+          name: squareObject.name,
           FB: _fbshadows[0],
           deepTexture: _fbshadows[1],
           settings: {
@@ -27787,7 +27787,7 @@ function defineworld(canvas, renderType) {
             yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw
           }
         };
-        world.FBOS.push(cubeObject.FBO);
+        world.FBOS.push(squareObject.FBO);
       }; // destroy self
 
 
@@ -28279,8 +28279,8 @@ function defineworld(canvas, renderType) {
           height: 512
         });
 
-        cubeObject.FBO = {
-          name: cubeObject.name,
+        objObject.FBO = {
+          name: objObject.name,
           FB: _fbshadows[0],
           deepTexture: _fbshadows[1],
           settings: {
@@ -28291,7 +28291,7 @@ function defineworld(canvas, renderType) {
             yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw
           }
         };
-        world.FBOS.push(cubeObject.FBO);
+        world.FBOS.push(objObject.FBO);
       }; // Update others start
 
 
@@ -41732,7 +41732,7 @@ var runHang3d = world => {
         // var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
         preventDoubleJump = null; // console.log("[", e.contact.bi._name, "][", e.contact.bj._name);
 
-        if (e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 || e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1 || e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 && e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1) {
+        if (e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 || e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1 || e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 || e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1) {
           preventDoubleJump = null;
           return;
         } // Procedure for trigerering is manual for now.
@@ -41990,17 +41990,21 @@ var runHang3d = world => {
       promiseAllGenerated.push(new Promise(resolve => {
         setTimeout(() => {
           var gname = "CUBE" + j;
+          var gscale = 3;
           world.Add("cubeLightTex", 1, gname, texStone);
           var b2 = new CANNON.Body({
             mass: 0.5,
             linearDamping: 0.01,
             position: new CANNON.Vec3(-10, 14.5, 15),
-            shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
+            shape: new CANNON.Box(new CANNON.Vec3(gscale, gscale, gscale))
           });
           physics.world.addBody(b2);
           App.scene[gname].physics.currentBody = b2;
           App.scene[gname].physics.enabled = true;
           App.scene[gname].activateShadows('spot-shadow');
+          App.scene[gname].geometry.setScale(gscale);
+          App.scene[gname].shadows.activeUpdate();
+          App.scene[gname].shadows.animatePositionY();
           resolve();
         }, 1000 * j);
       }));
