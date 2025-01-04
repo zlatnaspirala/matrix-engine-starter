@@ -84,7 +84,7 @@ export class RCSAccount {
 		var hideLoginMyAccount = document.createElement('button');
 		hideLoginMyAccount.classList.add(`btn`);
 		hideLoginMyAccount.classList.add(`btnMargin`);
-		hideLoginMyAccount.innerHTML = `NO LOGIN -> FREE PLAY`;
+		hideLoginMyAccount.innerHTML = `NO LOGIN -> INSTANT PLAY`;
 		hideLoginMyAccount.addEventListener('click', () => {
 			byId('myAccountLoginForm').remove();
 		})

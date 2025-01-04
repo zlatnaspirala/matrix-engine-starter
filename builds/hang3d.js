@@ -41732,16 +41732,13 @@ var runHang3d = world => {
         // var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
         preventDoubleJump = null; // console.log("[", e.contact.bi._name, "][", e.contact.bj._name);
 
-        if ( // e.contact.bj._name == 'floor' || e.contact.bi._name == 'floor' ||
-        e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 || e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1 || e.contact.si && e.contact.si._name.indexOf('floor') != -1 && e.contact.sj && e.contact.sj._name.indexOf('floor') != -1) {
-          preventDoubleJump = null; // console.log("", e.contact.bi._name, " WITH ", e.contact.bj._name);
-
+        if (e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 || e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1 || e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 && e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1) {
+          preventDoubleJump = null;
           return;
         } // Procedure for trigerering is manual for now.
 
 
         if (e.contact.bj._name == 'TRIGER-BOX1' || e.contact.bi._name == 'TRIGER-BOX1') {
-          //
           if (preventDoubleTrigger == null) {
             preventDoubleTrigger = setTimeout(() => {
               App.myCustomEnvItems.door1.openDoor();
@@ -41992,7 +41989,8 @@ var runHang3d = world => {
     for (var j = 0; j < n; j++) {
       promiseAllGenerated.push(new Promise(resolve => {
         setTimeout(() => {
-          world.Add("cubeLightTex", 1, "CUBE" + j, texStone);
+          var gname = "CUBE" + j;
+          world.Add("cubeLightTex", 1, gname, texStone);
           var b2 = new CANNON.Body({
             mass: 0.5,
             linearDamping: 0.01,
@@ -42000,15 +41998,16 @@ var runHang3d = world => {
             shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1))
           });
           physics.world.addBody(b2);
-          App.scene['CUBE' + j].physics.currentBody = b2;
-          App.scene['CUBE' + j].physics.enabled = true;
+          App.scene[gname].physics.currentBody = b2;
+          App.scene[gname].physics.enabled = true;
+          App.scene[gname].activateShadows('spot-shadow');
           resolve();
         }, 1000 * j);
       }));
     }
-  }; // objGenerator(1);
+  };
 
-
+  objGenerator(10);
   createObjSequence('player'); // Promise.all(promiseAllGenerated).then((what) => {
   // 	// console.info(`Waiting for runtime generation of scene objects,
   // 	//               then swap scene array index for scene draw-index -> 
@@ -42367,20 +42366,7 @@ var runHang3d = world => {
     var arg = {};
     arg[n.name] = n.path;
     matrixEngine.objLoader.downloadMeshes(arg, onLoadObj);
-  } // loadObjStatic({
-  // 	name: "wall_from_code",
-  // 	mass: 0,
-  // 	path: "res/3d-objects/env/door1.obj",
-  // 	position: [-10, 1, -20],
-  // 	// activeRotation: [0, 20, 0],
-  // 	rotation: [180, 0, 0],
-  // 	scale: 1.1,
-  // 	textures: ["res/3d-objects/env/metal1.png"],
-  // 	shadows: false,
-  // 	gamePlayItem: 'STATIC_WALL'
-  // })
-  //
-  // Handler for obj
+  } // Handler for obj
 
 
   function loadObjStatic(n) {
@@ -42989,7 +42975,7 @@ class RCSAccount {
     var hideLoginMyAccount = document.createElement('button');
     hideLoginMyAccount.classList.add(`btn`);
     hideLoginMyAccount.classList.add(`btnMargin`);
-    hideLoginMyAccount.innerHTML = `NO LOGIN -> FREE PLAY`;
+    hideLoginMyAccount.innerHTML = `NO LOGIN -> INSTANT PLAY`;
     hideLoginMyAccount.addEventListener('click', () => {
       byId('myAccountLoginForm').remove();
     });
