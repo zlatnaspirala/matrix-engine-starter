@@ -50,7 +50,7 @@ And navigate to app.html, examples.html etc.
 
 ## Projects
 
-## NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter
+## NEW PROJECT - Hang3d Matrix MultiPlayer FPShooter MIT Licence
 
 - Basic for now
 
@@ -222,9 +222,20 @@ ROOT Bone
 
 ### Licence
 
-Projects folder `projects/` under licence:
-`GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007`
-All other folders are under `Mit licence`.
+Projects folder 
+ -`projects/hang3d`
+ -`projects/matrix-roulette`
+ -`projects/matrix-slot`
+ under licence:
+`MIT Licence`
+All other folders are under `Mit licence` except on graphics cases (ussually i add origin src link).
+I never take non-commercial in resources aspect.
+My blender works are total free.
+
+Projects folder:
+ -`projects/web-anatomy`
+ under GPL v3 + CCAttribution-Share Alike 2.1 Japan
+
 
 ### Join chat on slack
 
