@@ -43449,21 +43449,23 @@ class Create2DBanner {
         id: "statusBox",
         size: {
           width: 600,
-          height: 250
+          height: 600
         }
       };
       let last10 = [];
       let nidza = new _nidza.Nidza();
       nidza.createNidzaIndentity(n);
       let texCanvas = document.getElementById('statusBox');
-      var previewR__ = '';
-      var previewR = '';
+      var colorForOpenGame = 'lime';
+      var previewR__ = 'based on glmatrix';
+      var previewR = 'Hang3d matrix FPS';
       var previewTitle = 'matrix engine 2.2.0 ';
-      var colorForCOLOR = 'rgba(120,0,0,0.4)';
+      var colorForCOLOR = 'rgba(252, 86, 86, 0.89)';
       var colorForLastMoment = 'rgba(255,15,15,1)';
       var p1 = 0;
-      addEventListener('SOME_CHANGES', e => {// p1 = e.detail * 17
-        // colorForCOLOR = colorForOpenGame
+      addEventListener('SSS', e => {
+        p1 = e.detail * 17;
+        colorForCOLOR = colorForOpenGame;
       });
       let activeTexture1 = nidza.access.statusBox.addCustom2dComponent({
         id: "CUSTOM",
@@ -43480,9 +43482,9 @@ class Create2DBanner {
           e.fillStyle = 'rgba(250,250,250,1)'; // if (previewR != -1) 
 
           e.font = 'bold 60px stormfaze';
-          e.fillText("" + previewR__.toString(), 340, 152, 250);
-          e.font = 'bold 40px stormfaze';
-          e.fillText("" + previewR.toString(), 340, 148, 250);
+          e.fillText("" + previewR__.toString(), 340, 152, 350);
+          e.font = 'bold 40px stormfaze'; // e.fillText("" + previewR.toString(), 340, 148, 250)
+
           e.fillRect(170, 66, 250, 43);
           e.textAlign = 'left';
           e.font = 'normal 20px stormfaze';
@@ -43490,6 +43492,7 @@ class Create2DBanner {
           e.fillStyle = 'rgba(250,50,50,1)';
           e.fillText(`maximumroulette.com`, 170, 78, 250, 33);
           e.fillText(`github.com/zlatnaspirala`, 170, 100, 250, 33);
+          e.fillText(previewR, 170, 125, 250);
           e.font = 'normal 33px stormfaze';
           e.fillStyle = 'rgba(250,250,250,1)';
           e.fillText(previewTitle, 20, 50, 550, 25);
@@ -44030,7 +44033,7 @@ var runHang3d = world => {
     // console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
     if (ev.detail.hitObject.name.indexOf('con_') == -1) {
       // funny shoots 
-      console.log('....', ev.detail.hitObject.physics.currentBody);
+      // console.log('....', ev.detail.hitObject.physics.currentBody)
       App.lastHit = ev.detail.hitObject.physics.currentBody;
       if (App.lastHit) App.lastHit.velocity.set(5, 5, 30);
       return;
@@ -44134,8 +44137,8 @@ var runHang3d = world => {
         preventDoubleJump = null; // console.log("[", e.contact.bi._name, "][", e.contact.bj._name);
 
         if (e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 || e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1 || e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 || e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1) {
-          preventDoubleJump = null;
-          console.log("[", e.contact.bi._name, "][", e.contact.bj._name + " si" + e.contact.sj + " ss " + e.contact.si._name);
+          preventDoubleJump = null; // console.log("[", e.contact.bi._name, "][", e.contact.bj._name +  " si" +  e.contact.sj + " ss " + e.contact.si._name );
+
           return;
         } // Procedure for trigerering is manual for now.
 
@@ -44704,29 +44707,29 @@ var runHang3d = world => {
   App.scene.LAVA.physics.enabled = true;
   App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
   App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT("res/video-texture/lava1.mkv"); // TEST 2d custom canvas
-
-  var banners = new _activeTextures.Create2DBanner().then(canvas2d => {
-    console.log('BANNERS', canvas2d);
-    world.Add("squareTex", 1, "banner1", tex1);
-    var lavaScale = 10;
-    var b4 = new CANNON.Body({
-      mass: 0,
-      linearDamping: 0.01,
-      position: new CANNON.Vec3(16, 36.5, 5),
-      shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
-    });
-    b4._name = 'banner1';
-    physics.world.addBody(b4);
-    App.scene.banner1.position.setPosition(16, 5, -36.5);
-    App.scene.banner1.geometry.setScale(lavaScale);
-    App.scene.banner1.physics.currentBody = b4;
-    App.scene.banner1.physics.enabled = true;
-    App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
-    App.scene.banner1.streamTextures = {
-      videoImage: canvas2d
-    };
-    App.scene.banner1.rotation.rotz = 180;
-  }); // // How to load obj and give him gameplay item props
+  // var banners = new Create2DBanner().then((canvas2d) => {
+  // 	console.log('BANNERS', canvas2d)
+  // 	// world.Add("squareTex", 1, "banner1", tex1);
+  // 	// var lavaScale = 10;
+  // 	// // var b4 = new CANNON.Body({
+  // 	// // 	mass: 0,
+  // 	// // 	linearDamping: 0.01,
+  // 	// // 	position: new CANNON.Vec3(16, 36.5, 5),
+  // 	// // 	shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
+  // 	// // });
+  // 	// // b4._name = 'banner1';
+  // 	// // physics.world.addBody(b4);
+  // 	// App.scene.banner1.position.setPosition(16, 5, -36.5)
+  // 	// App.scene.banner1.geometry.setScale(lavaScale);
+  // 	// // App.scene.banner1.physics.currentBody = b4;
+  // 	// // App.scene.banner1.physics.enabled = true;
+  // 	// App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
+  // 	// App.scene.banner1.streamTextures = {videoImage: canvas2d}
+  // 	// App.scene.banner1.rotation.rotz = 180
+  // 	// App.scene.banner1.rotation.roty = 90
+  // 	// App.scene.banner1.physics.currentBody.position.set(-146,47.5,8)
+  // });
+  // // How to load obj and give him gameplay item props
   // loadObj({
   // 	name: "armor",
   // 	path: "res/3d-objects/armor.obj",
@@ -45135,9 +45138,9 @@ const meMapLoader = {
       });
       if (App.scene[n.name].mesh.groups) App.scene[n.name].mesh.groups.forEach(group => {
         // We can add the same shape several times to position child shapes within the Compound.
-        // tHIS WORKS ONLY FOR SIMPLY CUBE
+        // tHIS WORKS ONLY FOR SIMPLY CUBE (no rotate in blender view)
         // i dont know who to hide collider 
-        console.log('<GROUP>', group);
+        // console.log('<GROUP>', group)
         var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
         group.groupVert.forEach((vert, index) => {
           if (index == 0) {
@@ -45161,23 +45164,16 @@ const meMapLoader = {
         calcY = calcY / 2;
         var calcZ = collectZ2 - collectZ0;
         var calcZWorldPos = (collectZ2 + collectZ0) / 2;
-        calcZ = calcZ / 2; // console.log('calcX', calcX)// console.log('calcY', calcY)// console.log('calcZ', calcZ)
-
-        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY))); // console.log('calcX pos ', calcXWorldPos)
-        // console.log('calcY pos ', calcYWorldPox)
-
-        shape._name = group.groupName;
-        console.log('GIVE NAME FOR EVERY GROUP ', shape._name);
-        console.log('G NAME ', group.groupName.toString());
+        calcZ = calcZ / 2;
+        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
+        shape._name = group.groupName; // console.log('G NAME ', group.groupName.toString())
 
         if (group.groupName.toString().indexOf('.RotX.') != -1) {
           var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""));
           var rotLocal = new CANNON.Quaternion(0, 0, 0, 1);
           console.log('getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180);
-          rotLocal.setFromEuler(getValueX * Math.PI / 180, 0, 0); // body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
-
-          body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox), rotLocal);
-          console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE', body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices);
+          rotLocal.setFromEuler(getValueX * Math.PI / 180, 0, 0);
+          body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox), rotLocal); // console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE',body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices)
         } else {
           body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
         }
@@ -45257,10 +45253,10 @@ const meMapLoader = {
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
       });
       App.scene[n.name].mesh.groups.forEach((group, index) => {
-        // We can add the same shape several times to position child shapes within the Compound.
+        // We can add the same shape several times to position child shapes within the compound.
         // tHIS WORKS ONLY FOR SIMPLY CUBE
-        // i dont know who to hide collider 
-        console.log('<GROUP>', group);
+        // i dont know who to hide collider
+        // console.log('<GROUP>', group)
         var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
         group.groupVert.forEach((vert, index) => {
           if (index == 0) {

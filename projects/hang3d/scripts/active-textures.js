@@ -8,7 +8,7 @@ export class Create2DBanner {
 				id: "statusBox",
 				size: {
 					width: 600,
-					height: 250
+					height: 600
 				}
 			}
 
@@ -18,17 +18,17 @@ export class Create2DBanner {
 			nidza.createNidzaIndentity(n);
 
 			let texCanvas = document.getElementById('statusBox');
-
-			var previewR__ = '';
-			var previewR = '';
+			var colorForOpenGame = 'lime'
+			var previewR__ = 'based on glmatrix';
+			var previewR = 'Hang3d matrix FPS';
 			var previewTitle = 'matrix engine 2.2.0 ';
-			var colorForCOLOR = 'rgba(120,0,0,0.4)'
+			var colorForCOLOR = 'rgba(252, 86, 86, 0.89)'
 			var colorForLastMoment = 'rgba(255,15,15,1)'
 			var p1 = 0;
 
-			addEventListener('SOME_CHANGES', (e) => {
-				// p1 = e.detail * 17
-				// colorForCOLOR = colorForOpenGame
+			addEventListener('SSS', (e) => {
+				p1 = e.detail * 17
+				colorForCOLOR = colorForOpenGame
 			})
 
 			let activeTexture1 = nidza.access.statusBox.addCustom2dComponent({
@@ -50,9 +50,9 @@ export class Create2DBanner {
 					e.fillStyle = 'rgba(250,250,250,1)';
 					// if (previewR != -1) 
 					e.font = 'bold 60px stormfaze'
-					e.fillText("" + previewR__.toString(), 340, 152, 250)
+					e.fillText("" + previewR__.toString(), 340, 152, 350)
 					e.font = 'bold 40px stormfaze'
-					e.fillText("" + previewR.toString(), 340, 148, 250)
+					// e.fillText("" + previewR.toString(), 340, 148, 250)
 
 					e.fillRect(170, 66, 250, 43)
 
@@ -63,6 +63,8 @@ export class Create2DBanner {
 					e.fillStyle = 'rgba(250,50,50,1)';
 					e.fillText(`maximumroulette.com`, 170, 78, 250, 33)
 					e.fillText(`github.com/zlatnaspirala`, 170, 100, 250, 33)
+					e.fillText(previewR, 170, 125, 250)
+					
 
 					e.font = 'normal 33px stormfaze'
 					e.fillStyle = 'rgba(250,250,250,1)';

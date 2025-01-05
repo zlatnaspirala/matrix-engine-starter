@@ -297,7 +297,7 @@ export var runHang3d = (world) => {
 		// console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
 		if(ev.detail.hitObject.name.indexOf('con_') == -1) {
 			// funny shoots 
-			console.log('....', ev.detail.hitObject.physics.currentBody)
+			// console.log('....', ev.detail.hitObject.physics.currentBody)
 			App.lastHit = ev.detail.hitObject.physics.currentBody;
 			if(App.lastHit) App.lastHit.velocity.set(5, 5, 30)
 			return;
@@ -400,7 +400,7 @@ export var runHang3d = (world) => {
 					(e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 ||
 						e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1)) {
 					preventDoubleJump = null;
-					console.log("[", e.contact.bi._name, "][", e.contact.bj._name +  " si" +  e.contact.sj + " ss " + e.contact.si._name );
+					// console.log("[", e.contact.bi._name, "][", e.contact.bj._name +  " si" +  e.contact.sj + " ss " + e.contact.si._name );
 					return;
 				}
 				// Procedure for trigerering is manual for now.
@@ -994,27 +994,29 @@ export var runHang3d = (world) => {
 
 
 	// TEST 2d custom canvas
-	var banners = new Create2DBanner().then((canvas2d) => {
-		console.log('BANNERS', canvas2d)
+	// var banners = new Create2DBanner().then((canvas2d) => {
+	// 	console.log('BANNERS', canvas2d)
 
-		world.Add("squareTex", 1, "banner1", tex1);
-		var lavaScale = 10;
-		var b4 = new CANNON.Body({
-			mass: 0,
-			linearDamping: 0.01,
-			position: new CANNON.Vec3(16, 36.5, 5),
-			shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
-		});
-		b4._name = 'banner1';
-		physics.world.addBody(b4);
-		App.scene.banner1.position.setPosition(16, 5, -36.5)
-		App.scene.banner1.geometry.setScale(lavaScale);
-		App.scene.banner1.physics.currentBody = b4;
-		App.scene.banner1.physics.enabled = true;
-		App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
-		App.scene.banner1.streamTextures = {videoImage: canvas2d}
-		App.scene.banner1.rotation.rotz = 180
-	});
+	// 	// world.Add("squareTex", 1, "banner1", tex1);
+	// 	// var lavaScale = 10;
+	// 	// // var b4 = new CANNON.Body({
+	// 	// // 	mass: 0,
+	// 	// // 	linearDamping: 0.01,
+	// 	// // 	position: new CANNON.Vec3(16, 36.5, 5),
+	// 	// // 	shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
+	// 	// // });
+	// 	// // b4._name = 'banner1';
+	// 	// // physics.world.addBody(b4);
+	// 	// App.scene.banner1.position.setPosition(16, 5, -36.5)
+	// 	// App.scene.banner1.geometry.setScale(lavaScale);
+	// 	// // App.scene.banner1.physics.currentBody = b4;
+	// 	// // App.scene.banner1.physics.enabled = true;
+	// 	// App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
+	// 	// App.scene.banner1.streamTextures = {videoImage: canvas2d}
+	// 	// App.scene.banner1.rotation.rotz = 180
+	// 	// App.scene.banner1.rotation.roty = 90
+	// 	// App.scene.banner1.physics.currentBody.position.set(-146,47.5,8)
+	// });
 
 	
 

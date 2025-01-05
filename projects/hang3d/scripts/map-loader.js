@@ -209,9 +209,9 @@ export const meMapLoader = {
 			});
 			if (App.scene[n.name].mesh.groups) App.scene[n.name].mesh.groups.forEach((group) => {
 				// We can add the same shape several times to position child shapes within the Compound.
-				// tHIS WORKS ONLY FOR SIMPLY CUBE
+				// tHIS WORKS ONLY FOR SIMPLY CUBE (no rotate in blender view)
 				// i dont know who to hide collider 
-				console.log('<GROUP>', group)
+				// console.log('<GROUP>', group)
 				var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
 				group.groupVert.forEach((vert, index) => {
 					if(index == 0) {
@@ -236,27 +236,18 @@ export const meMapLoader = {
 				var calcZ = collectZ2 - collectZ0;
 				var calcZWorldPos = (collectZ2 + collectZ0) / 2;
 				calcZ = calcZ / 2;
-				// console.log('calcX', calcX)// console.log('calcY', calcY)// console.log('calcZ', calcZ)
 				var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
-				// console.log('calcX pos ', calcXWorldPos)
-				// console.log('calcY pos ', calcYWorldPox)
-
 				shape._name = group.groupName
-				console.log('GIVE NAME FOR EVERY GROUP ', shape._name)
-				console.log('G NAME ', group.groupName.toString())
+				// console.log('G NAME ', group.groupName.toString())
 				if(group.groupName.toString().indexOf('.RotX.') != -1) {
 					var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""))
 					var rotLocal = new CANNON.Quaternion(0, 0, 0, 1)
 					console.log('getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180)
 					rotLocal.setFromEuler((getValueX * Math.PI / 180), 0, 0)
-					// body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
 					body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox),
 						rotLocal
 					);
-
-					console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE',
-						body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices
-					)
+					// console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE',body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices)
 				} else {
 					body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
 				}
@@ -324,10 +315,10 @@ export const meMapLoader = {
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
 			});
 			App.scene[n.name].mesh.groups.forEach((group, index) => {
-				// We can add the same shape several times to position child shapes within the Compound.
+				// We can add the same shape several times to position child shapes within the compound.
 				// tHIS WORKS ONLY FOR SIMPLY CUBE
-				// i dont know who to hide collider 
-				console.log('<GROUP>', group)
+				// i dont know who to hide collider
+				// console.log('<GROUP>', group)
 				var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
 				group.groupVert.forEach((vert, index) => {
 					if(index == 0) {
