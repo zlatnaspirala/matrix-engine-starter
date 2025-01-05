@@ -20493,7 +20493,33 @@ _manifest.default.operation.draws.cube = function (object, ray) {
   _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); // Shadows
 
 
-  if (object.shadows && object.shadows.type == 'spot' || object.shadows && object.shadows.type == 'spot-shadow') {// set the light position
+  if (object.shadows && object.shadows.type == 'spot') {
+    // set the light position
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.position.worldLocation);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess); // Set the spotlight uniforms
+
+
+    {
+      var target = [0, 0, 0]; // object.position.worldLocation;
+
+      var up = [0, 1, 0];
+      var lmat = m4.lookAt(object.shadows.lightPosition, target, up); // var lmat = m4.lookAt(object.position.worldLocation, target, up);
+
+      lmat = m4.multiply(m4.xRotation(object.shadows.lightRotationX), lmat);
+      lmat = m4.multiply(m4.yRotation(object.shadows.lightRotationY), lmat); // get the zAxis from the matrix
+      // negate it because lookAt looks down the -Z axis
+
+      object.shadows.lightDirection = [-lmat[8], -lmat[9], -lmat[10]]; // object.shadows.lightDirection = [-0, -0, -1];
+    }
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightDirectionLocation, object.shadows.lightDirection);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.innerLimitLocation, Math.cos(object.shadows.innerLimit));
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit));
   } else if (object.shadows && object.shadows.type == 'spec') {
     // global position
     _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.specularColor, object.shadows.specularDATA);
@@ -30705,8 +30731,15 @@ objPos) {
   const edge1 = vec3.create();
   const edge2 = vec3.create();
   const h = vec3.create();
-  vec3.sub(edge1, v1, v0);
-  vec3.sub(edge2, v2, v0);
+
+  try {
+    vec3.sub(edge1, v1, v0);
+    vec3.sub(edge2, v2, v0);
+  } catch (e) {
+    console.log('Probably your obj file have non triangulate faces vertices. Raycast support only triangulate faces not quard faces. Error log:', e);
+    return false;
+  }
+
   vec3.cross(h, rayVector, edge2);
   const a = vec3.dot(edge1, h);
 
@@ -30906,7 +30939,14 @@ function checkingProcedureCalc(object) {
       triangle = [[triangleInZero[0][0] + object.position.worldLocation[0], triangleInZero[0][1] + object.position.worldLocation[1], triangleInZero[0][2]], [triangleInZero[1][0] + object.position.worldLocation[0], triangleInZero[1][1] + object.position.worldLocation[1], triangleInZero[1][2]], [triangleInZero[2][0] + object.position.worldLocation[0], triangleInZero[2][1] + object.position.worldLocation[1], triangleInZero[2][2]]];
     }
 
-    object.raycastFace.push(triangle);
+    object.raycastFace.push(triangle); // triangle.forEach((a) => {
+    // 	a.forEach((b, index, array) => {
+    // 		array[index] = parseFloat(b.toFixed(2))
+    // 	})
+    // })
+    // non handled situation
+
+    if (triangle == null) return; // console.log('t:' + triangle)
 
     if (rayIntersectsTriangle(myRayOrigin, ray, triangle, intersectionPoint, object.position)) {
       rayHitEvent = new CustomEvent('ray.hit.event', {
@@ -43458,8 +43498,8 @@ class Create2DBanner {
       let texCanvas = document.getElementById('statusBox');
       var colorForOpenGame = 'lime';
       var previewR__ = 'based on glmatrix';
-      var previewR = 'Hang3d matrix FPS';
-      var previewTitle = 'matrix engine 2.2.0 ';
+      var previewR = 'Hang3d matrix ';
+      var previewTitle = 'FPS Area Hang3d Serials';
       var colorForCOLOR = 'rgba(252, 86, 86, 0.89)';
       var colorForLastMoment = 'rgba(255,15,15,1)';
       var p1 = 0;
@@ -44707,29 +44747,30 @@ var runHang3d = world => {
   App.scene.LAVA.physics.enabled = true;
   App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
   App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT("res/video-texture/lava1.mkv"); // TEST 2d custom canvas
-  // var banners = new Create2DBanner().then((canvas2d) => {
-  // 	console.log('BANNERS', canvas2d)
-  // 	// world.Add("squareTex", 1, "banner1", tex1);
-  // 	// var lavaScale = 10;
-  // 	// // var b4 = new CANNON.Body({
-  // 	// // 	mass: 0,
-  // 	// // 	linearDamping: 0.01,
-  // 	// // 	position: new CANNON.Vec3(16, 36.5, 5),
-  // 	// // 	shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
-  // 	// // });
-  // 	// // b4._name = 'banner1';
-  // 	// // physics.world.addBody(b4);
-  // 	// App.scene.banner1.position.setPosition(16, 5, -36.5)
-  // 	// App.scene.banner1.geometry.setScale(lavaScale);
-  // 	// // App.scene.banner1.physics.currentBody = b4;
-  // 	// // App.scene.banner1.physics.enabled = true;
-  // 	// App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
-  // 	// App.scene.banner1.streamTextures = {videoImage: canvas2d}
-  // 	// App.scene.banner1.rotation.rotz = 180
-  // 	// App.scene.banner1.rotation.roty = 90
-  // 	// App.scene.banner1.physics.currentBody.position.set(-146,47.5,8)
-  // });
-  // // How to load obj and give him gameplay item props
+
+  var banners = new _activeTextures.Create2DBanner().then(canvas2d => {
+    console.log('BANNERS', canvas2d);
+    world.Add("squareTex", 1, "banner1", tex1);
+    var lavaScale = 10; // var b4 = new CANNON.Body({
+    // 	mass: 0,
+    // 	linearDamping: 0.01,
+    // 	position: new CANNON.Vec3(16, 36.5, 5),
+    // 	shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
+    // });
+    // b4._name = 'banner1';
+    // physics.world.addBody(b4);
+
+    App.scene.banner1.position.setPosition(16, 5, -36.5);
+    App.scene.banner1.geometry.setScale(lavaScale); // App.scene.banner1.physics.currentBody = b4;
+    // App.scene.banner1.physics.enabled = true;
+
+    App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
+    App.scene.banner1.streamTextures = {
+      videoImage: canvas2d
+    };
+    App.scene.banner1.rotation.rotz = 180;
+    App.scene.banner1.rotation.roty = 90; // App.scene.banner1.physics.currentBody.position.set(-146,47.5,8)
+  }); // // How to load obj and give him gameplay item props
   // loadObj({
   // 	name: "armor",
   // 	path: "res/3d-objects/armor.obj",

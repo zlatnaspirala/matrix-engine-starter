@@ -20,8 +20,8 @@ export class Create2DBanner {
 			let texCanvas = document.getElementById('statusBox');
 			var colorForOpenGame = 'lime'
 			var previewR__ = 'based on glmatrix';
-			var previewR = 'Hang3d matrix FPS';
-			var previewTitle = 'matrix engine 2.2.0 ';
+			var previewR = 'Hang3d matrix ';
+			var previewTitle = 'FPS Area Hang3d Serials';
 			var colorForCOLOR = 'rgba(252, 86, 86, 0.89)'
 			var colorForLastMoment = 'rgba(255,15,15,1)'
 			var p1 = 0;
