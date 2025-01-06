@@ -40044,7 +40044,9 @@ class MatrixStream {
     _matrixStream.netConfig.resolution = arg.resolution;
 
     _utility.scriptManager.LOAD('openvidu-browser-2.20.0.js', undefined, undefined, undefined, () => {
-      this.loadNetHTML();
+      setTimeout(() => {
+        this.loadNetHTML();
+      }, 500);
     });
   }
 
