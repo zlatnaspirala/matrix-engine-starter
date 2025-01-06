@@ -294,14 +294,18 @@ export var runHang3d = (world) => {
 	App.lastHit = {};
 	var preventFlagDouble = false;
 	addEventListener('ray.hit.event', (ev) => {
-		// console.log(`%cYou shoot the object: ${ev.detail.hitObject}`, REDLOG);
-		if(ev.detail.hitObject.name.indexOf('con_') == -1) {
-			// funny shoots 
-			// console.log('....', ev.detail.hitObject.physics.currentBody)
+		// console.log(`%cYou shoot the object: ${ev.detail.hitObject.name}`, REDLOG);
+		if(ev.detail.hitObject.name.indexOf('collisionBox') != -1 ||
+		ev.detail.hitObject.name.indexOf('mapobjsgroup_5_10') != -1) {
+			// player case
+			return;
+		} else if (ev.detail.hitObject.name.indexOf('con_') == -1) {
+			// console.log('..ray hit..', ev.detail.hitObject.physics.currentBody)
+			console.log(`%cYou shoot the object: ${ev.detail.hitObject.name}`, REDLOG);
 			App.lastHit = ev.detail.hitObject.physics.currentBody;
 			if(App.lastHit) App.lastHit.velocity.set(5, 5, 30)
-			return;
 		}
+
 		if(preventFlagDouble == false) {
 			preventFlagDouble = true;
 			setTimeout(() => {
@@ -390,17 +394,47 @@ export var runHang3d = (world) => {
 			App.scene.playerCollisonBox.pingpong = true;
 			var preventDoubleTrigger = null;
 
+			if(isMobile() == true) {
+				byId('mobSpace').addEventListener('touchstart', (e) => {
+					// Jump
+					if(preventDoubleJump == null) {
+						preventDoubleJump = setTimeout(() => {
+							App.scene.playerCollisonBox.physics.currentBody.mass = 1;
+							App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
+							// preventDoubleJump = null; for ever
+						}, 250);
+					}
+				})
+			} else {
+				// Matrix-engine key event DESKTOP
+				addEventListener('hit.keyDown', (e) => {
+					// Jump
+			
+					if(e.detail.keyCode == 32) {
+						if(preventDoubleJump == null) {
+							console.log('TEST 1 JUMP')
+							preventDoubleJump = setTimeout(() => {
+								console.log('JUMP: ', e.detail.keyCode);
+								App.scene.playerCollisonBox.physics.currentBody.mass = 1;
+								App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
+								// preventDoubleJump = null; for ever
+							}, 250);
+						}
+					}
+				})
+			}
+
 			collisionBox.addEventListener("collide", function(e) {
 				// const contactNormal = new CANNON.Vec3();
 				// var relativeVelocity = e.contact.getImpactVelocityAlongNormal();
-				preventDoubleJump = null;
+				// preventDoubleJump = null;
 				// console.log("[", e.contact.bi._name, "][", e.contact.bj._name);
 				if((e.contact.bj._name && e.contact.bj._name.indexOf('floor') != -1 ||
 					e.contact.bi._name && e.contact.bi._name.indexOf('floor') != -1) ||
 					(e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 ||
 						e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1)) {
 					preventDoubleJump = null;
-					// console.log("[", e.contact.bi._name, "][", e.contact.bj._name +  " si" +  e.contact.sj + " ss " + e.contact.si._name );
+					console.log("[", e.contact.bi._name, "][", e.contact.bj._name + " si" + e.contact.sj + " ss " + e.contact.si._name);
 					return;
 				}
 				// Procedure for trigerering is manual for now.
@@ -447,35 +481,6 @@ export var runHang3d = (world) => {
 					}
 				}
 			});
-
-			// Mobile support
-			if(isMobile() == true) {
-				byId('mobSpace').addEventListener('touchstart', (e) => {
-					// Jump
-					if(preventDoubleJump == null) {
-						preventDoubleJump = setTimeout(() => {
-							App.scene.playerCollisonBox.physics.currentBody.mass = 1;
-							App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
-							// preventDoubleJump = null; for ever
-						}, 250);
-					}
-				})
-			} else {
-				// Matrix-engine key event DESKTOP
-				addEventListener('hit.keyDown', (e) => {
-					// Jump
-					if(e.detail.keyCode == 32) {
-						if(preventDoubleJump == null) {
-							preventDoubleJump = setTimeout(() => {
-								console.log('JUMP: ', e.detail.keyCode);
-								App.scene.playerCollisonBox.physics.currentBody.mass = 1;
-								App.scene.playerCollisonBox.physics.currentBody.velocity.set(0, 0, 25);
-								// preventDoubleJump = null; for ever
-							}, 250);
-						}
-					}
-				})
-			}
 
 			var handlerTimeout = null, handlerTimeout2 = null;
 			var playerUpdater = {
@@ -652,7 +657,7 @@ export var runHang3d = (world) => {
 		for(var j = 0;j < n;j++) {
 			promiseAllGenerated.push(new Promise((resolve) => {
 				setTimeout(() => {
-					var gname =  "CUBE" + j;
+					var gname = "CUBE" + j;
 					var gscale = 3;
 					world.Add("cubeLightTex", 1, gname, texStone);
 					var b2 = new CANNON.Body({
@@ -1015,10 +1020,11 @@ export var runHang3d = (world) => {
 		App.scene.banner1.streamTextures = {videoImage: canvas2d}
 		App.scene.banner1.rotation.rotz = 180
 		App.scene.banner1.rotation.roty = 90
-		// App.scene.banner1.physics.currentBody.position.set(-146,47.5,8)
+		App.scene.banner1.position.setPosition(15, 10, -45)
+
 	});
 
-	
+
 
 	// // How to load obj and give him gameplay item props
 	// loadObj({
