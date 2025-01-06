@@ -44768,7 +44768,8 @@ var runHang3d = world => {
     // b4._name = 'banner1';
     // physics.world.addBody(b4);
 
-    App.scene.banner1.position.setPosition(16, 5, -36.5);
+    App.scene.banner1.position.setPosition(16, 25, -100);
+    App.scene.banner1.rotation.roty = 180;
     App.scene.banner1.geometry.setScale(lavaScale); // App.scene.banner1.physics.currentBody = b4;
     // App.scene.banner1.physics.enabled = true;
 
@@ -44777,8 +44778,6 @@ var runHang3d = world => {
       videoImage: canvas2d
     };
     App.scene.banner1.rotation.rotz = 180;
-    App.scene.banner1.rotation.roty = 90;
-    App.scene.banner1.position.setPosition(15, 10, -45);
   }); // // How to load obj and give him gameplay item props
   // loadObj({
   // 	name: "armor",
@@ -45215,15 +45214,17 @@ const meMapLoader = {
         var calcZ = collectZ2 - collectZ0;
         var calcZWorldPos = (collectZ2 + collectZ0) / 2;
         calcZ = calcZ / 2;
-        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
+        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY - 1)));
         shape._name = group.groupName; // console.log('G NAME ', group.groupName.toString())
 
         if (group.groupName.toString().indexOf('.RotX.') != -1) {
+          // fix
+          shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
           var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""));
           var rotLocal = new CANNON.Quaternion(0, 0, 0, 1);
-          console.log('getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180);
+          console.log('..................getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180);
           rotLocal.setFromEuler(getValueX * Math.PI / 180, 0, 0);
-          body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox), rotLocal); // console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE',body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices)
+          body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox - 10), rotLocal); // console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE',body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices)
         } else {
           body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
         }

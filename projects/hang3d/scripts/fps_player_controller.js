@@ -1003,6 +1003,8 @@ export var runHang3d = (world) => {
 		console.log('BANNERS', canvas2d)
 
 		world.Add("squareTex", 1, "banner1", tex1);
+	 
+
 		var lavaScale = 10;
 		// var b4 = new CANNON.Body({
 		// 	mass: 0,
@@ -1012,19 +1014,16 @@ export var runHang3d = (world) => {
 		// });
 		// b4._name = 'banner1';
 		// physics.world.addBody(b4);
-		App.scene.banner1.position.setPosition(16, 5, -36.5)
+		App.scene.banner1.position.setPosition(16, 25, -100)
+		App.scene.banner1.rotation.roty = 180;
+		
 		App.scene.banner1.geometry.setScale(lavaScale);
 		// App.scene.banner1.physics.currentBody = b4;
 		// App.scene.banner1.physics.enabled = true;
 		App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
 		App.scene.banner1.streamTextures = {videoImage: canvas2d}
 		App.scene.banner1.rotation.rotz = 180
-		App.scene.banner1.rotation.roty = 90
-		App.scene.banner1.position.setPosition(15, 10, -45)
-
 	});
-
-
 
 	// // How to load obj and give him gameplay item props
 	// loadObj({
