@@ -978,24 +978,24 @@ export var runHang3d = (world) => {
 	// App.scene['floorAngle'].geometry.setScaleByY(-0.9);
 	// App.scene.floorAngle.physics.currentBody.quaternion.setFromEuler(5 * Math.PI/180,0,0)
 
-	world.Add("cubeLightTex", 1, "LAVA", tex1);
-	var lavaScale = 10;
-	var b4 = new CANNON.Body({
-		mass: 0,
-		linearDamping: 0.01,
-		position: new CANNON.Vec3(-6, -16.5, -1),
-		shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
-	});
-	b4._name = 'damage';
-	physics.world.addBody(b4);
-	App.scene.LAVA.position.setPosition(-6, -1, -16.5)
-	App.scene.LAVA.geometry.setScale(lavaScale);
-	App.scene.LAVA.physics.currentBody = b4;
-	App.scene.LAVA.physics.enabled = true;
-	App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
-	App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT(
-		"res/video-texture/lava1.mkv"
-	);
+	// world.Add("cubeLightTex", 1, "LAVA", tex1);
+	// var lavaScale = 10;
+	// var b4 = new CANNON.Body({
+	// 	mass: 0,
+	// 	linearDamping: 0.01,
+	// 	position: new CANNON.Vec3(-6, -16.5, -1),
+	// 	shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
+	// });
+	// b4._name = 'damage';
+	// physics.world.addBody(b4);
+	// App.scene.LAVA.position.setPosition(-6, -1, -16.5)
+	// App.scene.LAVA.geometry.setScale(lavaScale);
+	// App.scene.LAVA.physics.currentBody = b4;
+	// App.scene.LAVA.physics.enabled = true;
+	// App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
+	// App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT(
+	// 	"res/video-texture/lava1.mkv"
+	// );
 
 
 	// TEST 2d custom canvas
@@ -1021,7 +1021,7 @@ export var runHang3d = (world) => {
 		// App.scene.banner1.physics.currentBody = b4;
 		// App.scene.banner1.physics.enabled = true;
 		App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
-		App.scene.banner1.streamTextures = {videoImage: canvas2d}
+		// App.scene.banner1.streamTextures = {videoImage: canvas2d}
 		App.scene.banner1.rotation.rotz = 180
 	});
 

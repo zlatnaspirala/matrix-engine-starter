@@ -11,9 +11,10 @@ export let map = {
 			activeRotation: [0, 0, 0],
 			scale: [1, 1, 1],
 			scaleCollider: [1, 1, 1],
-			texture: {source: ["res/images/map-1.png", "res/images/old-tex/floor.gif"], mix_operation: "multiply"},
+			texture: {source: ["res/images/map-1.png"], mix_operation: "multiply"},
 			targetDom: {id: "field510", x: 5, y: 10},
 		},
+		// "res/images/old-tex/floor.gif"
 		// {
 		// 	name: "mapobjsgroup_125_10",
 		// 	path: "res/3d-objects/env/teleport.obj",

@@ -21364,75 +21364,74 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
       // console.log('TEST')
       //-------------------------------------------
       //------------ FROM CUBE 
-
-
-      for (var t = 0; t < object.textures.length; t++) {
-        if (object.custom.gl_texture == null) {
-          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
-
-          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
-
-          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
-
-          if (object.texParams.MIPMAP == false) {
-            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | _matrixWorld.world.GL.gl.REPEAT);
-
-            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | _matrixWorld.world.GL.gl.REPEAT); // -- Allocate storage for the texture
-            // world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-            // world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0,512, 512, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, object.textures[t]);
-
-          } else {
-            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
-
-            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
-
-            _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
-          }
-
-          if (_matrixWorld.world.GL.extTFAnisotropic && object.texParams.ANISOTROPIC == true) {
-            _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-          } //console.log('TEST' , object.texParams)
-
-
-          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
-        } else {
-          object.custom.gl_texture(object, t);
-        }
-      } // for(var t = 0;t < object.textures.length;t++) {
+      // for(var t = 0;t < object.textures.length;t++) {
       // 	if(object.custom.gl_texture == null) {
       // 		world.GL.gl.activeTexture(world.GL.gl['TEXTURE' + t]);
       // 		world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.textures[t]);
-      // 		// world.GL.gl.pixelStorei(world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
-      // 		if(world.GL.extTFAnisotropic) {
+      // 		world.GL.gl.pixelStorei(world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+      // 		if(object.texParams.MIPMAP == false) {
+      // 			world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | world.GL.gl.REPEAT);
+      // 			world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | world.GL.gl.REPEAT);
+      // 			// -- Allocate storage for the texture
+      // 			// world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
+      // 			// world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0,512, 512, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, object.textures[t]);
+      // 		} else {
+      // 			world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | world.GL.gl.LINEAR);
+      // 			world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | world.GL.gl.LINEAR);
+      // 			world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
+      // 		}
+      // 		if(world.GL.extTFAnisotropic && object.texParams.ANISOTROPIC == true) {
       // 			world.GL.gl.texParameterf(world.GL.gl.TEXTURE_2D,
       // 				world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT,
       // 				world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
       // 		}
-      // 		world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | world.GL.gl.LINEAR);
-      // 		world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | world.GL.gl.LINEAR);
-      // 		// world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | world.GL.gl.REPEAT);
-      // 		// world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | world.GL.gl.REPEAT);
-      // 		// -- Allocate storage for the texture
-      // 		// world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-      // 		// world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE,  object.textures[t]);
-      // 		// world.GL.gl.texImage2D(
-      // 		//   world.GL.gl.TEXTURE_2D,
-      // 		//   0,
-      // 		//   world.GL.gl.RGBA,
-      // 		//   world.GL.gl.RGBA,
-      // 		//   world.GL.gl.UNSIGNED_BYTE,
-      // 		//   object.textures[t].image);
-      // 		// world.GL.gl.texImage2D(world.GL.gl.TEXTURE_2D, 0, world.GL.gl.RGBA, 512, 512, 0, world.GL.gl.RGBA, world.GL.gl.UNSIGNED_BYTE,  object.textures[t].image);
-      // 		world.GL.gl.pixelStorei(world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
-      // 		if(object.texParams.TEXTURE_MIN_FILTER) {
-      // 			world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
-      // 		}
+      // 		//console.log('TEST' , object.texParams)
       // 		world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
       // 	} else {
       // 		object.custom.gl_texture(object, t);
       // 	}
       // }
 
+
+      for (var t = 0; t < object.textures.length; t++) {
+        if (object.custom.gl_texture == null) {
+          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+
+          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]); // world.GL.gl.pixelStorei(world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+
+          if (_matrixWorld.world.GL.extTFAnisotropic) {
+            _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+          }
+
+          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR); // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | world.GL.gl.REPEAT);
+          // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | world.GL.gl.REPEAT);
+          // -- Allocate storage for the texture
+          // world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
+          // world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE,  object.textures[t]);
+          // world.GL.gl.texImage2D(
+          //   world.GL.gl.TEXTURE_2D,
+          //   0,
+          //   world.GL.gl.RGBA,
+          //   world.GL.gl.RGBA,
+          //   world.GL.gl.UNSIGNED_BYTE,
+          //   object.textures[t].image);
+          // world.GL.gl.texImage2D(world.GL.gl.TEXTURE_2D, 0, world.GL.gl.RGBA, 512, 512, 0, world.GL.gl.RGBA, world.GL.gl.UNSIGNED_BYTE,  object.textures[t].image);
+
+
+          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+          if (object.texParams.TEXTURE_MIN_FILTER) {
+            _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
+          }
+
+          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+        } else {
+          object.custom.gl_texture(object, t);
+        }
+      }
     }
 
     localLooper = localLooper + 1;
@@ -21449,9 +21448,8 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
 
     _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
   } // world.disableUnusedAttr( world.GL.gl, localLooper);
+  // world.disableUnusedAttr(world.GL.gl, 4);
 
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -21462,12 +21460,40 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
   } else {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
-    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // world.GL.gl.depthMask(true);
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
 
+    _matrixWorld.world.GL.gl.depthMask(true);
   } // shadows
 
 
-  if (object.shadows && object.shadows.type == 'spot' || object.shadows && object.shadows.type == 'spot-shadow') {} else if (object.shadows && object.shadows.type == 'spec') {
+  if (object.shadows && object.shadows.type == 'spot') {
+    // set the light position
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.position.worldLocation);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess); // Set the spotlight uniforms
+
+
+    {
+      var target = [0, 0, 0]; // object.position.worldLocation;
+
+      var up = [0, 1, 0];
+      var lmat = m4.lookAt(object.shadows.lightPosition, target, up); // var lmat = m4.lookAt(object.position.worldLocation, target, up);
+
+      lmat = m4.multiply(m4.xRotation(object.shadows.lightRotationX), lmat);
+      lmat = m4.multiply(m4.yRotation(object.shadows.lightRotationY), lmat); // get the zAxis from the matrix
+      // negate it because lookAt looks down the -Z axis
+
+      object.shadows.lightDirection = [-lmat[8], -lmat[9], -lmat[10]]; // object.shadows.lightDirection = [-0, -0, -1];
+    }
+
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightDirectionLocation, object.shadows.lightDirection);
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.innerLimitLocation, Math.cos(object.shadows.innerLimit));
+
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit));
+  } else if (object.shadows && object.shadows.type == 'spec') {
     // global position
     _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.specularColor, object.shadows.specularDATA);
 
@@ -31076,11 +31102,6 @@ function checkingProcedureCalcObj(object) {
       triangle = [[triangleInZero[0][0] + object.position.worldLocation[0], triangleInZero[0][1] + object.position.worldLocation[1], triangleInZero[0][2]], [triangleInZero[1][0] + object.position.worldLocation[0], triangleInZero[1][1] + object.position.worldLocation[1], triangleInZero[1][2]], [triangleInZero[2][0] + object.position.worldLocation[0], triangleInZero[2][1] + object.position.worldLocation[1], triangleInZero[2][2]]];
     }
 
-    if (triangle == null) {
-      console.log('t:' + triangle);
-      return;
-    }
-
     object.raycastFace.push(triangle);
 
     if (rayIntersectsTriangle(myRayOrigin, ray, triangle, intersectionPoint, object.position)) {
@@ -40046,7 +40067,7 @@ class MatrixStream {
     _utility.scriptManager.LOAD('openvidu-browser-2.20.0.js', undefined, undefined, undefined, () => {
       setTimeout(() => {
         this.loadNetHTML();
-      }, 500);
+      }, 2500);
     });
   }
 
@@ -40110,7 +40131,7 @@ class MatrixStream {
       (0, _matrixStream.leaveSession)();
     });
     (0, _matrixStream.byId)('netHeaderTitle').addEventListener('click', this.domManipulation.hideNetPanel);
-    setTimeout(() => dispatchEvent(new CustomEvent('net-ready', {})), 500);
+    setTimeout(() => dispatchEvent(new CustomEvent('net-ready', {})), 200);
   }
 
   multiPlayer = {
@@ -40259,7 +40280,7 @@ function joinSession(options) {
   document.getElementById("join-btn").disabled = true;
   document.getElementById("join-btn").innerHTML = "Joining...";
   getToken(function () {
-    OV = new OpenVidu();
+    OV = new window.OpenVidu();
     window.OV = OV;
     exports.session = session = OV.initSession();
     session.on('connectionCreated', event => {
@@ -43389,7 +43410,7 @@ let map = {
     scale: [1, 1, 1],
     scaleCollider: [1, 1, 1],
     texture: {
-      source: ["res/images/map-1.png", "res/images/old-tex/floor.gif"],
+      source: ["res/images/map-1.png"],
       mix_operation: "multiply"
     },
     targetDom: {
@@ -43397,7 +43418,8 @@ let map = {
       x: 5,
       y: 10
     }
-  }, // {
+  }, // "res/images/old-tex/floor.gif"
+  // {
   // 	name: "mapobjsgroup_125_10",
   // 	path: "res/3d-objects/env/teleport.obj",
   // 	position: {x: -50, y: 50, z: 42},
@@ -44740,23 +44762,25 @@ var runHang3d = world => {
   // App.scene['floorAngle'].geometry.setScaleByZ(15);
   // App.scene['floorAngle'].geometry.setScaleByY(-0.9);
   // App.scene.floorAngle.physics.currentBody.quaternion.setFromEuler(5 * Math.PI/180,0,0)
-
-  world.Add("cubeLightTex", 1, "LAVA", tex1);
-  var lavaScale = 10;
-  var b4 = new CANNON.Body({
-    mass: 0,
-    linearDamping: 0.01,
-    position: new CANNON.Vec3(-6, -16.5, -1),
-    shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
-  });
-  b4._name = 'damage';
-  physics.world.addBody(b4);
-  App.scene.LAVA.position.setPosition(-6, -1, -16.5);
-  App.scene.LAVA.geometry.setScale(lavaScale);
-  App.scene.LAVA.physics.currentBody = b4;
-  App.scene.LAVA.physics.enabled = true;
-  App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
-  App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT("res/video-texture/lava1.mkv"); // TEST 2d custom canvas
+  // world.Add("cubeLightTex", 1, "LAVA", tex1);
+  // var lavaScale = 10;
+  // var b4 = new CANNON.Body({
+  // 	mass: 0,
+  // 	linearDamping: 0.01,
+  // 	position: new CANNON.Vec3(-6, -16.5, -1),
+  // 	shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
+  // });
+  // b4._name = 'damage';
+  // physics.world.addBody(b4);
+  // App.scene.LAVA.position.setPosition(-6, -1, -16.5)
+  // App.scene.LAVA.geometry.setScale(lavaScale);
+  // App.scene.LAVA.physics.currentBody = b4;
+  // App.scene.LAVA.physics.enabled = true;
+  // App.scene.LAVA.LightsData.ambientLight.set(0, 0, 0);
+  // App.scene.LAVA.streamTextures = new matrixEngine.Engine.VT(
+  // 	"res/video-texture/lava1.mkv"
+  // );
+  // TEST 2d custom canvas
 
   var banners = new _activeTextures.Create2DBanner().then(canvas2d => {
     console.log('BANNERS', canvas2d);
@@ -44775,10 +44799,8 @@ var runHang3d = world => {
     App.scene.banner1.geometry.setScale(lavaScale); // App.scene.banner1.physics.currentBody = b4;
     // App.scene.banner1.physics.enabled = true;
 
-    App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
-    App.scene.banner1.streamTextures = {
-      videoImage: canvas2d
-    };
+    App.scene.banner1.LightsData.ambientLight.set(1, 1, 1); // App.scene.banner1.streamTextures = {videoImage: canvas2d}
+
     App.scene.banner1.rotation.rotz = 180;
   }); // // How to load obj and give him gameplay item props
   // loadObj({
