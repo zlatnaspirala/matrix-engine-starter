@@ -70,7 +70,7 @@
 	"dependencies": {
 		"audio-commander": "^1.0.3",
 		"fs": "0.0.1-security",
-		"matrix-engine": "^2.2.9",
+		"matrix-engine": "^2.2.12",
 		"matrix-engine-plugins": "0.1.0",
 		"matrix-network": "^1.0.12",
 		"nidza": "^1.2.15",

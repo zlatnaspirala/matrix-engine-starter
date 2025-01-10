@@ -236,6 +236,12 @@ Projects folder:
  -`projects/web-anatomy`
  under GPL v3 + CCAttribution-Share Alike 2.1 Japan
 
+### Credits
+
+- Used in HANG3d Matrix template:
+  BLACK FLY by Audionautix | http://audionautix.com
+  Music promoted by https://www.free-stock-music.com
+  Creative Commons Attribution-ShareAlike 3.0 Unported
 
 ### Join chat on slack
 

@@ -376,6 +376,29 @@ export class RCSAccount {
 		})
 	}
 
+	getLeaderboardFor3dContext = async (e) => {
+		// e.preventDefault();
+		fetch(this.apiDomain + '/rocket/public-leaderboard', {
+			method: 'POST',
+			headers: jsonHeaders,
+			body: JSON.stringify({})
+		}).then((d) => {
+			return d.json();
+		}).then((r) => {
+			notify.error(`${r.message}`)
+			if(r.message == "You got leaderboard data.") {
+				this.leaderboardData = r.leaderboard;
+				console.log('PREPARE FOR 3d context', this.leaderboardData)
+			}
+			setTimeout(() => {this.leaderboardBtn.disabled = false}, 5000)
+		}).catch((err) => {
+			console.log('[Leaderboard Error]', err)
+			notify.show("Next call try in 5 secounds...")
+			setTimeout(() => {this.leaderboardBtn.disabled = false}, 5000)
+			return;
+		})
+	}
+
 	async points10() {
 		let route = this.apiDomain;
 		if(sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {

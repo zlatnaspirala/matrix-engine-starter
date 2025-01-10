@@ -62,6 +62,18 @@ export var runHang3d = (world) => {
 
 	// Audio effects
 	App.sounds.createAudio('shoot', 'res/music/single-gunshot.mp3', 5);
+	App.sounds.createAudio('bgMusic', 'res/music/audionautix-black-fly.mp3');
+	App.sounds.audios.bgMusic.loop = true;
+	App.FIRST_CLICK = function(e) {
+		e.preventDefault()
+		App.sounds.play('bgMusic').then((e) => {
+			console.log('good ', e)
+			window.removeEventListener("click", App.FIRST_CLICK);
+		}).catch((e) => {
+			console.log('wait for first click', e)
+		})
+	};
+	window.addEventListener("click", App.FIRST_CLICK);
 	// Prevent right click context menu
 	window.addEventListener("contextmenu", (e) => {e.preventDefault()});
 	// Only for mobile - Mobile player controller UI
@@ -71,7 +83,6 @@ export var runHang3d = (world) => {
 		byId('debugBox').style.display = 'none';
 		matrixEngine.utility.createDomFPSController();
 	}
-
 	// Activate networking
 	matrixEngine.Engine.activateNet2(undefined,
 		{
@@ -292,18 +303,47 @@ export var runHang3d = (world) => {
 	})
 
 	App.lastHit = {};
+	App.hitAllowedList = [
+		"CUBE"
+	];
+	App.hitPassiveList = [
+		"mapobjsgroup_5_10",
+		"collisionBox",
+		"mapobjsgroup_10_4",
+		"mapobjsgroup_3_4"
+	];
+
+	App.getHitAllowedList = (checkName) => {
+		var l = false;
+		App.hitAllowedList.forEach((item) => {
+			if(checkName.indexOf(item) != -1) l = true;
+		})
+		return l;
+	}
+
+	App.getHitPassiveList = (checkName) => {
+		var l = false;
+		App.hitPassiveList.forEach((item) => {
+			if(checkName.indexOf(item) != -1) l = true;
+		})
+		return l;
+	}
+
 	var preventFlagDouble = false;
 	addEventListener('ray.hit.event', (ev) => {
 		// console.log(`%cYou shoot the object: ${ev.detail.hitObject.name}`, REDLOG);
-		if(ev.detail.hitObject.name.indexOf('collisionBox') != -1 ||
-		ev.detail.hitObject.name.indexOf('mapobjsgroup_5_10') != -1) {
+		// mapobjsgroup_10_4
+		if(App.getHitPassiveList(ev.detail.hitObject.name) == true) {
 			// player case
+			console.log(`%cYou shoot passive list: ${ev.detail.hitObject.name}`, REDLOG);
 			return;
-		} else if (ev.detail.hitObject.name.indexOf('con_') == -1) {
+		} else if(ev.detail.hitObject.name.indexOf('con_') == -1 &&
+			App.getHitAllowedList(ev.detail.hitObject.name) == true) {
 			// console.log('..ray hit..', ev.detail.hitObject.physics.currentBody)
-			console.log(`%cYou shoot the object: ${ev.detail.hitObject.name}`, REDLOG);
-			App.lastHit = ev.detail.hitObject.physics.currentBody;
-			if(App.lastHit) App.lastHit.velocity.set(5, 5, 30)
+			console.log(`%cYou shoot allowed list: ${ev.detail.hitObject.name}`, REDLOG);
+			// App.lastHit = ev.detail.hitObject.physics.currentBody;
+			// if(App.lastHit) App.lastHit.velocity.set(5, 5, 30)
+			ev.detail.hitObject.physics.currentBody.velocity.set(5, 5, 30)
 		}
 
 		if(preventFlagDouble == false) {
@@ -409,7 +449,7 @@ export var runHang3d = (world) => {
 				// Matrix-engine key event DESKTOP
 				addEventListener('hit.keyDown', (e) => {
 					// Jump
-			
+
 					if(e.detail.keyCode == 32) {
 						if(preventDoubleJump == null) {
 							console.log('TEST 1 JUMP')
@@ -434,7 +474,7 @@ export var runHang3d = (world) => {
 					(e.contact.si._name && e.contact.si._name.indexOf('floor') != -1 ||
 						e.contact.sj._name && e.contact.sj._name.indexOf('floor') != -1)) {
 					preventDoubleJump = null;
-					console.log("[", e.contact.bi._name, "][", e.contact.bj._name + " si" + e.contact.sj + " ss " + e.contact.si._name);
+					console.log("[", e.contact.bi._name, "][", e.contact.bj._name + " sJ:" + e.contact.sj._name + " ss " + e.contact.si._name);
 					return;
 				}
 				// Procedure for trigerering is manual for now.
@@ -656,26 +696,29 @@ export var runHang3d = (world) => {
 
 		for(var j = 0;j < n;j++) {
 			promiseAllGenerated.push(new Promise((resolve) => {
-				setTimeout(() => {
-					var gname = "CUBE" + j;
-					var gscale = 3;
-					world.Add("cubeLightTex", 1, gname, texStone);
-					var b2 = new CANNON.Body({
-						mass: 0.5,
-						linearDamping: 0.01,
-						position: new CANNON.Vec3(-10, 14.5, 15),
-						shape: new CANNON.Box(new CANNON.Vec3(gscale, gscale, gscale))
-					});
-					physics.world.addBody(b2);
-					App.scene[gname].physics.currentBody = b2;
-					App.scene[gname].physics.enabled = true;
-					App.scene[gname].activateShadows('spot-shadow')
-					App.scene[gname].geometry.setScale(gscale)
+				function fixAsync(j_) {
+					setTimeout(() => {
+						var gname = "CUBE" + j_;
+						var gscale = 3;
+						world.Add("cubeLightTex", 1, gname, texStone);
+						var b2 = new CANNON.Body({
+							mass: 0.5,
+							linearDamping: 0.01,
+							position: new CANNON.Vec3(-10, 14.5, 15),
+							shape: new CANNON.Box(new CANNON.Vec3(gscale, gscale, gscale))
+						});
+						physics.world.addBody(b2);
+						App.scene[gname].physics.currentBody = b2;
+						App.scene[gname].physics.enabled = true;
+						App.scene[gname].activateShadows('spot-shadow')
+						App.scene[gname].geometry.setScale(gscale)
 
-					App.scene[gname].shadows.activeUpdate()
-					App.scene[gname].shadows.animatePositionY()
-					resolve();
-				}, 1000 * j);
+						App.scene[gname].shadows.activeUpdate()
+						App.scene[gname].shadows.animatePositionY()
+						resolve();
+					}, 1000 * j_);
+				}
+				fixAsync(j)
 			}));
 		}
 	}
@@ -695,10 +738,10 @@ export var runHang3d = (world) => {
 	var tex = {
 		source: ["res/images/old-tex/floor.gif"],
 		mix_operation: "multiply",
-		params: {
-			TEXTURE_MAG_FILTER: world.GL.gl.NEAREST,
-			TEXTURE_MIN_FILTER: world.GL.gl.LINEAR_MIPMAP_NEAREST
-		}
+		// params: {
+		// 	TEXTURE_MAG_FILTER: world.GL.gl.NEAREST,
+		// 	TEXTURE_MIN_FILTER: world.GL.gl.LINEAR_MIPMAP_NEAREST
+		// }
 	};
 
 	var texNoMipmap = {
@@ -938,6 +981,8 @@ export var runHang3d = (world) => {
 		if(useRCSAccount == true) {
 			App.myAccounts = new RCSAccount(RCSAccountDomain);
 			App.myAccounts.createDOM();
+
+			App.myAccounts.getLeaderboardFor3dContext()
 			// notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
 			console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, REDLOG);
 		}
@@ -1000,28 +1045,14 @@ export var runHang3d = (world) => {
 
 	// TEST 2d custom canvas
 	var banners = new Create2DBanner().then((canvas2d) => {
-		console.log('BANNERS', canvas2d)
-
+		console.log('BANNERS tex1', tex1)
 		world.Add("squareTex", 1, "banner1", tex1);
-	 
-
-		var lavaScale = 10;
-		// var b4 = new CANNON.Body({
-		// 	mass: 0,
-		// 	linearDamping: 0.01,
-		// 	position: new CANNON.Vec3(16, 36.5, 5),
-		// 	shape: new CANNON.Box(new CANNON.Vec3(lavaScale, lavaScale, lavaScale))
-		// });
-		// b4._name = 'banner1';
-		// physics.world.addBody(b4);
+		var lavaScale = 20;
 		App.scene.banner1.position.setPosition(16, 25, -100)
 		App.scene.banner1.rotation.roty = 180;
-		
 		App.scene.banner1.geometry.setScale(lavaScale);
-		// App.scene.banner1.physics.currentBody = b4;
-		// App.scene.banner1.physics.enabled = true;
 		App.scene.banner1.LightsData.ambientLight.set(1, 1, 1);
-		// App.scene.banner1.streamTextures = {videoImage: canvas2d}
+		App.scene.banner1.streamTextures = {videoImage: canvas2d}
 		App.scene.banner1.rotation.rotz = 180
 	});
 
@@ -1145,7 +1176,7 @@ const createNetworkPlayerCharacter = (objName) => {
 		var textuteImageSamplers2 = {
 			source: ["res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.webp",
 				"res/bvh-skeletal-base/swat-guy/textures/Ch15_1001_Diffuse.webp"],
-			mix_operation: "multiply", // ENUM : multiply , divide
+			mix_operation: "multiply"
 		};
 
 		setTimeout(function() {
@@ -1177,7 +1208,6 @@ const createNetworkPlayerCharacter = (objName) => {
 			);
 			App.scene[objName].position.y = 2;
 			App.scene[objName].position.z = 2;
-			// From 2.0.14 only for obj seq -> scaleAll
 			App.scene[objName].scaleAll(2.4)
 		}, 1);
 	}
