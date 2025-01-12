@@ -73,7 +73,8 @@ export var runHang3d = (world) => {
 			console.log('wait for first click', e)
 		})
 	};
-	window.addEventListener("click", App.FIRST_CLICK);
+	// window.addEventListener("click", App.FIRST_CLICK);
+	
 	// Prevent right click context menu
 	window.addEventListener("contextmenu", (e) => {e.preventDefault()});
 	// Only for mobile - Mobile player controller UI

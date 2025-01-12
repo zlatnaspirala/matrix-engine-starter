@@ -19412,7 +19412,7 @@ _manifest.default.operation.triangle_buffer_procedure = function (object) {
 };
 
 _manifest.default.operation.obj_buffer_procedure = function (object) {
-  /* Vertex */
+  /* Vertex Color only - other come from objLoader */
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
@@ -19435,37 +19435,6 @@ _manifest.default.operation.obj_buffer_procedure = function (object) {
     object.vertexColorBuffer.itemSize = 4;
     object.vertexColorBuffer.numItems = 4;
   }
-  /* Texture
-    if (object.texture) {
-      // console.log("        Buffer the " + object.type + "'s texture");
-      object.vertexTexCoordBuffer = world.GL.gl.createBuffer();
-      world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
-      world.GL.gl.bufferData(world.GL.gl.ARRAY_BUFFER, object.geometry.texCoords , world.GL.gl.STATIC_DRAW);
-      object.vertexTexCoordBuffer.itemSize = 2;
-      object.vertexTexCoordBuffer.numItems = 24;
-    }
-  */
-
-  /* Normals                                   */
-
-
-  if (object.shaderProgram.useLightingUniform) {
-    // console.log("        Buffer the " + object.type + "'s normals");
-    // object.vertexNormalBuffer = world.GL.gl.createBuffer();
-    // world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, );
-    _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.normalBuffer, _matrixWorld.world.GL.gl.STATIC_DRAW); // object.mesh.normalBuffer.itemSize = 3;
-    // object.mesh.normalBuffer.numItems = 24;
-
-  }
-  /* Indices
-    // console.log("        Buffer the " + object.type + "'s indices");
-    object.vertexIndexBuffer = world.GL.gl.createBuffer();
-    world.GL.gl.bindBuffer(world.GL.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
-    world.GL.gl.bufferData(world.GL.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(object.geometry.indices), world.GL.gl.STATIC_DRAW);
-    object.vertexIndexBuffer.itemSize = 1;
-    object.vertexIndexBuffer.numItems = 36;
-  */
-
 };
 
 _manifest.default.operation.squareTex_buffer_procedure = function (object) {
@@ -20593,9 +20562,8 @@ _manifest.default.operation.draws.cube = function (object, ray) {
     _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
   } // world.disableUnusedAttr(world.GL.gl, localLooper);
   // FIX FOR MOBILE - from white cube to normal texture view , good
+  // world.disableUnusedAttr(world.GL.gl, 4);
 
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -20842,9 +20810,12 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
       // now to render the mesh test
       _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertexBuffer);
 
-      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertices, _matrixWorld.world.GL.gl.STATIC_DRAW);
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, new Float32Array(object.mesh.vertices), _matrixWorld.world.GL.gl.STATIC_DRAW);
 
       _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.mesh.vertexBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute); // console.log(".vertices.." + world.GL.gl.getBufferParameter(world.GL.gl.ARRAY_BUFFER, world.GL.gl.BUFFER_SIZE))
+
     }
   } // COLOR BUFFER
   // if (object.vertexColorBuffer) {
@@ -20930,10 +20901,9 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
     if (object.texture) {
       _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.textureBuffer);
 
-      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
+      _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.textureCoordAttribute, object.mesh.textureBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
 
-      _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.textureCoordAttribute, object.mesh.textureBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0); //ori world.GL.gl.activeTexture(world.GL.gl.TEXTURE0);
-      // ori world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.texture);
+      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute); // console.log(".tex.." + world.GL.gl.getBufferParameter(world.GL.gl.ARRAY_BUFFER, world.GL.gl.BUFFER_SIZE))
 
 
       if (object.streamTextures != null) {
@@ -21134,10 +21104,7 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
       localLooper = localLooper + 1;
     } else {// world.GL.gl.disableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
     }
-  } // Normals normalBuffer
-  //  world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, object.mesh.normalBuffer);
-  //  world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexNormalAttribute, object.mesh.normalBuffer.itemSize, world.GL.gl.FLOAT, false, 0, 0);
-
+  }
 
   if (object.mesh.normalBuffer && object.shaderProgram.nMatrixUniform) {
     var normalMatrix = mat3.create();
@@ -21194,7 +21161,6 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
-      // world.GL.gl.disable(world.GL.gl.DEPTH_TEST);
       _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
     }
 
@@ -21203,11 +21169,7 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-  } // ori this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
-
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper + 1); // world.GL.gl.drawElements(world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, world.GL.gl.UNSIGNED_SHORT, 0);
-  // update for anim
+  } // world.disableUnusedAttr(world.GL.gl, 4);
 
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
@@ -21558,9 +21520,8 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
 
     _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
   } // world.disableUnusedAttr( world.GL.gl, localLooper);
+  // world.disableUnusedAttr(world.GL.gl, 4);
 
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -21790,10 +21751,8 @@ _manifest.default.operation.draws.sphere = function (object, ray) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.uniformTime, 0.1);
   } catch (e) {
     console.warn('WTF - ERROR10001');
-  } // world.disableUnusedAttr(world.GL.gl, localLooper);
+  } // world.disableUnusedAttr(world.GL.gl, 4);
 
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -27644,7 +27603,7 @@ function defineworld(canvas, renderType) {
 
   world.initShaders = _engine.initShaders;
   world.handleLoadedTexture = _manifest.default.tools.BasicTextures;
-  world.initTexture = _manifest.default.tools.loadTextureImage;
+  world.initTexture = _manifest.default.tools.loadTextureImage; // DEPLACED
 
   world.disableUnusedAttr = function (gl, vertLimit) {
     var Local_looper1 = vertLimit; // var Local_looper1 = 0;
@@ -27654,6 +27613,10 @@ function defineworld(canvas, renderType) {
       gl.disableVertexAttribArray(Local_looper1);
       Local_looper1 = Local_looper1 + 1;
     }
+  };
+
+  world.disableAttr = function (gl, current) {
+    gl.disableVertexAttribArray(current);
   }; // Bind base methods
 
   /* Push Matrix                              */
@@ -28532,11 +28495,14 @@ function defineworld(canvas, renderType) {
               spriteAnimation: false,
               MIPMAP: false,
               ANISOTROPY: false,
-              TEXTURE_WRAP_S: this.GL.gl.REPEAT,
-              TEXTURE_WRAP_T: this.GL.gl.REPEAT,
+              TEXTURE_WRAP_S: null,
+              //this.GL.gl.REPEAT,
+              TEXTURE_WRAP_T: null,
+              // this.GL.gl.REPEAT,
               TEXTURE_MAG_FILTER: this.GL.gl.LINEAR,
               // NEAREST
-              TEXTURE_MIN_FILTER: this.GL.gl.LINEAR
+              TEXTURE_MIN_FILTER: this.GL.gl.LINEAR // LINEAR
+
             };
           } else {
             objObject.texParams = texturesPaths.params;
@@ -44019,9 +43985,9 @@ var runHang3d = world => {
     }).catch(e => {
       console.log('wait for first click', e);
     });
-  };
+  }; // window.addEventListener("click", App.FIRST_CLICK);
+  // Prevent right click context menu
 
-  window.addEventListener("click", App.FIRST_CLICK); // Prevent right click context menu
 
   window.addEventListener("contextmenu", e => {
     e.preventDefault();
