@@ -43530,18 +43530,32 @@ let map = {
       y: 10
     }
   }, // "res/images/old-tex/floor.gif"
-  // {
-  // 	name: "mapobjsgroup_125_10",
-  // 	path: "res/3d-objects/env/teleport.obj",
-  // 	position: {x: -50, y: 50, z: 42},
-  // 	rotation: {rotx: 0, roty: 0, rotz: 0},
-  // 	activeRotation: [0, 0, 0],
-  // 	scale: [1, 1, 1],
-  // 	scaleCollider: [1, 1, 1],
-  // 	texture: {source: ["res/3d-objects/env/textures/teleport.png"], mix_operation: "multiply"},
-  // 	targetDom: {id: "field510", x: 125, y: 10},
-  // },
-  // {
+  {
+    name: "mapobjsgroup_125_10",
+    path: "res/3d-objects/destructable-mesh/test.obj",
+    position: {
+      x: -50,
+      y: 50,
+      z: 42
+    },
+    rotation: {
+      rotx: 0,
+      roty: 0,
+      rotz: 0
+    },
+    activeRotation: [0, 0, 0],
+    scale: [1, 1, 1],
+    scaleCollider: [1, 1, 1],
+    texture: {
+      source: ["res/3d-objects/env/textures/teleport.png"],
+      mix_operation: "multiply"
+    },
+    targetDom: {
+      id: "field510",
+      x: 125,
+      y: 10
+    }
+  }, // {
   //   name: "mapobjsgroup_10_10",
   //   path: "res/3d-objects/env/cube-scifi.obj",
   //   position: {x: -230, y: 1, z: 42},
@@ -43950,6 +43964,7 @@ var runHang3d = world => {
   let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
   let isMobile = matrixEngine.utility.isMobile;
   let randomFloatFromTo = matrixEngine.utility.randomFloatFromTo;
+  const getQuery = matrixEngine.utility.QueryString;
   let App = matrixEngine.App;
   setTimeout(() => document.querySelector('.button2').click(), 2000); // Camera
 
@@ -43963,7 +43978,9 @@ var runHang3d = world => {
   App.camera.yawRateOnEdge = 3; //ori 3
 
   App.camera.yawRate = 3; // 1
+  // raycaster
 
+  matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true;
   App.myAccounts = {}; // Keyboard event
 
   addEventListener('hit.keyDown', e => {
@@ -43985,9 +44002,9 @@ var runHang3d = world => {
     }).catch(e => {
       console.log('wait for first click', e);
     });
-  }; // window.addEventListener("click", App.FIRST_CLICK);
-  // Prevent right click context menu
+  };
 
+  if (getQuery.music === 'true') window.addEventListener("click", App.FIRST_CLICK); // Prevent right click context menu
 
   window.addEventListener("contextmenu", e => {
     e.preventDefault();
@@ -45359,10 +45376,17 @@ const meMapLoader = {
         position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
       });
       if (App.scene[n.name].mesh.groups) App.scene[n.name].mesh.groups.forEach(group => {
+        // ANY VERTS SOLUTION _
+        if (group.groupName.toString().indexOf('Destruct_cell') != -1 || group.groupName.toString().indexOf('estruct_cell') != -1) {
+          console.log('DESTRUCT GROUP FOUND');
+          return;
+        } // CUBE PROCEDURE
         // We can add the same shape several times to position child shapes within the Compound.
         // tHIS WORKS ONLY FOR SIMPLY CUBE (no rotate in blender view)
         // i dont know who to hide collider 
         // console.log('<GROUP>', group)
+
+
         var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
         group.groupVert.forEach((vert, index) => {
           if (index == 0) {
@@ -45395,7 +45419,7 @@ const meMapLoader = {
           shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
           var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""));
           var rotLocal = new CANNON.Quaternion(0, 0, 0, 1);
-          console.log('..................getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180);
+          console.log('getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180);
           rotLocal.setFromEuler(getValueX * Math.PI / 180, 0, 0);
           body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox - 10), rotLocal); // console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE',body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices)
         } else {
@@ -45630,10 +45654,11 @@ class RCSAccount {
 
     if (isMobile() == false) {
       var descText = document.createElement('div');
-      descText.id = 'descText'; // logo.style = 'width: max-content;'
-
+      descText.id = 'descText';
+      descText.style = 'font-size:smaller;';
       descText.innerHTML = `<span style="width:45%" >Hang3d use webcam for video chat and streaming data</span>
-		<span style="width:45%" >Add Url params '?video=false&audio=false' to disable streaming</span>
+		<span style="width:45%;" >Add Url params '?video=false&audio=false' to disable streaming</span>
+		<span> BLACK FLY by Audionautix | http://audionautix.com Music promoted by https://www.free-stock-music.com Creative Commons Attribution-ShareAlike 3.0 Unported</span>
 		`;
     }
 

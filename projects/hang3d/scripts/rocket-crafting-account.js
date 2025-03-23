@@ -92,9 +92,10 @@ export class RCSAccount {
 		if(isMobile() == false) {
 			var descText = document.createElement('div');
 			descText.id = 'descText';
-			// logo.style = 'width: max-content;'
+			descText.style = 'font-size:smaller;'
 			descText.innerHTML = `<span style="width:45%" >Hang3d use webcam for video chat and streaming data</span>
-		<span style="width:45%" >Add Url params '?video=false&audio=false' to disable streaming</span>
+		<span style="width:45%;" >Add Url params '?video=false&audio=false' to disable streaming</span>
+		<span> BLACK FLY by Audionautix | http://audionautix.com Music promoted by https://www.free-stock-music.com Creative Commons Attribution-ShareAlike 3.0 Unported</span>
 		`;
 		}
 

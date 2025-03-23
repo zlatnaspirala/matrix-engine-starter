@@ -15,17 +15,17 @@ export let map = {
 			targetDom: {id: "field510", x: 5, y: 10},
 		},
 		// "res/images/old-tex/floor.gif"
-		// {
-		// 	name: "mapobjsgroup_125_10",
-		// 	path: "res/3d-objects/env/teleport.obj",
-		// 	position: {x: -50, y: 50, z: 42},
-		// 	rotation: {rotx: 0, roty: 0, rotz: 0},
-		// 	activeRotation: [0, 0, 0],
-		// 	scale: [1, 1, 1],
-		// 	scaleCollider: [1, 1, 1],
-		// 	texture: {source: ["res/3d-objects/env/textures/teleport.png"], mix_operation: "multiply"},
-		// 	targetDom: {id: "field510", x: 125, y: 10},
-		// },
+		{
+			name: "mapobjsgroup_125_10",
+			path: "res/3d-objects/destructable-mesh/test.obj",
+			position: {x: -50, y: 50, z: 42},
+			rotation: {rotx: 0, roty: 0, rotz: 0},
+			activeRotation: [0, 0, 0],
+			scale: [1, 1, 1],
+			scaleCollider: [1, 1, 1],
+			texture: {source: ["res/3d-objects/env/textures/teleport.png"], mix_operation: "multiply"},
+			targetDom: {id: "field510", x: 125, y: 10},
+		},
 		// {
 		//   name: "mapobjsgroup_10_10",
 		//   path: "res/3d-objects/env/cube-scifi.obj",

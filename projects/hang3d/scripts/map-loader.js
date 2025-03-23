@@ -208,6 +208,18 @@ export const meMapLoader = {
 				position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
 			});
 			if (App.scene[n.name].mesh.groups) App.scene[n.name].mesh.groups.forEach((group) => {
+
+
+				// ANY VERTS SOLUTION _
+				if(group.groupName.toString().indexOf('Destruct_cell') != -1 || group.groupName.toString().indexOf('estruct_cell') != -1) {
+					console.log('DESTRUCT GROUP FOUND')
+					
+					return;
+				}
+
+
+
+				// CUBE PROCEDURE
 				// We can add the same shape several times to position child shapes within the Compound.
 				// tHIS WORKS ONLY FOR SIMPLY CUBE (no rotate in blender view)
 				// i dont know who to hide collider 
@@ -244,7 +256,7 @@ export const meMapLoader = {
 					shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY)));
 					var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""))
 					var rotLocal = new CANNON.Quaternion(0, 0, 0, 1)
-					console.log('..................getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180)
+					console.log('getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180)
 					rotLocal.setFromEuler((getValueX * Math.PI / 180), 0, 0)
 					body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox - 10),
 						rotLocal

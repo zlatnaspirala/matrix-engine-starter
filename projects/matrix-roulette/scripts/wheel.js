@@ -70,7 +70,7 @@ export default class Wheel {
 
 	addBall = (j, posArg, force) => {
 		if(this.ballBody !== null) {
-			console.log('Ball already created.')
+			console.log('Ball already created. POS : ', posArg[0], ' - ',  posArg[1],' - ', posArg[2])
 			this.ballBody.position.set(posArg[0], posArg[1], posArg[2])
 			this.ballBody.angularVelocity.setZero()
 			this.ballBody.quaternion.set(0, 0, 0, 0)
@@ -93,8 +93,8 @@ export default class Wheel {
 			mass: 6,
 			linearDamping: 0.01,
 			angularDamping: 0.01,
-			sleepSpeedLimit: 0.1, // Body will feel sleepy if speed<1 (speed == norm of velocity)
-			sleepTimeLimit: 0.1, // Body falls asleep after 1s of sleepiness
+			sleepSpeedLimit: 0.0, // Body will feel sleepy if speed<1 (speed == norm of velocity)
+			sleepTimeLimit: 0.0, // Body falls asleep after 1s of sleepiness
 			angularVelocity: new CANNON.Vec3(0, 0, 0),
 			position: new CANNON.Vec3(posArg[0], posArg[1], posArg[2]),
 			shape: new CANNON.Sphere(j),
@@ -190,7 +190,7 @@ export default class Wheel {
 		matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, "bottomSquare", tex);
 		App.scene.bottomSquare.position.setPosition(0, -1.25, -21);
 		App.scene.bottomSquare.rotation.rotx = 90
-		App.scene.bottomSquare.rotation.rotationSpeed.z = 90
+		App.scene.bottomSquare.rotation.rotationSpeed.z = 9
 		App.scene.bottomSquare.geometry.setScale(10.8)
 		App.scene.bottomSquare.deactivateTex();
 		App.scene.bottomSquare.geometry.setScaleByZ(-11.5)
@@ -227,8 +227,7 @@ export default class Wheel {
 			position: new CANNON.Vec3(0, -21, 0.05)
 		});
 		// dev
-		window.centerWheel = centerWheel;
-
+		// window.centerWheel = centerWheel;
 		this.pWorld.world.addBody(centerWheel);
 		App.scene.centerWheel.physics.currentBody = centerWheel;
 		App.scene.centerWheel.physics.enabled = true;
@@ -271,31 +270,37 @@ export default class Wheel {
 	}
 
 	animateRoll() {
-		console.warn('ONCE')
-		this.C = 0;
-
+		console.warn('ONCE <><>')
+		this.C = 100;
 		this.rollTimer = {};
 
 		this.rollTimer.UPDATE = () => {
 			for(var i = 0;i < 37;i++) {
 				var p = {x: 0.1, y: 0.1, z: 0};
 				p = this.orbit(0, 9, i / 5.9 + this.C, p);
-				var p3 = {x: 0.1, y: 0.1, z: 0};
-				p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
-				App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1.)
-				App.scene['centerWheel' + i].physics.currentBody.position.set(p3.x, p3.y - 30, -0.2)
+				// var p3 = p;
+				// var p3 = {x: 0.1, y: 0.1, z: 0};
+				// p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
+				App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1)
+				App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.2)
 
+				// console.warn('>>>>', p)
 				if(App.scene.centerRollDecoration) {
 					App.scene.centerRollDecoration.rotation.rotationSpeed.y = this.speedRollInit * 1000
 				}
-			}
+			} 
 			this.C = this.C - this.speedRollInit
-			if(this.speedRollInit < 0.002) {
+			if(this.speedRollInit < 0.001) {
 				// clearInterval(this.rollTimer)
 			} else {
-				this.speedRollInit = this.speedRollInit - 0.001
+				this.speedRollInit = this.speedRollInit - 0.00085
 			}
 		}
+
+		// setInterval(() => {
+		// 	this.rollTimer.UPDATE()
+		// }, 10);
+
 		App.updateBeforeDraw.push(this.rollTimer)
 	}
 
@@ -323,8 +328,6 @@ export default class Wheel {
 			this.pWorld.world.addBody(b2);
 			App.scene['roll' + i].physics.currentBody = b2;
 			App.scene['roll' + i].physics.enabled = true;
-
-
 			App.scene['roll' + i].physics.currentBody.matrixRouletteId = i;
 			// console.info('centerWheel', App.scene['roll' + i].physics.currentBody.id) 
 
@@ -358,12 +361,10 @@ export default class Wheel {
 				position: new CANNON.Vec3(0, -21, 0.05)
 			});
 			// dev
-			window.centerWheel = centerWheel;
+			// window.centerWheel = centerWheel;
 			this.pWorld.world.addBody(centerWheel);
 			App.scene['centerWheel' + i].physics.currentBody = centerWheel;
 			App.scene['centerWheel' + i].physics.enabled = true;
-			//////////////
-
 		}
 	}
 

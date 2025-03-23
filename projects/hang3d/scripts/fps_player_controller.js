@@ -38,6 +38,7 @@ export var runHang3d = (world) => {
 	let ENUMERATORS = matrixEngine.utility.ENUMERATORS;
 	let isMobile = matrixEngine.utility.isMobile;
 	let randomFloatFromTo = matrixEngine.utility.randomFloatFromTo;
+	const getQuery = matrixEngine.utility.QueryString;
 	let App = matrixEngine.App;
 	setTimeout(() => document.querySelector('.button2').click(), 2000)
 	// Camera
@@ -49,7 +50,8 @@ export var runHang3d = (world) => {
 	matrixEngine.Events.camera.yPos = 10;
 	App.camera.yawRateOnEdge = 3; //ori 3
 	App.camera.yawRate = 3; // 1
-
+  // raycaster
+	matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true;
 	App.myAccounts = {};
 
 	// Keyboard event
@@ -73,7 +75,7 @@ export var runHang3d = (world) => {
 			console.log('wait for first click', e)
 		})
 	};
-	// window.addEventListener("click", App.FIRST_CLICK);
+	if (getQuery.music === 'true') window.addEventListener("click", App.FIRST_CLICK);
 	
 	// Prevent right click context menu
 	window.addEventListener("contextmenu", (e) => {e.preventDefault()});

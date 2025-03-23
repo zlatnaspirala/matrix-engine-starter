@@ -92,8 +92,9 @@ export class MatrixRoulette {
 		// Matrix-engine staff
 		this.world = matrixEngine.matrixWorld.world;
 		App.camera.SceneController = true;
-		App.camera.sceneControllerEdgeCameraYawRate = 0.01;
-		App.camera.speedAmp = 0.01;
+		App.camera.sceneControllerEdgeCameraYawRate = 0.0001;
+		App.camera.speedAmp = 0.0001;
+ 
 		// Add physics - ground and main instance of cannonjs
 		this.preparePhysics()
 		// Betting/Hovering/table screen/view
@@ -139,6 +140,7 @@ export class MatrixRoulette {
 		if(this.isManual() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'manual'}))
 		if(this.serverGiveResults() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'server'}))
 
+			App.scene.FLOOR_STATIC.position.SetY(-2);
 	}
 
 	firstClick = (e) => {
@@ -150,7 +152,7 @@ export class MatrixRoulette {
 	}
 
 	setupCameraView(type) {
-		var AMP = 0.5;
+		var AMP = 0.05;
 		if(typeof matrixEngine.utility.QueryString.cameraSpeed == 'undefined' ||
 			matrixEngine.utility.QueryString.cameraSpeed == null) {
 			// nothing for now
@@ -283,6 +285,7 @@ export class MatrixRoulette {
 			matrixEngine.Events.camera.pitch = -54.970000000000034
 			matrixEngine.Events.camera.zPos = 11.526822219793473
 			matrixEngine.Events.camera.yPos = 7.49717201776934
+
 		}
 	}
 
@@ -508,7 +511,7 @@ export class MatrixRoulette {
 		setTimeout(() => {
 			// clear double call
 			// roulette.wheelSystem.fireBall()
-			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.3, [4., -11.4, 3], [-4000, 250, 10]]}))
+			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.2, [4., -11.4, 3], [-4000, 250, 10]]}))
 			removeEventListener('camera-view-wheel', this.prepareFire)
 		}, this.status.winNumberMomentDelay)
 	}

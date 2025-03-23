@@ -16962,6 +16962,12 @@ Object.defineProperty(exports, "defineShader", {
     return _buildinMyShaders.defineShader;
   }
 });
+Object.defineProperty(exports, "meMapLoader", {
+  enumerable: true,
+  get: function () {
+    return _mapLoader.meMapLoader;
+  }
+});
 exports.raycaster = exports.utility = exports.objLoader = exports.Events = exports.Engine = exports.matrixRender = exports.matrixGeometry = exports.matrixWorld = void 0;
 
 var _manifest = _interopRequireDefault(require("./program/manifest"));
@@ -17008,13 +17014,15 @@ var _buildinShaders = require("./lib/optimizer/buildin-shaders");
 
 var _buildinMyShaders = require("./lib/optimizer/buildin-my-shaders");
 
+var _mapLoader = require("./lib/map-loader");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./lib/engine":13,"./lib/events":14,"./lib/loader-obj":15,"./lib/matrix-buffers":16,"./lib/matrix-bvh":17,"./lib/matrix-geometry":19,"./lib/matrix-render":22,"./lib/matrix-textures":27,"./lib/matrix-world":28,"./lib/optimizer/buildin-my-shaders":30,"./lib/optimizer/buildin-shaders":31,"./lib/raycast":34,"./lib/utility":40,"./program/manifest":44}],13:[function(require,module,exports){
+},{"./lib/engine":13,"./lib/events":14,"./lib/loader-obj":15,"./lib/map-loader":16,"./lib/matrix-buffers":17,"./lib/matrix-bvh":18,"./lib/matrix-geometry":20,"./lib/matrix-render":23,"./lib/matrix-textures":28,"./lib/matrix-world":29,"./lib/optimizer/buildin-my-shaders":31,"./lib/optimizer/buildin-shaders":32,"./lib/raycast":35,"./lib/utility":41,"./program/manifest":45}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17067,11 +17075,9 @@ var _sounds = require("./sounds");
 
 var _app = require("../networking2/app");
 
-var _matrixStream = require("../networking2/matrix-stream");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
+if (typeof _utility.QueryString.offScreen !== 'undefined' && (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true')) {
   _manifest.default.offScreenCanvas = true;
   console.log('[matrix-engine] offScreenCanvas activated =>', _manifest.default.offScreenCanvas);
 
@@ -17139,6 +17145,7 @@ let activateNet2 = (CustomConfig, sessionOption) => {
 
 
     if (typeof sessionOption === 'undefined') {
+      var sessionOption = {};
       sessionOption.sessionName = 'matrix-engine-random';
       sessionOption.resolution = '160x240';
     }
@@ -17242,10 +17249,15 @@ function defineWebGLWorld(cavnas) {
     const available_extensions = gl.getSupportedExtensions();
     const test_depth_texture = gl.getExtension('WEBGL_depth_texture');
 
-    if (!test_depth_texture) {// console.warn('No support for WEBGL_depth_texture [opengles1.1] !', ext);
-    } // console.info("WEBGL base pocket: SUCCESS , Lets see list of ext : ", available_extensions);
+    if (!test_depth_texture) {
+      console.info(`%cNo support for WEBGL_depth_texture!`, _matrixWorld.CS4);
+    }
 
-
+    console.info(`%cAvailable_extensions: ${available_extensions}`, _matrixWorld.CS4);
+    console.info(`%cMAX ELEMENT INDEX   : ${gl.getParameter(gl.MAX_ELEMENT_INDEX)}`, _matrixWorld.CS4);
+    console.info(`%cMAX VERTICES        : ${gl.getParameter(gl.MAX_ELEMENTS_VERTICES)}`, _matrixWorld.CS4);
+    console.info(`%cMAX INDICES         : ${gl.getParameter(gl.MAX_ELEMENTS_INDICES)}`, _matrixWorld.CS4);
+    console.info(`%cApp.limitations: ${_manifest.default.limitations}`, _matrixWorld.CS4);
     const extTFAnisotropic = gl.getExtension('EXT_texture_filter_anisotropic') || gl.getExtension('MOZ_EXT_texture_filter_anisotropic') || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
 
     if (extTFAnisotropic) {
@@ -17269,13 +17281,11 @@ function defineWebGLWorld(cavnas) {
 }
 
 function updateFPS(elements) {
-  // console.log(" Update FPS");
   var now = new Date().getTime();
   var delta = now - lastTime;
   exports.lastTime = lastTime = now;
   exports.totalTime = totalTime = totalTime + delta;
-  exports.updateTime = updateTime = updateTime + delta; // eslint-disable-next-line no-global-assign
-
+  exports.updateTime = updateTime = updateTime + delta;
   (0, _matrixWorld.modifyFrames)(_matrixWorld.frames + 1);
   exports.updateFrames = updateFrames = updateFrames + 1;
 
@@ -17287,13 +17297,12 @@ function updateFPS(elements) {
 }
 
 function drawCanvas() {
-  // console.log("Init the canvas...");
   var canvas = document.createElement('canvas');
   canvas.id = 'canvas';
 
   if (_manifest.default.resize.canvas == 'full-screen') {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight; // SYS.DEBUG.LOG('SYS: fullscreen diametric resize is active. ');
+    canvas.height = window.innerHeight;
   } else {
     canvas.width = window.innerHeight * _manifest.default.resize.aspectRatio;
     canvas.height = window.innerHeight;
@@ -17302,7 +17311,7 @@ function drawCanvas() {
   }
 
   document.body.append(canvas);
-} // Degree to Radian converter 
+} // Degree to Radian converter
 
 
 function degToRad(degrees) {
@@ -17559,6 +17568,10 @@ function initShaders(gl, fragment, vertex) {
 
       if (null !== gl.getUniformLocation(shaderProgram, 'uDirectionalColor')) {
         shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, 'uDirectionalColor');
+      }
+
+      if (null !== gl.getUniformLocation(shaderProgram, 'u_reverseLightDirection')) {
+        shaderProgram.u_reverseLightDirection = gl.getUniformLocation(shaderProgram, 'u_reverseLightDirection');
       } // Local SpotLight
 
 
@@ -17727,64 +17740,43 @@ var webcamError = function (e) {
 exports.webcamError = webcamError;
 
 function SET_STREAM(video) {
-  var videoSrc = null;
-  navigator.mediaDevices.enumerateDevices().then(getDevices).then(getStream).catch(() => {
-    alert('ERR MEDIA');
-  });
+  let v;
 
-  function getDevices(deviceInfos) {
-    for (var i = 0; i !== deviceInfos.length; ++i) {
-      var deviceInfo = deviceInfos[i];
-
-      if (deviceInfo.kind === 'videoinput') {
-        videoSrc = deviceInfo.deviceId;
-        break;
-      }
-    }
+  if ((0, _utility.isMobile)() == true) {
+    v = true; // {deviceId: {exact: videoSrc}, facingMode: 'user'}
+  } else {
+    v = true;
   }
 
-  function getStream() {
-    if (navigator.getUserMedia) {
-      var VIDEO__;
-
-      if (isMobile() == true) {
-        VIDEO__ = {
-          deviceId: {
-            exact: videoSrc
-          },
-          facingMode: 'user'
-        };
-      } else {
-        VIDEO__ = true;
-      }
-
-      navigator.getUserMedia({
-        audio: true,
-        video: VIDEO__
-      }, function (stream) {
-        try {
-          console.log('stream1', stream);
-          video.srcObject = stream;
-          console.log('stream2', stream);
-        } catch (error) {
-          video.src = window.URL.createObjectURL(stream);
-        }
-      }, webcamError);
-    } else if (navigator.webkitGetUserMedia) {
-      navigator.webkitGetUserMedia({
-        audio: true,
-        video: true
-      }, function (stream) {
-        try {
-          video.srcObject = stream;
-        } catch (error) {
-          video.src = window.URL.createObjectURL(stream);
-        }
-      }, webcamError);
-    } else {
-      alert('webcam broken.');
+  navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: v
+  }).then(stream => {
+    try {
+      video.srcObject = stream;
+      console.log('[me][new-gen-device]', stream);
+    } catch (error) {
+      video.src = window.URL.createObjectURL(stream);
+      console.log('[me][old-gen-device]', stream);
     }
-  }
+
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      devices.forEach(device => {
+        if (_manifest.default.printDevicesInfo == true) console.log('device.label :', device.label);
+      });
+    });
+  }).catch(error => {
+    console.log('Error :', error);
+  }); // var videoSrc = null;
+  // function getDevices(deviceInfos) {
+  // 	for(var i = 0;i !== deviceInfos.length;++i) {
+  // 		var deviceInfo = deviceInfos[i];
+  // 		if(deviceInfo.kind === 'videoinput') {
+  // 			videoSrc = deviceInfo.deviceId;
+  // 			break;
+  // 		}
+  // 	}
+  // }
 }
 
 function ACCESS_CAMERA(htmlElement) {
@@ -18095,7 +18087,7 @@ function DOM_VT(video, name, options) {
   };
 }
 
-},{"../client-config":11,"../networking2/app":42,"../networking2/matrix-stream":43,"../program/manifest":44,"./events":14,"./matrix-render":22,"./matrix-shaders1":23,"./matrix-shaders3":24,"./matrix-world":28,"./net":29,"./sounds":39,"./utility":40,"./webgl-utils":41}],14:[function(require,module,exports){
+},{"../client-config":11,"../networking2/app":43,"../program/manifest":45,"./events":14,"./matrix-render":23,"./matrix-shaders1":24,"./matrix-shaders3":25,"./matrix-world":29,"./net":30,"./sounds":40,"./utility":41,"./webgl-utils":42}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18471,22 +18463,22 @@ camera.yawAmp = 0.077;
 camera.pitchAmp = 0.017;
 camera.virtualJumpY = 2;
 camera.virtualJumpActive = false;
-camera.preventSpeedZero = false; // eslint-disable-next-line no-global-assign
-
+camera.moveLeft = false;
+camera.preventSpeedZero = false;
 var keyboardPress = defineKeyBoardObject(); // For FirstPersonController
 
 exports.keyboardPress = keyboardPress;
 
 camera.setCamera = function (object) {
-  if (keyboardPress.getKeyStatus(37) || keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
-    /* Left Key  or A */
+  if (keyboardPress.getKeyStatus(65) || _manifest.default.camera.leftEdge == true) {
+    /* A */
     camera.yawRate = _manifest.default.camera.yawRate;
 
     if (_manifest.default.camera.leftEdge == true) {
       camera.yawRate = _manifest.default.camera.yawRateOnEdge;
     }
-  } else if (keyboardPress.getKeyStatus(39) || keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
-    /* Right Key or D */
+  } else if (keyboardPress.getKeyStatus(68) || _manifest.default.camera.rightEdge == true) {
+    /* D */
     camera.yawRate = -_manifest.default.camera.yawRate;
 
     if (_manifest.default.camera.rightEdge == true) {
@@ -18498,21 +18490,27 @@ camera.setCamera = function (object) {
       this.virtualJumpActive = true;
     }
   }
-  /* Up Key or W */
 
-
-  if (keyboardPress.getKeyStatus(38) || keyboardPress.getKeyStatus(87)) {
+  if (keyboardPress.getKeyStatus(37)) {
+    /* Left Key  || App.camera.leftEdge == true*/
+    camera.moveLeft = true;
+    camera.speed = _manifest.default.camera.speedAmp;
+  } else if (keyboardPress.getKeyStatus(39)) {
+    /* Right Key || App.camera.rightEdge == true */
+    camera.moveRight = true;
+    camera.speed = _manifest.default.camera.speedAmp;
+  } else if (keyboardPress.getKeyStatus(38) || keyboardPress.getKeyStatus(87)) {
+    /* Up Key or W */
     camera.speed = _manifest.default.camera.speedAmp;
   } else if (keyboardPress.getKeyStatus(40) || keyboardPress.getKeyStatus(83)) {
     /* Down Key or S */
     camera.speed = -_manifest.default.camera.speedAmp;
-  } else {
-    if (camera.preventSpeedZero == false) camera.speed = 0;
+  } else {// if(camera.preventSpeedZero == false) camera.speed = 0;
   }
   /* Calculate yaw, pitch and roll(x,y,z) */
 
 
-  if (camera.speed != 0) {
+  if (camera.speed != 0 && camera.moveLeft == false && camera.moveRight == false) {
     camera.xPos -= Math.sin(degToRad(camera.yaw)) * camera.speed;
 
     if (camera.fly == true) {
@@ -18525,6 +18523,14 @@ camera.setCamera = function (object) {
     }
 
     camera.zPos -= Math.cos(degToRad(camera.yaw)) * camera.speed;
+  } else if (camera.moveLeft == true) {
+    // by side move left
+    camera.xPos -= Math.sin(degToRad(camera.yaw + 90)) * camera.speed;
+    camera.zPos -= Math.cos(degToRad(camera.yaw + 90)) * camera.speed;
+  } else if (camera.moveRight == true) {
+    // by side move rigth
+    camera.xPos -= Math.sin(degToRad(camera.yaw - 90)) * camera.speed;
+    camera.zPos -= Math.cos(degToRad(camera.yaw - 90)) * camera.speed;
   }
 
   camera.yaw += camera.yawRate * camera.yawAmp;
@@ -18533,7 +18539,11 @@ camera.setCamera = function (object) {
   mat4.rotate(object.mvMatrix, object.mvMatrix, degToRad(-camera.yaw), [0, 1, 0]);
   mat4.translate(object.mvMatrix, object.mvMatrix, [-camera.xPos, -camera.yPos, -camera.zPos]);
   camera.yawRate = 0;
-  camera.pitchRate = 0;
+  camera.pitchRate = 0; // update
+
+  camera.moveLeft = false;
+  camera.moveRight = false;
+  if (camera.preventSpeedZero == false) camera.speed = 0;
 }; // For sceneController
 
 
@@ -18632,7 +18642,7 @@ if (_manifest.default.pwa.addToHomePage === true) {
   } catch (err) {}
 }
 
-},{"../program/manifest":44,"./matrix-world":28,"./utility":40}],15:[function(require,module,exports){
+},{"../program/manifest":45,"./matrix-world":29,"./utility":41}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18653,86 +18663,93 @@ var _matrixWorld = require("./matrix-world");
  * @constructor
  *
  * @param {String} objectData a string representation of an OBJ file with newlines preserved.
+ * 
+ * Fro group only detect special case `mesh name`
+ *  - COLLIDER
+ *  - Destruct
+ * Generate vert , norm , texCord.
  */
 class constructMesh {
   constructor(objectData, inputArg) {
+    this.name = '';
     this.inputArg = inputArg;
     this.objectData = objectData;
     this.create(objectData, inputArg);
 
     this.setScale = s => {
       this.inputArg.scale = s;
-      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg));
-    };
+      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg, undefined, this));
+    }; // Never used
+
 
     this.updateBuffers = () => {
       this.inputArg.scale = 1;
-      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg));
+      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg, undefined, this));
     };
   }
 
-  create = (objectData, inputArg, callback) => {
+  create = (objectData, inputArg, callback, root) => {
     if (typeof callback === 'undefined') callback = function () {};
     let initOrientation = [0, 1, 2];
     /*
-      The OBJ file format does a sort of compression when saving a model in a
-      program like Blender. There are at least 3 sections (4 including textures)
-      within the file. Each line in a section begins with the same string:
-        * 'v': indicates vertex section
-        * 'vn': indicates vertex normal section
-        * 'f': indicates the faces section
-        * 'vt': indicates vertex texture section (if textures were used on the model)
-      Each of the above sections (except for the faces section) is a list/set of
-      unique vertices.
-      Each line of the faces section contains a list of
-      (vertex, [texture], normal) groups
-      Some examples:
-          // the texture index is optional, both formats are possible for models
-          // without a texture applied
-          f 1/25 18/46 12/31
-          f 1//25 18//46 12//31
-          // A 3 vertex face with texture indices
-          f 16/92/11 14/101/22 1/69/1
-          // A 4 vertex face
-          f 16/92/11 40/109/40 38/114/38 14/101/22
-      The first two lines are examples of a 3 vertex face without a texture applied.
-      The second is an example of a 3 vertex face with a texture applied.
-      The third is an example of a 4 vertex face. Note: a face can contain N
-      number of vertices.
-      Each number that appears in one of the groups is a 1-based index
-      corresponding to an item from the other sections (meaning that indexing
-      starts at one and *not* zero).
-      For example:
-          `f 16/92/11` is saying to
-            - take the 16th element from the [v] vertex array
-            - take the 92nd element from the [vt] texture array
-            - take the 11th element from the [vn] normal array
-          and together they make a unique vertex.
-      Using all 3+ unique Vertices from the face line will produce a polygon.
-      Now, you could just go through the OBJ file and create a new vertex for
-      each face line and WebGL will draw what appears to be the same model.
-      However, vertices will be overlapped and duplicated all over the place.
-      Consider a cube in 3D space centered about the origin and each side is
-      2 units long. The front face (with the positive Z-axis pointing towards
-      you) would have a Top Right vertex (looking orthogonal to its normal)
-      mapped at (1,1,1) The right face would have a Top Left vertex (looking
-      orthogonal to its normal) at (1,1,1) and the top face would have a Bottom
-      Right vertex (looking orthogonal to its normal) at (1,1,1). Each face
-      has a vertex at the same coordinates, however, three distinct vertices
-      will be drawn at the same spot.
-      To solve the issue of duplicate Vertices (the `(vertex, [texture], normal)`
-      groups), while iterating through the face lines, when a group is encountered
-      the whole group string ('16/92/11') is checked to see if it exists in the
-      packed.hashindices object, and if it doesn't, the indices it specifies
-      are used to look up each attribute in the corresponding attribute arrays
-      already created. The values are then copied to the corresponding unpacked
-      array (flattened to play nice with WebGL's ELEMENT_ARRAY_BUFFER indexing),
-      the group string is added to the hashindices set and the current unpacked
-      index is used as this hashindices value so that the group of elements can
-      be reused. The unpacked index is incremented. If the group string already
-      exists in the hashindices object, its corresponding value is the index of
-      that group and is appended to the unpacked indices array.
-      */
+    	The OBJ file format does a sort of compression when saving a model in a
+    	program like Blender. There are at least 3 sections (4 including textures)
+    	within the file. Each line in a section begins with the same string:
+    		* 'v': indicates vertex section
+    		* 'vn': indicates vertex normal section
+    		* 'f': indicates the faces section
+    		* 'vt': indicates vertex texture section (if textures were used on the model)
+    	Each of the above sections (except for the faces section) is a list/set of
+    	unique vertices.
+    	Each line of the faces section contains a list of
+    	(vertex, [texture], normal) groups
+    	Some examples:
+    			// the texture index is optional, both formats are possible for models
+    			// without a texture applied
+    			f 1/25 18/46 12/31
+    			f 1//25 18//46 12//31
+    			// A 3 vertex face with texture indices
+    			f 16/92/11 14/101/22 1/69/1
+    			// A 4 vertex face
+    			f 16/92/11 40/109/40 38/114/38 14/101/22
+    	The first two lines are examples of a 3 vertex face without a texture applied.
+    	The second is an example of a 3 vertex face with a texture applied.
+    	The third is an example of a 4 vertex face. Note: a face can contain N
+    	number of vertices.
+    	Each number that appears in one of the groups is a 1-based index
+    	corresponding to an item from the other sections (meaning that indexing
+    	starts at one and *not* zero).
+    	For example:
+    			`f 16/92/11` is saying to
+    				- take the 16th element from the [v] vertex array
+    				- take the 92nd element from the [vt] texture array
+    				- take the 11th element from the [vn] normal array
+    			and together they make a unique vertex.
+    	Using all 3+ unique Vertices from the face line will produce a polygon.
+    	Now, you could just go through the OBJ file and create a new vertex for
+    	each face line and WebGL will draw what appears to be the same model.
+    	However, vertices will be overlapped and duplicated all over the place.
+    	Consider a cube in 3D space centered about the origin and each side is
+    	2 units long. The front face (with the positive Z-axis pointing towards
+    	you) would have a Top Right vertex (looking orthogonal to its normal)
+    	mapped at (1,1,1) The right face would have a Top Left vertex (looking
+    	orthogonal to its normal) at (1,1,1) and the top face would have a Bottom
+    	Right vertex (looking orthogonal to its normal) at (1,1,1). Each face
+    	has a vertex at the same coordinates, however, three distinct vertices
+    	will be drawn at the same spot.
+    	To solve the issue of duplicate Vertices (the `(vertex, [texture], normal)`
+    	groups), while iterating through the face lines, when a group is encountered
+    	the whole group string ('16/92/11') is checked to see if it exists in the
+    	packed.hashindices object, and if it doesn't, the indices it specifies
+    	are used to look up each attribute in the corresponding attribute arrays
+    	already created. The values are then copied to the corresponding unpacked
+    	array (flattened to play nice with WebGL's ELEMENT_ARRAY_BUFFER indexing),
+    	the group string is added to the hashindices set and the current unpacked
+    	index is used as this hashindices value so that the group of elements can
+    	be reused. The unpacked index is incremented. If the group string already
+    	exists in the hashindices object, its corresponding value is the index of
+    	that group and is appended to the unpacked indices array.
+    	*/
 
     var verts = [],
         vertNormals = [],
@@ -18744,9 +18761,12 @@ class constructMesh {
     unpacked.textures = [];
     unpacked.hashindices = {};
     unpacked.indices = [];
-    unpacked.index = 0; // array of lines separated by the newline
+    unpacked.index = 0;
+    var TEST_FACES = []; // array of lines separated by the newline
 
-    var lines = objectData.split('\n'); // update swap orientation
+    var lines = objectData.split('\n'); // test group catch data bpund or center
+
+    var objGroups = []; // update swap orientation
 
     if (inputArg.swap[0] !== null) {
       swap(inputArg.swap[0], inputArg.swap[1], initOrientation);
@@ -18764,24 +18784,36 @@ class constructMesh {
       elements.shift();
 
       if (VERTEX_RE.test(line)) {
-        // if this is a vertex
         verts.push.apply(verts, elements);
+
+        if (objGroups.length > 0) {
+          objGroups[objGroups.length - 1].groupVert.push(elements);
+        }
       } else if (NORMAL_RE.test(line)) {
         // if this is a vertex normal
-        vertNormals.push.apply(vertNormals, elements);
+        vertNormals.push.apply(vertNormals, elements); // TEST 
+
+        if (objGroups.length > 0) {
+          objGroups[objGroups.length - 1].groupNorm.push(elements);
+        }
       } else if (TEXTURE_RE.test(line)) {
         // if this is a texture
-        textures.push.apply(textures, elements);
+        textures.push.apply(textures, elements); // TEST 
+
+        if (objGroups.length > 0) {
+          objGroups[objGroups.length - 1].groupTexCord.push(elements);
+        }
       } else if (FACE_RE.test(line)) {
         // if this is a face
 
         /*
-          split this face into an array of vertex groups
-          for example:
-            f 16/92/11 14/101/22 1/69/1
-          becomes:
-            ['16/92/11', '14/101/22', '1/69/1'];
-          */
+        	split this face into an array of vertex groups
+        	for example:
+        		f 16/92/11 14/101/22 1/69/1
+        	becomes:
+        		['16/92/11', '14/101/22', '1/69/1'];
+        	*/
+        // 		unpacked.index = 0;
         var quad = false;
 
         for (var j = 0, eleLen = elements.length; j < eleLen; j++) {
@@ -18797,43 +18829,52 @@ class constructMesh {
           }
 
           if (elements[j] in unpacked.hashindices) {
-            unpacked.indices.push(unpacked.hashindices[elements[j]]);
+            unpacked.indices.push(unpacked.hashindices[elements[j]]); // console.log('HASH INDICES >>>> elements[j] ', elements[j])
           } else {
             /*
-                  Each element of the face line array is a vertex which has its
-                  attributes delimited by a forward slash. This will separate
-                  each attribute into another array:
-                      '19/92/11'
-                  becomes:
-                      vertex = ['19', '92', '11'];
-                  where
-                      vertex[0] is the vertex index
-                      vertex[1] is the texture index
-                      vertex[2] is the normal index
-                  Think of faces having Vertices which are comprised of the
-                  attributes location (v), texture (vt), and normal (vn).
-                  */
+            			Each element of the face line array is a vertex which has its
+            			attributes delimited by a forward slash. This will separate
+            			each attribute into another array:
+            					'19/92/11'
+            			becomes:
+            					vertex = ['19', '92', '11'];
+            			where
+            					vertex[0] is the vertex index
+            					vertex[1] is the texture index
+            					vertex[2] is the normal index
+            			Think of faces having Vertices which are comprised of the
+            			attributes location (v), texture (vt), and normal (vn).
+            			*/
             var vertex = elements[j].split('/');
             /*
-                  The verts, textures, and vertNormals arrays each contain a
-                  flattend array of coordinates.
-                  Because it gets confusing by referring to vertex and then
-                  vertex (both are different in my descriptions) I will explain
-                  what's going on using the vertexNormals array:
-                  vertex[2] will contain the one-based index of the vertexNormals
-                  section (vn). One is subtracted from this index number to play
-                  nice with javascript's zero-based array indexing.
-                  Because vertexNormal is a flattened array of x, y, z values,
-                  simple pointer arithmetic is used to skip to the start of the
-                  vertexNormal, then the offset is added to get the correct
-                  component: +0 is x, +1 is y, +2 is z.
-                  This same process is repeated for verts and textures.
-                  */
-            // vertex position
+            			The verts, textures, and vertNormals arrays each contain a
+            			flattend array of coordinates.
+            			Because it gets confusing by referring to vertex and then
+            			vertex (both are different in my descriptions) I will explain
+            			what's going on using the vertexNormals array:
+            			vertex[2] will contain the one-based index of the vertexNormals
+            			section (vn). One is subtracted from this index number to play
+            			nice with javascript's zero-based array indexing.
+            			Because vertexNormal is a flattened array of x, y, z values,
+            			simple pointer arithmetic is used to skip to the start of the
+            			vertexNormal, then the offset is added to get the correct
+            			component: +0 is x, +1 is y, +2 is z.
+            			This same process is repeated for verts and textures.
+            			*/
+            // vertex position + scale by axis
 
-            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale);
-            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[1]] * inputArg.scale);
-            unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale); // vertex textures
+            if (typeof inputArg.scale == "number") {
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale);
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[1]] * inputArg.scale);
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale); // console.log('VERT PUSH >> (vertex[0] - 1) * 3 >>  ', (vertex[0] - 1) * 3)
+
+              TEST_FACES.push(vertex[0] - 1);
+            } else {
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale.x);
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[1]] * inputArg.scale.y);
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale.z); // console.log('VERT PUSH2   >> (vertex[0] - 1) * 3 >>  ', (vertex[0] - 1) * 3)
+            } // vertex textures
+
 
             if (textures.length) {
               unpacked.textures.push(+textures[(vertex[1] - 1) * 2 + 0]);
@@ -18856,6 +18897,36 @@ class constructMesh {
             unpacked.indices.push(unpacked.hashindices[elements[0]]);
           }
         }
+      } else {
+        if (line.indexOf('# ') != -1) {// console.log('obj loader comment:', line)
+        } else if (line.indexOf('mtllib') != -1) {// console.log('obj loader MTL file:', line)
+        } else if (line.indexOf('o ') != -1) {
+          console.log('obj loader object name:', line.split(' ')[1]);
+          this.name = line.split(' ')[1];
+        } else if (line.indexOf('g ') != -1) {
+          // console.log('obj loader group :', line)
+          var nameOFGroup = line.split(' ')[1];
+
+          if (nameOFGroup.indexOf('COLLIDER') != -1) {
+            // console.log('obj loader group [SPECIAL CASE COLLIDER]:', nameOFGroup)
+            objGroups.push({
+              groupName: nameOFGroup,
+              groupVert: [],
+              groupNorm: [],
+              groupTexCord: [],
+              groupIndices: []
+            });
+          } else if (nameOFGroup.indexOf('Destruct') != -1) {
+            // console.log('obj loader group [SPECIAL CASE Destruct] [reset] :', nameOFGroup)
+            objGroups.push({
+              groupName: nameOFGroup,
+              groupVert: [],
+              groupNorm: [],
+              groupTexCord: [],
+              groupIndices: []
+            });
+          }
+        }
       }
     }
 
@@ -18863,6 +18934,18 @@ class constructMesh {
     this.vertexNormals = unpacked.norms;
     this.textures = unpacked.textures;
     this.indices = unpacked.indices;
+    verts = verts.map(function (item) {
+      return parseFloat(item);
+    });
+    this.TEST_verts = verts;
+    this.TEST_FACES = TEST_FACES;
+
+    if (objGroups.length > 0) {
+      this.groups = objGroups;
+    } else {
+      this.groups = null;
+    }
+
     callback();
     return this;
   };
@@ -18995,53 +19078,6 @@ var _buildBuffer = function (gl, type, data, itemSize) {
  * **indexBuffer**        |contains the indices of the faces
  * indexBuffer.itemSize   |is set to 1
  * indexBuffer.numItems   |the total number of indices
- *
- * A simple example (a lot of steps are missing, so don't copy and paste):
- *
- *     var gl   = canvas.getContext('webgl'),
- *         mesh = OBJ.Mesh(obj_file_data);
- *     // compile the shaders and create a shader program
- *     var shaderProgram = gl.createProgram();
- *     // compilation stuff here
- *     ...
- *     // make sure you have vertex, vertex normal, and texture coordinate
- *     // attributes located in your shaders and attach them to the shader program
- *     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
- *     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
- *
- *     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
- *     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
- *
- *     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
- *     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *
- *     // create and initialize the vertex, vertex normal, and texture coordinate buffers
- *     // and save on to the mesh object
- *     OBJ.initMeshBuffers(gl, mesh);
- *
- *     // now to render the mesh
- *     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
- *     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *     // it's possible that the mesh doesn't contain
- *     // any texture coordinates (e.g. suzanne.obj in the development branch).
- *     // in this case, the texture vertexAttribArray will need to be disabled
- *     // before the call to drawElements
- *     if(!mesh.textures.length){
- *       gl.disableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *     }
- *     else{
- *       // if the texture vertexAttribArray has been previously
- *       // disabled, then it needs to be re-enabled
- *       gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
- *       gl.bindBuffer(gl.ARRAY_BUFFER, mesh.textureBuffer);
- *       gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *     }
- *
- *     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.normalBuffer);
- *     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
- *
- *     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.mesh.indexBuffer);
- *     gl.drawElements(gl.TRIANGLES, model.mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
  */
 
 
@@ -19066,24 +19102,24 @@ var deleteMeshBuffers = function (gl, mesh) {
  * This is adaptation for blender obj animation export.
  * For example:
  *    matrixEngine.objLoader.downloadMeshes(
-      matrixEngine.objLoader.makeObjSeqArg(
-        {
-          id: objName,
-          joinMultiPahts: [
-            {
-              path: "res/bvh-skeletal-base/swat-guy/seq-walk/low/swat",
-              id: objName,
-              from: 1, to: 34
-            },
-            {
-              path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
-              id: objName,
-              from: 35, to: 54
-            }
-          ]
-        }),
-      onLoadObj
-    );
+			matrixEngine.objLoader.makeObjSeqArg(
+				{
+					id: objName,
+					joinMultiPahts: [
+						{
+							path: "res/bvh-skeletal-base/swat-guy/seq-walk/low/swat",
+							id: objName,
+							from: 1, to: 34
+						},
+						{
+							path: "res/bvh-skeletal-base/swat-guy/seq-walk-pistol/low/swat-walk-pistol",
+							id: objName,
+							from: 35, to: 54
+						}
+					]
+				}),
+			onLoadObj
+		);
  */
 
 
@@ -19150,10 +19186,414 @@ exports.makeObjSeqArg = makeObjSeqArg;
 function play(nameAni) {
   this.animation.anims.active = nameAni;
   this.animation.currentAni = this.animation.anims[this.animation.anims.active].from;
-} // TEST 
+} // TEST
 // add destroy animation meshs procedure
 
-},{"./matrix-world":28}],16:[function(require,module,exports){
+},{"./matrix-world":29}],16:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.meMapLoader = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("../index"));
+
+var CANNON = _interopRequireWildcard(require("cannon"));
+
+var _manifest = _interopRequireDefault(require("../program/manifest"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+const meMapLoader = {
+  physics: {},
+  load: function (map, physics) {
+    this.physics = physics;
+    map.staticCubes.forEach(item => {
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
+
+      _manifest.default.scene[item.name].geometry.setScaleByX(item.scale[0]);
+
+      _manifest.default.scene[item.name].geometry.setScaleByY(item.scale[1]);
+
+      _manifest.default.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+
+      var b = new CANNON.Body({
+        mass: 0,
+        linearDamping: 0.01,
+        position: new CANNON.Vec3(item.position.x, item.position.z, item.position.y),
+        shape: new CANNON.Box(new CANNON.Vec3(item.scaleCollider[0], item.scaleCollider[2], item.scaleCollider[1]))
+      });
+      physics.world.addBody(b);
+      _manifest.default.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+      _manifest.default.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+      _manifest.default.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+      _manifest.default.scene[item.name].rotation.rotationSpeed.x = item.activeRotation[0];
+      _manifest.default.scene[item.name].rotation.rotationSpeed.y = item.activeRotation[1];
+      _manifest.default.scene[item.name].rotation.rotationSpeed.z = item.activeRotation[2];
+
+      _manifest.default.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
+
+      _manifest.default.scene[item.name].physics.currentBody = b;
+      _manifest.default.scene[item.name].physics.enabled = true;
+
+      _manifest.default.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx, item.rotation.rotz, item.rotation.roty);
+    }); // platform angle
+
+    if (map.staticFloors) map.staticFloors.forEach(item => {
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, item.name, item.texture);
+      const b = new CANNON.Body({
+        shape: new CANNON.Box(new CANNON.Vec3(item.scaleCollider[0], item.scaleCollider[2], 0.1)),
+        type: CANNON.Body.STATIC,
+        position: new CANNON.Vec3(0, 0, 0)
+      });
+      b.fixedRotation = true;
+      b.updateMassProperties();
+      _manifest.default.scene[item.name].physics.currentBody = b;
+      _manifest.default.scene[item.name].physics.enabled = true;
+
+      _manifest.default.scene[item.name].geometry.setScaleByX(item.scale[0]);
+
+      _manifest.default.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+
+      _manifest.default.scene[item.name].geometry.setScaleByY(-0.9); // App.scene[item.name].physics.currentBody.quaternion.setFromEuler(5 * Math.PI/180,0,0)
+      // shape: new CANNON.Box(new CANNON.Vec3(item.scale[0] * 2, item.scale[2] * 2, item.scale[1] * 2))
+      // App.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+      // App.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+      // App.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+      // no active rot for floors
+
+
+      _manifest.default.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
+
+      _manifest.default.scene[item.name].physics.currentBody = b;
+      _manifest.default.scene[item.name].physics.enabled = true;
+
+      _manifest.default.scene[item.name].physics.currentBody.quaternion.setFromEuler(item.rotation.rotx * Math.PI / 180, 0, 0);
+
+      physics.world.addBody(b);
+    }); //
+
+    if (map.staticObjs) map.staticObjs.forEach(item => {
+      // matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+      // App.scene[item.name].geometry.setScaleByX(item.scale[0]);
+      // App.scene[item.name].geometry.setScaleByY(item.scale[1]);
+      // App.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+      this.loadObjStatic({
+        name: item.name,
+        mass: 0,
+        path: item.path,
+        position: [item.position.x, item.position.y, item.position.z],
+        activeRotation: item.activeRotation,
+        rotation: item.rotation,
+        scale: item.scale,
+        scaleCollider: item.scaleCollider,
+        textures: item.texture.source,
+        shadows: false,
+        gamePlayItem: 'STATIC_rock'
+      }, physics);
+    });
+    if (map.noPhysics && map.noPhysics.cubes.length > 0) map.noPhysics.cubes.forEach(item => {
+      matrixEngine.matrixWorld.world.Add("cubeLightTex", item.scale[0], item.name, item.texture);
+
+      _manifest.default.scene[item.name].geometry.setScaleByX(item.scale[0]);
+
+      _manifest.default.scene[item.name].geometry.setScaleByY(item.scale[1]);
+
+      _manifest.default.scene[item.name].geometry.setScaleByZ(item.scale[2]);
+
+      _manifest.default.scene[item.name].rotation.rotx = parseFloat(item.rotation.rotx);
+      _manifest.default.scene[item.name].rotation.roty = parseFloat(item.rotation.roty);
+      _manifest.default.scene[item.name].rotation.rotz = parseFloat(item.rotation.rotz);
+      _manifest.default.scene[item.name].rotation.rotationSpeed.x = item.activeRotation[0];
+      _manifest.default.scene[item.name].rotation.rotationSpeed.y = item.activeRotation[1];
+      _manifest.default.scene[item.name].rotation.rotationSpeed.z = item.activeRotation[2];
+
+      _manifest.default.scene[item.name].position.setPosition(item.position.x, item.position.y, item.position.z);
+    });
+    if (map.staticObjsGroup) map.staticObjsGroup.forEach(item => {
+      this.loadObjStaticGroup({
+        name: item.name,
+        mass: 0,
+        path: item.path,
+        position: [item.position.x, item.position.y, item.position.z],
+        activeRotation: item.activeRotation,
+        rotation: item.rotation,
+        scale: item.scale,
+        scaleCollider: item.scaleCollider,
+        textures: item.texture.source,
+        shadows: false,
+        gamePlayItem: 'STATIC_rock'
+      }, physics);
+    });
+  },
+
+  loadObjStatic(n, physics) {
+    function onLoadObjS(meshes) {
+      var tex = {
+        source: n.textures,
+        mix_operation: "multiply"
+      };
+
+      for (let key in meshes) {
+        matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[key]);
+        matrixEngine.matrixWorld.world.Add("obj", n.scale, n.name, tex, meshes[key]);
+      }
+
+      _manifest.default.scene[n.name].position.x = n.position[0];
+      _manifest.default.scene[n.name].position.y = n.position[1];
+      _manifest.default.scene[n.name].position.z = n.position[2];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2]; // MUST BE FIXED ---------------------->><<---
+      // console.log('>>>>>>>>>>>>>', n)
+
+      _manifest.default.scene[n.name].mesh.setScale({
+        x: n.scale[0],
+        y: n.scale[1],
+        z: n.scale[2]
+      });
+
+      var b44 = new CANNON.Body({
+        mass: n.mass,
+        linearDamping: 0.01,
+        position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1]),
+        shape: new CANNON.Box(new CANNON.Vec3(n.scaleCollider[0], n.scaleCollider[2], n.scaleCollider[1]))
+      });
+      b44._name = n.gamePlayItem;
+      physics.world.addBody(b44);
+      _manifest.default.scene[n.name].physics.currentBody = b44;
+      _manifest.default.scene[n.name].physics.enabled = true;
+      _manifest.default.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
+      _manifest.default.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
+      _manifest.default.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
+
+      _manifest.default.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty);
+
+      if (n.shadows == true) {
+        _manifest.default.scene[n.name].activateShadows('spot');
+      }
+    }
+
+    var arg = {};
+    arg[n.name] = n.path;
+    matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS);
+  },
+
+  loadObjStaticGroup(n, physics) {
+    function onLoadObjS(meshes) {
+      var tex = {
+        source: n.textures,
+        mix_operation: "multiply"
+      };
+
+      for (let key in meshes) {
+        matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[key]);
+        matrixEngine.matrixWorld.world.Add("obj", n.scale, n.name, tex, meshes[key]);
+      }
+
+      _manifest.default.scene[n.name].position.x = n.position[0];
+      _manifest.default.scene[n.name].position.y = n.position[1];
+      _manifest.default.scene[n.name].position.z = n.position[2];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2];
+      var body = new CANNON.Body({
+        mass: 0,
+        position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
+      });
+
+      _manifest.default.scene[n.name].mesh.groups.forEach(group => {
+        // We can add the same shape several times to position child shapes within the Compound.
+        // tHIS WORKS ONLY FOR SIMPLY CUBE
+        // i dont know who to hide collider 
+        console.log('<GROUP>', group);
+        var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
+        group.groupVert.forEach((vert, index) => {
+          if (index == 0) {
+            collectX0 = parseFloat(vert[0]);
+            collectY0 = parseFloat(vert[1]);
+            collectZ0 = parseFloat(vert[2]);
+          } else if (index == 1) {
+            collectY1 = parseFloat(vert[1]);
+          } else if (index == 2) {
+            collectZ2 = parseFloat(vert[2]);
+          } else if (index == 4) {
+            collectX4 = parseFloat(vert[0]);
+          }
+        }); // / 2 because elementar cube is -1 1 it is 2 in sum
+
+        var calcX = collectX4 - collectX0;
+        var calcXWorldPos = (collectX4 + collectX0) / 2;
+        calcX = calcX / 2;
+        var calcY = collectY1 - collectY0;
+        var calcYWorldPox = (collectY1 + collectY0) / 2;
+        calcY = calcY / 2;
+        var calcZ = collectZ2 - collectZ0;
+        var calcZWorldPos = (collectZ2 + collectZ0) / 2;
+        calcZ = calcZ / 2; // console.log('calcX', calcX)// console.log('calcY', calcY)// console.log('calcZ', calcZ)
+
+        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcZ), Math.abs(calcY))); // console.log('calcX pos ', calcXWorldPos)
+        // console.log('calcY pos ', calcYWorldPox)
+        // console.log('calcZ pos ', calcZWorldPos)
+
+        console.log('G NAME ', group.groupName.toString());
+
+        if (group.groupName.toString().indexOf('.RotX.') != -1) {
+          var getValueX = parseFloat(group.groupName.toString().split('.RotX.')[1].replace("_Mesh", ""));
+          var rotLocal = new CANNON.Quaternion(0, 0, 0, 1);
+          console.log('getValueX = ', getValueX, "  getValueX * Math.PI / 180 ", getValueX * Math.PI / 180);
+          rotLocal.setFromEuler(getValueX * Math.PI / 180, 0, 0); // body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
+
+          body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox), rotLocal);
+          console.log('body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices  GET REAL VERTICES FROM ROTATED PHYSC CUBE', body.shapes[body.shapes.length - 1].convexPolyhedronRepresentation.vertices);
+        } else {
+          body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcZWorldPos, calcYWorldPox));
+        }
+      });
+
+      _manifest.default.scene[n.name].mesh.setScale({
+        x: n.scale[0],
+        y: n.scale[1],
+        z: n.scale[2]
+      });
+
+      physics.world.addBody(body);
+      _manifest.default.scene[n.name].physics.currentBody = body;
+      _manifest.default.scene[n.name].physics.enabled = true;
+      _manifest.default.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
+      _manifest.default.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
+      _manifest.default.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz); // This is general rot if map loaded then whole map usualy 0 0 0 
+
+      _manifest.default.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty); // if(group.groupName.toString().indexOf('.RotX.') != -1) {
+      // 	//App.scene[n.name].physics.currentBody.
+      // 	// App.scene.mapobjsgroup_1_2.physics.currentBody.shapes[24].convexPolyhedronRepresentation.vertices
+      // }
+
+
+      if (n.shadows == true) {
+        _manifest.default.scene[n.name].activateShadows('spot');
+      }
+    }
+
+    var arg = {};
+    arg[n.name] = n.path;
+    matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS);
+  },
+
+  loadObjCorridorOPTIMISED(n, physics) {
+    function onLoadObjS(meshes) {
+      var tex = {
+        source: n.textures,
+        mix_operation: "multiply"
+      };
+
+      for (let key in meshes) {
+        matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[key]);
+        matrixEngine.matrixWorld.world.Add("obj", n.scale, n.name, tex, meshes[key]);
+      }
+
+      _manifest.default.scene[n.name].position.x = n.position[0];
+      _manifest.default.scene[n.name].position.y = n.position[1];
+      _manifest.default.scene[n.name].position.z = n.position[2];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.x = n.activeRotation[0];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.y = n.activeRotation[1];
+      _manifest.default.scene[n.name].rotation.rotationSpeed.z = n.activeRotation[2]; // matrixEngine already have array - good for buffers optimisation 
+      // same buffer just draw with diff position - possible in opengles1.1
+      // test numberOfInstance is 10 by my memory - It is good to collect from blender file obj export 
+      // info abot modifiers i am not sure ...
+      // collider !! must be added - no need for new   bodies 
+
+      _manifest.default.scene[n.name].instancedDraws.numberOfInstance = 5;
+      var S1 = new matrixEngine.utility.SWITCHER(); // colleders visible false must be - from code 
+
+      _manifest.default.scene[n.name].instancedDraws.array_of_local_offset = [0, 0, 0];
+
+      _manifest.default.scene[n.name].instancedDraws.overrideDrawArraysInstance = function (object) {
+        for (var i = -5; i < object.instancedDraws.numberOfInstance; i++) {
+          if (i == -5) {
+            object.instancedDraws.array_of_local_offset = [0, 0, i * 7];
+            mat4.translate(object.mvMatrix, object.mvMatrix, object.instancedDraws.array_of_local_offset);
+          }
+
+          object.instancedDraws.array_of_local_offset = [0, 0, 7];
+          mat4.translate(object.mvMatrix, object.mvMatrix, object.instancedDraws.array_of_local_offset);
+          matrixEngine.matrixWorld.world.setMatrixUniforms(object, matrixEngine.matrixWorld.world.pMatrix, object.mvMatrix);
+          matrixEngine.matrixWorld.world.GL.gl.drawElements(matrixEngine.matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, matrixEngine.matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
+        }
+      }; //
+
+
+      var body = new CANNON.Body({
+        mass: 0,
+        position: new CANNON.Vec3(n.position[0], n.position[2], n.position[1])
+      });
+
+      _manifest.default.scene[n.name].mesh.groups.forEach(group => {
+        // We can add the same shape several times to position child shapes within the Compound.
+        // tHIS WORKS ONLY FOR SIMPLY CUBE
+        // i dont know who to hide collider 
+        console.log('<GROUP>', group);
+        var collectX0, collectX4, collectY0, collectY1, collectZ0, collectZ2;
+        group.groupVert.forEach((vert, index) => {
+          if (index == 0) {
+            collectX0 = parseFloat(vert[0]);
+            collectY0 = parseFloat(vert[1]);
+            collectZ0 = parseFloat(vert[2]);
+          } else if (index == 1) {
+            collectY1 = parseFloat(vert[1]);
+          } else if (index == 2) {
+            collectZ2 = parseFloat(vert[2]);
+          } else if (index == 4) {
+            collectX4 = parseFloat(vert[0]);
+          }
+        });
+        var calcX = collectX4 - collectX0;
+        var calcXWorldPos = (collectX4 + collectX0) / 2;
+        calcX = calcX / 2;
+        var calcY = collectY1 - collectY0;
+        var calcYWorldPox = (collectY1 + collectY0) / 2;
+        calcY = calcY / 2;
+        var calcZ = collectZ2 - collectZ0;
+        var calcZWorldPos = (collectZ2 + collectZ0) / 2;
+        calcZ = calcZ / 2;
+        var shape = new CANNON.Box(new CANNON.Vec3(Math.abs(calcX), Math.abs(calcY * _manifest.default.scene[n.name].instancedDraws.numberOfInstance * 3.5), Math.abs(calcZ)));
+        body.addShape(shape, new CANNON.Vec3(calcXWorldPos, calcYWorldPox * _manifest.default.scene[n.name].instancedDraws.numberOfInstance / 2, calcZWorldPos));
+      });
+
+      _manifest.default.scene[n.name].mesh.setScale({
+        x: n.scale[0],
+        y: n.scale[1],
+        z: n.scale[2]
+      });
+
+      physics.world.addBody(body);
+      _manifest.default.scene[n.name].physics.currentBody = body;
+      _manifest.default.scene[n.name].physics.enabled = true;
+      _manifest.default.scene[n.name].rotation.rotx = parseFloat(n.rotation.rotx);
+      _manifest.default.scene[n.name].rotation.roty = parseFloat(n.rotation.roty);
+      _manifest.default.scene[n.name].rotation.rotz = parseFloat(n.rotation.rotz);
+
+      _manifest.default.scene[n.name].physics.currentBody.quaternion.setFromEuler(n.rotation.rotx, n.rotation.rotz, n.rotation.roty);
+
+      if (n.shadows == true) {
+        _manifest.default.scene[n.name].activateShadows('spot');
+      }
+    }
+
+    var arg = {};
+    arg[n.name] = n.path;
+    matrixEngine.objLoader.downloadMeshes(arg, onLoadObjS);
+  }
+
+};
+exports.meMapLoader = meMapLoader;
+
+},{"../index":12,"../program/manifest":45,"cannon":5}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19298,7 +19738,7 @@ _manifest.default.operation.triangle_buffer_procedure = function (object) {
 };
 
 _manifest.default.operation.obj_buffer_procedure = function (object) {
-  /* Vertex */
+  /* Vertex Color only - other come from objLoader */
   if (object.color && null !== object.shaderProgram.vertexColorAttribute) {
     object.vertexColorBuffer = _matrixWorld.world.GL.gl.createBuffer();
 
@@ -19321,37 +19761,6 @@ _manifest.default.operation.obj_buffer_procedure = function (object) {
     object.vertexColorBuffer.itemSize = 4;
     object.vertexColorBuffer.numItems = 4;
   }
-  /* Texture
-    if (object.texture) {
-      // console.log("        Buffer the " + object.type + "'s texture");
-      object.vertexTexCoordBuffer = world.GL.gl.createBuffer();
-      world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, object.vertexTexCoordBuffer);
-      world.GL.gl.bufferData(world.GL.gl.ARRAY_BUFFER, object.geometry.texCoords , world.GL.gl.STATIC_DRAW);
-      object.vertexTexCoordBuffer.itemSize = 2;
-      object.vertexTexCoordBuffer.numItems = 24;
-    }
-  */
-
-  /* Normals                                   */
-
-
-  if (object.shaderProgram.useLightingUniform) {
-    // console.log("        Buffer the " + object.type + "'s normals");
-    // object.vertexNormalBuffer = world.GL.gl.createBuffer();
-    // world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, );
-    _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.normalBuffer, _matrixWorld.world.GL.gl.STATIC_DRAW); // object.mesh.normalBuffer.itemSize = 3;
-    // object.mesh.normalBuffer.numItems = 24;
-
-  }
-  /* Indices
-    // console.log("        Buffer the " + object.type + "'s indices");
-    object.vertexIndexBuffer = world.GL.gl.createBuffer();
-    world.GL.gl.bindBuffer(world.GL.gl.ELEMENT_ARRAY_BUFFER, object.vertexIndexBuffer);
-    world.GL.gl.bufferData(world.GL.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(object.geometry.indices), world.GL.gl.STATIC_DRAW);
-    object.vertexIndexBuffer.itemSize = 1;
-    object.vertexIndexBuffer.numItems = 36;
-  */
-
 };
 
 _manifest.default.operation.squareTex_buffer_procedure = function (object) {
@@ -19561,7 +19970,7 @@ _manifest.default.operation.cubemap_buffer_procedure = function (object) {
 var _default = _manifest.default.operation;
 exports.default = _default;
 
-},{"../program/manifest":44,"./matrix-world":28}],17:[function(require,module,exports){
+},{"../program/manifest":45,"./matrix-world":29}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19593,14 +20002,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @async Yes
  */
 class MEBvhAnimation {
-  constructor(path_, options) {
+  constructor(path_, options, callback) {
     if (typeof options === 'undefined' || typeof options.world === 'undefined') {
       console.error('MEBvhAnimation class error: No second argument options || possible world is not passed.');
       return;
     }
 
+    if (typeof callback === 'undefined') {
+      options.callback = () => {};
+    } else {
+      options.callback = callback;
+    }
+
     if (typeof options.skeletalBoneScale === 'undefined') {
       options.skeletalBoneScale = 0.3;
+    }
+
+    if (typeof options.skeletalBoneScaleXYZ === 'undefined') {
+      options.skeletalBoneScaleXYZ = null;
     }
 
     if (typeof options.loop === 'undefined') options.loop = true;
@@ -19611,9 +20030,9 @@ class MEBvhAnimation {
     if (typeof options.globalOffset === 'undefined') options.globalOffset = [0, 0, 0];
     if (typeof options.globalRotation === 'undefined') options.globalRotation = [0, 0, 0];
     if (typeof options.myFrameRate === 'undefined') options.myFrameRate = 125;
-    if (typeof options.speed === 'undefined') options.speed = 5;
+    if (typeof options.speed === 'undefined') options.speed = 1;
     if (typeof options.matrixSkeletalObjScale === 'undefined') options.matrixSkeletalObjScale = 1;
-    if (typeof options.ifNotExistDrawType === 'undefined') options.ifNotExistDrawType = 'cube'; // passed
+    if (typeof options.ifNotExistDrawType === 'undefined') options.ifNotExistDrawType = 'cubeLightTex'; // passed
 
     this.options = options;
     this.world = options.world;
@@ -19633,8 +20052,9 @@ class MEBvhAnimation {
       this.skeletalKeys = this.anim.joint_names();
       this.animation = this.anim.all_frame_poses();
       this.sumOfFrames = this.animation[0].length - 1;
-      this.loopInverse = new _utility.OSCILLATOR(1, this.sumOfFrames, options.speed);
+      this.loopInverse = new _utility.OSCILLATOR(-this.sumOfFrames, -1, options.speed);
       if (this.isConstructed == false) this.constructSkeletal(this.options);
+      if (this.options.callback) this.options.callback();
     }).catch(err => {
       console.warn('Bvh-loader error: ', err);
     });
@@ -19697,23 +20117,33 @@ class MEBvhAnimation {
         console.log('TEST NON EXIST  T POSE', b);
       }
     }
-  } // Must be improved not secure 100%.
+  } // Must be improved not secure 100%. <<
 
 
   accessBonesObject() {
     let onlyMine = [];
     matrixWorld.objListToDispose[0].contentList.forEach(MEObject => {
       if (MEObject.name.indexOf(this.options.boneNameBasePrefix) != -1) {
-        // console.log(MEObject)
         onlyMine.push(MEObject);
       }
     });
     return onlyMine;
-  } // cleanNames = (name) => {
-  //   const arrondissements = ['mixamorig'];
-  //   return arrondissements.reduce((acc, cur) => acc.replace(cur, ''), name);
-  // };
+  }
 
+  getInfoAboutJoints = () => {
+    let allNames = [];
+    let allEndBones = [];
+
+    for (var k in this.anim.joints) {
+      allNames.push(this.anim.joints[k].name);
+      if (this.anim.joints[k].name.indexOf('_end') != -1) allEndBones.push(this.anim.joints[k].name);
+    }
+
+    return {
+      names: allNames,
+      allEndBones: allEndBones
+    };
+  };
 
   async constructSkeletal(options) {
     this.skeletalKeys = this.skeletalKeys.map(item => item.replace('mixamorig:', ''));
@@ -19744,7 +20174,16 @@ class MEBvhAnimation {
                   for (let key in meshes) {
                     meshes[key].setScale(this.options.matrixSkeletalObjScale);
                     matrixEngine.objLoader.initMeshBuffers(this.world.GL.gl, meshes[key]);
-                    this.world.Add('obj', this.options.matrixSkeletalObjScale, key, this.options.boneTex, meshes[key]);
+                    this.world.Add('obj', this.options.matrixSkeletalObjScale, key, this.options.boneTex, meshes[key]); // [2.1.7]
+
+                    if (options.skeletalBoneScaleXYZ != null) {
+                      App.scene[key].mesh.setScale({
+                        x: this.options.skeletalBoneScaleXYZ[0],
+                        y: this.options.skeletalBoneScaleXYZ[1],
+                        z: this.options.skeletalBoneScaleXYZ[2]
+                      });
+                    }
+
                     resolve(key);
                   }
                 });
@@ -19752,15 +20191,29 @@ class MEBvhAnimation {
             } else {
               // Primitives mesh
               this.world.Add(this.options.ifNotExistDrawType, this.options.skeletalBoneScale, b, this.options.boneTex);
+
+              if (this.options.skeletalBoneScaleXYZ != null) {
+                App.scene[b].geometry.setScaleByX(this.options.skeletalBoneScaleXYZ[0]);
+                App.scene[b].geometry.setScaleByY(this.options.skeletalBoneScaleXYZ[1]);
+                App.scene[b].geometry.setScaleByZ(this.options.skeletalBoneScaleXYZ[2]);
+              }
+
               resolve(b);
             }
           } else {
             // Primitives mesh
             this.world.Add(detTypeOfMEObject, this.options.skeletalBoneScale, b, this.options.boneTex);
+
+            if (this.options.skeletalBoneScaleXYZ != null) {
+              App.scene[b].geometry.setScaleByX(this.options.skeletalBoneScaleXYZ[0]);
+              App.scene[b].geometry.setScaleByY(this.options.skeletalBoneScaleXYZ[1]);
+              App.scene[b].geometry.setScaleByZ(this.options.skeletalBoneScaleXYZ[2]);
+            }
+
             resolve(b);
           }
         } else {
-          // Primitives mesh
+          // Primitives mesh - not sure for exist scale by axis...
           this.world.Add('cube', this.options.skeletalBoneScale, b);
           resolve(b);
         }
@@ -19800,6 +20253,7 @@ class MEBvhAnimation {
 
   playAnimation() {
     if (this.animationTimer == null) {
+      // Must be update before draw not timer any more - optimisation <<
       this.animationTimer = setInterval(() => {
         for (var x = 0; x < this.tPosition.length; x++) {
           var b = this.options.boneNameBasePrefix + this.skeletalKeys[x]; // catch if not exist possible!
@@ -19825,8 +20279,15 @@ class MEBvhAnimation {
           }
         }
 
-        if (this.options.loop == 'playInverse') {
-          this.actualFrame = this.loopInverse.UPDATE();
+        if (this.options.loop == 'playInverse' || this.options.loop == 'playInverseAndStop') {
+          this.actualFrame = -this.loopInverse.UPDATE();
+
+          if (this.actualFrame <= 1 && this.options.loop == 'playInverseAndStop') {
+            this.stopAnimation();
+            return;
+          }
+
+          return;
         } else {
           this.actualFrame++;
         }
@@ -19853,11 +20314,70 @@ class MEBvhAnimation {
     this.animationTimer = null;
   }
 
+  playAnimationFromKeyframes() {
+    if (this.animationTimer == null) {
+      // Must be update before draw not timer any more - optimisation <<
+      this.animationTimer = setInterval(() => {
+        for (var x = 0; x < this.anim.joints.__0.children.length; x++) {
+          var b = this.options.boneNameBasePrefix + this.anim.joints.__0.children[x].name; //this.skeletalKeys[x];
+          // catch if not exist possible!
+
+          if (App.scene[b]) {
+            // 2.1.13
+            if (App.scene[b] && this.anim.keyframes[this.actualFrame]) {
+              App.scene[b].position.SetX(this.anim.keyframes[this.actualFrame][0 + x * 6] + this.globalOffset[0]);
+              App.scene[b].position.SetZ(this.anim.keyframes[this.actualFrame][1 + x * 6] + this.globalOffset[1]);
+              App.scene[b].position.SetY(this.anim.keyframes[this.actualFrame][2 + x * 6] + this.globalOffset[2]);
+              App.scene[b].rotation.rotateX(this.anim.keyframes[this.actualFrame][3 + x * 6] + this.globalRotation[0]);
+              App.scene[b].rotation.rotateY(this.anim.keyframes[this.actualFrame][4 + x * 6] + this.globalRotation[1]);
+              App.scene[b].rotation.rotateZ(this.anim.keyframes[this.actualFrame][5 + x * 6] + this.globalRotation[2]);
+            } else {
+              // for non t pose
+              App.scene[b].position.SetX(this.anim.keyframes[this.actualFrame][0] + this.globalOffset[0]);
+              App.scene[b].position.SetY(this.anim.keyframes[this.actualFrame][1] + this.globalOffset[1]);
+              App.scene[b].position.SetZ(this.anim.keyframes[this.actualFrame][2] + this.globalOffset[2]);
+              App.scene[b].rotation.rotateX(this.anim.keyframes[this.actualFrame][3] + this.globalRotation[0]);
+              App.scene[b].rotation.rotateY(this.anim.keyframes[this.actualFrame][4] + this.globalRotation[1]);
+              App.scene[b].rotation.rotateZ(this.anim.keyframes[this.actualFrame][5] + this.globalRotation[2]);
+            }
+          }
+        }
+
+        if (this.options.loop == 'playInverse' || this.options.loop == 'playInverseAndStop') {
+          this.actualFrame = -this.loopInverse.UPDATE();
+
+          if (this.actualFrame <= 1 && this.options.loop == 'playInverseAndStop') {
+            this.stopAnimation();
+            return;
+          }
+
+          return;
+        } else {
+          this.actualFrame++;
+        }
+
+        if (this.actualFrame >= this.animation[0].length - 1) {
+          if (this.options.loop == true) {
+            this.actualFrame = 1;
+          } else if (this.options.loop == 'stopOnEnd') {
+            this.stopAnimation();
+          } else if (this.options.loop == 'stopAndReset') {
+            this.constructFirstFrame();
+            this.actualFrame = 1;
+            this.stopAnimation();
+          }
+        }
+      }, this.options.myFrameRate);
+    } else {
+      console.warn('MEBvhAnimation: Animation already play.');
+    }
+  }
+
 }
 
 exports.default = MEBvhAnimation;
 
-},{"./matrix-world":28,"./utility":40,"bvh-loader":3}],18:[function(require,module,exports){
+},{"./matrix-world":29,"./utility":41,"bvh-loader":3}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19875,10 +20395,6 @@ var _utility = require("./utility");
 
 var raycaster = _interopRequireWildcard(require("./raycast"));
 
-var _matrixShadows = require("./matrix-shadows");
-
-var _matrixTextures = require("./matrix-textures");
-
 var _engine = require("./engine");
 
 var CANNON = _interopRequireWildcard(require("cannon"));
@@ -19889,21 +20405,14 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import {vec2} from 'wgpu-matrix';
-// test override 
+// Override
 CANNON.Quaternion.prototype.toAxisAngle = function (targetAxis) {
   targetAxis = targetAxis || new CANNON.Vec3();
-  if (this.w > 1) this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
-
+  if (this.w > 1) this.normalize();
   var angle = 2 * Math.acos(this.w);
-  var s = Math.sqrt(1 - this.w * this.w); // assuming quaternion normalised then w is less than 1, so term always positive.
+  var s = Math.sqrt(1 - this.w * this.w);
 
   if (s < 0.00000001) {
-    // test to avoid divide by zero, s is always positive due to sqrt
-    // if s close to zero then direction of axis not important
-    // if it is important that axis is normalised then replace with x=1; y=z=0;
-    // console.log('override works: x: ', this.x + " y: ", this.y, " z: ", this.z)
-    // nikola lukic
     var max1 = [this.x, this.y, this.z];
     var getMaxValue = Math.max(...max1);
     var index = max1.indexOf(getMaxValue);
@@ -19911,8 +20420,7 @@ CANNON.Quaternion.prototype.toAxisAngle = function (targetAxis) {
     targetAxis.y = 0;
     targetAxis.z = 0;
   } else {
-    targetAxis.x = this.x / s; // normalise axis
-
+    targetAxis.x = this.x / s;
     targetAxis.y = this.y / s;
     targetAxis.z = this.z / s;
   }
@@ -19936,18 +20444,13 @@ _manifest.default.operation.draws.cube = function (object, ray) {
     }
 
     var QP = object.physics.currentBody.quaternion;
-    QP.normalize(); // mat4.translate(object.mvMatrix, object.mvMatrix, [0.0, 0.0, 0.0]);
-
+    QP.normalize();
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
     if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
     var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.z, object.rotation.axis.y);
     object.rotation.axisSystem[0].normalize();
-    var AXIS = vec3.fromValues(object.rotation.axisSystem[0].x.toFixed(2), object.rotation.axisSystem[0].z.toFixed(2), object.rotation.axisSystem[0].y.toFixed(2));
-    var MY_ANGLE = 2 * Math.acos(QP.w); // if(radToDeg(object.rotation.angle) > 90) console.log("aNGLE:" + radToDeg(object.rotation.angle) + " VS MY_ANGLE " + radToDeg(MY_ANGLE) + "  axis ++++ " + AXIS)
-    // mat4.rotateX(object.mvMatrix, object.mvMatrix, (object.rotation.angle));
-    // mat4.rotateY(object.mvMatrix, object.mvMatrix, (object.rotation.angle));
-    // mat4.rotateZ(object.mvMatrix, object.mvMatrix, (-object.rotation.angle));
-
+    var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].z.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].y.toFixed(2)));
+    var MY_ANGLE = 2 * Math.acos(QP.w);
     mat4.rotate(object.mvMatrix, object.mvMatrix, MY_ANGLE, AXIS);
   } else if (object.isHUD === true) {
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
@@ -20010,15 +20513,13 @@ _manifest.default.operation.draws.cube = function (object, ray) {
 
       localLooper = localLooper + 1;
     }
-    /* Set the ambient light */
+    /* Ambient light */
 
 
     if (object.shaderProgram.ambientColorUniform) {
       if ((0, _utility.E)('ambLightR')) {
-        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLightR').getAttribute('value')), parseFloat((0, _utility.E)('ambLightG').getAttribute('value')), parseFloat((0, _utility.E)('ambLightB').getAttribute('value'))); // console.log("LIGHTS UNIFORM AMB  B = ", parseFloat(E('ambLightB').value) )
-
+        _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, parseFloat((0, _utility.E)('ambLightR').getAttribute('value')), parseFloat((0, _utility.E)('ambLightG').getAttribute('value')), parseFloat((0, _utility.E)('ambLightB').getAttribute('value')));
       } else {
-        // object.LightsData.ambientLight
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.ambientColorUniform, object.LightsData.ambientLight.r, object.LightsData.ambientLight.g, object.LightsData.ambientLight.b);
       }
     }
@@ -20029,18 +20530,16 @@ _manifest.default.operation.draws.cube = function (object, ray) {
       if ((0, _utility.E)('dirLightR')) {
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, parseFloat((0, _utility.E)('dirLightR').getAttribute('value')), parseFloat((0, _utility.E)('dirLightG').getAttribute('value')), parseFloat((0, _utility.E)('dirLightB').getAttribute('value')));
       } else {
-        //console.log('TEST')
         _matrixWorld.world.GL.gl.uniform3f(object.shaderProgram.directionalColorUniform, object.LightsData.directionLight.R(), object.LightsData.directionLight.G(), object.LightsData.directionLight.B());
       }
     }
-    /* Normalize the direction */
+    /* Direction */
 
 
     var lightingDirection = null;
 
     if (object.shaderProgram.lightingDirectionUniform) {
       if ((0, _utility.E)('dirX') && (0, _utility.E)('dirY') && (0, _utility.E)('dirZ')) {
-        // console.log("LIGHTS UNIFORM AMB  B = ",  E('dirZ').value )
         lightingDirection = [(0, _engine.degToRad)(parseFloat((0, _utility.E)('dirX').getAttribute('value'))), (0, _engine.degToRad)(parseFloat((0, _utility.E)('dirY').getAttribute('value'))), (0, _engine.degToRad)(parseFloat((0, _utility.E)('dirZ').getAttribute('value')))];
       } else {
         lightingDirection = [object.LightsData.lightingDirection.r, object.LightsData.lightingDirection.g, object.LightsData.lightingDirection.b];
@@ -20087,82 +20586,188 @@ _manifest.default.operation.draws.cube = function (object, ray) {
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
     } else if (object.FBO) {
-      // test FBO
-      // spot light test light
-      // Fbo staff
-      _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+      if (object.shadows && object.shadows.type == "spot-shadow") {
+        // --------------------------------------------------------------------
+        let textureMatrix = m4.identity();
+        textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.multiply(textureMatrix, object.shadows.lightProjectionMatrix);
+        const lightWorldMatrix = m4.lookAt([object.shadows.lightPosition[0], object.shadows.lightPosition[1], object.shadows.lightPosition[2]], [object.shadows.lightTarget[0], object.shadows.lightTarget[1], object.shadows.lightTarget[2]], // target
+        [object.shadows.orientation[0], object.shadows.orientation[1], object.shadows.orientation[2]] // up
+        );
+        textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
+        const mat = m4.multiply(lightWorldMatrix, m4.inverse(object.shadows.lightProjectionMatrix));
 
-      _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_textureMatrix, false, textureMatrix);
 
-      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // // shadow staff dev
-      // var target = [0, 0, 0];
-      // var up = [0, 1, 0];
-      // // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
-      // var lmat = m4.lookAt([0, 2, 0], target, up);
-      // const viewMatrix = m4.inverse(lmat);
-      // // first draw from the POV of the light
-      // const lightWorldMatrix = m4.lookAt(
-      //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
-      //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-      //   [0, 1, 0],                                              // up
-      // );
-      // const lightProjectionMatrix = object.FBO.settings.perspective
-      //   ? m4.perspective(
-      //     degToRad(object.FBO.settings.fieldOfView),
-      //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
-      //     0.5,  // near
-      //     10)   // far
-      //   : m4.orthographic(
-      //     -object.FBO.settings.projWidth / 2,   // left
-      //     object.FBO.settings.projWidth / 2,   // right
-      //     -object.FBO.settings.projHeight / 2,  // bottom
-      //     object.FBO.settings.projHeight / 2,  // top
-      //     0.5,                      // near
-      //     10);                      // far
-      // // draw to the depth texture
-      // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
-      // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
-      // world.GL.gl.viewport(0, 0, 512, 512);
-      // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
-      // draw 
-      // let textureMatrix = m4.identity();
-      // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-      // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-      // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-      // textureMatrix = m4.multiply(
-      //   textureMatrix,
-      //   m4.inverse(lightWorldMatrix));
-      // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-      // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
 
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, m4.translate(object.position.worldLocation[0], object.position.worldLocation[1], object.position.worldLocation[2])); // world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, mat);
+
+
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.u_reverseLightDirection, lightWorldMatrix.slice(8, 11));
+
+        _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.shadows.bias); //---------------------------------------------------------------------
+
+
+        _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+        _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+
+        _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); //-------------------------------------------
+
+
+        var t_index0 = 0;
+
+        for (var t = 1; t < object.textures.length; t++) {
+          if (object.custom.gl_texture == null) {
+            _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+
+            _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t_index0]);
+
+            if (_matrixWorld.world.GL.extTFAnisotropic) {
+              _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+            }
+
+            if (object.texParams.MIPMAP == false) {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.REPEAT);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.REPEAT);
+            } else {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+            }
+
+            if (typeof object.texParams.spriteAnimation != 'undefined' && object.texParams.spriteAnimation != false && object.textures[t].image.width != 0) {
+              //char * data; // data of 8-bit per sample RGBA image
+              // int w, h; // size of the image
+              // int sx, sy, sw, sh; // position and size of area you want to crop.
+              //glTexImage2D does support regions - of - interest.You do it as follows:
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+              var [XX, YY] = object.texParams.spriteAnimation.getOffsetXY();
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ROW_LENGTH, object.textures[t].image.height);
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_PIXELS, XX * (object.textures[t].image.width / object.texParams.spriteAnimation.shema[0]));
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_ROWS, YY * (object.textures[t].image.height / object.texParams.spriteAnimation.shema[1]));
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ALIGNMENT, 1); // LodePNG tightly packs everything
+              // glTexImage2D(GL_TEXTURE_2D, level, internalFormat,
+              // sw, sh, border, format, type, data);
+
+
+              _matrixWorld.world.GL.gl.texImage2D(_matrixWorld.world.GL.gl.TEXTURE_2D, 0, _matrixWorld.world.GL.gl.RGBA, object.textures[t].image.width / object.texParams.spriteAnimation.shema[0], object.textures[t].image.height / object.texParams.spriteAnimation.shema[1], 0, _matrixWorld.world.GL.gl.RGBA, _matrixWorld.world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+            }
+
+            if (object.texParams.MIPMAP == true) {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.LINEAR_MIPMAP_NEAREST);
+
+              _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
+            }
+
+            _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+
+            _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.u_projectedTexture, t);
+          } else {
+            object.custom.gl_texture(object, t);
+          }
+        } // world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 1);
+
+      } else {
+        _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+        _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+
+        _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+      }
     } else {
+      //------------
+      if (object.shadows && object.shadows.type == "spot-shadow") {
+        // --------------------------------------------------------------------
+        let textureMatrix = m4.identity();
+        textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.multiply(textureMatrix, object.shadows.lightProjectionMatrix);
+        const lightWorldMatrix = m4.lookAt([object.shadows.lightPosition[0], object.shadows.lightPosition[1], object.shadows.lightPosition[2]], [object.shadows.lightTarget[0], object.shadows.lightTarget[1], object.shadows.lightTarget[2]], // target
+        [object.shadows.orientation[0], object.shadows.orientation[1], object.shadows.orientation[2]] // up
+        );
+        textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
+        const mat = m4.multiply(lightWorldMatrix, m4.inverse(object.shadows.lightProjectionMatrix));
+
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_textureMatrix, false, textureMatrix);
+
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
+
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, m4.translate(object.position.worldLocation[0], object.position.worldLocation[1], object.position.worldLocation[2])); // world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, mat);
+
+
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.u_reverseLightDirection, lightWorldMatrix.slice(8, 11));
+
+        _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.shadows.bias);
+      } //---------------------------------------------------------------------
+      // world.GL.gl.activeTexture(world.GL.gl.TEXTURE0);
+      // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+      // world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+      // console.log('TEST')
+      //-------------------------------------------
+      //------------
+
+
       for (var t = 0; t < object.textures.length; t++) {
         if (object.custom.gl_texture == null) {
           _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
 
           _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
 
-          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+          if (_matrixWorld.world.GL.extTFAnisotropic) {
+            _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+          }
 
           if (object.texParams.MIPMAP == false) {
-            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | _matrixWorld.world.GL.gl.REPEAT);
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.REPEAT);
 
-            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | _matrixWorld.world.GL.gl.REPEAT); // -- Allocate storage for the texture
-            // world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-            // world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0,512, 512, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, object.textures[t]);
-
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.REPEAT);
           } else {
             _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
 
             _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+          }
+
+          if (typeof object.texParams.spriteAnimation != 'undefined' && object.texParams.spriteAnimation != false && object.textures[t].image.width != 0) {
+            //char * data; // data of 8-bit per sample RGBA image
+            // int w, h; // size of the image
+            // int sx, sy, sw, sh; // position and size of area you want to crop.
+            //glTexImage2D does support regions - of - interest.You do it as follows:
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+            var [XX, YY] = object.texParams.spriteAnimation.getOffsetXY();
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ROW_LENGTH, object.textures[t].image.height);
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_PIXELS, XX * (object.textures[t].image.width / object.texParams.spriteAnimation.shema[0]));
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_ROWS, YY * (object.textures[t].image.height / object.texParams.spriteAnimation.shema[1]));
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ALIGNMENT, 1); // LodePNG tightly packs everything
+            // glTexImage2D(GL_TEXTURE_2D, level, internalFormat,
+            // sw, sh, border, format, type, data);
+
+
+            _matrixWorld.world.GL.gl.texImage2D(_matrixWorld.world.GL.gl.TEXTURE_2D, 0, _matrixWorld.world.GL.gl.RGBA, object.textures[t].image.width / object.texParams.spriteAnimation.shema[0], object.textures[t].image.height / object.texParams.spriteAnimation.shema[1], 0, _matrixWorld.world.GL.gl.RGBA, _matrixWorld.world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+          }
+
+          if (object.texParams.MIPMAP == true) {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.LINEAR_MIPMAP_NEAREST);
 
             _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
           }
-
-          if (_matrixWorld.world.GL.extTFAnisotropic && object.texParams.ANISOTROPIC == true) {
-            _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-          } //console.log('TEST' , object.texParams)
-
 
           _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
         } else {
@@ -20234,11 +20839,11 @@ _manifest.default.operation.draws.cube = function (object, ray) {
   _matrixWorld.world.setMatrixUniforms(object, this.pMatrix, object.mvMatrix); // Shadows
 
 
-  if (object.shadows && object.shadows.type == 'spot' || object.shadows && object.shadows.type == 'spot-shadow') {
+  if (object.shadows && object.shadows.type == 'spot') {
     // set the light position
     _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
 
-    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.shadows.lightPosition);
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.position.worldLocation);
 
     _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess); // Set the spotlight uniforms
 
@@ -20283,9 +20888,8 @@ _manifest.default.operation.draws.cube = function (object, ray) {
     _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
   } // world.disableUnusedAttr(world.GL.gl, localLooper);
   // FIX FOR MOBILE - from white cube to normal texture view , good
+  // world.disableUnusedAttr(world.GL.gl, 4);
 
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -20296,8 +20900,7 @@ _manifest.default.operation.draws.cube = function (object, ray) {
   } else {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
-    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // TEST world.GL.gl.enable(world.GL.gl.CULL_FACE);
-
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
   }
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
@@ -20475,12 +21078,29 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
-  if (object.isHUD === true) {
+  if (object.physics.enabled == true && object.rotation.axisSystem) {
+    if (_manifest.default.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (_manifest.default.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
+
+    var QP = object.physics.currentBody.quaternion;
+    QP.normalize();
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    if (raycaster.checkingProcedureCalcObj && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
+    var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.z, object.rotation.axis.y);
+    object.rotation.axisSystem[0].normalize(); // TEST - Yes ultimate - MAybe even cube will be better
+
+    var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].z.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].y.toFixed(2)));
+    var MY_ANGLE = 2 * Math.acos(QP.w);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, MY_ANGLE, AXIS);
+  } else if (object.isHUD === true) {
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
-    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
+    if (raycaster.checkingProcedureCalcObj) raycaster.checkingProcedureCalcObj(object);
   } else {
     if (_manifest.default.camera.FirstPersonController == true) {
       _events.camera.setCamera(object);
@@ -20489,7 +21109,7 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
     }
 
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
+    if (raycaster.checkingProcedureCalcObj && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
@@ -20533,9 +21153,12 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
       // now to render the mesh test
       _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertexBuffer);
 
-      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.vertices, _matrixWorld.world.GL.gl.STATIC_DRAW);
+      _matrixWorld.world.GL.gl.bufferData(_matrixWorld.world.GL.gl.ARRAY_BUFFER, new Float32Array(object.mesh.vertices), _matrixWorld.world.GL.gl.STATIC_DRAW);
 
       _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexPositionAttribute, object.mesh.vertexBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
+
+      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.vertexPositionAttribute); // console.log(".vertices.." + world.GL.gl.getBufferParameter(world.GL.gl.ARRAY_BUFFER, world.GL.gl.BUFFER_SIZE))
+
     }
   } // COLOR BUFFER
   // if (object.vertexColorBuffer) {
@@ -20621,10 +21244,9 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
     if (object.texture) {
       _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.mesh.textureBuffer);
 
-      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
+      _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.textureCoordAttribute, object.mesh.textureBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0);
 
-      _matrixWorld.world.GL.gl.vertexAttribPointer(object.shaderProgram.textureCoordAttribute, object.mesh.textureBuffer.itemSize, _matrixWorld.world.GL.gl.FLOAT, false, 0, 0); //ori world.GL.gl.activeTexture(world.GL.gl.TEXTURE0);
-      // ori world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.texture);
+      _matrixWorld.world.GL.gl.enableVertexAttribArray(object.shaderProgram.textureCoordAttribute); // console.log(".tex.." + world.GL.gl.getBufferParameter(world.GL.gl.ARRAY_BUFFER, world.GL.gl.BUFFER_SIZE))
 
 
       if (object.streamTextures != null) {
@@ -20638,105 +21260,194 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
 
         _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
       } else if (object.FBO) {
-        // Fbo staff
-        // if(!object.FBO.FB) {
-        //   object.FBO = {
-        //     name: object.name
-        //   };
-        //   object.FBO.FB = makeFBO(world.GL.gl, object);
-        //   object.FBO.settings = {
-        //     cameraX: 6,
-        //     cameraY: 5,
-        //     posX: 2.5,
-        //     posY: 4.8,
-        //     posZ: 4.3,
-        //     targetX: 2.5,
-        //     targetY: 0,
-        //     targetZ: 3.5,
-        //     projWidth: 1,
-        //     projHeight: 1,
-        //     perspective: true,
-        //     fieldOfView: 120,
-        //     bias: -0.006,
-        //   };
-        //   world.FBOS.push(object.FBO);
-        // }
-        _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+        if (object.shadows && object.shadows.type == "spot-shadow") {
+          // --------------------------------------------------------------------
+          let textureMatrix = m4.identity();
+          textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+          textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+          textureMatrix = m4.multiply(textureMatrix, object.shadows.lightProjectionMatrix);
+          const lightWorldMatrix = m4.lookAt([object.shadows.lightPosition[0], object.shadows.lightPosition[1], object.shadows.lightPosition[2]], [object.shadows.lightTarget[0], object.shadows.lightTarget[1], object.shadows.lightTarget[2]], // target
+          [object.shadows.orientation[0], object.shadows.orientation[1], object.shadows.orientation[2]] // up
+          );
+          textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
+          const mat = m4.multiply(lightWorldMatrix, m4.inverse(object.shadows.lightProjectionMatrix));
 
-        _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
+          _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_textureMatrix, false, textureMatrix);
 
-        _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // shadow staff
-        // var target = [0, 0, 0];
-        // var up = [0, 1, 0];
-        // var lmat = m4.lookAt([0, 1, 0], target, up);
-        // const viewMatrix = m4.inverse(lmat);
-        // // first draw from the POV of the light
-        // const lightWorldMatrix = m4.lookAt(
-        //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
-        //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-        //   [0, 1, 0],                                              // up
-        // );
-        // const lightProjectionMatrix = object.FBO.settings.perspective
-        //   ? m4.perspective(
-        //     degToRad(object.FBO.settings.fieldOfView),
-        //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
-        //     0.5,  // near
-        //     10)   // far
-        //   : m4.orthographic(
-        //     -object.FBO.settings.projWidth / 2,   // left
-        //     object.FBO.settings.projWidth / 2,   // right
-        //     -object.FBO.settings.projHeight / 2,  // bottom
-        //     object.FBO.settings.projHeight / 2,  // top
-        //     0.5,                      // near
-        //     10);                      // far
-        // // // draw to the depth texture
-        // // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
-        // // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
-        // // world.GL.gl.viewport(0, 0, 512, 512);
-        // // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
-        // // draw 
-        // let textureMatrix = m4.identity();
-        // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-        // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-        // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-        // textureMatrix = m4.multiply(
-        //   textureMatrix,
-        //   m4.inverse(lightWorldMatrix));
-        // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-        // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
+          _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
 
-      } else {
-        for (var t = 0; t < object.textures.length; t++) {
-          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
-
-          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
-
-          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
-
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
-
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.NEAREST);
-
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE);
-
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.CLAMP_TO_EDGE); // -- Allocate storage for the texture
-          //world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-          //world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE, image);
-          //world.GL.gl.generateMipmap(world.GL.gl.TEXTURE_2D);
+          _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, m4.translate(object.position.worldLocation[0], object.position.worldLocation[1], object.position.worldLocation[2])); // world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, mat);
 
 
-          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+          _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.u_reverseLightDirection, lightWorldMatrix.slice(8, 11));
+
+          _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.shadows.bias); //---------------------------------------------------------------------
+
+
+          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+
+          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); //-------------------------------------------
+
+
+          var t_index0 = 0;
+
+          for (var t = 1; t < object.textures.length; t++) {
+            if (object.custom.gl_texture == null) {
+              _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+
+              _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t_index0]);
+
+              if (_matrixWorld.world.GL.extTFAnisotropic) {
+                _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+              }
+
+              if (object.texParams.MIPMAP == false) {
+                _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.REPEAT);
+
+                _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.REPEAT);
+              } else {
+                _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+                _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+              }
+
+              if (typeof object.texParams.spriteAnimation != 'undefined' && object.texParams.spriteAnimation != false && object.textures[t].image.width != 0) {
+                //char * data; // data of 8-bit per sample RGBA image
+                // int w, h; // size of the image
+                // int sx, sy, sw, sh; // position and size of area you want to crop.
+                //glTexImage2D does support regions - of - interest.You do it as follows:
+                _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+                var [XX, YY] = object.texParams.spriteAnimation.getOffsetXY();
+
+                _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ROW_LENGTH, object.textures[t].image.height);
+
+                _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_PIXELS, XX * (object.textures[t].image.width / object.texParams.spriteAnimation.shema[0]));
+
+                _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_ROWS, YY * (object.textures[t].image.height / object.texParams.spriteAnimation.shema[1]));
+
+                _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ALIGNMENT, 1); // LodePNG tightly packs everything
+                // glTexImage2D(GL_TEXTURE_2D, level, internalFormat,
+                // sw, sh, border, format, type, data);
+
+
+                _matrixWorld.world.GL.gl.texImage2D(_matrixWorld.world.GL.gl.TEXTURE_2D, 0, _matrixWorld.world.GL.gl.RGBA, object.textures[t].image.width / object.texParams.spriteAnimation.shema[0], object.textures[t].image.height / object.texParams.spriteAnimation.shema[1], 0, _matrixWorld.world.GL.gl.RGBA, _matrixWorld.world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+              }
+
+              if (object.texParams.MIPMAP == true) {
+                _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+                _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.LINEAR_MIPMAP_NEAREST);
+
+                _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
+              }
+
+              _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+
+              _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.u_projectedTexture, t);
+            } else {
+              object.custom.gl_texture(object, t);
+            }
+          } // world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 1);
+
+        } else {
+          _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+
+          _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
         }
-      } // world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+      } else {
+        //------------
+        if (object.shadows && object.shadows.type == "spot-shadow") {
+          // --------------------------------------------------------------------
+          let textureMatrix = m4.identity();
+          textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+          textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+          textureMatrix = m4.multiply(textureMatrix, object.shadows.lightProjectionMatrix);
+          const lightWorldMatrix = m4.lookAt([object.shadows.lightPosition[0], object.shadows.lightPosition[1], object.shadows.lightPosition[2]], [object.shadows.lightTarget[0], object.shadows.lightTarget[1], object.shadows.lightTarget[2]], // target
+          [object.shadows.orientation[0], object.shadows.orientation[1], object.shadows.orientation[2]] // up
+          );
+          textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
+          const mat = m4.multiply(lightWorldMatrix, m4.inverse(object.shadows.lightProjectionMatrix));
 
+          _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_textureMatrix, false, textureMatrix);
+
+          _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
+
+          _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, m4.translate(object.position.worldLocation[0], object.position.worldLocation[1], object.position.worldLocation[2])); // world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, mat);
+
+
+          _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.u_reverseLightDirection, lightWorldMatrix.slice(8, 11));
+
+          _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.shadows.bias);
+        } //------------ FROM CUBE
+
+
+        for (var t = 0; t < object.textures.length; t++) {
+          if (object.custom.gl_texture == null) {
+            _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+
+            _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
+
+            if (_matrixWorld.world.GL.extTFAnisotropic) {
+              _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+            }
+
+            if (object.texParams.MIPMAP == false) {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.REPEAT);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.REPEAT);
+            } else {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+            }
+
+            if (typeof object.texParams.spriteAnimation != 'undefined' && object.texParams.spriteAnimation != false && object.textures[t].image.width != 0) {
+              //char * data; // data of 8-bit per sample RGBA image
+              // int w, h; // size of the image
+              // int sx, sy, sw, sh; // position and size of area you want to crop.
+              //glTexImage2D does support regions - of - interest.You do it as follows:
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+              var [XX, YY] = object.texParams.spriteAnimation.getOffsetXY();
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ROW_LENGTH, object.textures[t].image.height);
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_PIXELS, XX * (object.textures[t].image.width / object.texParams.spriteAnimation.shema[0]));
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_ROWS, YY * (object.textures[t].image.height / object.texParams.spriteAnimation.shema[1]));
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ALIGNMENT, 1); // LodePNG tightly packs everything
+              // glTexImage2D(GL_TEXTURE_2D, level, internalFormat,
+              // sw, sh, border, format, type, data);
+
+
+              _matrixWorld.world.GL.gl.texImage2D(_matrixWorld.world.GL.gl.TEXTURE_2D, 0, _matrixWorld.world.GL.gl.RGBA, object.textures[t].image.width / object.texParams.spriteAnimation.shema[0], object.textures[t].image.height / object.texParams.spriteAnimation.shema[1], 0, _matrixWorld.world.GL.gl.RGBA, _matrixWorld.world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+            }
+
+            if (object.texParams.MIPMAP == true) {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.LINEAR_MIPMAP_NEAREST);
+
+              _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
+            }
+
+            _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+          } else {
+            object.custom.gl_texture(object, t);
+          }
+        }
+      }
 
       localLooper = localLooper + 1;
     } else {// world.GL.gl.disableVertexAttribArray(object.shaderProgram.textureCoordAttribute);
     }
-  } // Normals normalBuffer
-  //  world.GL.gl.bindBuffer(world.GL.gl.ARRAY_BUFFER, object.mesh.normalBuffer);
-  //  world.GL.gl.vertexAttribPointer(object.shaderProgram.vertexNormalAttribute, object.mesh.normalBuffer.itemSize, world.GL.gl.FLOAT, false, 0, 0);
-
+  }
 
   if (object.mesh.normalBuffer && object.shaderProgram.nMatrixUniform) {
     var normalMatrix = mat3.create();
@@ -20793,7 +21504,6 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
-      // world.GL.gl.disable(world.GL.gl.DEPTH_TEST);
       _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.BLEND);
     }
 
@@ -20802,21 +21512,17 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
     _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
-  } // ori this.setMatrixUniforms(object, this.pMatrix, object.mvMatrix);
-
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, localLooper + 1); // world.GL.gl.drawElements(world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, world.GL.gl.UNSIGNED_SHORT, 0);
-  // update for anim
+  } // world.disableUnusedAttr(world.GL.gl, 4);
 
 
   _matrixWorld.world.GL.gl.drawElements(_matrixWorld.world.GL.gl[object.glDrawElements.mode], object.glDrawElements.numberOfIndicesRender, _matrixWorld.world.GL.gl.UNSIGNED_SHORT, 0);
 
+  object.instancedDraws.overrideDrawArraysInstance(object);
   this.mvPopMatrix(object.mvMatrix, this.mvMatrixStack);
 };
 
 _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
-  var lighting = true; // eslint-disable-next-line no-unused-vars
-
+  var lighting = true;
   var localLooper = 0;
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
@@ -20954,107 +21660,185 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
 
       _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
     } else if (object.FBO) {
-      // test FBO
-      // Fbo staff
-      // if(!object.FBO.FB) {
-      //   object.FBO = {
-      //     name: object.name
-      //   };
-      //   object.FBO.FB = makeFBO(world.GL.gl, object);
-      //   world.FBOS.push(object.FBO);
-      //   object.FBO.settings = {
-      //     cameraX: 6,
-      //     cameraY: 5,
-      //     posX: 2.5,
-      //     posY: 4.8,
-      //     posZ: 4.3,
-      //     targetX: 2.5,
-      //     targetY: 0,
-      //     targetZ: 3.5,
-      //     projWidth: 1,
-      //     projHeight: 1,
-      //     perspective: true,
-      //     fieldOfView: 120,
-      //     bias: -0.006,
-      //   };
-      // }
-      _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+      if (object.shadows && object.shadows.type == "spot-shadow") {
+        // --------------------------------------------------------------------
+        let textureMatrix = m4.identity();
+        textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.multiply(textureMatrix, object.shadows.lightProjectionMatrix);
+        const lightWorldMatrix = m4.lookAt([object.shadows.lightPosition[0], object.shadows.lightPosition[1], object.shadows.lightPosition[2]], [object.shadows.lightTarget[0], object.shadows.lightTarget[1], object.shadows.lightTarget[2]], // target
+        [object.shadows.orientation[0], object.shadows.orientation[1], object.shadows.orientation[2]] // up
+        );
+        textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
+        const mat = m4.multiply(lightWorldMatrix, m4.inverse(object.shadows.lightProjectionMatrix));
 
-      _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.FB.texture);
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_textureMatrix, false, textureMatrix);
 
-      _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); // // shadow staff
-      // var target = [0, 0, 0];
-      // var up = [0, 1, 0];
-      // // var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
-      // var lmat = m4.lookAt([0, 1, 0], target, up);
-      // const viewMatrix = m4.inverse(lmat);
-      // // first draw from the POV of the light
-      // const lightWorldMatrix = m4.lookAt(
-      //   [object.FBO.settings.posX, object.FBO.settings.posY, object.FBO.settings.posZ],          // position
-      //   [object.FBO.settings.targetX, object.FBO.settings.targetY, object.FBO.settings.targetZ], // target
-      //   [0, 1, 0],                                              // up
-      // );
-      // const lightProjectionMatrix = object.FBO.settings.perspective
-      //   ? m4.perspective(
-      //     degToRad(object.FBO.settings.fieldOfView),
-      //     object.FBO.settings.projWidth / object.FBO.settings.projHeight,
-      //     0.5,  // near
-      //     10)   // far
-      //   : m4.orthographic(
-      //     -object.FBO.settings.projWidth / 2,   // left
-      //     object.FBO.settings.projWidth / 2,   // right
-      //     -object.FBO.settings.projHeight / 2,  // bottom
-      //     object.FBO.settings.projHeight / 2,  // top
-      //     0.5,                      // near
-      //     10);                      // far
-      // // // draw to the depth texture
-      // // world.GL.gl.bindFramebuffer(world.GL.gl.FRAMEBUFFER, object.shadows.depthFramebuffer);
-      // // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.shadows.checkerboardTexture);
-      // // world.GL.gl.viewport(0, 0, 512, 512);
-      // // world.GL.gl.clear(world.GL.gl.COLOR_BUFFER_BIT | world.GL.gl.DEPTH_BUFFER_BIT);
-      // // draw 
-      // let textureMatrix = m4.identity();
-      // textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
-      // textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
-      // textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
-      // textureMatrix = m4.multiply(
-      //   textureMatrix,
-      //   m4.inverse(lightWorldMatrix));
-      // world.GL.gl.uniform4fv(object.shaderProgram.u_textureMatrix, textureMatrix);
-      // world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.FBO.settings.bias);
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
 
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, m4.translate(object.position.worldLocation[0], object.position.worldLocation[1], object.position.worldLocation[2])); // world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, mat);
+
+
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.u_reverseLightDirection, lightWorldMatrix.slice(8, 11));
+
+        _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.shadows.bias); //---------------------------------------------------------------------
+
+
+        _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+        _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+
+        _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0); //-------------------------------------------
+
+
+        var t_index0 = 0;
+
+        for (var t = 1; t < object.textures.length; t++) {
+          if (object.custom.gl_texture == null) {
+            _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
+
+            _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t_index0]);
+
+            if (_matrixWorld.world.GL.extTFAnisotropic) {
+              _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+            }
+
+            if (object.texParams.MIPMAP == false) {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.REPEAT);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.REPEAT);
+            } else {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+            }
+
+            if (typeof object.texParams.spriteAnimation != 'undefined' && object.texParams.spriteAnimation != false && object.textures[t].image.width != 0) {
+              //char * data; // data of 8-bit per sample RGBA image
+              // int w, h; // size of the image
+              // int sx, sy, sw, sh; // position and size of area you want to crop.
+              //glTexImage2D does support regions - of - interest.You do it as follows:
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+              var [XX, YY] = object.texParams.spriteAnimation.getOffsetXY();
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ROW_LENGTH, object.textures[t].image.height);
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_PIXELS, XX * (object.textures[t].image.width / object.texParams.spriteAnimation.shema[0]));
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_ROWS, YY * (object.textures[t].image.height / object.texParams.spriteAnimation.shema[1]));
+
+              _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ALIGNMENT, 1); // LodePNG tightly packs everything
+              // glTexImage2D(GL_TEXTURE_2D, level, internalFormat,
+              // sw, sh, border, format, type, data);
+
+
+              _matrixWorld.world.GL.gl.texImage2D(_matrixWorld.world.GL.gl.TEXTURE_2D, 0, _matrixWorld.world.GL.gl.RGBA, object.textures[t].image.width / object.texParams.spriteAnimation.shema[0], object.textures[t].image.height / object.texParams.spriteAnimation.shema[1], 0, _matrixWorld.world.GL.gl.RGBA, _matrixWorld.world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+            }
+
+            if (object.texParams.MIPMAP == true) {
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+              _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.LINEAR_MIPMAP_NEAREST);
+
+              _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
+            }
+
+            _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, t);
+
+            _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.u_projectedTexture, t);
+          } else {
+            object.custom.gl_texture(object, t);
+          }
+        } // world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 1);
+
+      } else {
+        _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl.TEXTURE0);
+
+        _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+
+        _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+      }
     } else {
+      //------------
+      if (object.shadows && object.shadows.type == "spot-shadow") {
+        // --------------------------------------------------------------------
+        let textureMatrix = m4.identity();
+        textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+        textureMatrix = m4.multiply(textureMatrix, object.shadows.lightProjectionMatrix);
+        const lightWorldMatrix = m4.lookAt([object.shadows.lightPosition[0], object.shadows.lightPosition[1], object.shadows.lightPosition[2]], [object.shadows.lightTarget[0], object.shadows.lightTarget[1], object.shadows.lightTarget[2]], // target
+        [object.shadows.orientation[0], object.shadows.orientation[1], object.shadows.orientation[2]] // up
+        );
+        textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
+        const mat = m4.multiply(lightWorldMatrix, m4.inverse(object.shadows.lightProjectionMatrix));
+
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_textureMatrix, false, textureMatrix);
+
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
+
+        _matrixWorld.world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, m4.translate(object.position.worldLocation[0], object.position.worldLocation[1], object.position.worldLocation[2])); // world.GL.gl.uniformMatrix4fv(object.shaderProgram.u_world, false, mat);
+
+
+        _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.u_reverseLightDirection, lightWorldMatrix.slice(8, 11));
+
+        _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.u_bias, object.shadows.bias);
+      } //---------------------------------------------------------------------
+      // world.GL.gl.activeTexture(world.GL.gl.TEXTURE0);
+      // world.GL.gl.bindTexture(world.GL.gl.TEXTURE_2D, object.FBO.deepTexture);
+      // world.GL.gl.uniform1i(object.shaderProgram.samplerUniform, 0);
+      // console.log('TEST')
+      //-------------------------------------------
+
+
       for (var t = 0; t < object.textures.length; t++) {
         if (object.custom.gl_texture == null) {
           _matrixWorld.world.GL.gl.activeTexture(_matrixWorld.world.GL.gl['TEXTURE' + t]);
 
-          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]); // world.GL.gl.pixelStorei(world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
-
+          _matrixWorld.world.GL.gl.bindTexture(_matrixWorld.world.GL.gl.TEXTURE_2D, object.textures[t]);
 
           if (_matrixWorld.world.GL.extTFAnisotropic) {
             _matrixWorld.world.GL.gl.texParameterf(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.extTFAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, _matrixWorld.world.GL.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
           }
 
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+          if (object.texParams.MIPMAP == false) {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_S, _matrixWorld.world.GL.gl.REPEAT);
 
-          _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR); // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_S, object.texParams.TEXTURE_WRAP_S | world.GL.gl.REPEAT);
-          // world.GL.gl.texParameteri(world.GL.gl.TEXTURE_2D, world.GL.gl.TEXTURE_WRAP_T, object.texParams.TEXTURE_WRAP_T | world.GL.gl.REPEAT);
-          // -- Allocate storage for the texture
-          // world.GL.gl.texStorage2D(world.GL.gl.TEXTURE_2D, 1, world.GL.gl.RGB8, 512, 512);
-          // world.GL.gl.texSubImage2D(world.GL.gl.TEXTURE_2D, 0, 0, 0, world.GL.gl.RGB, world.GL.gl.UNSIGNED_BYTE,  object.textures[t]);
-          // world.GL.gl.texImage2D(
-          //   world.GL.gl.TEXTURE_2D,
-          //   0,
-          //   world.GL.gl.RGBA,
-          //   world.GL.gl.RGBA,
-          //   world.GL.gl.UNSIGNED_BYTE,
-          //   object.textures[t].image);
-          // world.GL.gl.texImage2D(world.GL.gl.TEXTURE_2D, 0, world.GL.gl.RGBA, 512, 512, 0, world.GL.gl.RGBA, world.GL.gl.UNSIGNED_BYTE,  object.textures[t].image);
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_WRAP_T, _matrixWorld.world.GL.gl.REPEAT);
+          } else {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, object.texParams.TEXTURE_MAG_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, object.texParams.TEXTURE_MIN_FILTER | _matrixWorld.world.GL.gl.LINEAR);
+          }
+
+          if (typeof object.texParams.spriteAnimation != 'undefined' && object.texParams.spriteAnimation != false && object.textures[t].image.width != 0) {
+            //char * data; // data of 8-bit per sample RGBA image
+            // int w, h; // size of the image
+            // int sx, sy, sw, sh; // position and size of area you want to crop.
+            //glTexImage2D does support regions - of - interest.You do it as follows:
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+
+            var [XX, YY] = object.texParams.spriteAnimation.getOffsetXY();
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ROW_LENGTH, object.textures[t].image.height);
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_PIXELS, XX * (object.textures[t].image.width / object.texParams.spriteAnimation.shema[0]));
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_SKIP_ROWS, YY * (object.textures[t].image.height / object.texParams.spriteAnimation.shema[1]));
+
+            _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_ALIGNMENT, 1); // LodePNG tightly packs everything
+            // glTexImage2D(GL_TEXTURE_2D, level, internalFormat,
+            // sw, sh, border, format, type, data);
 
 
-          _matrixWorld.world.GL.gl.pixelStorei(_matrixWorld.world.GL.gl.UNPACK_FLIP_Y_WEBGL, false);
+            _matrixWorld.world.GL.gl.texImage2D(_matrixWorld.world.GL.gl.TEXTURE_2D, 0, _matrixWorld.world.GL.gl.RGBA, object.textures[t].image.width / object.texParams.spriteAnimation.shema[0], object.textures[t].image.height / object.texParams.spriteAnimation.shema[1], 0, _matrixWorld.world.GL.gl.RGBA, _matrixWorld.world.GL.gl.UNSIGNED_BYTE, object.textures[t].image);
+          }
 
-          if (object.texParams.TEXTURE_MIN_FILTER) {
+          if (object.texParams.MIPMAP == true) {
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MAG_FILTER, _matrixWorld.world.GL.gl.NEAREST);
+
+            _matrixWorld.world.GL.gl.texParameteri(_matrixWorld.world.GL.gl.TEXTURE_2D, _matrixWorld.world.GL.gl.TEXTURE_MIN_FILTER, _matrixWorld.world.GL.gl.LINEAR_MIPMAP_NEAREST);
+
             _matrixWorld.world.GL.gl.generateMipmap(_matrixWorld.world.GL.gl.TEXTURE_2D);
           }
 
@@ -21079,9 +21863,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
 
     _matrixWorld.world.GL.gl.uniformMatrix3fv(object.shaderProgram.nMatrixUniform, false, normalMatrix);
   } // world.disableUnusedAttr( world.GL.gl, localLooper);
-
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4); // ori
+  // world.disableUnusedAttr(world.GL.gl, 4);
 
 
   if (object.glBlend.blendEnabled == true) {
@@ -21093,29 +21875,30 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
   } else {
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
-    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // for non blend
-
-
-    _matrixWorld.world.GL.gl.depthMask(true); // world.GL.gl.enable(world.GL.gl.CULL_FACE);
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // world.GL.gl.depthMask(true);
 
   } // shadows
 
 
   if (object.shadows && object.shadows.type == 'spot') {
-    // console.log(" SHADOWS -> " , object.shadows)
+    // set the light position
     _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.lightWorldPositionLocation, object.shadows.lightPosition);
 
-    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.shadows.lightPosition);
+    _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.viewWorldPositionLocation, object.position.worldLocation);
 
     _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.shininessLocation, object.shadows.shininess); // Set the spotlight uniforms
 
 
     {
-      var target = [0, 0, 0];
+      var target = [0, 0, 0]; // object.position.worldLocation;
+
       var up = [0, 1, 0];
-      var lmat = m4.lookAt(object.shadows.lightPosition, target, up);
+      var lmat = m4.lookAt(object.shadows.lightPosition, target, up); // var lmat = m4.lookAt(object.position.worldLocation, target, up);
+
       lmat = m4.multiply(m4.xRotation(object.shadows.lightRotationX), lmat);
-      lmat = m4.multiply(m4.yRotation(object.shadows.lightRotationY), lmat);
+      lmat = m4.multiply(m4.yRotation(object.shadows.lightRotationY), lmat); // get the zAxis from the matrix
+      // negate it because lookAt looks down the -Z axis
+
       object.shadows.lightDirection = [-lmat[8], -lmat[9], -lmat[10]]; // object.shadows.lightDirection = [-0, -0, -1];
     }
 
@@ -21123,8 +21906,7 @@ _manifest.default.operation.draws.drawSquareTex = function (object, ray) {
 
     _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.innerLimitLocation, Math.cos(object.shadows.innerLimit));
 
-    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit)); // world.GL.gl.uniform1f(object.shaderProgram.u_projectedTexture, 1);
-
+    _matrixWorld.world.GL.gl.uniform1f(object.shaderProgram.outerLimitLocation, Math.cos(object.shadows.outerLimit));
   } else if (object.shadows && object.shadows.type == 'spec') {
     // global position
     _matrixWorld.world.GL.gl.uniform3fv(object.shaderProgram.specularColor, object.shadows.specularDATA);
@@ -21151,17 +21933,50 @@ _manifest.default.operation.draws.sphere = function (object, ray) {
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
-  if (_manifest.default.camera.FirstPersonController == true) {
-    _events.camera.setCamera(object);
-  } else if (_manifest.default.camera.SceneController == true) {
-    _events.camera.setSceneCamera(object);
-  } // no ray for now !!!
+  if (object.physics.enabled == true) {
+    if (_manifest.default.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (_manifest.default.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
 
+    if (object.custom_type != 'torus') {
+      var QP = object.physics.currentBody.quaternion;
+      QP.normalize();
+      mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation); // if(raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
 
-  mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ()); // V
+      var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.y, object.rotation.axis.z);
+      object.rotation.axisSystem[0].normalize(); // TEST - Yes ultimate - MAybe even cube will be better
+
+      var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), parseFloat(object.rotation.axisSystem[0].y.toFixed(2)), parseFloat(object.rotation.axisSystem[0].z.toFixed(2)));
+      var MY_ANGLE = 2 * Math.acos(QP.w);
+      mat4.rotate(object.mvMatrix, object.mvMatrix, MY_ANGLE, AXIS);
+    } else if (object.custom_type == 'torus') {
+      mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation); // if(raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+
+      mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+      mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+      mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
+    }
+  } else if (object.isHUD === true) {
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ()); // if(raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+  } else {
+    if (_manifest.default.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (_manifest.default.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
+
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation); // if(raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
+  } // V
+
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -21312,10 +22127,8 @@ _manifest.default.operation.draws.sphere = function (object, ray) {
     _matrixWorld.world.GL.gl.uniform1i(object.shaderProgram.uniformTime, 0.1);
   } catch (e) {
     console.warn('WTF - ERROR10001');
-  } // world.disableUnusedAttr(world.GL.gl, localLooper);
+  } // world.disableUnusedAttr(world.GL.gl, 4);
 
-
-  _matrixWorld.world.disableUnusedAttr(_matrixWorld.world.GL.gl, 4);
 
   if (object.glBlend.blendEnabled == true) {
     if (!_matrixWorld.world.GL.gl.isEnabled(_matrixWorld.world.GL.gl.BLEND)) {
@@ -21341,7 +22154,7 @@ var drawsOperation = _manifest.default.operation.draws;
 var _default = drawsOperation;
 exports.default = _default;
 
-},{"../program/manifest":44,"./engine":13,"./events":14,"./matrix-shadows":25,"./matrix-textures":27,"./matrix-world":28,"./raycast":34,"./utility":40,"cannon":5}],19:[function(require,module,exports){
+},{"../program/manifest":45,"./engine":13,"./events":14,"./matrix-world":29,"./raycast":35,"./utility":41,"cannon":5}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21664,6 +22477,7 @@ class Position {
     this.targetY = y;
     this.targetZ = z;
     this.thrust = 0.01;
+    this.phySleepOn2digits = false;
     return this;
   }
 
@@ -22984,6 +23798,7 @@ class sphereVertex {
 }
 
 exports.sphereVertex = sphereVertex;
+var S1 = new _utility.SWITCHER();
 
 class customVertex {
   createGeoData(root) {
@@ -23039,13 +23854,19 @@ class customVertex {
         }
       }
     } else if (this.root.custom_type == "cubic") {
-      for (var j = 0; j < 8; j++) {
+      // console.log('??????????not work for now???????????????')
+      for (var j = 0; j < 118; j++) {
         var x = j + 1 * S1.GET();
         var y = 1;
         var z = j + 1;
         this.normalData.push(x);
         this.normalData.push(y);
         this.normalData.push(z);
+        const u = j / root.loops;
+        const loop_angle = u * 2 * Math.PI; // const v = slice / this.root.slices;
+
+        const v = 2 / this.root.slices;
+        const slice_angle = v * 2 * Math.PI;
         this.textureCoordData.push(u);
         this.textureCoordData.push(v);
         this.vertexPositionData.push(this.radius * x);
@@ -23111,6 +23932,48 @@ class customVertex {
           v1 += 1;
           v2 += 1;
         }
+      }
+    } else if (this.root.custom_type == "testConvex") {
+      if (this.root.custom_geometry) {
+        this.indexData = [];
+        console.log('[CUSTOM-GEO][from cannonjs]', this.root.custom_geometry); // try to convert direct from CANNON geometry - can be reused for diff stuff.
+
+        this.root.custom_geometry.vertices.forEach(point => {
+          this.textureCoordData.push(point.x);
+          this.textureCoordData.push(point.y);
+          this.vertexPositionData.push(this.radius * point.x);
+          this.vertexPositionData.push(this.radius * point.y);
+          this.vertexPositionData.push(this.radius * point.z);
+        });
+        this.root.custom_geometry.faceNormals.forEach(point => {
+          this.normalData.push(point.x);
+          this.normalData.push(point.y);
+          this.normalData.push(point.z);
+        });
+        this.root.custom_geometry.faces.forEach(face => {
+          // console.log("FACES", face)
+          face.forEach(f => {
+            this.indexData.push(f);
+          });
+        });
+      }
+    } else if (this.root.custom_type == "testTrimesh") {
+      if (this.root.custom_geometry) {
+        this.indexData = []; // FOr trimesh is little dif cannonjs role
+
+        this.vertexPositionData = this.root.custom_geometry.vertices;
+
+        if (this.root.custom_geometry.textureCoordData) {
+          this.textureCoordData = this.root.custom_geometry.textureCoordData;
+        } else {
+          this.root.custom_geometry.vertices.forEach(point => {
+            this.textureCoordData.push(point.x);
+            this.textureCoordData.push(point.y);
+          });
+        }
+
+        this.normalData = this.root.custom_geometry.normals;
+        this.indexData = this.root.custom_geometry.indices;
       }
     }
   }
@@ -23385,7 +24248,7 @@ class GeoOfColor {
 
 exports.GeoOfColor = GeoOfColor;
 
-},{"../program/manifest":44,"./engine":13,"./utility":40}],20:[function(require,module,exports){
+},{"../program/manifest":45,"./engine":13,"./utility":41}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24104,7 +24967,7 @@ function getInitVSCubeMap() {
   _utility.scriptManager.LOAD(f, "cubeMap-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
-},{"./utility":40}],21:[function(require,module,exports){
+},{"./utility":41}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24137,6 +25000,7 @@ var _utility = require("./utility");
 /**
  * @description From 1.9.43
  * Opengles300 in single file.
+ * From 2.2.0 FBO mixed with shadow with two attachemnts.
  */
 function loadShaders300() {
   genInitFSTriangle();
@@ -24163,449 +25027,428 @@ function loadShaders300() {
 
 function genInitFSTriangle() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec4 vColor;
-  out vec4 outColor;
-  void main(void) {
-    outColor = vColor;
-  }
-  `;
+	precision mediump float;
+	in vec4 vColor;
+	out vec4 outColor;
+	void main(void) {
+		outColor = vColor;
+	}
+	`;
 
   _utility.scriptManager.LOAD(f, "triangle-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSTriangle() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec4 aVertexColor;
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  out vec3 meVertexPosition;
-  out vec4 vColor;
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vColor      = aVertexColor;
-  }
-  `;
+	in vec3 aVertexPosition;
+	in vec4 aVertexColor;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	out vec3 meVertexPosition;
+	out vec4 vColor;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vColor			= aVertexColor;
+	}
+	`;
 
   _utility.scriptManager.LOAD(f, "triangle-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
 function getInitFSCubeTexLight() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec2 vTextureCoord;
-  in vec3 vLightWeighting;
-  uniform sampler2D uSampler;
-  uniform sampler2D uSampler1;
-  uniform sampler2D uSampler2;
-  uniform sampler2D uSampler3;
-  uniform sampler2D uSampler4;
-  uniform sampler2D uSampler5;
-  // The CubeMap texture.
-  uniform samplerCube u_texture;
-  // cube map
-  // in vec3 v_normal_cubemap;
-  uniform float numberOfsamplers;
+	precision mediump float;
+	in vec2 vTextureCoord;
+	in vec3 vLightWeighting;
+	uniform sampler2D uSampler;
+	uniform sampler2D uSampler1;
+	uniform sampler2D uSampler2;
+	uniform sampler2D uSampler3;
+	uniform sampler2D uSampler4;
+	uniform sampler2D uSampler5;
+	// The CubeMap texture.
+	uniform samplerCube u_texture;
+	// cube map
+	// in vec3 v_normal_cubemap;
+	uniform float numberOfsamplers;
 
-  // Spot
-  // Passed in from the vertex shader.
-  in vec3 v_normal;
-  in vec3 v_surfaceToLight;
-  in vec3 v_surfaceToView;
-  uniform vec4 u_color;
-  uniform float u_shininess;
-  uniform vec3 u_lightDirection;
-  uniform float u_innerLimit;
-  uniform float u_outerLimit;
+	// Spot
+	// Passed in from the vertex shader.
+	in vec3 v_normal;
+	in vec3 v_surfaceToLight;
+	in vec3 v_surfaceToView;
+	uniform vec4 u_color;
+	uniform float u_shininess;
+	uniform vec3 u_lightDirection;
+	uniform float u_innerLimit;
+	uniform float u_outerLimit;
 
-  out vec4 outColor;
+	out vec4 outColor;
 
-  void main(void) {
-    // because v_normal is a varying it's interpolated
-    // so it will not be a unit vector. Normalizing it
-    // will make it a unit vector again
-    vec3 normal = normalize(v_normal);
+	void main(void) {
+		// because v_normal is a varying it's interpolated
+		// so it will not be a unit vector. Normalizing it
+		// will make it a unit vector again
+		vec3 normal = normalize(v_normal);
 
-    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
-    vec3 surfaceToViewDirection = normalize(v_surfaceToView);
-    vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+		vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+		vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+		vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
 
-    float dotFromDirection = dot(surfaceToLightDirection,
-                                 -u_lightDirection);
-    float limitRange = u_innerLimit - u_outerLimit;
-    float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
-    float light = inLight * dot(normal, surfaceToLightDirection);
-    float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+		float dotFromDirection = dot(surfaceToLightDirection,
+																 -u_lightDirection);
+		float limitRange = u_innerLimit - u_outerLimit;
+		float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+		float light = inLight * dot(normal, surfaceToLightDirection);
+		float specular = inLight * pow(dot(normal, halfVector), u_shininess);
 
-    // Directioin vs uAmbientColor
-    vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+		// Directioin vs uAmbientColor
+		vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
 
-    vec4 testUnused = texture2D(u_texture, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 testUnused = texture2D(u_texture, vec2(vTextureCoord.s, vTextureCoord.t));
 
-    outColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+		outColor			= vec4(textureColor.rgb * vLightWeighting, textureColor.a);
 
-    // Lets multiply just the color portion (not the alpha)
-    // by the light
-    outColor.rgb *= light;
-    // Just add in the specular
-    outColor.rgb += specular;
-  }
-  `;
+		// Lets multiply just the color portion (not the alpha)
+		// by the light
+		outColor.rgb *= light;
+		// Just add in the specular
+		outColor.rgb += specular;
+	}
+	`;
 
   _utility.scriptManager.LOAD(f, "cubeLightTex-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSCubeTexLight() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec3 aVertexNormal;
-  in vec2 aTextureCoord;
+	// No modify in runtime for VS
+	// matrix-engine 2.2.x
+	in vec3 aVertexPosition;
+	in vec3 aVertexNormal;
+	in vec2 aTextureCoord;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	uniform mat3 uNMatrix;
+	uniform vec3 uAmbientColor;
+	uniform vec3 uLightingDirection;
+	uniform vec3 uDirectionalColor;
+	uniform bool uUseLighting;
+	out vec2 vTextureCoord;
+	out vec3 vLightWeighting;
+	out vec3 meVertexPosition;
 
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  uniform mat3 uNMatrix;
-  uniform vec3 uAmbientColor;
-  uniform vec3 uLightingDirection;
-  uniform vec3 uDirectionalColor;
-  uniform bool uUseLighting;
-  out vec2 vTextureCoord;
-  out vec3 vLightWeighting;
-  out vec3 meVertexPosition;
+	// Spot
+	uniform vec3 u_lightWorldPosition;
+	out vec3 v_normal;
+	out vec3 v_surfaceToLight;
+	out vec3 v_surfaceToView;
 
-  // Spot
-  uniform vec3 u_lightWorldPosition;
-  out vec3 v_normal;
-  // out vec3 v_normal_cubemap;
-  out vec3 v_surfaceToLight;
-  out vec3 v_surfaceToView;
+	// Specular
+	out mat4 uMVMatrixINTER;
+	out mat3 uNMatrixINTER;
+	out mat4 uPMatrixINNTER;
 
-  // Specular
-  out mat4 uMVMatrixINTER;
-  out mat3 uNMatrixINTER;
-  out mat4 uPMatrixINNTER;
+	in vec4 specularColor;
+	out vec4 vColor;
+	out vec3 vNormal;
+	out vec4 vPosition;
+	out float vDist;
 
-  in vec4 specularColor;
-  out vec4 vColor;
-  out vec3 vNormal;
-  out vec4 vPosition;
-  out float vDist;
+	// spot-shadow
+	uniform mat4 u_textureMatrix;
+	out vec2 v_texcoord;
+	out vec4 v_projectedTexcoord;
+	uniform mat4 u_world;
 
-  void main(void) {
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		uMVMatrixINTER = uMVMatrix;
+		uNMatrixINTER = uNMatrix;
+		uPMatrixINNTER = uPMatrix;
+		vColor = specularColor;
+		vNormal = normalize(mat3(u_world) * vec3(aVertexNormal)); 
+		vPosition =	uMVMatrix * vec4(aVertexPosition, 1.0);
+		vDist = gl_Position.w;
+		v_normal = normalize(uNMatrix * vec3(aVertexNormal)); 
+		vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
+		v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+		v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
 
-    meVertexPosition = aVertexPosition;
-    uMVMatrixINTER = uMVMatrix;
-    uNMatrixINTER = uNMatrix;
-    uPMatrixINNTER = uPMatrix;
+		vec4 worldPosition =	u_world * vec4((aVertexPosition).xyz, 1.0);
+		v_texcoord = aTextureCoord;
+		v_projectedTexcoord = u_textureMatrix * worldPosition;
 
-    // GLOBAL POS SPECULAR
-    vColor = specularColor;
-    vNormal = normalize(uNMatrix * vec3(aVertexNormal));
-    // Calculate the modelView of the model, and set the vPosition
-    // mat4 modelViewMatrix = uViewMatrix * uModelMatrix;
-    vPosition = uMVMatrix * vec4(1,1,1,1);
-    vDist = gl_Position.w;
+		gl_Position	 = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vTextureCoord = aTextureCoord;
 
-    // SPOT
-    // orient the normals and pass to the fragment shader
-    v_normal = mat3(uNMatrix) * aVertexNormal;
-
-    // normalize
-    // v_normal_cubemap = normalize(aVertexPosition.xyz);
-
-    // compute the world position of the surfoace
-    vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
-
-    // compute the vector of the surface to the light
-    // and pass it to the fragment shader
-    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
-
-    // compute the vector of the surface to the view/camera
-    // and pass it to the fragment shader
-    v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
-
-    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vTextureCoord = aTextureCoord;
-
-    if (!uUseLighting) {
-      vLightWeighting = vec3(1.0, 1.0, 1.0);
-    }
-    else {
-      vec3 transformedNormal          = uNMatrix * aVertexNormal;
-      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-    }
-  } `;
+		if (!uUseLighting) {
+			vLightWeighting = vec3(1.0, 1.0, 1.0);
+		} else {
+			vec3 transformedNormal					= uNMatrix * aVertexNormal;
+			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+			vLightWeighting								 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+		}
+	}`;
 
   _utility.scriptManager.LOAD(f, "cubeLightTex-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
 function getInitFSSquare() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec4 vColor;
-  out vec4 outColor;
-  void main(void) {
-    outColor = vColor;
-  }
-  `;
+	precision mediump float;
+	in vec4 vColor;
+	out vec4 outColor;
+	void main(void) {
+		outColor = vColor;
+	}
+	`;
 
   _utility.scriptManager.LOAD(f, "square-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSSquare() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec4 aVertexColor;
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  out vec3 meVertexPosition;
-  out vec4 vColor;
+	in vec3 aVertexPosition;
+	in vec4 aVertexColor;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	out vec3 meVertexPosition;
+	out vec4 vColor;
 
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vColor      = aVertexColor;
-  }`;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vColor			= aVertexColor;
+	}`;
 
   _utility.scriptManager.LOAD(f, "square-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
 function getInitFSCube() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec4 vColor;
-  out vec4 outColor;
-  void main(void) {
-    outColor = vColor;
-  }`;
+	precision mediump float;
+	in vec4 vColor;
+	out vec4 outColor;
+	void main(void) {
+		outColor = vColor;
+	}`;
 
   _utility.scriptManager.LOAD(f, "cube-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSCube() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec4 aVertexColor;
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  out vec3 meVertexPosition;
-  out vec4 vColor;
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vColor      = aVertexColor;
-  }`;
+	in vec3 aVertexPosition;
+	in vec4 aVertexColor;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	out vec3 meVertexPosition;
+	out vec4 vColor;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vColor			= aVertexColor;
+	}`;
 
   _utility.scriptManager.LOAD(f, "cube-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
 function getInitFSCubeTex() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec2 vTextureCoord;
-  uniform sampler2D uSampler;
-  out vec4 outColor;
-  void main(void) {
-    outColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-  }`;
+	precision mediump float;
+	in vec2 vTextureCoord;
+	uniform sampler2D uSampler;
+	out vec4 outColor;
+	void main(void) {
+		outColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+	}`;
 
   _utility.scriptManager.LOAD(f, "cubeTex-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSCubeTex() {
   const f = `#version 300 es
-  #define POSITION_LOCATION 0
-  in vec3 aVertexPosition;
-  in vec2 aTextureCoord;
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  out vec3 meVertexPosition;
-  out vec2 vTextureCoord;
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vTextureCoord = aTextureCoord;
-  }`;
+	#define POSITION_LOCATION 0
+	in vec3 aVertexPosition;
+	in vec2 aTextureCoord;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	out vec3 meVertexPosition;
+	out vec2 vTextureCoord;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		gl_Position	 = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vTextureCoord = aTextureCoord;
+	}`;
 
   _utility.scriptManager.LOAD(f, "cubeTex-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
 function getInitFSObj() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec2 vTextureCoord;
-  in vec3 vLightWeighting;
-  uniform sampler2D uSampler;
-  uniform sampler2D uSampler1;
-  uniform sampler2D uSampler2;
-  uniform sampler2D uSampler3;
-  uniform sampler2D uSampler4;
-  uniform sampler2D uSampler5;
-  uniform samplerCube u_texture;
-  uniform float numberOfsamplers;
+	precision mediump float;
+	in vec2 vTextureCoord;
+	in vec3 vLightWeighting;
+	uniform sampler2D uSampler;
+	uniform sampler2D uSampler1;
+	uniform sampler2D uSampler2;
+	uniform sampler2D uSampler3;
+	uniform sampler2D uSampler4;
+	uniform sampler2D uSampler5;
+	uniform samplerCube u_texture;
+	uniform float numberOfsamplers;
 
-  // Spot
-  // Passed in from the vertex shader.
-  in vec3 v_normal;
-  in vec3 v_surfaceToLight;
-  in vec3 v_surfaceToView;
-  uniform vec4 u_color;
-  uniform float u_shininess;
-  uniform vec3 u_lightDirection;
-  uniform float u_innerLimit;
-  uniform float u_outerLimit;
+	// Spot
+	// Passed in from the vertex shader.
+	in vec3 v_normal;
+	in vec3 v_surfaceToLight;
+	in vec3 v_surfaceToView;
+	uniform vec4 u_color;
+	uniform float u_shininess;
+	uniform vec3 u_lightDirection;
+	uniform float u_innerLimit;
+	uniform float u_outerLimit;
 
-  out vec4 outColor;
+	out vec4 outColor;
 
-  void main(void) {
-    // because v_normal is a varying it's interpolated
-    // so it will not be a unit vector. Normalizing it
-    // will make it a unit vector again
-    vec3 normal = normalize(v_normal);
+	void main(void) {
+		// because v_normal is a varying it's interpolated
+		// so it will not be a unit vector. Normalizing it
+		// will make it a unit vector again
+		vec3 normal = normalize(v_normal);
 
-    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
-    vec3 surfaceToViewDirection = normalize(v_surfaceToView);
-    vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+		vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+		vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+		vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
 
-    float dotFromDirection = dot(surfaceToLightDirection,
-                                 -u_lightDirection);
-    float limitRange = u_innerLimit - u_outerLimit;
-    float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
-    float light = inLight * dot(normal, surfaceToLightDirection);
-    float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+		float dotFromDirection = dot(surfaceToLightDirection,
+																 -u_lightDirection);
+		float limitRange = u_innerLimit - u_outerLimit;
+		float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+		float light = inLight * dot(normal, surfaceToLightDirection);
+		float specular = inLight * pow(dot(normal, halfVector), u_shininess);
 
-    // Directioin vs uAmbientColor
-    vec4 textureColor = texture(uSampler, vTextureCoord) * vec4(1,1,1,1);
-    vec4 textureColor1 = texture(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor2 = texture(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
-    // vec4 testUnused = texture(u_texture, vec2(vTextureCoord.s, vTextureCoord.t));
+		// Directioin vs uAmbientColor
+		vec4 textureColor = texture(uSampler, vTextureCoord) * vec4(1,1,1,1);
+		vec4 textureColor1 = texture(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 textureColor2 = texture(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+		// vec4 testUnused = texture(u_texture, vec2(vTextureCoord.s, vTextureCoord.t));
 
-    outColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+		outColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
 
-    // Lets multiply just the color portion (not the alpha)
-    outColor.rgb *= light;
-    // Just add in the specular
-    outColor.rgb += specular;
-  }`;
+		// Lets multiply just the color portion (not the alpha)
+		outColor.rgb *= light;
+		// Just add in the specular
+		outColor.rgb += specular;
+	}`;
 
   _utility.scriptManager.LOAD(f, "obj-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSObj() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec3 aVertexNormal;
-  in vec2 aTextureCoord;
+	in vec3 aVertexPosition;
+	in vec3 aVertexNormal;
+	in vec2 aTextureCoord;
 
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  uniform mat3 uNMatrix;
-  uniform vec3 uAmbientColor;
-  uniform vec3 uLightingDirection;
-  uniform vec3 uDirectionalColor;
-  uniform bool uUseLighting;
-  out vec2 vTextureCoord;
-  out vec3 vLightWeighting;
-  out vec3 meVertexPosition;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	uniform mat3 uNMatrix;
+	uniform vec3 uAmbientColor;
+	uniform vec3 uLightingDirection;
+	uniform vec3 uDirectionalColor;
+	uniform bool uUseLighting;
+	out vec2 vTextureCoord;
+	out vec3 vLightWeighting;
+	out vec3 meVertexPosition;
 
-  // Spot
-  uniform vec3 u_lightWorldPosition;
-  out vec3 v_normal;
-  out vec3 v_normal_cubemap;
-  out vec3 v_surfaceToLight;
-  out vec3 v_surfaceToView;
+	// Spot
+	uniform vec3 u_lightWorldPosition;
+	out vec3 v_normal;
+	out vec3 v_normal_cubemap;
+	out vec3 v_surfaceToLight;
+	out vec3 v_surfaceToView;
 
-  // Specular
-  out mat4 uMVMatrixINTER;
-  out mat3 uNMatrixINTER;
-  out mat4 uPMatrixINNTER;
+	// Specular
+	out mat4 uMVMatrixINTER;
+	out mat3 uNMatrixINTER;
+	out mat4 uPMatrixINNTER;
 
-  in vec4 specularColor;
-  out vec4 vColor;
-  out vec3 vNormal;
-  out vec4 vPosition;
-  out float vDist;
+	in vec4 specularColor;
+	out vec4 vColor;
+	out vec3 vNormal;
+	out vec4 vPosition;
+	out float vDist;
 
-  void main(void) {
-    meVertexPosition = aVertexPosition;
+// spot-shadow
+	uniform mat4 u_textureMatrix;
+	out vec2 v_texcoord;
+	out vec4 v_projectedTexcoord;
+	uniform mat4 u_world;
 
-    uMVMatrixINTER = uMVMatrix;
-    uNMatrixINTER = uNMatrix;
-    uPMatrixINNTER = uPMatrix;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		uMVMatrixINTER = uMVMatrix;
+		uNMatrixINTER = uNMatrix;
+		uPMatrixINNTER = uPMatrix;
+		vColor = specularColor;
+		vNormal = normalize(mat3(u_world) * vec3(aVertexNormal)); 
+		vPosition =	uMVMatrix * vec4(aVertexPosition, 1.0);
+		vDist = gl_Position.w;
+		v_normal = normalize(uNMatrix * vec3(aVertexNormal)); 
+		vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
+		v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+		v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
 
-    // GLOBAL POS SPECULAR
-    vColor = specularColor;
-    vNormal = normalize(uNMatrix * vec3(aVertexNormal));
-    // Calculate the modelView of the model, and set the vPosition
-    // mat4 modelViewMatrix = uViewMatrix * uModelMatrix;
-    vPosition = uMVMatrix * vec4(1,1,1,1);
-    vDist = gl_Position.w;
+		vec4 worldPosition =	u_world * vec4((aVertexPosition).xyz, 1.0);
+		v_texcoord = aTextureCoord;
+		v_projectedTexcoord = u_textureMatrix * worldPosition;
 
-    // SPOT
-    // orient the normals and pass to the fragment shader
-    v_normal = mat3(uNMatrix) * aVertexNormal;
+		gl_Position	 = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vTextureCoord = aTextureCoord;
 
-    // normalize
-    v_normal_cubemap = normalize(aVertexPosition.xyz);
-
-    // compute the world position of the surfoace
-    vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
-
-    // compute the vector of the surface to the light
-    // and pass it to the fragment shader
-    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
-
-    // compute the vector of the surface to the view/camera
-    // and pass it to the fragment shader
-    v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
-
-    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vTextureCoord = aTextureCoord;
-
-    if (!uUseLighting) {
-      vLightWeighting = vec3(1.0, 1.0, 1.0);
-    }
-    else {
-      vec3 transformedNormal          = uNMatrix * aVertexNormal;
-      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-    }
-  } 
-`;
+		if (!uUseLighting) {
+			vLightWeighting = vec3(1.0, 1.0, 1.0);
+		} else {
+			vec3 transformedNormal					= uNMatrix * aVertexNormal;
+			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+			vLightWeighting								 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+		}
+	}`;
 
   _utility.scriptManager.LOAD(f, "obj-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
 function getInitFSPyramid() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec4 vColor;
+	precision mediump float;
+	in vec4 vColor;
 
-  out vec4 outColor;
-  void main(void) {
-    outColor = vColor;
-  }`;
+	out vec4 outColor;
+	void main(void) {
+		outColor = vColor;
+	}`;
 
   _utility.scriptManager.LOAD(f, "pyramid-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSPyramid() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec4 aVertexColor;
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  out vec3 meVertexPosition;
-  out vec4 vColor;
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vColor      = aVertexColor;
-  }
+	in vec3 aVertexPosition;
+	in vec4 aVertexColor;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	out vec3 meVertexPosition;
+	out vec4 vColor;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vColor			= aVertexColor;
+	}
 `;
 
   _utility.scriptManager.LOAD(f, "pyramid-shader-vs", "x-shader/x-vertex", "shaders");
@@ -24613,182 +25456,179 @@ function getInitVSPyramid() {
 
 function getInitFSSquareTex() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec2 vTextureCoord;
-  in vec3 vLightWeighting;
-  uniform sampler2D uSampler;
-  uniform sampler2D uSampler1;
-  uniform sampler2D uSampler2;
-  uniform sampler2D uSampler3;
-  uniform sampler2D uSampler4;
-  uniform sampler2D uSampler5;
-  uniform float numberOfsamplers;
+	precision mediump float;
+	in vec2 vTextureCoord;
+	in vec3 vLightWeighting;
+	uniform sampler2D uSampler;
+	uniform sampler2D uSampler1;
+	uniform sampler2D uSampler2;
+	uniform sampler2D uSampler3;
+	uniform sampler2D uSampler4;
+	uniform sampler2D uSampler5;
+	uniform float numberOfsamplers;
 
-  // Spot
-  // Passed in from the vertex shader.
-  in vec3 v_normal;
-  in vec3 v_surfaceToLight;
-  in vec3 v_surfaceToView;
-  uniform vec4 u_color;
-  uniform float u_shininess;
-  uniform vec3 u_lightDirection;
-  uniform float u_innerLimit;
-  uniform float u_outerLimit;
+	// Spot
+	// Passed in from the vertex shader.
+	in vec3 v_normal;
+	in vec3 v_surfaceToLight;
+	in vec3 v_surfaceToView;
+	uniform vec4 u_color;
+	uniform float u_shininess;
+	uniform vec3 u_lightDirection;
+	uniform float u_innerLimit;
+	uniform float u_outerLimit;
 
-  out vec4 outColor;
+	out vec4 outColor;
 
-  void main(void) {
-    vec3 normal = normalize(v_normal);
-    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
-    vec3 surfaceToViewDirection = normalize(v_surfaceToView);
-    vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
-    float dotFromDirection = dot(surfaceToLightDirection,
-                                 -u_lightDirection);
-    float limitRange = u_innerLimit - u_outerLimit;
-    float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
-    float light = inLight * dot(normal, surfaceToLightDirection);
-    float specular = inLight * pow(dot(normal, halfVector), u_shininess);
-    vec4 textureColor  = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
-    outColor       = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+	void main(void) {
+		vec3 normal = normalize(v_normal);
+		vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+		vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+		vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+		float dotFromDirection = dot(surfaceToLightDirection,
+																 -u_lightDirection);
+		float limitRange = u_innerLimit - u_outerLimit;
+		float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+		float light = inLight * dot(normal, surfaceToLightDirection);
+		float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+		vec4 textureColor	= texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 textureColor1 = texture2D(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 textureColor2 = texture2D(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+		outColor			 = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
 
-    outColor.rgb *= light;
-    // gl_FragColor.rgb += specular;
-  }
-  `;
+		outColor.rgb *= light;
+		// gl_FragColor.rgb += specular;
+	}
+	`;
 
   _utility.scriptManager.LOAD(f, "squareTex-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSSquareTex() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec3 aVertexNormal;
-  in vec2 aTextureCoord;
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  uniform mat3 uNMatrix;
-  uniform vec3 uAmbientColor;
-  uniform vec3 uLightingDirection;
-  uniform vec3 uDirectionalColor;
-  uniform bool uUseLighting;
-  out vec2 vTextureCoord;
-  out vec3 vLightWeighting;
-  out vec3 meVertexPosition;
+	in vec3 aVertexPosition;
+	in vec3 aVertexNormal;
+	in vec2 aTextureCoord;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	uniform mat3 uNMatrix;
+	uniform vec3 uAmbientColor;
+	uniform vec3 uLightingDirection;
+	uniform vec3 uDirectionalColor;
+	uniform bool uUseLighting;
+	out vec2 vTextureCoord;
+	out vec3 vLightWeighting;
+	out vec3 meVertexPosition;
 
-  // Spot
-  uniform vec3 u_lightWorldPosition;
-  out vec3 v_normal;
-  out vec3 v_surfaceToLight;
-  out vec3 v_surfaceToView;
+	// Spot
+	uniform vec3 u_lightWorldPosition;
+	out vec3 v_normal;
+	out vec3 v_surfaceToLight;
+	out vec3 v_surfaceToView;
 
-  // spot-Shadow
-  uniform mat4 u_textureMatrix;
-  out vec2 v_texcoord;
-  out vec4 v_projectedTexcoord;
+	// Specular
+	out mat4 uMVMatrixINTER;
+	out mat3 uNMatrixINTER;
+	out mat4 uPMatrixINNTER;
+	out vec4 specularColor;
+	out vec4 vColor;
+	out vec3 vNormal;
+	out vec4 vPosition;
+	out float vDist;
 
-  // Specular
-  // out vec4 specularColor;
-  // out vec4 vColor;
-  // out vec3 vNormal;
-  // out vec4 vPosition;
-  // out float vDist;
+	// spot-shadow
+	uniform mat4 u_textureMatrix;
+	out vec2 v_texcoord;
+	out vec4 v_projectedTexcoord;
+	uniform mat4 u_world;
 
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    // GLOBAL POS SPECULAR
-    // vColor = specularColor;
-    // vNormal = normalize(uNMatrix * vec3(aVertexNormal));
-    // Calculate the modelView of the model, and set the vPosition
-    // mat4 modelViewMatrix = uViewMatrix * uModelMatrix;
-    // vPosition = uMVMatrix * vec4(1,1,1,1);
-    // vDist = gl_Position.w;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		uMVMatrixINTER = uMVMatrix;
+		uNMatrixINTER = uNMatrix;
+		uPMatrixINNTER = uPMatrix;
+		vColor = specularColor;
+		vNormal = normalize(mat3(u_world) * vec3(aVertexNormal)); 
+		vPosition =	uMVMatrix * vec4(aVertexPosition, 1.0);
+		vDist = gl_Position.w;
+		v_normal = normalize(uNMatrix * vec3(aVertexNormal)); 
+		vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
+		v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+		v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
 
-    // SPOT
-    v_normal = mat3(uNMatrix) * aVertexNormal;
-    vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
-    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
-    v_surfaceToView = -surfaceWorldPosition;
+		vec4 worldPosition =	u_world * vec4((aVertexPosition).xyz, 1.0);
+		v_texcoord = aTextureCoord;
+		v_projectedTexcoord = u_textureMatrix * worldPosition;
 
-    // spot shadow
-    // vec4 worldPosition = u_world * a_position;
-    vec4 worldPosition = vec4(1,1,1,1) * vec4( aVertexPosition, 1.0);
-    v_texcoord = aTextureCoord;
-    v_projectedTexcoord = u_textureMatrix * worldPosition;
+		gl_Position	 = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vTextureCoord = aTextureCoord;
 
-    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vTextureCoord = aTextureCoord;
+		if (!uUseLighting) {
+			vLightWeighting = vec3(1.0, 1.0, 1.0);
+		} else {
+			vec3 transformedNormal					= uNMatrix * aVertexNormal;
+			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+			vLightWeighting								 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+		}
+	}`;
 
-    if (!uUseLighting) {
-      vLightWeighting = vec3(1.0, 1.0, 1.0);
-    }
-    else {
-      vec3 transformedNormal          = uNMatrix * aVertexNormal;
-      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-    }
-  }
-`;
-
-  _utility.scriptManager.LOAD(f, "squareTex-shader-vs", "x-shader/x-vertex", "shaders"); // console.log(" squareTex-shader-vs v")
-
+  _utility.scriptManager.LOAD(f, "squareTex-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
 function getInitFSSphereLightTex() {
   const f = `#version 300 es
-  precision mediump float;
-  in vec2 vTextureCoord;
-  in vec3 vLightWeighting;
-  uniform sampler2D uSampler;
-  uniform sampler2D uSampler1;
-  uniform sampler2D uSampler2;
-  uniform sampler2D uSampler3;
-  uniform float numberOfsamplers;
-  out vec4 outColor;
-  void main(void) {
-    vec4 textureColor = texture(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor1 = texture(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColor2 = texture(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
-    outColor      = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
-  }
-  `;
+	precision mediump float;
+	in vec2 vTextureCoord;
+	in vec3 vLightWeighting;
+	uniform sampler2D uSampler;
+	uniform sampler2D uSampler1;
+	uniform sampler2D uSampler2;
+	uniform sampler2D uSampler3;
+	uniform float numberOfsamplers;
+	out vec4 outColor;
+	void main(void) {
+		vec4 textureColor = texture(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 textureColor1 = texture(uSampler1, vec2(vTextureCoord.s, vTextureCoord.t));
+		vec4 textureColor2 = texture(uSampler2, vec2(vTextureCoord.s, vTextureCoord.t));
+		outColor			= vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+	}
+	`;
 
   _utility.scriptManager.LOAD(f, "sphereLightTex-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSSphereLightTex() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec3 aVertexNormal;
-  in vec2 aTextureCoord;
+	in vec3 aVertexPosition;
+	in vec3 aVertexNormal;
+	in vec2 aTextureCoord;
 
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  uniform mat3 uNMatrix;
-  uniform vec3 uAmbientColor;
-  uniform vec3 uLightingDirection;
-  uniform vec3 uDirectionalColor;
-  uniform bool uUseLighting;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	uniform mat3 uNMatrix;
+	uniform vec3 uAmbientColor;
+	uniform vec3 uLightingDirection;
+	uniform vec3 uDirectionalColor;
+	uniform bool uUseLighting;
 
-  out vec2 vTextureCoord;
-  out vec3 vLightWeighting;
-  out vec3 meVertexPosition;
+	out vec2 vTextureCoord;
+	out vec3 vLightWeighting;
+	out vec3 meVertexPosition;
 
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    vTextureCoord = aTextureCoord;
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		gl_Position	 = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vTextureCoord = aTextureCoord;
 
-    if (!uUseLighting) {
-      vLightWeighting = vec3(1.0, 1.0, 1.0);
-    }
-    else {
-      vec3 transformedNormal          = uNMatrix * aVertexNormal;
-      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-    }
-  }
+		if (!uUseLighting) {
+			vLightWeighting = vec3(1.0, 1.0, 1.0);
+		}
+		else {
+			vec3 transformedNormal					= uNMatrix * aVertexNormal;
+			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+			vLightWeighting								 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+		}
+	}
 `;
 
   _utility.scriptManager.LOAD(f, "sphereLightTex-shader-vs", "x-shader/x-vertex", "shaders");
@@ -24796,128 +25636,128 @@ function getInitVSSphereLightTex() {
 
 function getInitFSCubeMap() {
   const f = `#version 300 es
-  precision mediump float;
+	precision mediump float;
 
-  in vec2 vTextureCoord;
-  in vec3 vLightWeighting;
+	in vec2 vTextureCoord;
+	in vec3 vLightWeighting;
 
-  // The CubeMap texture test.
-  uniform samplerCube u_texture;
-  // cube map
-  in vec3 v_normal_cubemap;
-  uniform float numberOfsamplers;
+	// The CubeMap texture test.
+	uniform samplerCube u_texture;
+	// cube map
+	in vec3 v_normal_cubemap;
+	uniform float numberOfsamplers;
 
-  // Spot
-  in vec3 v_normal;
-  in vec3 v_surfaceToLight;
-  in vec3 v_surfaceToView;
+	// Spot
+	in vec3 v_normal;
+	in vec3 v_surfaceToLight;
+	in vec3 v_surfaceToView;
 
-  uniform vec4 u_color;
-  uniform float u_shininess;
-  uniform vec3 u_lightDirection;
-  uniform float u_innerLimit;
-  uniform float u_outerLimit;
+	uniform vec4 u_color;
+	uniform float u_shininess;
+	uniform vec3 u_lightDirection;
+	uniform float u_innerLimit;
+	uniform float u_outerLimit;
 
-  out vec4 outColor;
+	out vec4 outColor;
 
-  void main(void) {
-    vec3 normal = normalize(v_normal);
+	void main(void) {
+		vec3 normal = normalize(v_normal);
 
-    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
-    vec3 surfaceToViewDirection = normalize(v_surfaceToView);
-    vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+		vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+		vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+		vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
 
-    float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
-    float limitRange = u_innerLimit - u_outerLimit;
-    float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
-    float light = inLight * dot(normal, surfaceToLightDirection);
-    float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+		float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
+		float limitRange = u_innerLimit - u_outerLimit;
+		float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
+		float light = inLight * dot(normal, surfaceToLightDirection);
+		float specular = inLight * pow(dot(normal, halfVector), u_shininess);
 
-    outColor = texture(u_texture, normal);
-    outColor.rgb += specular;
-  }`;
+		outColor = texture(u_texture, normal);
+		outColor.rgb += specular;
+	}`;
 
   _utility.scriptManager.LOAD(f, "cubeMap-shader-fs", "x-shader/x-fragment", "shaders");
 }
 
 function getInitVSCubeMap() {
   const f = `#version 300 es
-  in vec3 aVertexPosition;
-  in vec3 aVertexNormal;
+	in vec3 aVertexPosition;
+	in vec3 aVertexNormal;
 
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
-  uniform mat3 uNMatrix;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	uniform mat3 uNMatrix;
 
-  out vec3 v_normal;
-  out vec3 v_normal_cubemap;
+	out vec3 v_normal;
+	out vec3 v_normal_cubemap;
 
-  // lights
-  uniform vec3 uAmbientColor;
-  uniform vec3 uLightingDirection;
-  uniform vec3 uDirectionalColor;
-  uniform bool uUseLighting;
-  out vec3 vLightWeighting;
-  out vec3 meVertexPosition;
+	// lights
+	uniform vec3 uAmbientColor;
+	uniform vec3 uLightingDirection;
+	uniform vec3 uDirectionalColor;
+	uniform bool uUseLighting;
+	out vec3 vLightWeighting;
+	out vec3 meVertexPosition;
 
-  // test 
-  // Spot
-  uniform vec3 u_lightWorldPosition;
-  // out vec3 v_normal;
-  out vec3 v_surfaceToLight;
-  out vec3 v_surfaceToView;
+	// test 
+	// Spot
+	uniform vec3 u_lightWorldPosition;
+	// out vec3 v_normal;
+	out vec3 v_surfaceToLight;
+	out vec3 v_surfaceToView;
 
-  // Specular
-  out mat4 uMVMatrixINTER;
-  out mat3 uNMatrixINTER;
-  out mat4 uPMatrixINNTER;
+	// Specular
+	out mat4 uMVMatrixINTER;
+	out mat3 uNMatrixINTER;
+	out mat4 uPMatrixINNTER;
 
-  in vec4 specularColor;
-  out vec4 vColor;
-  out vec3 vNormal;
-  out vec4 vPosition;
-  out float vDist;
-  // end test
+	in vec4 specularColor;
+	out vec4 vColor;
+	out vec3 vNormal;
+	out vec4 vPosition;
+	out float vDist;
+	// end test
 
-  void main(void) {
-    meVertexPosition = aVertexPosition;
-    v_normal = mat3(uNMatrix) * aVertexNormal;
-    // v_normal_cubemap = normalize(aVertexPosition.xyz);
+	void main(void) {
+		meVertexPosition = aVertexPosition;
+		v_normal = mat3(uNMatrix) * aVertexNormal;
+		// v_normal_cubemap = normalize(aVertexPosition.xyz);
 
-    // test SPOT
-    // orient the normals and pass to the fragment shader
-    v_normal = mat3(uNMatrix) * aVertexNormal;
+		// test SPOT
+		// orient the normals and pass to the fragment shader
+		v_normal = mat3(uNMatrix) * aVertexNormal;
 
-    // normalize
-    v_normal_cubemap = normalize(aVertexPosition.xyz);
+		// normalize
+		v_normal_cubemap = normalize(aVertexPosition.xyz);
 
-    // compute the world position of the surfoace
-    vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
+		// compute the world position of the surfoace
+		vec3 surfaceWorldPosition = (uNMatrix * aVertexPosition).xyz;
 
-    // compute the vector of the surface to the light
-    // and pass it to the fragment shader
-    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+		// compute the vector of the surface to the light
+		// and pass it to the fragment shader
+		v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
 
-    // compute the vector of the surface to the view/camera
-    // and pass it to the fragment shader
-    v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
-    // end test
+		// compute the vector of the surface to the view/camera
+		// and pass it to the fragment shader
+		v_surfaceToView = (uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0)).xyz - surfaceWorldPosition;
+		// end test
 
-    gl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-    if (!uUseLighting) {
-      vLightWeighting = vec3(1.0, 1.0, 1.0);
-    }
-    else {
-      vec3 transformedNormal          = uNMatrix * aVertexNormal;
-      float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-      vLightWeighting                 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-    }
-  } `;
+		gl_Position	 = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		if (!uUseLighting) {
+			vLightWeighting = vec3(1.0, 1.0, 1.0);
+		}
+		else {
+			vec3 transformedNormal					= uNMatrix * aVertexNormal;
+			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+			vLightWeighting								 = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+		}
+	} `;
 
   _utility.scriptManager.LOAD(f, "cubeMap-shader-vs", "x-shader/x-vertex", "shaders");
 }
 
-},{"./utility":40}],22:[function(require,module,exports){
+},{"./utility":41}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24991,7 +25831,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
         var local = _matrixWorld.world.contentList[physicsLooper];
 
         if (local.physics.currentBody.shapeOrientations.length == 1) {
-          if (local.position.x.toFixed(2) == local.physics.currentBody.position.x.toFixed(2)) {// console.log(' TEST SLEEP RENDER local.position.x', local.position.x.toFixed(2), " VS ", local.physics.currentBody.position.x.toFixed(2))
+          if (local.position.x.toFixed(2) == local.physics.currentBody.position.x.toFixed(2) && local.position.phySleepOn2digits == true) {// console.log(' TEST SLEEP RENDER local.position.x', local.position.x.toFixed(2), " VS ", local.physics.currentBody.position.x.toFixed(2))
           } else {
             local.position.SetX(local.physics.currentBody.position.x);
             local.position.SetZ(local.physics.currentBody.position.y);
@@ -24999,25 +25839,26 @@ _manifest.default.operation.reDrawGlobal = function (time) {
           }
 
           if (_matrixWorld.world.contentList[physicsLooper].custom_type && _matrixWorld.world.contentList[physicsLooper].custom_type == 'torus') {
-            _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]) + 90;
+            // [NOT PERFECT]
+            _matrixWorld.world.contentList[physicsLooper].rotation.rotx = 90 + (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
             _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-            _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+            _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]); // var axisAngle = local.physics.currentBody.quaternion.toAxisAngle()[1];
+            // world.contentList[physicsLooper].rotation.angle = axisAngle;
+            // world.contentList[physicsLooper].rotation.axisSystem = local.physics.currentBody.quaternion.toAxisAngle();
+            // world.contentList[physicsLooper].rotation.axis.x = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].x.toFixed(2));
+            // world.contentList[physicsLooper].rotation.axis.z = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].y.toFixed(2));
+            // world.contentList[physicsLooper].rotation.axis.y = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].z.toFixed(2));
           } else {
             var axisAngle = local.physics.currentBody.quaternion.toAxisAngle()[1];
             _matrixWorld.world.contentList[physicsLooper].rotation.angle = axisAngle;
             _matrixWorld.world.contentList[physicsLooper].rotation.axisSystem = local.physics.currentBody.quaternion.toAxisAngle();
             _matrixWorld.world.contentList[physicsLooper].rotation.axis.x = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].x.toFixed(2));
             _matrixWorld.world.contentList[physicsLooper].rotation.axis.y = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].y.toFixed(2));
-            _matrixWorld.world.contentList[physicsLooper].rotation.axis.z = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].z.toFixed(2)); // if (world.contentList[physicsLooper].rotation.x > 0) {
-            // 	 console.log('TEST ' , world.contentList[physicsLooper].rotation.x ) 
-            // }
-            // if(local.physics.currentBody.quaternion.x != 0) world.contentList[physicsLooper].rotation.rotx = radToDeg(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-            // if(local.physics.currentBody.quaternion.y != 0) world.contentList[physicsLooper].rotation.roty = radToDeg(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-            // if(local.physics.currentBody.quaternion.z != 0) world.contentList[physicsLooper].rotation.rotz = radToDeg(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+            _matrixWorld.world.contentList[physicsLooper].rotation.axis.z = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].z.toFixed(2));
           }
         } else if (local.physics.currentBody.shapeOrientations.length > 1) {
           // subObjs
-          for (var x = 0; x < local.subObjs.length; x++) {
+          if (local.subObjs) for (var x = 0; x < local.subObjs.length; x++) {
             local.subObjs[x].position.SetX(local.physics.currentBody.shapeOffsets[x].x);
             local.subObjs[x].position.SetZ(local.physics.currentBody.shapeOffsets[x].y);
             local.subObjs[x].position.SetY(local.physics.currentBody.shapeOffsets[x].z);
@@ -25050,8 +25891,6 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
   for (var fbindex = 0; fbindex < _matrixWorld.world.FBOS.length; fbindex++) {
     // save samera pos
-    // if (typeof world.FBOS[fbindex].settings.xPosMemo === 'undefined') {
-    // setup by custom params
     matrixEngine.Events.camera.xPos = _matrixWorld.world.FBOS[fbindex].settings.cameraX;
     matrixEngine.Events.camera.yPos = _matrixWorld.world.FBOS[fbindex].settings.cameraY;
     matrixEngine.Events.camera.zPos = _matrixWorld.world.FBOS[fbindex].settings.cameraZ;
@@ -25060,13 +25899,16 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
     _matrixWorld.world.GL.gl.bindFramebuffer(_matrixWorld.world.GL.gl.FRAMEBUFFER, _matrixWorld.world.FBOS[fbindex].FB);
 
-    _matrixWorld.world.GL.gl.viewport(0, 0, 512, 512);
+    _matrixWorld.world.GL.gl.viewport(0, 0, _manifest.default.frameBufferViewPort[0], _manifest.default.frameBufferViewPort[1]);
 
-    _matrixWorld.world.GL.gl.clearColor(0.2, 0.2, 0.4, 1.0);
+    _matrixWorld.world.GL.gl.clearColor(_manifest.default.frameBufferBgColor.r, _manifest.default.frameBufferBgColor.g, _manifest.default.frameBufferBgColor.b, _manifest.default.frameBufferBgColor.a);
 
     _matrixWorld.world.GL.gl.clear(_matrixWorld.world.GL.gl.COLOR_BUFFER_BIT | _matrixWorld.world.GL.gl.DEPTH_BUFFER_BIT);
 
-    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST); // test
+
+
+    _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.CULL_FACE);
 
     _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
 
@@ -25074,7 +25916,8 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
 
     while (_engine.looper <= _matrixWorld.world.contentList.length - 1) {
-      if (_matrixWorld.world.contentList[_engine.looper].visible === true && !_matrixWorld.world.contentList[_engine.looper].FBO && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
+      // console.log(world.FBOS[fbindex].name == world.contentList[looper].name)
+      if (_matrixWorld.world.contentList[_engine.looper].visible === true && !(_matrixWorld.world.FBOS[fbindex].name == _matrixWorld.world.contentList[_engine.looper].name) && _matrixWorld.world.contentList[_engine.looper].glBlend.blendEnabled == false) {
         if ('triangle' == _matrixWorld.world.contentList[_engine.looper].type) {
           _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
@@ -25086,7 +25929,11 @@ _manifest.default.operation.reDrawGlobal = function (time) {
         } else if ('cube' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'cubeMap' == _matrixWorld.world.contentList[_engine.looper].type) {
           _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
-          _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper], 'noray');
+          if (_matrixWorld.world.contentList[_engine.looper].shadows && _matrixWorld.world.contentList[_engine.looper].shadows.type == "spot-shadow" && _matrixWorld.world.FBOS[fbindex].name == _matrixWorld.world.contentList[_engine.looper].name) {
+            console.log('PREVENT OVERRIDE FBO DRAWING....');
+          } else {
+            _matrixWorld.world.drawCube(_matrixWorld.world.contentList[_engine.looper], 'noray');
+          }
         } else if (_matrixWorld.world.contentList[_engine.looper].type.indexOf("custom-") != -1) {
           // interest part - frst time draw func taken from object inself not from world.
           // Looks like better solution.
@@ -25160,7 +26007,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
           _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
           _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]), 'noray';
-        } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        } else if ('sphereLighstTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
           _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
           _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper], 'noray');
@@ -25179,7 +26026,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
     // Reset camera
 
 
-    if (typeof _matrixWorld.world.FBOS[0] !== 'undefined') {
+    if (typeof _matrixWorld.world.FBOS[fbindex] !== 'undefined') {
       matrixEngine.Events.camera.zPos = matrixEngine.Events.camera.zPosMemo;
       matrixEngine.Events.camera.xPos = matrixEngine.Events.camera.xPosMemo;
       matrixEngine.Events.camera.yPos = matrixEngine.Events.camera.yPosMemo;
@@ -25198,6 +26045,8 @@ _manifest.default.operation.reDrawGlobal = function (time) {
   _matrixWorld.world.GL.gl.enable(_matrixWorld.world.GL.gl.DEPTH_TEST);
 
   _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.BLEND);
+
+  _matrixWorld.world.GL.gl.disable(_matrixWorld.world.GL.gl.CULL_FACE);
 
   _matrixWorld.world.GL.gl.depthMask(true); // All but no blend
 
@@ -25512,7 +26361,7 @@ _manifest.default.operation.simplyRender = function (time) {
   if (_manifest.default.offScreenCanvas == true) exports.reDrawID = reDrawID = setTimeout(() => _manifest.default.operation.simplyRender(), _manifest.default.redrawInterval);
 };
 
-},{"../program/manifest":44,"./engine":13,"./matrix-world":28,"./raycast":34,"./utility":40}],23:[function(require,module,exports){
+},{"../program/manifest":45,"./engine":13,"./matrix-world":29,"./raycast":35,"./utility":41}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25872,7 +26721,7 @@ function generateSpotLightShadowMain1() {
   `;
 }
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26190,43 +27039,37 @@ function generateSpotLightShadowDefinitions() {
   uniform mat4 u_view;
   uniform mat4 u_world;
   uniform mat4 u_textureMatrix;
+	uniform vec3 u_reverseLightDirection;
   // inject generateSpotLightShadowDefinitions end
   `;
 }
 
 function generateSpotLightShadowMain() {
   return `
-  vec3 normal = normalize(v_normal);
-  vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
-  vec3 surfaceToViewDirection = normalize(v_surfaceToView);
-  vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
-  float dotFromDirection = dot(surfaceToLightDirection, -u_lightDirection);
-  float limitRange = u_innerLimit - u_outerLimit;
-  float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
-  float light = inLight * dot(normal, surfaceToLightDirection);
-  float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+	vec3 normal = normalize(v_normal);
+	float light = dot(normal, u_reverseLightDirection);
+	vec3 projectedTexcoord = v_projectedTexcoord.xyz / v_projectedTexcoord.w;
+	float currentDepth = projectedTexcoord.z + u_bias;
 
-  vec3 projectedTexcoord = v_projectedTexcoord.xyz / v_projectedTexcoord.w;
-  float currentDepth = projectedTexcoord.z + u_bias;
+	bool inRange =
+			projectedTexcoord.x >= 0.0 &&
+			projectedTexcoord.x <= 1.0 &&
+			projectedTexcoord.y >= 0.0 &&
+			projectedTexcoord.y <= 1.0;
 
-  bool inRange =
-      projectedTexcoord.x >= 0.0 &&
-      projectedTexcoord.x <= 1.0 &&
-      projectedTexcoord.y >= 0.0 &&
-      projectedTexcoord.y <= 1.0;
+	// the 'r' channel has the depth values
+	float projectedDepth = texture(u_projectedTexture, projectedTexcoord.xy).r;
+	float shadowLight = (inRange && projectedDepth <= currentDepth) ? 0.0 : 1.0;
 
-  // the 'r' channel has the depth values
-  float projectedDepth = texture(u_projectedTexture, projectedTexcoord.xy).r;
-  float shadowLight = (inRange && projectedDepth <= currentDepth) ? 0.0 : 1.0;
-  vec4 texColor = texture(u_texture, v_texcoord) * vec4(0.5, 0.5, 1, 1);
-  outColor = vec4(
-    texColor.rgb * light * shadowLight +
-    specular * shadowLight,
-    texColor.a);
-  `;
+	// * textureColor1.rgb
+	vec4 texColor = texture(u_texture, v_texcoord) * vec4(1, 1, 1, 1);
+	// outColor = vec4(texColor.rgb * textureColor1.rgb * light * shadowLight + specular * shadowLight, texColor.a);
+	// outColor = vec4(texColor.rgb  * textureColor.rgb * textureColor1.rgb * light * shadowLight , texColor.a);
+	outColor = vec4(texColor.rgb * textureColor.rgb * textureColor1.rgb * light * shadowLight , texColor.a);
+	`;
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26449,14 +27292,22 @@ exports.MatrixEffectLens = MatrixEffectLens;
 class MatrixShadowSpotShadowTest {
   constructor() {
     this.type = 'spot-shadow';
-    this.lightPosition = [0, 0, 2];
-    this.shininess = 150;
-    this.lightRotationX = 0;
-    this.lightRotationY = 0; // this is computed in updateScene
+    this.FBO_IN_DRAW_PASS = false;
+    this.lightPosition = [0, 3, -1];
+    this.lightTarget = [0, 0, 0];
+    this.orientation = [0, -1, 0];
+    this.angleOfView = 90;
+    this.projW = 50;
+    this.projH = 1;
+    this.projNear = 0.1;
+    this.projFar = 20;
+    this.bias = -0.01;
 
-    this.lightDirection = [0, 0, -1];
-    this.innerLimit = degToRad(0);
-    this.outerLimit = degToRad(20);
+    this.updateLPM = () => {
+      this.lightProjectionMatrix = m4.perspective(degToRad(this.angleOfView), this.projW / this.projH, this.projNear, this.projFar);
+    };
+
+    this.updateLPM();
     this.idUpdater = null;
     this.r = null;
     this.ir = null;
@@ -26493,14 +27344,14 @@ class MatrixShadowSpotShadowTest {
       this.UPDATE = this.lightRadius;
     };
 
-    this.animateInnerRadius = function (option) {
+    this.animateProjW = function (option) {
       if (typeof option === 'undefined') var option = {
-        from: 0,
-        to: 120,
+        from: 50,
+        to: 100,
         step: 1
       };
       this.ir = new _utility.OSCILLATOR(option.from, option.to, option.step);
-      this.UPDATE = this.lightInnerRadius;
+      this.UPDATE = this.projWFunc;
     };
 
     this.animatePositionX = function (option) {
@@ -26558,11 +27409,13 @@ class MatrixShadowSpotShadowTest {
   }
 
   lightRadius() {
-    this.outerLimit = degToRad(this.r.UPDATE());
+    this.angleOfView = this.r.UPDATE();
+    this.updateLPM();
   }
 
-  lightInnerRadius() {
-    this.innerLimit = degToRad(this.ir.UPDATE());
+  projWFunc() {
+    this.projW = this.ir.UPDATE();
+    this.updateLPM();
   }
 
   positionXLight() {
@@ -26581,7 +27434,7 @@ class MatrixShadowSpotShadowTest {
 
 exports.MatrixShadowSpotShadowTest = MatrixShadowSpotShadowTest;
 
-},{"../program/manifest":44,"./utility":40}],26:[function(require,module,exports){
+},{"../program/manifest":45,"./utility":41}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26672,14 +27525,14 @@ class MatrixButton extends HTMLButtonElement {
 
 exports.MatrixButton = MatrixButton;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /* globals App world */
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.makeFBO = exports.cubeMapTextures = void 0;
+exports.default = exports.SpriteAnimation = exports.makeFBO = exports.cubeMapTextures = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
 
@@ -26850,63 +27703,6 @@ const cubeMapTextures = async function (sources, callback) {
  * @description
  * FBO textures
  */
-// test
-// gl.activeTexture(gl.TEXTURE0);
-// const checkerboardTexture = gl.createTexture();
-// gl.bindTexture(gl.TEXTURE_2D, checkerboardTexture);
-// gl.texImage2D(
-//   gl.TEXTURE_2D,
-//   0,                // mip level
-//   gl.LUMINANCE,     // internal format
-//   8,                // width
-//   8,                // height
-//   0,                // border
-//   gl.LUMINANCE,     // format
-//   gl.UNSIGNED_BYTE, // type
-//   new Uint8Array([  // data
-//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-//     0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC,
-//     0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF, 0xCC, 0xFF,
-//   ]));
-// gl.generateMipmap(gl.TEXTURE_2D);
-// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-// // test depth
-// const depthTexture = gl.createTexture();
-// const depthTextureSize = 512;
-// gl.bindTexture(gl.TEXTURE_2D, depthTexture);
-// {
-//   // define size and format of level 0
-//   const level = 0;
-//   const internalFormat = gl.RGBA;
-//   const border = 0;
-//   const format = gl.RGBA;
-//   const type = gl.UNSIGNED_BYTE;
-//   const data = null;
-//   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-//                 512, 512, border,
-//                 format, type, data);
-//   // set the filtering so we don't need mips
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-// }
-// const depthFramebuffer = gl.createFramebuffer();
-// gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
-// gl.framebufferTexture2D(
-//     gl.FRAMEBUFFER,       // target
-//     gl.COLOR_ATTACHMENT0, //  gl.DEPTH_ATTACHMENT,  // attachment point
-//     gl.TEXTURE_2D,        // texture target
-//     depthTexture,         // texture
-//     0);                   // mip level
-//////////////////////////////////////////////////////
-// TEST 2 Success for now just fbo
-// gl.getParameter(gl.MAX_DRAW_BUFFERS)
-//////////////////////////////////////////////////////
 
 
 exports.cubeMapTextures = cubeMapTextures;
@@ -26919,8 +27715,9 @@ const makeFBO = (gl, o) => {
       width: 512,
       height: 512
     };
-  } // console.log('FBO MAKE FUNC');
+  }
 
+  console.log('[MAX_DRAW_BUFFERS]:' + gl.getParameter(gl.MAX_DRAW_BUFFERS));
 
   var error = function () {
     console.log('Error in creating FBO!');
@@ -26956,31 +27753,62 @@ const makeFBO = (gl, o) => {
   }
 
   gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
-  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT); // Attach the texture and the renderbuffer object to the FBO
-
+  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer); // Check if FBO is configured correctly
-
+  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
   var e = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
 
   if (gl.FRAMEBUFFER_COMPLETE !== e) {
     console.log('Frame buffer object is incomplete: ' + e.toString());
     return error();
-  } // Unbind the buffer object
-
+  }
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.bindTexture(gl.TEXTURE_2D, null);
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-  return framebuffer;
+  return [framebuffer, texture];
 };
 
 exports.makeFBO = makeFBO;
+
+class SpriteAnimation {
+  constructor() {
+    this.activeFrame = 0;
+    this.shema = [4, 4];
+    this.updateAfter = 20;
+    this.X = 0;
+    this.Y = 0;
+
+    this.getOffsetXY = function () {
+      this.activeFrame++;
+
+      if (this.activeFrame > this.updateAfter) {
+        this.activeFrame = 0;
+        this.X = this.X + 1;
+
+        if (this.X >= this.shema[0]) {
+          this.X = 0;
+          this.Y = this.Y + 1;
+
+          if (this.Y >= this.shema[1]) {
+            this.Y = 0;
+          }
+        } // console.log('TEST X:', this.X, " Y:", this.Y)
+
+      }
+
+      return [this.X, this.Y];
+    };
+  }
+
+}
+
+exports.SpriteAnimation = SpriteAnimation;
 var _default = _manifest.default.tools;
 exports.default = _default;
 
-},{"../program/manifest":44,"./matrix-world":28}],28:[function(require,module,exports){
+},{"../program/manifest":45,"./matrix-world":29}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26988,7 +27816,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.modifyFrames = modifyFrames;
 exports.defineworld = defineworld;
-exports.reDraw = exports.objListToDispose = exports.world = exports.frames = exports.CS4 = exports.CS3 = exports.CS2 = exports.CS1 = void 0;
+exports.reDraw = exports.objListToDispose = exports.world = exports.frames = exports.CS5 = exports.CS4 = exports.CS3 = exports.CS2 = exports.CS1 = void 0;
 
 var _manifest = _interopRequireDefault(require("../program/manifest"));
 
@@ -27026,8 +27854,10 @@ var CS2 = "font-family: stormfaze;color: #fd1233; font-size:20px;text-shadow: 2p
 exports.CS2 = CS2;
 var CS3 = "font-family: stormfaze;color: #f1f033; font-size:14px;text-shadow: 2px 2px 4px #f335f4, 4px 4px 4px #d64444, 2px 2px 4px #c160a6, 6px 2px 0px #123de3;background: black;";
 exports.CS3 = CS3;
-var CS4 = "font-family: verdana;color: #lime; font-size:16px;text-shadow: 2px 2px 4px orangered;background: black;";
+var CS4 = "font-family: verdana;color: #lime; font-size:11px;text-shadow: 1px 1px 2px orangered;background: black;";
 exports.CS4 = CS4;
+var CS5 = "font-family: stormfaze;color: #lime; font-size:10px;text-shadow: 2px 1px 2px gray;background: black;";
+exports.CS5 = CS5;
 window.mat4 = glMatrix.mat4;
 window.mat2 = glMatrix.mat2;
 window.mat2d = glMatrix.mat2d;
@@ -27038,8 +27868,10 @@ window.quat2 = glMatrix.quat2;
 window.vec2 = glMatrix.vec2;
 window.vec3 = glMatrix.vec3;
 window.vec4 = glMatrix.vec4;
-console.info(`%cMatrix-Engine %c 2.0.0 BETA 🛸`, CS1, CS1);
+console.info(`%cMatrix-Engine %c 2.3.0 [wip-convexphys] 🛸`, CS1, CS1);
 var lastChanges = `
+[2.3.0] Look in cube_light_and_texture.js
+[2.2.0] Look in cube_light_and_texture.js
 [2.0.0] New networking based on kurento service and OpenVide web client
 [1.9.40] First version with both support opengles11/2 and opengles300
  - Default : 1.3/opengles300
@@ -27072,8 +27904,9 @@ if (_utility.QueryString.GLSL && _utility.QueryString.GLSL == 1.3) {
   console.info(`%cActive: GLSL 1.3. for OPENGLES30 %c webGL2`, CS3, CS3);
   (0, _matrixInitShaders.loadShaders300)();
 }
-/* Width and Height variables of the browser screen  */
 
+console.info(`%c Welcome to collaborate on github: https://github.com/zlatnaspirala/`, CS5);
+/* Width and Height variables of the browser screen  */
 
 var frames = 0; // must be fixed
 
@@ -27086,9 +27919,6 @@ function modifyFrames(newFrames) {
 var world = {};
 exports.world = world;
 var updateFrames = 0;
-/* Because JavaScript is third class in mouse events */
-// var mouseLoc = defineMouseLocationObject();
-
 /* Common sense to object disposition                */
 
 var objListToDispose = new Array();
@@ -27157,7 +27987,7 @@ function defineworld(canvas, renderType) {
 
   world.initShaders = _engine.initShaders;
   world.handleLoadedTexture = _manifest.default.tools.BasicTextures;
-  world.initTexture = _manifest.default.tools.loadTextureImage;
+  world.initTexture = _manifest.default.tools.loadTextureImage; // DEPLACED
 
   world.disableUnusedAttr = function (gl, vertLimit) {
     var Local_looper1 = vertLimit; // var Local_looper1 = 0;
@@ -27167,6 +27997,10 @@ function defineworld(canvas, renderType) {
       gl.disableVertexAttribArray(Local_looper1);
       Local_looper1 = Local_looper1 + 1;
     }
+  };
+
+  world.disableAttr = function (gl, current) {
+    gl.disableVertexAttribArray(current);
   }; // Bind base methods
 
   /* Push Matrix                              */
@@ -27313,7 +28147,6 @@ function defineworld(canvas, renderType) {
     	object.vertexTexCoordBuffer =  allocated during buffering
     	object.vertexIndexBuffer    =  allocated during buffering
     */
-    // console.info("Fill world with:" + filler + " of size:" + size);
     if ('triangle' == filler) {
       var triangleObject = new Object();
       triangleObject.visible = true;
@@ -27457,8 +28290,7 @@ function defineworld(canvas, renderType) {
       }
     }
 
-    if ('squareTex' == filler) {
-      // eslint-disable-next-line no-redeclare
+    if ('squareTex' == filler || 'squareLightTex' == filler) {
       var squareObject = new Object();
       squareObject.visible = true;
 
@@ -27483,23 +28315,24 @@ function defineworld(canvas, renderType) {
       squareObject.geometry.nameUniq = nameUniq;
       squareObject.glBlend = new _utility._glBlend();
 
-      squareObject.setFBO = function () {
-        console.log('cubeObject set fbo ... ');
+      squareObject.setFBO = function (arg) {
+        var _fbshadows = (0, _matrixTextures.makeFBO)(world.GL.gl, {
+          width: 512,
+          height: 512
+        });
+
         squareObject.FBO = {
           name: squareObject.name,
-          FB: (0, _matrixTextures.makeFBO)(world.GL.gl, {
-            width: 512,
-            height: 512
-          }),
+          FB: _fbshadows[0],
+          deepTexture: _fbshadows[1],
           settings: {
-            cameraX: typeof arg === 'undefined' || !arg.cameraX ? 6 : arg.cameraX,
-            cameraY: typeof arg === 'undefined' || !arg.cameraY ? 5 : arg.cameraY,
-            cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 5 : arg.cameraZ,
+            cameraX: typeof arg === 'undefined' || !arg.cameraX ? 0 : arg.cameraX,
+            cameraY: typeof arg === 'undefined' || !arg.cameraY ? 0 : arg.cameraY,
+            cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 0 : arg.cameraZ,
             pitch: typeof arg === 'undefined' || !arg.pitch ? 2.5 : arg.pitch,
             yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw
           }
-        }; // for now
-
+        };
         world.FBOS.push(squareObject.FBO);
       }; // destroy self
 
@@ -27507,8 +28340,6 @@ function defineworld(canvas, renderType) {
       squareObject.selfDestroy = after => {
         if (after) {
           setTimeout(() => {
-            // destroy me
-            // destroy me
             var TEST = world.contentList[world.contentList.indexOf(squareObject)];
 
             if (typeof TEST != 'undefined' && typeof _manifest.default.scene[TEST.name] != 'undefined' && _manifest.default.scene[TEST.name] != null) {
@@ -27552,6 +28383,7 @@ function defineworld(canvas, renderType) {
             squareObject.useShadows = true;
             squareObject.shadows = new _matrixShadows.MatrixEffectLens();
           } else if (t == 'spot-shadow') {
+            console.info(`%c[squareObject]  shadow - object: ${squareObject.name}.`, CS3);
             squareObject.useShadows = true;
             squareObject.shadows = new _matrixShadows.MatrixShadowSpotShadowTest();
           }
@@ -27571,21 +28403,22 @@ function defineworld(canvas, renderType) {
           squareObject.textures = [];
           squareObject.textures[0] = squareObject.texture;
         } else if (typeof texturesPaths == 'object') {
-          // console.info("texturesPaths is object...");
           squareObject.textures = [];
           squareObject.texture = true;
 
           if (typeof texturesPaths.params === 'undefined') {
             squareObject.texParams = {
+              spriteAnimation: false,
+              MIPMAP: false,
+              ANISOTROPY: false,
               TEXTURE_WRAP_S: this.GL.gl.REPEAT,
               TEXTURE_WRAP_T: this.GL.gl.REPEAT,
               TEXTURE_MAG_FILTER: this.GL.gl.LINEAR,
-              // NEAREST
-              TEXTURE_MIN_FILTER: this.GL.gl.LINEAR // 
-
+              TEXTURE_MIN_FILTER: this.GL.gl.LINEAR
             };
           } else {
             squareObject.texParams = texturesPaths.params;
+            if (typeof squareObject.texParams.MIPMAP == -1) squareObject.texParams.MIPMAP = false;
           }
 
           (0, _engine.RegenerateShader)('' + filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, 'opengles');
@@ -27599,7 +28432,7 @@ function defineworld(canvas, renderType) {
           alert('Exec add obj : texturePaths : path is unknow typeof');
         }
       } else {
-        // no textures , use default single textures
+        console.info(`%c[squareObject]  no textures , use default single textures for object: ${squareObject.name}.`, CS3);
         squareObject.texture = this.initTexture(this.GL.gl, 'res/images/icon2.jpg');
         squareObject.textures[0] = squareObject.texture;
         squareObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
@@ -27946,6 +28779,11 @@ function defineworld(canvas, renderType) {
       objObject.custom.gl_texture = null;
       objObject.glDrawElements = new _utility._DrawElements(mesh_.indexBuffer.numItems);
       objObject.glBlend = new _utility._glBlend();
+      objObject.instancedDraws = {
+        numberOfInstance: 10,
+        array_of_local_offset: [0, 0, 0],
+        overrideDrawArraysInstance: function (object_) {}
+      };
       objObject.LightsData = {
         directionLight: new _matrixGeometry.COLOR(5, 5, 5),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
@@ -27964,9 +28802,8 @@ function defineworld(canvas, renderType) {
             }
           }, after);
         } else {
-          world.contentList.splice(world.contentList.indexOf(objObject), 1)[0]; // App.scene[objForDelete.name] = null;
-
-          console.log("DESTROYED objObject.name ", objObject.name);
+          let objForDelete = world.contentList.splice(world.contentList.indexOf(objObject), 1)[0];
+          _manifest.default.scene[objForDelete.name] = null;
         }
       };
 
@@ -27981,8 +28818,25 @@ function defineworld(canvas, renderType) {
         enable: false
       };
 
-      objObject.setFBO = function () {
-        objObject.FBO = {};
+      objObject.setFBO = function (arg) {
+        var _fbshadows = (0, _matrixTextures.makeFBO)(world.GL.gl, {
+          width: 512,
+          height: 512
+        });
+
+        objObject.FBO = {
+          name: objObject.name,
+          FB: _fbshadows[0],
+          deepTexture: _fbshadows[1],
+          settings: {
+            cameraX: typeof arg === 'undefined' || !arg.cameraX ? 0 : arg.cameraX,
+            cameraY: typeof arg === 'undefined' || !arg.cameraY ? 0 : arg.cameraY,
+            cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 0 : arg.cameraZ,
+            pitch: typeof arg === 'undefined' || !arg.pitch ? 2.5 : arg.pitch,
+            yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw
+          }
+        };
+        world.FBOS.push(objObject.FBO);
       }; // Update others start
 
 
@@ -28017,21 +28871,22 @@ function defineworld(canvas, renderType) {
           objObject.textures[0] = objObject.texture;
         } else if (typeof texturesPaths == 'object') {
           objObject.textures = [];
-          objObject.textures_texParameteri = []; //new
-
+          objObject.textures_texParameteri = [];
           objObject.texture = true;
 
           if (typeof texturesPaths.params === 'undefined') {
             objObject.texParams = {
+              spriteAnimation: false,
               MIPMAP: false,
-              // custom
               ANISOTROPY: false,
-              // custom
-              TEXTURE_WRAP_S: this.GL.gl.REPEAT,
-              TEXTURE_WRAP_T: this.GL.gl.REPEAT,
+              TEXTURE_WRAP_S: null,
+              //this.GL.gl.REPEAT,
+              TEXTURE_WRAP_T: null,
+              // this.GL.gl.REPEAT,
               TEXTURE_MAG_FILTER: this.GL.gl.LINEAR,
               // NEAREST
-              TEXTURE_MIN_FILTER: this.GL.gl.LINEAR
+              TEXTURE_MIN_FILTER: this.GL.gl.LINEAR // LINEAR
+
             };
           } else {
             objObject.texParams = texturesPaths.params;
@@ -28141,35 +28996,23 @@ function defineworld(canvas, renderType) {
       };
 
       cubeObject.setFBO = function (arg) {
-        // cubeObject.FBO = {};
-        // console.log('cubeObject set fbo ... ')
+        var _fbshadows = (0, _matrixTextures.makeFBO)(world.GL.gl, {
+          width: 512,
+          height: 512
+        });
+
         cubeObject.FBO = {
           name: cubeObject.name,
-          FB: (0, _matrixTextures.makeFBO)(world.GL.gl, {
-            width: 512,
-            height: 512
-          }),
+          FB: _fbshadows[0],
+          deepTexture: _fbshadows[1],
           settings: {
             cameraX: typeof arg === 'undefined' || !arg.cameraX ? 0 : arg.cameraX,
             cameraY: typeof arg === 'undefined' || !arg.cameraY ? 0 : arg.cameraY,
             cameraZ: typeof arg === 'undefined' || !arg.cameraZ ? 0 : arg.cameraZ,
             pitch: typeof arg === 'undefined' || !arg.pitch ? 2.5 : arg.pitch,
-            yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw // posZ: (typeof arg === 'undefined' || !arg.posZ? 4.3 : arg.posZ),
-            // targetX: (typeof arg === 'undefined' || !arg.targetX? 2.5 : arg.targetX),
-            // targetY: (typeof arg === 'undefined'|| !arg.targetY ? 0 : arg.targetY),
-            // targetZ: (typeof arg === 'undefined' || !arg.targetZ? 3.5 : arg.targetZ),
-            // projWidth: (typeof arg === 'undefined' || !arg.projWidth? 1 : arg.projWidth),
-            // projHeight: (typeof arg === 'undefined'|| !arg.projHeight ? 1 : arg.projHeight),
-            // perspective:  (typeof arg === 'undefined' || !arg.perspective? true : arg.perspective),
-            // fieldOfView:  (typeof arg === 'undefined' || !arg.fieldOfView? 120 : arg.fieldOfView),
-            // bias: (typeof arg === 'undefined' || !arg.bias ? -0.006 : arg.bias),
-            // translate: (typeof arg === 'undefined' || !arg.translate ? [1.5, 1.5, 1.5] : [arg.translate[0], arg.translate[1], arg.translate[2]]),
-            // scale  : (typeof arg === 'undefined' || !arg.scale ? [0.5 ,0.5 ,0.5] : [arg.scale[0],arg.scale[1] ,arg.scale[2] ])
-
+            yaw: typeof arg === 'undefined' || !arg.yaw ? 4.8 : arg.yaw
           }
-        }; // for now
-        // world.FBOS[0] = cubeObject.FBO;
-
+        };
         world.FBOS.push(cubeObject.FBO);
       }; // destroy self  MAy need more improve
 
@@ -28220,8 +29063,8 @@ function defineworld(canvas, renderType) {
           cubeObject.shadows = new _matrixShadows.MatrixShadowSpotShadowTest();
         }
 
-        (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, t);
-        console.log('REGEN');
+        (0, _engine.RegenerateShader)(filler + '-shader-fs', texturesPaths.source.length, texturesPaths.mix_operation, t); // console.log('REGEN')
+
         cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
       };
 
@@ -28250,6 +29093,7 @@ function defineworld(canvas, renderType) {
 
           if (typeof texturesPaths.params === 'undefined') {
             cubeObject.texParams = {
+              spriteAnimation: false,
               MIPMAP: false,
               // custom
               ANISOTROPY: false,
@@ -28280,6 +29124,7 @@ function defineworld(canvas, renderType) {
         cubeObject.textures.push(cubeObject.texture);
         cubeObject.texture = true;
         cubeObject.shaderProgram = this.initShaders(this.GL.gl, filler + '-shader-fs', filler + '-shader-vs');
+        cubeObject.shaderProgramColor = this.initShaders(this.GL.gl, 'cube' + '-shader-fs', 'cube' + '-shader-vs');
       }
 
       cubeObject.changeMaterial = function (texturesPaths) {
@@ -28599,6 +29444,9 @@ function defineworld(canvas, renderType) {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
         lightingDirection: new _matrixGeometry.COLOR(1, 1, 0)
+      };
+      customObject.raycast = {
+        enabled: true
       }; // Physics
 
       customObject.physics = {
@@ -28663,6 +29511,16 @@ function defineworld(canvas, renderType) {
           customObject.loops = mesh_.loops;
           customObject.inner_rad = mesh_.inner_rad;
           customObject.outerRad = mesh_.outerRad;
+        } else if (mesh_.custom_type == 'testConvex' || mesh_.custom_type == 'testTrimesh') {
+          // Little diff for this line 
+          // custom_geometry is geometry prepared for CANNONJS
+          customObject.custom_geometry = mesh_.custom_geometry;
+        } else {
+          // same for now DEFAULT
+          customObject.slices = mesh_.slices;
+          customObject.loops = mesh_.loops;
+          customObject.inner_rad = mesh_.inner_rad;
+          customObject.outerRad = mesh_.outerRad;
         }
       } else {
         customObject.latitudeBands = 30;
@@ -28687,7 +29545,7 @@ function defineworld(canvas, renderType) {
         this.contentList[this.contentList.length] = customObject;
         _manifest.default.scene[customObject.name] = customObject;
       } else {
-        console.log("   customObject shader failure");
+        console.log("customObject shader failure");
       }
     }
   };
@@ -28697,7 +29555,7 @@ function defineworld(canvas, renderType) {
   return world;
 }
 
-},{"../program/manifest":44,"./engine":13,"./loader-obj":15,"./matrix-draws":18,"./matrix-geometry":19,"./matrix-init-shaders1":20,"./matrix-init-shaders3":21,"./matrix-render":22,"./matrix-shadows":25,"./matrix-tags":26,"./matrix-textures":27,"./optimizer/override-matrix-render":32,"./physics":33,"./utility":40}],29:[function(require,module,exports){
+},{"../program/manifest":45,"./engine":13,"./loader-obj":15,"./matrix-draws":19,"./matrix-geometry":20,"./matrix-init-shaders1":21,"./matrix-init-shaders3":22,"./matrix-render":23,"./matrix-shadows":26,"./matrix-tags":27,"./matrix-textures":28,"./optimizer/override-matrix-render":33,"./physics":34,"./utility":41}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -29195,7 +30053,7 @@ class Broadcaster {
 
 exports.Broadcaster = Broadcaster;
 
-},{"../program/manifest.js":44,"./rtc-multi-connection/FileBufferReader.js":35,"./rtc-multi-connection/RTCMultiConnection3":36,"./rtc-multi-connection/getHTMLMediaElement":37,"./rtc-multi-connection/socket.io":38,"./utility":40}],30:[function(require,module,exports){
+},{"../program/manifest.js":45,"./rtc-multi-connection/FileBufferReader.js":36,"./rtc-multi-connection/RTCMultiConnection3":37,"./rtc-multi-connection/getHTMLMediaElement":38,"./rtc-multi-connection/socket.io":39,"./utility":41}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -29579,7 +30437,7 @@ buildinShaders.shaderTest = () => {
   `;
 };
 
-},{"../..":12,"../matrix-world":28,"../utility":40}],31:[function(require,module,exports){
+},{"../..":12,"../matrix-world":29,"../utility":41}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -30247,7 +31105,7 @@ void main() {
   `;
 };
 
-},{"../..":12,"../events":14,"../matrix-world":28,"../utility":40}],32:[function(require,module,exports){
+},{"../..":12,"../events":14,"../matrix-world":29,"../utility":41}],33:[function(require,module,exports){
 
 /**
  * @description
@@ -30255,7 +31113,7 @@ void main() {
  * @simplyRender
  * No FBO draw flow
  */
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -30319,7 +31177,7 @@ class MatrixPhysics {
     // Makes the body static
     var groundBody = new CANNON.Body({
       mass: 0,
-      position: new CANNON.Vec3(0, -15, -2)
+      position: new CANNON.Vec3(0, -15, 0)
     });
     var groundShape = new CANNON.Plane();
     groundBody.addShape(groundShape);
@@ -30328,7 +31186,7 @@ class MatrixPhysics {
     world.Add("squareTex", 1, "FLOOR_STATIC", tex);
     App.scene.FLOOR_STATIC.geometry.setScaleByX(15);
     App.scene.FLOOR_STATIC.geometry.setScaleByY(15);
-    App.scene.FLOOR_STATIC.position.SetY(-2);
+    App.scene.FLOOR_STATIC.position.SetY(0);
     App.scene.FLOOR_STATIC.position.SetZ(-15);
     App.scene.FLOOR_STATIC.rotation.rotx = 90;
   }
@@ -30337,7 +31195,7 @@ class MatrixPhysics {
 
 exports.default = MatrixPhysics;
 
-},{"./matrix-world":28,"cannon":5}],34:[function(require,module,exports){
+},{"./matrix-world":29,"cannon":5}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -30397,8 +31255,15 @@ objPos) {
   const edge1 = vec3.create();
   const edge2 = vec3.create();
   const h = vec3.create();
-  vec3.sub(edge1, v1, v0);
-  vec3.sub(edge2, v2, v0);
+
+  try {
+    vec3.sub(edge1, v1, v0);
+    vec3.sub(edge2, v2, v0);
+  } catch (e) {
+    console.log('Probably your obj file have non triangulate faces vertices. Raycast support only triangulate faces not quard faces. Error log:', e);
+    return false;
+  }
+
   vec3.cross(h, rayVector, edge2);
   const a = vec3.dot(edge1, h);
 
@@ -30598,7 +31463,14 @@ function checkingProcedureCalc(object) {
       triangle = [[triangleInZero[0][0] + object.position.worldLocation[0], triangleInZero[0][1] + object.position.worldLocation[1], triangleInZero[0][2]], [triangleInZero[1][0] + object.position.worldLocation[0], triangleInZero[1][1] + object.position.worldLocation[1], triangleInZero[1][2]], [triangleInZero[2][0] + object.position.worldLocation[0], triangleInZero[2][1] + object.position.worldLocation[1], triangleInZero[2][2]]];
     }
 
-    object.raycastFace.push(triangle);
+    object.raycastFace.push(triangle); // triangle.forEach((a) => {
+    // 	a.forEach((b, index, array) => {
+    // 		array[index] = parseFloat(b.toFixed(2))
+    // 	})
+    // })
+    // non handled situation
+
+    if (triangle == null) return; // console.log('t:' + triangle)
 
     if (rayIntersectsTriangle(myRayOrigin, ray, triangle, intersectionPoint, object.position)) {
       rayHitEvent = new CustomEvent('ray.hit.event', {
@@ -30753,7 +31625,7 @@ function checkingProcedureCalcObj(object) {
   }
 }
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (Buffer){(function (){
 // Last time updated: 2017-08-27 5:48:35 AM UTC
 
@@ -31993,7 +32865,7 @@ function checkingProcedureCalcObj(object) {
 })();
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"buffer":2}],36:[function(require,module,exports){
+},{"buffer":2}],37:[function(require,module,exports){
 (function (process,global){(function (){
 'use strict';
 
@@ -37911,7 +38783,7 @@ if (typeof define === 'function' && define.amd) {
 }
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":63}],37:[function(require,module,exports){
+},{"_process":64}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38421,7 +39293,7 @@ function getAudioElement(mediaElement, config) {
   return mediaElementContainer;
 }
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * Socket.IO v3.1.3
@@ -38431,7 +39303,7 @@ function getAudioElement(mediaElement, config) {
 !function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.io=e():t.io=e()}(self,(function(){return function(t){var e={};function n(r){if(e[r])return e[r].exports;var o=e[r]={i:r,l:!1,exports:{}};return t[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=t,n.c=e,n.d=function(t,e,r){n.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:r})},n.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},n.t=function(t,e){if(1&e&&(t=n(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var o in t)n.d(r,o,function(e){return t[e]}.bind(null,o));return r},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},n.p="",n(n.s=17)}([function(t,e,n){function r(t){if(t)return function(t){for(var e in r.prototype)t[e]=r.prototype[e];return t}(t)}t.exports=r,r.prototype.on=r.prototype.addEventListener=function(t,e){return this._callbacks=this._callbacks||{},(this._callbacks["$"+t]=this._callbacks["$"+t]||[]).push(e),this},r.prototype.once=function(t,e){function n(){this.off(t,n),e.apply(this,arguments)}return n.fn=e,this.on(t,n),this},r.prototype.off=r.prototype.removeListener=r.prototype.removeAllListeners=r.prototype.removeEventListener=function(t,e){if(this._callbacks=this._callbacks||{},0==arguments.length)return this._callbacks={},this;var n,r=this._callbacks["$"+t];if(!r)return this;if(1==arguments.length)return delete this._callbacks["$"+t],this;for(var o=0;o<r.length;o++)if((n=r[o])===e||n.fn===e){r.splice(o,1);break}return 0===r.length&&delete this._callbacks["$"+t],this},r.prototype.emit=function(t){this._callbacks=this._callbacks||{};for(var e=new Array(arguments.length-1),n=this._callbacks["$"+t],r=1;r<arguments.length;r++)e[r-1]=arguments[r];if(n){r=0;for(var o=(n=n.slice(0)).length;r<o;++r)n[r].apply(this,e)}return this},r.prototype.listeners=function(t){return this._callbacks=this._callbacks||{},this._callbacks["$"+t]||[]},r.prototype.hasListeners=function(t){return!!this.listeners(t).length}},function(t,e,n){var r=n(23),o=n(24),i=String.fromCharCode(30);t.exports={protocol:4,encodePacket:r,encodePayload:function(t,e){var n=t.length,o=new Array(n),s=0;t.forEach((function(t,c){r(t,!1,(function(t){o[c]=t,++s===n&&e(o.join(i))}))}))},decodePacket:o,decodePayload:function(t,e){for(var n=t.split(i),r=[],s=0;s<n.length;s++){var c=o(n[s],e);if(r.push(c),"error"===c.type)break}return r}}},function(t,e){t.exports="undefined"!=typeof self?self:"undefined"!=typeof window?window:Function("return this")()},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e){return(i=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function s(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=a(t);if(e){var o=a(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return c(this,n)}}function c(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function a(t){return(a=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var u=n(1),f=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&i(t,e)}(a,t);var e,n,r,c=s(a);function a(t){var e;return function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,a),(e=c.call(this)).opts=t,e.query=t.query,e.readyState="",e.socket=t.socket,e}return e=a,(n=[{key:"onError",value:function(t,e){var n=new Error(t);return n.type="TransportError",n.description=e,this.emit("error",n),this}},{key:"open",value:function(){return"closed"!==this.readyState&&""!==this.readyState||(this.readyState="opening",this.doOpen()),this}},{key:"close",value:function(){return"opening"!==this.readyState&&"open"!==this.readyState||(this.doClose(),this.onClose()),this}},{key:"send",value:function(t){if("open"!==this.readyState)throw new Error("Transport not open");this.write(t)}},{key:"onOpen",value:function(){this.readyState="open",this.writable=!0,this.emit("open")}},{key:"onData",value:function(t){var e=u.decodePacket(t,this.socket.binaryType);this.onPacket(e)}},{key:"onPacket",value:function(t){this.emit("packet",t)}},{key:"onClose",value:function(){this.readyState="closed",this.emit("close")}}])&&o(e.prototype,n),r&&o(e,r),a}(n(0));t.exports=f},function(t,e){e.encode=function(t){var e="";for(var n in t)t.hasOwnProperty(n)&&(e.length&&(e+="&"),e+=encodeURIComponent(n)+"="+encodeURIComponent(t[n]));return e},e.decode=function(t){for(var e={},n=t.split("&"),r=0,o=n.length;r<o;r++){var i=n[r].split("=");e[decodeURIComponent(i[0])]=decodeURIComponent(i[1])}return e}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e,n){return(o="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=a(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function i(t,e){return(i=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function s(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=a(t);if(e){var o=a(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return c(this,n)}}function c(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function a(t){return(a=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}function u(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function f(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function p(t,e,n){return e&&f(t.prototype,e),n&&f(t,n),t}Object.defineProperty(e,"__esModule",{value:!0}),e.Decoder=e.Encoder=e.PacketType=e.protocol=void 0;var l,h=n(0),y=n(29),d=n(15);e.protocol=5,function(t){t[t.CONNECT=0]="CONNECT",t[t.DISCONNECT=1]="DISCONNECT",t[t.EVENT=2]="EVENT",t[t.ACK=3]="ACK",t[t.CONNECT_ERROR=4]="CONNECT_ERROR",t[t.BINARY_EVENT=5]="BINARY_EVENT",t[t.BINARY_ACK=6]="BINARY_ACK"}(l=e.PacketType||(e.PacketType={}));var v=function(){function t(){u(this,t)}return p(t,[{key:"encode",value:function(t){return t.type!==l.EVENT&&t.type!==l.ACK||!d.hasBinary(t)?[this.encodeAsString(t)]:(t.type=t.type===l.EVENT?l.BINARY_EVENT:l.BINARY_ACK,this.encodeAsBinary(t))}},{key:"encodeAsString",value:function(t){var e=""+t.type;return t.type!==l.BINARY_EVENT&&t.type!==l.BINARY_ACK||(e+=t.attachments+"-"),t.nsp&&"/"!==t.nsp&&(e+=t.nsp+","),null!=t.id&&(e+=t.id),null!=t.data&&(e+=JSON.stringify(t.data)),e}},{key:"encodeAsBinary",value:function(t){var e=y.deconstructPacket(t),n=this.encodeAsString(e.packet),r=e.buffers;return r.unshift(n),r}}]),t}();e.Encoder=v;var b=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&i(t,e)}(n,t);var e=s(n);function n(){return u(this,n),e.call(this)}return p(n,[{key:"add",value:function(t){var e;if("string"==typeof t)(e=this.decodeString(t)).type===l.BINARY_EVENT||e.type===l.BINARY_ACK?(this.reconstructor=new m(e),0===e.attachments&&o(a(n.prototype),"emit",this).call(this,"decoded",e)):o(a(n.prototype),"emit",this).call(this,"decoded",e);else{if(!d.isBinary(t)&&!t.base64)throw new Error("Unknown type: "+t);if(!this.reconstructor)throw new Error("got binary data when not reconstructing a packet");(e=this.reconstructor.takeBinaryData(t))&&(this.reconstructor=null,o(a(n.prototype),"emit",this).call(this,"decoded",e))}}},{key:"decodeString",value:function(t){var e=0,r={type:Number(t.charAt(0))};if(void 0===l[r.type])throw new Error("unknown packet type "+r.type);if(r.type===l.BINARY_EVENT||r.type===l.BINARY_ACK){for(var o=e+1;"-"!==t.charAt(++e)&&e!=t.length;);var i=t.substring(o,e);if(i!=Number(i)||"-"!==t.charAt(e))throw new Error("Illegal attachments");r.attachments=Number(i)}if("/"===t.charAt(e+1)){for(var s=e+1;++e;){if(","===t.charAt(e))break;if(e===t.length)break}r.nsp=t.substring(s,e)}else r.nsp="/";var c=t.charAt(e+1);if(""!==c&&Number(c)==c){for(var a=e+1;++e;){var u=t.charAt(e);if(null==u||Number(u)!=u){--e;break}if(e===t.length)break}r.id=Number(t.substring(a,e+1))}if(t.charAt(++e)){var f=function(t){try{return JSON.parse(t)}catch(t){return!1}}(t.substr(e));if(!n.isPayloadValid(r.type,f))throw new Error("invalid payload");r.data=f}return r}},{key:"destroy",value:function(){this.reconstructor&&this.reconstructor.finishedReconstruction()}}],[{key:"isPayloadValid",value:function(t,e){switch(t){case l.CONNECT:return"object"===r(e);case l.DISCONNECT:return void 0===e;case l.CONNECT_ERROR:return"string"==typeof e||"object"===r(e);case l.EVENT:case l.BINARY_EVENT:return Array.isArray(e)&&e.length>0;case l.ACK:case l.BINARY_ACK:return Array.isArray(e)}}}]),n}(h);e.Decoder=b;var m=function(){function t(e){u(this,t),this.packet=e,this.buffers=[],this.reconPack=e}return p(t,[{key:"takeBinaryData",value:function(t){if(this.buffers.push(t),this.buffers.length===this.reconPack.attachments){var e=y.reconstructPacket(this.reconPack,this.buffers);return this.finishedReconstruction(),e}return null}},{key:"finishedReconstruction",value:function(){this.reconPack=null,this.buffers=[]}}]),t}()},function(t,e){var n=/^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/,r=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"];t.exports=function(t){var e=t,o=t.indexOf("["),i=t.indexOf("]");-1!=o&&-1!=i&&(t=t.substring(0,o)+t.substring(o,i).replace(/:/g,";")+t.substring(i,t.length));for(var s,c,a=n.exec(t||""),u={},f=14;f--;)u[r[f]]=a[f]||"";return-1!=o&&-1!=i&&(u.source=e,u.host=u.host.substring(1,u.host.length-1).replace(/;/g,":"),u.authority=u.authority.replace("[","").replace("]","").replace(/;/g,":"),u.ipv6uri=!0),u.pathNames=function(t,e){var n=e.replace(/\/{2,9}/g,"/").split("/");"/"!=e.substr(0,1)&&0!==e.length||n.splice(0,1);"/"==e.substr(e.length-1,1)&&n.splice(n.length-1,1);return n}(0,u.path),u.queryKey=(s=u.query,c={},s.replace(/(?:^|&)([^&=]*)=?([^&]*)/g,(function(t,e,n){e&&(c[e]=n)})),c),u}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e,n){return(i="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=u(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function s(t,e){return(s=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function c(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=u(t);if(e){var o=u(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return a(this,n)}}function a(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function u(t){return(u=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.Manager=void 0;var f=n(19),p=n(14),l=n(0),h=n(5),y=n(16),d=n(30),v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&s(t,e)}(v,t);var e,n,a,l=c(v);function v(t,e){var n;!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,v),(n=l.call(this)).nsps={},n.subs=[],t&&"object"===r(t)&&(e=t,t=void 0),(e=e||{}).path=e.path||"/socket.io",n.opts=e,n.reconnection(!1!==e.reconnection),n.reconnectionAttempts(e.reconnectionAttempts||1/0),n.reconnectionDelay(e.reconnectionDelay||1e3),n.reconnectionDelayMax(e.reconnectionDelayMax||5e3),n.randomizationFactor(e.randomizationFactor||.5),n.backoff=new d({min:n.reconnectionDelay(),max:n.reconnectionDelayMax(),jitter:n.randomizationFactor()}),n.timeout(null==e.timeout?2e4:e.timeout),n._readyState="closed",n.uri=t;var o=e.parser||h;return n.encoder=new o.Encoder,n.decoder=new o.Decoder,n._autoConnect=!1!==e.autoConnect,n._autoConnect&&n.open(),n}return e=v,(n=[{key:"reconnection",value:function(t){return arguments.length?(this._reconnection=!!t,this):this._reconnection}},{key:"reconnectionAttempts",value:function(t){return void 0===t?this._reconnectionAttempts:(this._reconnectionAttempts=t,this)}},{key:"reconnectionDelay",value:function(t){var e;return void 0===t?this._reconnectionDelay:(this._reconnectionDelay=t,null===(e=this.backoff)||void 0===e||e.setMin(t),this)}},{key:"randomizationFactor",value:function(t){var e;return void 0===t?this._randomizationFactor:(this._randomizationFactor=t,null===(e=this.backoff)||void 0===e||e.setJitter(t),this)}},{key:"reconnectionDelayMax",value:function(t){var e;return void 0===t?this._reconnectionDelayMax:(this._reconnectionDelayMax=t,null===(e=this.backoff)||void 0===e||e.setMax(t),this)}},{key:"timeout",value:function(t){return arguments.length?(this._timeout=t,this):this._timeout}},{key:"maybeReconnectOnOpen",value:function(){!this._reconnecting&&this._reconnection&&0===this.backoff.attempts&&this.reconnect()}},{key:"open",value:function(t){var e=this;if(~this._readyState.indexOf("open"))return this;this.engine=f(this.uri,this.opts);var n=this.engine,r=this;this._readyState="opening",this.skipReconnect=!1;var o=y.on(n,"open",(function(){r.onopen(),t&&t()})),s=y.on(n,"error",(function(n){r.cleanup(),r._readyState="closed",i(u(v.prototype),"emit",e).call(e,"error",n),t?t(n):r.maybeReconnectOnOpen()}));if(!1!==this._timeout){var c=this._timeout;0===c&&o();var a=setTimeout((function(){o(),n.close(),n.emit("error",new Error("timeout"))}),c);this.subs.push((function(){clearTimeout(a)}))}return this.subs.push(o),this.subs.push(s),this}},{key:"connect",value:function(t){return this.open(t)}},{key:"onopen",value:function(){this.cleanup(),this._readyState="open",i(u(v.prototype),"emit",this).call(this,"open");var t=this.engine;this.subs.push(y.on(t,"ping",this.onping.bind(this)),y.on(t,"data",this.ondata.bind(this)),y.on(t,"error",this.onerror.bind(this)),y.on(t,"close",this.onclose.bind(this)),y.on(this.decoder,"decoded",this.ondecoded.bind(this)))}},{key:"onping",value:function(){i(u(v.prototype),"emit",this).call(this,"ping")}},{key:"ondata",value:function(t){this.decoder.add(t)}},{key:"ondecoded",value:function(t){i(u(v.prototype),"emit",this).call(this,"packet",t)}},{key:"onerror",value:function(t){i(u(v.prototype),"emit",this).call(this,"error",t)}},{key:"socket",value:function(t,e){var n=this.nsps[t];return n||(n=new p.Socket(this,t,e),this.nsps[t]=n),n}},{key:"_destroy",value:function(t){for(var e=0,n=Object.keys(this.nsps);e<n.length;e++){var r=n[e];if(this.nsps[r].active)return}this._close()}},{key:"_packet",value:function(t){for(var e=this.encoder.encode(t),n=0;n<e.length;n++)this.engine.write(e[n],t.options)}},{key:"cleanup",value:function(){this.subs.forEach((function(t){return t()})),this.subs.length=0,this.decoder.destroy()}},{key:"_close",value:function(){this.skipReconnect=!0,this._reconnecting=!1,"opening"===this._readyState&&this.cleanup(),this.backoff.reset(),this._readyState="closed",this.engine&&this.engine.close()}},{key:"disconnect",value:function(){return this._close()}},{key:"onclose",value:function(t){this.cleanup(),this.backoff.reset(),this._readyState="closed",i(u(v.prototype),"emit",this).call(this,"close",t),this._reconnection&&!this.skipReconnect&&this.reconnect()}},{key:"reconnect",value:function(){var t=this;if(this._reconnecting||this.skipReconnect)return this;var e=this;if(this.backoff.attempts>=this._reconnectionAttempts)this.backoff.reset(),i(u(v.prototype),"emit",this).call(this,"reconnect_failed"),this._reconnecting=!1;else{var n=this.backoff.duration();this._reconnecting=!0;var r=setTimeout((function(){e.skipReconnect||(i(u(v.prototype),"emit",t).call(t,"reconnect_attempt",e.backoff.attempts),e.skipReconnect||e.open((function(n){n?(e._reconnecting=!1,e.reconnect(),i(u(v.prototype),"emit",t).call(t,"reconnect_error",n)):e.onreconnect()})))}),n);this.subs.push((function(){clearTimeout(r)}))}}},{key:"onreconnect",value:function(){var t=this.backoff.attempts;this._reconnecting=!1,this.backoff.reset(),i(u(v.prototype),"emit",this).call(this,"reconnect",t)}}])&&o(e.prototype,n),a&&o(e,a),v}(l);e.Manager=v},function(t,e,n){var r=n(9),o=n(22),i=n(26),s=n(27);e.polling=function(t){var e=!1,n=!1,s=!1!==t.jsonp;if("undefined"!=typeof location){var c="https:"===location.protocol,a=location.port;a||(a=c?443:80),e=t.hostname!==location.hostname||a!==t.port,n=t.secure!==c}if(t.xdomain=e,t.xscheme=n,"open"in new r(t)&&!t.forceJSONP)return new o(t);if(!s)throw new Error("JSONP disabled");return new i(t)},e.websocket=s},function(t,e,n){var r=n(21),o=n(2);t.exports=function(t){var e=t.xdomain,n=t.xscheme,i=t.enablesXDR;try{if("undefined"!=typeof XMLHttpRequest&&(!e||r))return new XMLHttpRequest}catch(t){}try{if("undefined"!=typeof XDomainRequest&&!n&&i)return new XDomainRequest}catch(t){}if(!e)try{return new(o[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(t){}}},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function i(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function s(t,e){return(s=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function c(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=u(t);if(e){var o=u(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return a(this,n)}}function a(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function u(t){return(u=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var f=n(3),p=n(4),l=n(1),h=n(12),y=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&s(t,e)}(u,t);var e,n,r,a=c(u);function u(){return o(this,u),a.apply(this,arguments)}return e=u,(n=[{key:"doOpen",value:function(){this.poll()}},{key:"pause",value:function(t){var e=this;function n(){e.readyState="paused",t()}if(this.readyState="pausing",this.polling||!this.writable){var r=0;this.polling&&(r++,this.once("pollComplete",(function(){--r||n()}))),this.writable||(r++,this.once("drain",(function(){--r||n()})))}else n()}},{key:"poll",value:function(){this.polling=!0,this.doPoll(),this.emit("poll")}},{key:"onData",value:function(t){var e=this;l.decodePayload(t,this.socket.binaryType).forEach((function(t,n,r){if("opening"===e.readyState&&"open"===t.type&&e.onOpen(),"close"===t.type)return e.onClose(),!1;e.onPacket(t)})),"closed"!==this.readyState&&(this.polling=!1,this.emit("pollComplete"),"open"===this.readyState&&this.poll())}},{key:"doClose",value:function(){var t=this;function e(){t.write([{type:"close"}])}"open"===this.readyState?e():this.once("open",e)}},{key:"write",value:function(t){var e=this;this.writable=!1,l.encodePayload(t,(function(t){e.doWrite(t,(function(){e.writable=!0,e.emit("drain")}))}))}},{key:"uri",value:function(){var t=this.query||{},e=this.opts.secure?"https":"http",n="";return!1!==this.opts.timestampRequests&&(t[this.opts.timestampParam]=h()),this.supportsBinary||t.sid||(t.b64=1),t=p.encode(t),this.opts.port&&("https"===e&&443!==Number(this.opts.port)||"http"===e&&80!==Number(this.opts.port))&&(n=":"+this.opts.port),t.length&&(t="?"+t),e+"://"+(-1!==this.opts.hostname.indexOf(":")?"["+this.opts.hostname+"]":this.opts.hostname)+n+this.opts.path+t}},{key:"name",get:function(){return"polling"}}])&&i(e.prototype,n),r&&i(e,r),u}(f);t.exports=y},function(t,e){var n=Object.create(null);n.open="0",n.close="1",n.ping="2",n.pong="3",n.message="4",n.upgrade="5",n.noop="6";var r=Object.create(null);Object.keys(n).forEach((function(t){r[n[t]]=t}));t.exports={PACKET_TYPES:n,PACKET_TYPES_REVERSE:r,ERROR_PACKET:{type:"error",data:"parser error"}}},function(t,e,n){"use strict";var r,o="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".split(""),i={},s=0,c=0;function a(t){var e="";do{e=o[t%64]+e,t=Math.floor(t/64)}while(t>0);return e}function u(){var t=a(+new Date);return t!==r?(s=0,r=t):t+"."+a(s++)}for(;c<64;c++)i[o[c]]=c;u.encode=a,u.decode=function(t){var e=0;for(c=0;c<t.length;c++)e=64*e+i[t.charAt(c)];return e},t.exports=u},function(t,e){t.exports.pick=function(t){for(var e=arguments.length,n=new Array(e>1?e-1:0),r=1;r<e;r++)n[r-1]=arguments[r];return n.reduce((function(e,n){return t.hasOwnProperty(n)&&(e[n]=t[n]),e}),{})}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){var n;if("undefined"==typeof Symbol||null==t[Symbol.iterator]){if(Array.isArray(t)||(n=function(t,e){if(!t)return;if("string"==typeof t)return i(t,e);var n=Object.prototype.toString.call(t).slice(8,-1);"Object"===n&&t.constructor&&(n=t.constructor.name);if("Map"===n||"Set"===n)return Array.from(t);if("Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))return i(t,e)}(t))||e&&t&&"number"==typeof t.length){n&&(t=n);var r=0,o=function(){};return{s:o,n:function(){return r>=t.length?{done:!0}:{done:!1,value:t[r++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var s,c=!0,a=!1;return{s:function(){n=t[Symbol.iterator]()},n:function(){var t=n.next();return c=t.done,t},e:function(t){a=!0,s=t},f:function(){try{c||null==n.return||n.return()}finally{if(a)throw s}}}}function i(t,e){(null==e||e>t.length)&&(e=t.length);for(var n=0,r=new Array(e);n<e;n++)r[n]=t[n];return r}function s(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function c(t,e,n){return(c="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=p(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function a(t,e){return(a=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function u(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=p(t);if(e){var o=p(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return f(this,n)}}function f(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function p(t){return(p=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.Socket=void 0;var l=n(5),h=n(0),y=n(16),d=Object.freeze({connect:1,connect_error:1,disconnect:1,disconnecting:1,newListener:1,removeListener:1}),v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&a(t,e)}(f,t);var e,n,r,i=u(f);function f(t,e,n){var r;return function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,f),(r=i.call(this)).receiveBuffer=[],r.sendBuffer=[],r.ids=0,r.acks={},r.flags={},r.io=t,r.nsp=e,r.ids=0,r.acks={},r.receiveBuffer=[],r.sendBuffer=[],r.connected=!1,r.disconnected=!0,r.flags={},n&&n.auth&&(r.auth=n.auth),r.io._autoConnect&&r.open(),r}return e=f,(n=[{key:"subEvents",value:function(){if(!this.subs){var t=this.io;this.subs=[y.on(t,"open",this.onopen.bind(this)),y.on(t,"packet",this.onpacket.bind(this)),y.on(t,"error",this.onerror.bind(this)),y.on(t,"close",this.onclose.bind(this))]}}},{key:"connect",value:function(){return this.connected||(this.subEvents(),this.io._reconnecting||this.io.open(),"open"===this.io._readyState&&this.onopen()),this}},{key:"open",value:function(){return this.connect()}},{key:"send",value:function(){for(var t=arguments.length,e=new Array(t),n=0;n<t;n++)e[n]=arguments[n];return e.unshift("message"),this.emit.apply(this,e),this}},{key:"emit",value:function(t){if(d.hasOwnProperty(t))throw new Error('"'+t+'" is a reserved event name');for(var e=arguments.length,n=new Array(e>1?e-1:0),r=1;r<e;r++)n[r-1]=arguments[r];n.unshift(t);var o={type:l.PacketType.EVENT,data:n,options:{}};o.options.compress=!1!==this.flags.compress,"function"==typeof n[n.length-1]&&(this.acks[this.ids]=n.pop(),o.id=this.ids++);var i=this.io.engine&&this.io.engine.transport&&this.io.engine.transport.writable,s=this.flags.volatile&&(!i||!this.connected);return s||(this.connected?this.packet(o):this.sendBuffer.push(o)),this.flags={},this}},{key:"packet",value:function(t){t.nsp=this.nsp,this.io._packet(t)}},{key:"onopen",value:function(){var t=this;"function"==typeof this.auth?this.auth((function(e){t.packet({type:l.PacketType.CONNECT,data:e})})):this.packet({type:l.PacketType.CONNECT,data:this.auth})}},{key:"onerror",value:function(t){this.connected||c(p(f.prototype),"emit",this).call(this,"connect_error",t)}},{key:"onclose",value:function(t){this.connected=!1,this.disconnected=!0,delete this.id,c(p(f.prototype),"emit",this).call(this,"disconnect",t)}},{key:"onpacket",value:function(t){if(t.nsp===this.nsp)switch(t.type){case l.PacketType.CONNECT:if(t.data&&t.data.sid){var e=t.data.sid;this.onconnect(e)}else c(p(f.prototype),"emit",this).call(this,"connect_error",new Error("It seems you are trying to reach a Socket.IO server in v2.x with a v3.x client, but they are not compatible (more information here: https://socket.io/docs/v3/migrating-from-2-x-to-3-0/)"));break;case l.PacketType.EVENT:case l.PacketType.BINARY_EVENT:this.onevent(t);break;case l.PacketType.ACK:case l.PacketType.BINARY_ACK:this.onack(t);break;case l.PacketType.DISCONNECT:this.ondisconnect();break;case l.PacketType.CONNECT_ERROR:var n=new Error(t.data.message);n.data=t.data.data,c(p(f.prototype),"emit",this).call(this,"connect_error",n)}}},{key:"onevent",value:function(t){var e=t.data||[];null!=t.id&&e.push(this.ack(t.id)),this.connected?this.emitEvent(e):this.receiveBuffer.push(Object.freeze(e))}},{key:"emitEvent",value:function(t){if(this._anyListeners&&this._anyListeners.length){var e,n=o(this._anyListeners.slice());try{for(n.s();!(e=n.n()).done;)e.value.apply(this,t)}catch(t){n.e(t)}finally{n.f()}}c(p(f.prototype),"emit",this).apply(this,t)}},{key:"ack",value:function(t){var e=this,n=!1;return function(){if(!n){n=!0;for(var r=arguments.length,o=new Array(r),i=0;i<r;i++)o[i]=arguments[i];e.packet({type:l.PacketType.ACK,id:t,data:o})}}}},{key:"onack",value:function(t){var e=this.acks[t.id];"function"==typeof e&&(e.apply(this,t.data),delete this.acks[t.id])}},{key:"onconnect",value:function(t){this.id=t,this.connected=!0,this.disconnected=!1,c(p(f.prototype),"emit",this).call(this,"connect"),this.emitBuffered()}},{key:"emitBuffered",value:function(){var t=this;this.receiveBuffer.forEach((function(e){return t.emitEvent(e)})),this.receiveBuffer=[],this.sendBuffer.forEach((function(e){return t.packet(e)})),this.sendBuffer=[]}},{key:"ondisconnect",value:function(){this.destroy(),this.onclose("io server disconnect")}},{key:"destroy",value:function(){this.subs&&(this.subs.forEach((function(t){return t()})),this.subs=void 0),this.io._destroy(this)}},{key:"disconnect",value:function(){return this.connected&&this.packet({type:l.PacketType.DISCONNECT}),this.destroy(),this.connected&&this.onclose("io client disconnect"),this}},{key:"close",value:function(){return this.disconnect()}},{key:"compress",value:function(t){return this.flags.compress=t,this}},{key:"onAny",value:function(t){return this._anyListeners=this._anyListeners||[],this._anyListeners.push(t),this}},{key:"prependAny",value:function(t){return this._anyListeners=this._anyListeners||[],this._anyListeners.unshift(t),this}},{key:"offAny",value:function(t){if(!this._anyListeners)return this;if(t){for(var e=this._anyListeners,n=0;n<e.length;n++)if(t===e[n])return e.splice(n,1),this}else this._anyListeners=[];return this}},{key:"listenersAny",value:function(){return this._anyListeners||[]}},{key:"active",get:function(){return!!this.subs}},{key:"volatile",get:function(){return this.flags.volatile=!0,this}}])&&s(e.prototype,n),r&&s(e,r),f}(h);e.Socket=v},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.hasBinary=e.isBinary=void 0;var o="function"==typeof ArrayBuffer,i=Object.prototype.toString,s="function"==typeof Blob||"undefined"!=typeof Blob&&"[object BlobConstructor]"===i.call(Blob),c="function"==typeof File||"undefined"!=typeof File&&"[object FileConstructor]"===i.call(File);function a(t){return o&&(t instanceof ArrayBuffer||function(t){return"function"==typeof ArrayBuffer.isView?ArrayBuffer.isView(t):t.buffer instanceof ArrayBuffer}(t))||s&&t instanceof Blob||c&&t instanceof File}e.isBinary=a,e.hasBinary=function t(e,n){if(!e||"object"!==r(e))return!1;if(Array.isArray(e)){for(var o=0,i=e.length;o<i;o++)if(t(e[o]))return!0;return!1}if(a(e))return!0;if(e.toJSON&&"function"==typeof e.toJSON&&1===arguments.length)return t(e.toJSON(),!0);for(var s in e)if(Object.prototype.hasOwnProperty.call(e,s)&&t(e[s]))return!0;return!1}},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.on=void 0,e.on=function(t,e,n){return t.on(e,n),function(){t.off(e,n)}}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.Socket=e.io=e.Manager=e.protocol=void 0;var o=n(18),i=n(7),s=n(14);Object.defineProperty(e,"Socket",{enumerable:!0,get:function(){return s.Socket}}),t.exports=e=a;var c=e.managers={};function a(t,e){"object"===r(t)&&(e=t,t=void 0),e=e||{};var n,s=o.url(t,e.path),a=s.source,u=s.id,f=s.path,p=c[u]&&f in c[u].nsps;return e.forceNew||e["force new connection"]||!1===e.multiplex||p?n=new i.Manager(a,e):(c[u]||(c[u]=new i.Manager(a,e)),n=c[u]),s.query&&!e.query&&(e.query=s.queryKey),n.socket(s.path,e)}e.io=a;var u=n(5);Object.defineProperty(e,"protocol",{enumerable:!0,get:function(){return u.protocol}}),e.connect=a;var f=n(7);Object.defineProperty(e,"Manager",{enumerable:!0,get:function(){return f.Manager}})},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.url=void 0;var r=n(6);e.url=function(t){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:"",n=arguments.length>2?arguments[2]:void 0,o=t;n=n||"undefined"!=typeof location&&location,null==t&&(t=n.protocol+"//"+n.host),"string"==typeof t&&("/"===t.charAt(0)&&(t="/"===t.charAt(1)?n.protocol+t:n.host+t),/^(https?|wss?):\/\//.test(t)||(t=void 0!==n?n.protocol+"//"+t:"https://"+t),o=r(t)),o.port||(/^(http|ws)$/.test(o.protocol)?o.port="80":/^(http|ws)s$/.test(o.protocol)&&(o.port="443")),o.path=o.path||"/";var i=-1!==o.host.indexOf(":"),s=i?"["+o.host+"]":o.host;return o.id=o.protocol+"://"+s+":"+o.port+e,o.href=o.protocol+"://"+s+(n&&n.port===o.port?"":":"+o.port),o}},function(t,e,n){var r=n(20);t.exports=function(t,e){return new r(t,e)},t.exports.Socket=r,t.exports.protocol=r.protocol,t.exports.Transport=n(3),t.exports.transports=n(8),t.exports.parser=n(1)},function(t,e,n){function r(){return(r=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n=arguments[e];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(t[r]=n[r])}return t}).apply(this,arguments)}function o(t){return(o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function c(t,e){return(c=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function a(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=f(t);if(e){var o=f(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return u(this,n)}}function u(t,e){return!e||"object"!==o(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function f(t){return(f=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var p=n(8),l=n(0),h=n(1),y=n(6),d=n(4),v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&c(t,e)}(l,t);var e,n,u,f=a(l);function l(t){var e,n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};return i(this,l),e=f.call(this),t&&"object"===o(t)&&(n=t,t=null),t?(t=y(t),n.hostname=t.host,n.secure="https"===t.protocol||"wss"===t.protocol,n.port=t.port,t.query&&(n.query=t.query)):n.host&&(n.hostname=y(n.host).host),e.secure=null!=n.secure?n.secure:"undefined"!=typeof location&&"https:"===location.protocol,n.hostname&&!n.port&&(n.port=e.secure?"443":"80"),e.hostname=n.hostname||("undefined"!=typeof location?location.hostname:"localhost"),e.port=n.port||("undefined"!=typeof location&&location.port?location.port:e.secure?443:80),e.transports=n.transports||["polling","websocket"],e.readyState="",e.writeBuffer=[],e.prevBufferLen=0,e.opts=r({path:"/engine.io",agent:!1,withCredentials:!1,upgrade:!0,jsonp:!0,timestampParam:"t",rememberUpgrade:!1,rejectUnauthorized:!0,perMessageDeflate:{threshold:1024},transportOptions:{}},n),e.opts.path=e.opts.path.replace(/\/$/,"")+"/","string"==typeof e.opts.query&&(e.opts.query=d.decode(e.opts.query)),e.id=null,e.upgrades=null,e.pingInterval=null,e.pingTimeout=null,e.pingTimeoutTimer=null,"function"==typeof addEventListener&&addEventListener("beforeunload",(function(){e.transport&&(e.transport.removeAllListeners(),e.transport.close())}),!1),e.open(),e}return e=l,(n=[{key:"createTransport",value:function(t){var e=function(t){var e={};for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n]);return e}(this.opts.query);e.EIO=h.protocol,e.transport=t,this.id&&(e.sid=this.id);var n=r({},this.opts.transportOptions[t],this.opts,{query:e,socket:this,hostname:this.hostname,secure:this.secure,port:this.port});return new p[t](n)}},{key:"open",value:function(){var t;if(this.opts.rememberUpgrade&&l.priorWebsocketSuccess&&-1!==this.transports.indexOf("websocket"))t="websocket";else{if(0===this.transports.length){var e=this;return void setTimeout((function(){e.emit("error","No transports available")}),0)}t=this.transports[0]}this.readyState="opening";try{t=this.createTransport(t)}catch(t){return this.transports.shift(),void this.open()}t.open(),this.setTransport(t)}},{key:"setTransport",value:function(t){var e=this;this.transport&&this.transport.removeAllListeners(),this.transport=t,t.on("drain",(function(){e.onDrain()})).on("packet",(function(t){e.onPacket(t)})).on("error",(function(t){e.onError(t)})).on("close",(function(){e.onClose("transport close")}))}},{key:"probe",value:function(t){var e=this.createTransport(t,{probe:1}),n=!1,r=this;function o(){if(r.onlyBinaryUpgrades){var t=!this.supportsBinary&&r.transport.supportsBinary;n=n||t}n||(e.send([{type:"ping",data:"probe"}]),e.once("packet",(function(t){if(!n)if("pong"===t.type&&"probe"===t.data){if(r.upgrading=!0,r.emit("upgrading",e),!e)return;l.priorWebsocketSuccess="websocket"===e.name,r.transport.pause((function(){n||"closed"!==r.readyState&&(f(),r.setTransport(e),e.send([{type:"upgrade"}]),r.emit("upgrade",e),e=null,r.upgrading=!1,r.flush())}))}else{var o=new Error("probe error");o.transport=e.name,r.emit("upgradeError",o)}})))}function i(){n||(n=!0,f(),e.close(),e=null)}function s(t){var n=new Error("probe error: "+t);n.transport=e.name,i(),r.emit("upgradeError",n)}function c(){s("transport closed")}function a(){s("socket closed")}function u(t){e&&t.name!==e.name&&i()}function f(){e.removeListener("open",o),e.removeListener("error",s),e.removeListener("close",c),r.removeListener("close",a),r.removeListener("upgrading",u)}l.priorWebsocketSuccess=!1,e.once("open",o),e.once("error",s),e.once("close",c),this.once("close",a),this.once("upgrading",u),e.open()}},{key:"onOpen",value:function(){if(this.readyState="open",l.priorWebsocketSuccess="websocket"===this.transport.name,this.emit("open"),this.flush(),"open"===this.readyState&&this.opts.upgrade&&this.transport.pause)for(var t=0,e=this.upgrades.length;t<e;t++)this.probe(this.upgrades[t])}},{key:"onPacket",value:function(t){if("opening"===this.readyState||"open"===this.readyState||"closing"===this.readyState)switch(this.emit("packet",t),this.emit("heartbeat"),t.type){case"open":this.onHandshake(JSON.parse(t.data));break;case"ping":this.resetPingTimeout(),this.sendPacket("pong"),this.emit("pong");break;case"error":var e=new Error("server error");e.code=t.data,this.onError(e);break;case"message":this.emit("data",t.data),this.emit("message",t.data)}}},{key:"onHandshake",value:function(t){this.emit("handshake",t),this.id=t.sid,this.transport.query.sid=t.sid,this.upgrades=this.filterUpgrades(t.upgrades),this.pingInterval=t.pingInterval,this.pingTimeout=t.pingTimeout,this.onOpen(),"closed"!==this.readyState&&this.resetPingTimeout()}},{key:"resetPingTimeout",value:function(){var t=this;clearTimeout(this.pingTimeoutTimer),this.pingTimeoutTimer=setTimeout((function(){t.onClose("ping timeout")}),this.pingInterval+this.pingTimeout)}},{key:"onDrain",value:function(){this.writeBuffer.splice(0,this.prevBufferLen),this.prevBufferLen=0,0===this.writeBuffer.length?this.emit("drain"):this.flush()}},{key:"flush",value:function(){"closed"!==this.readyState&&this.transport.writable&&!this.upgrading&&this.writeBuffer.length&&(this.transport.send(this.writeBuffer),this.prevBufferLen=this.writeBuffer.length,this.emit("flush"))}},{key:"write",value:function(t,e,n){return this.sendPacket("message",t,e,n),this}},{key:"send",value:function(t,e,n){return this.sendPacket("message",t,e,n),this}},{key:"sendPacket",value:function(t,e,n,r){if("function"==typeof e&&(r=e,e=void 0),"function"==typeof n&&(r=n,n=null),"closing"!==this.readyState&&"closed"!==this.readyState){(n=n||{}).compress=!1!==n.compress;var o={type:t,data:e,options:n};this.emit("packetCreate",o),this.writeBuffer.push(o),r&&this.once("flush",r),this.flush()}}},{key:"close",value:function(){var t=this;function e(){t.onClose("forced close"),t.transport.close()}function n(){t.removeListener("upgrade",n),t.removeListener("upgradeError",n),e()}function r(){t.once("upgrade",n),t.once("upgradeError",n)}return"opening"!==this.readyState&&"open"!==this.readyState||(this.readyState="closing",this.writeBuffer.length?this.once("drain",(function(){this.upgrading?r():e()})):this.upgrading?r():e()),this}},{key:"onError",value:function(t){l.priorWebsocketSuccess=!1,this.emit("error",t),this.onClose("transport error",t)}},{key:"onClose",value:function(t,e){"opening"!==this.readyState&&"open"!==this.readyState&&"closing"!==this.readyState||(clearTimeout(this.pingIntervalTimer),clearTimeout(this.pingTimeoutTimer),this.transport.removeAllListeners("close"),this.transport.close(),this.transport.removeAllListeners(),this.readyState="closed",this.id=null,this.emit("close",t,e),this.writeBuffer=[],this.prevBufferLen=0)}},{key:"filterUpgrades",value:function(t){for(var e=[],n=0,r=t.length;n<r;n++)~this.transports.indexOf(t[n])&&e.push(t[n]);return e}}])&&s(e.prototype,n),u&&s(e,u),l}(l);v.priorWebsocketSuccess=!1,v.protocol=h.protocol,t.exports=v},function(t,e){try{t.exports="undefined"!=typeof XMLHttpRequest&&"withCredentials"in new XMLHttpRequest}catch(e){t.exports=!1}},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(){return(o=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n=arguments[e];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(t[r]=n[r])}return t}).apply(this,arguments)}function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function s(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function c(t,e,n){return e&&s(t.prototype,e),n&&s(t,n),t}function a(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&u(t,e)}function u(t,e){return(u=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function f(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=l(t);if(e){var o=l(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return p(this,n)}}function p(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function l(t){return(l=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var h=n(9),y=n(10),d=n(0),v=n(13).pick,b=n(2);function m(){}var g=null!=new h({xdomain:!1}).responseType,k=function(t){a(n,t);var e=f(n);function n(t){var r;if(i(this,n),r=e.call(this,t),"undefined"!=typeof location){var o="https:"===location.protocol,s=location.port;s||(s=o?443:80),r.xd="undefined"!=typeof location&&t.hostname!==location.hostname||s!==t.port,r.xs=t.secure!==o}var c=t&&t.forceBase64;return r.supportsBinary=g&&!c,r}return c(n,[{key:"request",value:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};return o(t,{xd:this.xd,xs:this.xs},this.opts),new w(this.uri(),t)}},{key:"doWrite",value:function(t,e){var n=this.request({method:"POST",data:t}),r=this;n.on("success",e),n.on("error",(function(t){r.onError("xhr post error",t)}))}},{key:"doPoll",value:function(){var t=this.request(),e=this;t.on("data",(function(t){e.onData(t)})),t.on("error",(function(t){e.onError("xhr poll error",t)})),this.pollXhr=t}}]),n}(y),w=function(t){a(n,t);var e=f(n);function n(t,r){var o;return i(this,n),(o=e.call(this)).opts=r,o.method=r.method||"GET",o.uri=t,o.async=!1!==r.async,o.data=void 0!==r.data?r.data:null,o.create(),o}return c(n,[{key:"create",value:function(){var t=v(this.opts,"agent","enablesXDR","pfx","key","passphrase","cert","ca","ciphers","rejectUnauthorized");t.xdomain=!!this.opts.xd,t.xscheme=!!this.opts.xs;var e=this.xhr=new h(t),r=this;try{e.open(this.method,this.uri,this.async);try{if(this.opts.extraHeaders)for(var o in e.setDisableHeaderCheck&&e.setDisableHeaderCheck(!0),this.opts.extraHeaders)this.opts.extraHeaders.hasOwnProperty(o)&&e.setRequestHeader(o,this.opts.extraHeaders[o])}catch(t){}if("POST"===this.method)try{e.setRequestHeader("Content-type","text/plain;charset=UTF-8")}catch(t){}try{e.setRequestHeader("Accept","*/*")}catch(t){}"withCredentials"in e&&(e.withCredentials=this.opts.withCredentials),this.opts.requestTimeout&&(e.timeout=this.opts.requestTimeout),this.hasXDR()?(e.onload=function(){r.onLoad()},e.onerror=function(){r.onError(e.responseText)}):e.onreadystatechange=function(){4===e.readyState&&(200===e.status||1223===e.status?r.onLoad():setTimeout((function(){r.onError("number"==typeof e.status?e.status:0)}),0))},e.send(this.data)}catch(t){return void setTimeout((function(){r.onError(t)}),0)}"undefined"!=typeof document&&(this.index=n.requestsCount++,n.requests[this.index]=this)}},{key:"onSuccess",value:function(){this.emit("success"),this.cleanup()}},{key:"onData",value:function(t){this.emit("data",t),this.onSuccess()}},{key:"onError",value:function(t){this.emit("error",t),this.cleanup(!0)}},{key:"cleanup",value:function(t){if(void 0!==this.xhr&&null!==this.xhr){if(this.hasXDR()?this.xhr.onload=this.xhr.onerror=m:this.xhr.onreadystatechange=m,t)try{this.xhr.abort()}catch(t){}"undefined"!=typeof document&&delete n.requests[this.index],this.xhr=null}}},{key:"onLoad",value:function(){var t=this.xhr.responseText;null!==t&&this.onData(t)}},{key:"hasXDR",value:function(){return"undefined"!=typeof XDomainRequest&&!this.xs&&this.enablesXDR}},{key:"abort",value:function(){this.cleanup()}}]),n}(d);if(w.requestsCount=0,w.requests={},"undefined"!=typeof document)if("function"==typeof attachEvent)attachEvent("onunload",_);else if("function"==typeof addEventListener){addEventListener("onpagehide"in b?"pagehide":"unload",_,!1)}function _(){for(var t in w.requests)w.requests.hasOwnProperty(t)&&w.requests[t].abort()}t.exports=k,t.exports.Request=w},function(t,e,n){var r=n(11).PACKET_TYPES,o="function"==typeof Blob||"undefined"!=typeof Blob&&"[object BlobConstructor]"===Object.prototype.toString.call(Blob),i="function"==typeof ArrayBuffer,s=function(t,e){var n=new FileReader;return n.onload=function(){var t=n.result.split(",")[1];e("b"+t)},n.readAsDataURL(t)};t.exports=function(t,e,n){var c,a=t.type,u=t.data;return o&&u instanceof Blob?e?n(u):s(u,n):i&&(u instanceof ArrayBuffer||(c=u,"function"==typeof ArrayBuffer.isView?ArrayBuffer.isView(c):c&&c.buffer instanceof ArrayBuffer))?e?n(u instanceof ArrayBuffer?u:u.buffer):s(new Blob([u]),n):n(r[a]+(u||""))}},function(t,e,n){var r,o=n(11),i=o.PACKET_TYPES_REVERSE,s=o.ERROR_PACKET;"function"==typeof ArrayBuffer&&(r=n(25));var c=function(t,e){if(r){var n=r.decode(t);return a(n,e)}return{base64:!0,data:t}},a=function(t,e){switch(e){case"blob":return t instanceof ArrayBuffer?new Blob([t]):t;case"arraybuffer":default:return t}};t.exports=function(t,e){if("string"!=typeof t)return{type:"message",data:a(t,e)};var n=t.charAt(0);return"b"===n?{type:"message",data:c(t.substring(1),e)}:i[n]?t.length>1?{type:i[n],data:t.substring(1)}:{type:i[n]}:s}},function(t,e){!function(t){"use strict";e.encode=function(e){var n,r=new Uint8Array(e),o=r.length,i="";for(n=0;n<o;n+=3)i+=t[r[n]>>2],i+=t[(3&r[n])<<4|r[n+1]>>4],i+=t[(15&r[n+1])<<2|r[n+2]>>6],i+=t[63&r[n+2]];return o%3==2?i=i.substring(0,i.length-1)+"=":o%3==1&&(i=i.substring(0,i.length-2)+"=="),i},e.decode=function(e){var n,r,o,i,s,c=.75*e.length,a=e.length,u=0;"="===e[e.length-1]&&(c--,"="===e[e.length-2]&&c--);var f=new ArrayBuffer(c),p=new Uint8Array(f);for(n=0;n<a;n+=4)r=t.indexOf(e[n]),o=t.indexOf(e[n+1]),i=t.indexOf(e[n+2]),s=t.indexOf(e[n+3]),p[u++]=r<<2|o>>4,p[u++]=(15&o)<<4|i>>2,p[u++]=(3&i)<<6|63&s;return f}}("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e,n){return(i="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(t,e,n){var r=function(t,e){for(;!Object.prototype.hasOwnProperty.call(t,e)&&null!==(t=f(t)););return t}(t,e);if(r){var o=Object.getOwnPropertyDescriptor(r,e);return o.get?o.get.call(n):o.value}})(t,e,n||t)}function s(t,e){return(s=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function c(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=f(t);if(e){var o=f(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return a(this,n)}}function a(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?u(t):e}function u(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}function f(t){return(f=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var p,l=n(10),h=n(2),y=/\n/g,d=/\\n/g,v=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&s(t,e)}(l,t);var e,n,r,a=c(l);function l(t){var e;!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,l),(e=a.call(this,t)).query=e.query||{},p||(p=h.___eio=h.___eio||[]),e.index=p.length;var n=u(e);return p.push((function(t){n.onData(t)})),e.query.j=e.index,e}return e=l,(n=[{key:"doClose",value:function(){this.script&&(this.script.onerror=function(){},this.script.parentNode.removeChild(this.script),this.script=null),this.form&&(this.form.parentNode.removeChild(this.form),this.form=null,this.iframe=null),i(f(l.prototype),"doClose",this).call(this)}},{key:"doPoll",value:function(){var t=this,e=document.createElement("script");this.script&&(this.script.parentNode.removeChild(this.script),this.script=null),e.async=!0,e.src=this.uri(),e.onerror=function(e){t.onError("jsonp poll error",e)};var n=document.getElementsByTagName("script")[0];n?n.parentNode.insertBefore(e,n):(document.head||document.body).appendChild(e),this.script=e,"undefined"!=typeof navigator&&/gecko/i.test(navigator.userAgent)&&setTimeout((function(){var t=document.createElement("iframe");document.body.appendChild(t),document.body.removeChild(t)}),100)}},{key:"doWrite",value:function(t,e){var n,r=this;if(!this.form){var o=document.createElement("form"),i=document.createElement("textarea"),s=this.iframeId="eio_iframe_"+this.index;o.className="socketio",o.style.position="absolute",o.style.top="-1000px",o.style.left="-1000px",o.target=s,o.method="POST",o.setAttribute("accept-charset","utf-8"),i.name="d",o.appendChild(i),document.body.appendChild(o),this.form=o,this.area=i}function c(){a(),e()}function a(){if(r.iframe)try{r.form.removeChild(r.iframe)}catch(t){r.onError("jsonp polling iframe removal error",t)}try{var t='<iframe src="javascript:0" name="'+r.iframeId+'">';n=document.createElement(t)}catch(t){(n=document.createElement("iframe")).name=r.iframeId,n.src="javascript:0"}n.id=r.iframeId,r.form.appendChild(n),r.iframe=n}this.form.action=this.uri(),a(),t=t.replace(d,"\\\n"),this.area.value=t.replace(y,"\\n");try{this.form.submit()}catch(t){}this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===r.iframe.readyState&&c()}:this.iframe.onload=c}},{key:"supportsBinary",get:function(){return!1}}])&&o(e.prototype,n),r&&o(e,r),l}(l);t.exports=v},function(t,e,n){function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function o(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function i(t,e){return(i=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function s(t){var e=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],(function(){}))),!0}catch(t){return!1}}();return function(){var n,r=a(t);if(e){var o=a(this).constructor;n=Reflect.construct(r,arguments,o)}else n=r.apply(this,arguments);return c(this,n)}}function c(t,e){return!e||"object"!==r(e)&&"function"!=typeof e?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(t):e}function a(t){return(a=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var u=n(3),f=n(1),p=n(4),l=n(12),h=n(13).pick,y=n(28),d=y.WebSocket,v=y.usingBrowserWebSocket,b=y.defaultBinaryType,m="undefined"!=typeof navigator&&"string"==typeof navigator.product&&"reactnative"===navigator.product.toLowerCase(),g=function(t){!function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&i(t,e)}(a,t);var e,n,r,c=s(a);function a(t){var e;return function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,a),(e=c.call(this,t)).supportsBinary=!t.forceBase64,e}return e=a,(n=[{key:"doOpen",value:function(){if(this.check()){var t=this.uri(),e=this.opts.protocols,n=m?{}:h(this.opts,"agent","perMessageDeflate","pfx","key","passphrase","cert","ca","ciphers","rejectUnauthorized","localAddress","protocolVersion","origin","maxPayload","family","checkServerIdentity");this.opts.extraHeaders&&(n.headers=this.opts.extraHeaders);try{this.ws=v&&!m?e?new d(t,e):new d(t):new d(t,e,n)}catch(t){return this.emit("error",t)}this.ws.binaryType=this.socket.binaryType||b,this.addEventListeners()}}},{key:"addEventListeners",value:function(){var t=this;this.ws.onopen=function(){t.onOpen()},this.ws.onclose=function(){t.onClose()},this.ws.onmessage=function(e){t.onData(e.data)},this.ws.onerror=function(e){t.onError("websocket error",e)}}},{key:"write",value:function(t){var e=this;this.writable=!1;for(var n=t.length,r=0,o=n;r<o;r++)!function(t){f.encodePacket(t,e.supportsBinary,(function(r){var o={};v||(t.options&&(o.compress=t.options.compress),e.opts.perMessageDeflate&&("string"==typeof r?Buffer.byteLength(r):r.length)<e.opts.perMessageDeflate.threshold&&(o.compress=!1));try{v?e.ws.send(r):e.ws.send(r,o)}catch(t){}--n||(e.emit("flush"),setTimeout((function(){e.writable=!0,e.emit("drain")}),0))}))}(t[r])}},{key:"onClose",value:function(){u.prototype.onClose.call(this)}},{key:"doClose",value:function(){void 0!==this.ws&&(this.ws.close(),this.ws=null)}},{key:"uri",value:function(){var t=this.query||{},e=this.opts.secure?"wss":"ws",n="";return this.opts.port&&("wss"===e&&443!==Number(this.opts.port)||"ws"===e&&80!==Number(this.opts.port))&&(n=":"+this.opts.port),this.opts.timestampRequests&&(t[this.opts.timestampParam]=l()),this.supportsBinary||(t.b64=1),(t=p.encode(t)).length&&(t="?"+t),e+"://"+(-1!==this.opts.hostname.indexOf(":")?"["+this.opts.hostname+"]":this.opts.hostname)+n+this.opts.path+t}},{key:"check",value:function(){return!(!d||"__initialize"in d&&this.name===a.prototype.name)}},{key:"name",get:function(){return"websocket"}}])&&o(e.prototype,n),r&&o(e,r),a}(u);t.exports=g},function(t,e,n){var r=n(2);t.exports={WebSocket:r.WebSocket||r.MozWebSocket,usingBrowserWebSocket:!0,defaultBinaryType:"arraybuffer"}},function(t,e,n){"use strict";function r(t){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}Object.defineProperty(e,"__esModule",{value:!0}),e.reconstructPacket=e.deconstructPacket=void 0;var o=n(15);e.deconstructPacket=function(t){var e=[],n=t.data,i=t;return i.data=function t(e,n){if(!e)return e;if(o.isBinary(e)){var i={_placeholder:!0,num:n.length};return n.push(e),i}if(Array.isArray(e)){for(var s=new Array(e.length),c=0;c<e.length;c++)s[c]=t(e[c],n);return s}if("object"===r(e)&&!(e instanceof Date)){var a={};for(var u in e)e.hasOwnProperty(u)&&(a[u]=t(e[u],n));return a}return e}(n,e),i.attachments=e.length,{packet:i,buffers:e}},e.reconstructPacket=function(t,e){return t.data=function t(e,n){if(!e)return e;if(e&&e._placeholder)return n[e.num];if(Array.isArray(e))for(var o=0;o<e.length;o++)e[o]=t(e[o],n);else if("object"===r(e))for(var i in e)e.hasOwnProperty(i)&&(e[i]=t(e[i],n));return e}(t.data,e),t.attachments=void 0,t}},function(t,e){function n(t){t=t||{},this.ms=t.min||100,this.max=t.max||1e4,this.factor=t.factor||2,this.jitter=t.jitter>0&&t.jitter<=1?t.jitter:0,this.attempts=0}t.exports=n,n.prototype.duration=function(){var t=this.ms*Math.pow(this.factor,this.attempts++);if(this.jitter){var e=Math.random(),n=Math.floor(e*this.jitter*t);t=0==(1&Math.floor(10*e))?t-n:t+n}return 0|Math.min(t,this.max)},n.prototype.reset=function(){this.attempts=0},n.prototype.setMin=function(t){this.ms=t},n.prototype.setMax=function(t){this.max=t},n.prototype.setJitter=function(t){this.jitter=t}}])}));
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"buffer":2}],39:[function(require,module,exports){
+},{"buffer":2}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38469,9 +39341,9 @@ class MatrixSounds {
 
   play(name) {
     if (this.audios[name].paused == true) {
-      this.audios[name].play();
+      return this.audios[name].play();
     } else {
-      this.tryClone(name);
+      return this.tryClone(name);
     }
   }
 
@@ -38483,7 +39355,9 @@ class MatrixSounds {
         cc++;
       }
 
-      if (this.audios[name + cc]) this.audios[name + cc].play();
+      if (this.audios[name + cc]) {
+        return this.audios[name + cc].play();
+      }
     } catch (err) {}
   }
 
@@ -38491,7 +39365,7 @@ class MatrixSounds {
 
 exports.MatrixSounds = MatrixSounds;
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 
 /* eslint-disable no-undef */
@@ -38611,10 +39485,9 @@ window.DETECTBROWSER = function () {
   if (mobile) {
     var userAgent = navigator.userAgent.toLowerCase();
 
-    if (userAgent.search('android') > -1 && userAgent.search('mobile') > -1) {
-      console.log('ANDROID MOBILE');
+    if (userAgent.search('android') > -1 && userAgent.search('mobile') > -1) {// console.log('ANDROID MOBILE');
     } else if (userAgent.search('android') > -1 && !(userAgent.search('mobile') > -1)) {
-      console.log(' ANDROID TABLET ');
+      // console.log(' ANDROID TABLET ');
       TYPEOFANDROID = 1;
     }
   } else {
@@ -39492,7 +40365,7 @@ let notify = {
 };
 exports.notify = notify;
 
-},{"../program/manifest":44,"./events":14}],41:[function(require,module,exports){
+},{"../program/manifest":45,"./events":14}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39660,7 +40533,7 @@ if (!window.requestAnimationFrame) {
   }();
 }
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39674,7 +40547,6 @@ var _matrixStream = require("./matrix-stream");
 
 /**
  * Main instance for matrix-stream
- * version 1.0.0 beta
  */
 class MatrixStream {
   connection = null;
@@ -39691,7 +40563,9 @@ class MatrixStream {
     _matrixStream.netConfig.resolution = arg.resolution;
 
     _utility.scriptManager.LOAD('openvidu-browser-2.20.0.js', undefined, undefined, undefined, () => {
-      this.loadNetHTML();
+      setTimeout(() => {
+        this.loadNetHTML();
+      }, 2500);
     });
   }
 
@@ -39755,7 +40629,7 @@ class MatrixStream {
       (0, _matrixStream.leaveSession)();
     });
     (0, _matrixStream.byId)('netHeaderTitle').addEventListener('click', this.domManipulation.hideNetPanel);
-    setTimeout(() => dispatchEvent(new CustomEvent('net-ready', {})), 500);
+    setTimeout(() => dispatchEvent(new CustomEvent('net-ready', {})), 1000);
   }
 
   multiPlayer = {
@@ -39837,7 +40711,7 @@ class MatrixStream {
 
 exports.MatrixStream = MatrixStream;
 
-},{"../lib/utility":40,"./matrix-stream":43}],43:[function(require,module,exports){
+},{"../lib/utility":41,"./matrix-stream":44}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40315,7 +41189,7 @@ function clearEventsTextarea() {
   exports.events = events = '';
 }
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40324,7 +41198,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var App = {
   name: "Matrix Engine Manifest",
-  version: "1.1.1",
+  version: "1.1.2",
   events: true,
   sounds: true,
   logs: false,
@@ -40362,6 +41236,13 @@ var App = {
     b: 0.0,
     a: 1.0
   },
+  frameBufferBgColor: {
+    r: 1.0,
+    g: 1.0,
+    b: 1.0,
+    a: 1.0
+  },
+  frameBufferViewPort: [512, 512],
   textures: [],
   // readOnly in manifest
   tools: {},
@@ -40383,6 +41264,7 @@ var App = {
   updateBeforeDraw: [],
   audioSystem: {},
   // readOnly in manifest
+  printDevicesInfo: false,
   pwa: {
     addToHomePage: true
   },
@@ -40392,7 +41274,7 @@ var App = {
 var _default = App;
 exports.default = _default;
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40416,7 +41298,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-},{"./src/lib/utility":61,"./src/nidza":62}],46:[function(require,module,exports){
+},{"./src/lib/utility":62,"./src/nidza":63}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40440,7 +41322,7 @@ class NidzaElement {
 
 exports.NidzaElement = NidzaElement;
 
-},{"./dimension":50,"./position":55}],47:[function(require,module,exports){
+},{"./dimension":51,"./position":56}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40464,7 +41346,7 @@ function setReferent(canvasDom) {
   };
 }
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40606,7 +41488,7 @@ class BaseShader {
 
 exports.BaseShader = BaseShader;
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40668,7 +41550,7 @@ class NidzaCustom2dComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaCustom2dComponent = NidzaCustom2dComponent;
 
-},{"./base-component":46,"./operations":54,"./rotation":56}],50:[function(require,module,exports){
+},{"./base-component":47,"./operations":55,"./rotation":57}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40799,7 +41681,7 @@ class Dimension {
 
 exports.Dimension = Dimension;
 
-},{"./base-referent":47}],51:[function(require,module,exports){
+},{"./base-referent":48}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40947,7 +41829,7 @@ class Nidza3dIdentity {
 
 exports.Nidza3dIdentity = Nidza3dIdentity;
 
-},{"./shader-component":58,"./shader-component-custom":57,"./utility":61}],52:[function(require,module,exports){
+},{"./shader-component":59,"./shader-component-custom":58,"./utility":62}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41144,7 +42026,7 @@ class NidzaIdentity {
 
 exports.NidzaIdentity = NidzaIdentity;
 
-},{"./custom2d-component":49,"./matrix-component":53,"./star-component":59,"./text-component":60,"./utility":61}],53:[function(require,module,exports){
+},{"./custom2d-component":50,"./matrix-component":54,"./star-component":60,"./text-component":61,"./utility":62}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41415,7 +42297,7 @@ class NidzaMatrixComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaMatrixComponent = NidzaMatrixComponent;
 
-},{"./base-component":46,"./operations":54,"./rotation":56,"./utility":61}],54:[function(require,module,exports){
+},{"./base-component":47,"./operations":55,"./rotation":57,"./utility":62}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41710,7 +42592,7 @@ function drawStarRotation() {
   this.ctx.restore();
 }
 
-},{"./utility":61}],55:[function(require,module,exports){
+},{"./utility":62}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41843,7 +42725,7 @@ class Position {
 
 exports.Position = Position;
 
-},{"./base-referent":47}],56:[function(require,module,exports){
+},{"./base-referent":48}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -41936,7 +42818,7 @@ class Rotator {
 
 exports.Rotator = Rotator;
 
-},{"./operations":54}],57:[function(require,module,exports){
+},{"./operations":55}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42080,7 +42962,7 @@ class ShaderComponentCustom extends _baseShaderComponent.BaseShader {
 
 exports.ShaderComponentCustom = ShaderComponentCustom;
 
-},{"./base-shader-component":48}],58:[function(require,module,exports){
+},{"./base-shader-component":49}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42275,7 +43157,7 @@ class ShaderComponent extends _baseShaderComponent.BaseShader {
 
 exports.ShaderComponent = ShaderComponent;
 
-},{"./base-shader-component":48,"./operations":54}],59:[function(require,module,exports){
+},{"./base-shader-component":49,"./operations":55}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42342,7 +43224,7 @@ class NidzaStarComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaStarComponent = NidzaStarComponent;
 
-},{"./base-component":46,"./operations":54,"./rotation":56}],60:[function(require,module,exports){
+},{"./base-component":47,"./operations":55,"./rotation":57}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42479,7 +43361,7 @@ class NidzaTextComponent extends _baseComponent.NidzaElement {
 
 exports.NidzaTextComponent = NidzaTextComponent;
 
-},{"./base-component":46,"./operations":54,"./rotation":56}],61:[function(require,module,exports){
+},{"./base-component":47,"./operations":55,"./rotation":57}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42609,7 +43491,7 @@ function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42709,7 +43591,7 @@ class Nidza {
 
 exports.Nidza = Nidza;
 
-},{"./lib/identity":52,"./lib/identity-3d":51,"./lib/operations":54}],63:[function(require,module,exports){
+},{"./lib/identity":53,"./lib/identity-3d":52,"./lib/operations":55}],64:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -42895,7 +43777,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42950,7 +43832,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/roulette":67,"matrix-engine":12}],65:[function(require,module,exports){
+},{"./scripts/roulette":68,"matrix-engine":12}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -43076,7 +43958,7 @@ class ClientConfig {
 var _default = ClientConfig;
 exports.default = _default;
 
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -43448,7 +44330,7 @@ function create2dHUDStatusLine(nidza, status) {
   });
 }
 
-},{"../../matrix-slot/scripts/standard-fonts":71,"./table-events":69,"matrix-engine":12,"matrix-engine-plugins":7}],67:[function(require,module,exports){
+},{"../../matrix-slot/scripts/standard-fonts":72,"./table-events":70,"matrix-engine":12,"matrix-engine-plugins":7}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -43572,8 +44454,8 @@ class MatrixRoulette {
 
     this.world = matrixEngine.matrixWorld.world;
     App.camera.SceneController = true;
-    App.camera.sceneControllerEdgeCameraYawRate = 0.01;
-    App.camera.speedAmp = 0.01; // Add physics - ground and main instance of cannonjs
+    App.camera.sceneControllerEdgeCameraYawRate = 0.0001;
+    App.camera.speedAmp = 0.0001; // Add physics - ground and main instance of cannonjs
 
     this.preparePhysics(); // Betting/Hovering/table screen/view
 
@@ -43620,6 +44502,7 @@ class MatrixRoulette {
     if (this.serverGiveResults() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
       detail: 'server'
     }));
+    App.scene.FLOOR_STATIC.position.SetY(-2);
   }
 
   firstClick = e => {
@@ -43632,7 +44515,7 @@ class MatrixRoulette {
   };
 
   setupCameraView(type) {
-    var AMP = 0.5;
+    var AMP = 0.05;
 
     if (typeof matrixEngine.utility.QueryString.cameraSpeed == 'undefined' || matrixEngine.utility.QueryString.cameraSpeed == null) {// nothing for now
     } else {
@@ -44015,7 +44898,7 @@ class MatrixRoulette {
       // clear double call
       // roulette.wheelSystem.fireBall()
       dispatchEvent(new CustomEvent('fire-ball', {
-        detail: [0.3, [4., -11.4, 3], [-4000, 250, 10]]
+        detail: [0.2, [4., -11.4, 3], [-4000, 250, 10]]
       }));
       removeEventListener('camera-view-wheel', this.prepareFire);
     }, this.status.winNumberMomentDelay);
@@ -44197,7 +45080,7 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"../client-config.js":65,"./2d-draw.js":66,"./table-events.js":69,"./wheel.js":70,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":40,"nidza":45}],68:[function(require,module,exports){
+},{"../client-config.js":66,"./2d-draw.js":67,"./table-events.js":70,"./wheel.js":71,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":41,"nidza":46}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44529,7 +45412,7 @@ class TableChips {
 
 exports.default = TableChips;
 
-},{"./table-events":69,"cannon":5,"matrix-engine":12}],69:[function(require,module,exports){
+},{"./table-events":70,"cannon":5,"matrix-engine":12}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -45542,7 +46425,7 @@ class TableEvents {
 
 exports.default = TableEvents;
 
-},{"./table-chips.js":68,"matrix-engine":12}],70:[function(require,module,exports){
+},{"./table-chips.js":69,"matrix-engine":12}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -45626,7 +46509,7 @@ class Wheel {
   };
   addBall = (j, posArg, force) => {
     if (this.ballBody !== null) {
-      console.log('Ball already created.');
+      console.log('Ball already created. POS : ', posArg[0], ' - ', posArg[1], ' - ', posArg[2]);
       this.ballBody.position.set(posArg[0], posArg[1], posArg[2]);
       this.ballBody.angularVelocity.setZero();
       this.ballBody.quaternion.set(0, 0, 0, 0);
@@ -45646,9 +46529,9 @@ class Wheel {
       mass: 6,
       linearDamping: 0.01,
       angularDamping: 0.01,
-      sleepSpeedLimit: 0.1,
+      sleepSpeedLimit: 0.0,
       // Body will feel sleepy if speed<1 (speed == norm of velocity)
-      sleepTimeLimit: 0.1,
+      sleepTimeLimit: 0.0,
       // Body falls asleep after 1s of sleepiness
       angularVelocity: new CANNON.Vec3(0, 0, 0),
       position: new CANNON.Vec3(posArg[0], posArg[1], posArg[2]),
@@ -45731,7 +46614,7 @@ class Wheel {
     matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, "bottomSquare", tex);
     App.scene.bottomSquare.position.setPosition(0, -1.25, -21);
     App.scene.bottomSquare.rotation.rotx = 90;
-    App.scene.bottomSquare.rotation.rotationSpeed.z = 90;
+    App.scene.bottomSquare.rotation.rotationSpeed.z = 9;
     App.scene.bottomSquare.geometry.setScale(10.8);
     App.scene.bottomSquare.deactivateTex();
     App.scene.bottomSquare.geometry.setScaleByZ(-11.5);
@@ -45763,8 +46646,8 @@ class Wheel {
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
       position: new CANNON.Vec3(0, -21, 0.05)
     }); // dev
+    // window.centerWheel = centerWheel;
 
-    window.centerWheel = centerWheel;
     this.pWorld.world.addBody(centerWheel);
     App.scene.centerWheel.physics.currentBody = centerWheel;
     App.scene.centerWheel.physics.enabled = true;
@@ -45803,8 +46686,8 @@ class Wheel {
   }
 
   animateRoll() {
-    console.warn('ONCE');
-    this.C = 0;
+    console.warn('ONCE <><>');
+    this.C = 100;
     this.rollTimer = {};
 
     this.rollTimer.UPDATE = () => {
@@ -45814,15 +46697,12 @@ class Wheel {
           y: 0.1,
           z: 0
         };
-        p = this.orbit(0, 9, i / 5.9 + this.C, p);
-        var p3 = {
-          x: 0.1,
-          y: 0.1,
-          z: 0
-        };
-        p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
-        App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1.);
-        App.scene['centerWheel' + i].physics.currentBody.position.set(p3.x, p3.y - 30, -0.2);
+        p = this.orbit(0, 9, i / 5.9 + this.C, p); // var p3 = p;
+        // var p3 = {x: 0.1, y: 0.1, z: 0};
+        // p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
+
+        App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1);
+        App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.2); // console.warn('>>>>', p)
 
         if (App.scene.centerRollDecoration) {
           App.scene.centerRollDecoration.rotation.rotationSpeed.y = this.speedRollInit * 1000;
@@ -45831,11 +46711,14 @@ class Wheel {
 
       this.C = this.C - this.speedRollInit;
 
-      if (this.speedRollInit < 0.002) {// clearInterval(this.rollTimer)
+      if (this.speedRollInit < 0.001) {// clearInterval(this.rollTimer)
       } else {
-        this.speedRollInit = this.speedRollInit - 0.001;
+        this.speedRollInit = this.speedRollInit - 0.00085;
       }
-    };
+    }; // setInterval(() => {
+    // 	this.rollTimer.UPDATE()
+    // }, 10);
+
 
     App.updateBeforeDraw.push(this.rollTimer);
   }
@@ -45893,11 +46776,11 @@ class Wheel {
         shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
         position: new CANNON.Vec3(0, -21, 0.05)
       }); // dev
+      // window.centerWheel = centerWheel;
 
-      window.centerWheel = centerWheel;
       this.pWorld.world.addBody(centerWheel);
       App.scene['centerWheel' + i].physics.currentBody = centerWheel;
-      App.scene['centerWheel' + i].physics.enabled = true; //////////////
+      App.scene['centerWheel' + i].physics.enabled = true;
     }
   }
 
@@ -45905,7 +46788,7 @@ class Wheel {
 
 exports.default = Wheel;
 
-},{"cannon":5,"matrix-engine":12}],71:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":12}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -45926,4 +46809,4 @@ const stdFonts = {
 };
 exports.stdFonts = stdFonts;
 
-},{}]},{},[64]);
+},{}]},{},[65]);
