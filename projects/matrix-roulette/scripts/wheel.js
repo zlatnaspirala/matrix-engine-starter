@@ -252,7 +252,7 @@ export default class Wheel {
 					App.scene[name].mesh.setScale(43.5)
 
 					App.scene.centerRollDecoration.LightsData.ambientLight.set(0.5, 0.5, 0)
-					App.scene.centerRollDecoration.LightsData.lightingDirection.set(1, -0.2, 0)
+					App.scene.centerRollDecoration.LightsData.lightingDirection.set(1, 1.2, 0)
 
 					App.scene.centerRollDecoration.LightsData.directionLight.g = 0
 					App.scene.centerRollDecoration.LightsData.directionLight.r = 0
@@ -281,8 +281,8 @@ export default class Wheel {
 				// var p3 = p;
 				// var p3 = {x: 0.1, y: 0.1, z: 0};
 				// p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
-				App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -1)
-				App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.2)
+				App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.3)
+				App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3)
 
 				// console.warn('>>>>', p)
 				if(App.scene.centerRollDecoration) {
@@ -322,7 +322,7 @@ export default class Wheel {
 			var b2 = new CANNON.Body({
 				type: CANNON.Body.STATIC,
 				mass: 0,
-				position: new CANNON.Vec3(p.x, p.y - 19.5, -0),
+				position: new CANNON.Vec3(p.x, p.y - 12.5, -0),
 				shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
 			});
 			this.pWorld.world.addBody(b2);
@@ -338,8 +338,8 @@ export default class Wheel {
 			};
 
 			// wheel config
-			var outerRad = 0.65;
-			var inner_rad = 0.13;
+			var outerRad = 0.7;
+			var inner_rad = 0.1;
 			var wheelsPoly = 8;
 
 			// [matrix-engine 1.9.20] custom_type: 'torus',
@@ -358,7 +358,7 @@ export default class Wheel {
 				mass: 0,
 				type: CANNON.Body.STATIC,
 				shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-				position: new CANNON.Vec3(0, -21, 0.05)
+				position: new CANNON.Vec3(0, -21, 3.55)
 			});
 			// dev
 			// window.centerWheel = centerWheel;
