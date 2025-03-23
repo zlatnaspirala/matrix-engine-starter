@@ -511,7 +511,7 @@ export class MatrixRoulette {
 		setTimeout(() => {
 			// clear double call
 			// roulette.wheelSystem.fireBall()
-			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.2, [4., -11.4, 3], [-4000, 250, 10]]}))
+			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.28, [6., -10.4, 3], [-4000, 250, 10]]}))
 			removeEventListener('camera-view-wheel', this.prepareFire)
 		}, this.status.winNumberMomentDelay)
 	}

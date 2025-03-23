@@ -44898,7 +44898,7 @@ class MatrixRoulette {
       // clear double call
       // roulette.wheelSystem.fireBall()
       dispatchEvent(new CustomEvent('fire-ball', {
-        detail: [0.2, [4., -11.4, 3], [-4000, 250, 10]]
+        detail: [0.28, [6., -10.4, 3], [-4000, 250, 10]]
       }));
       removeEventListener('camera-view-wheel', this.prepareFire);
     }, this.status.winNumberMomentDelay);
@@ -46480,6 +46480,8 @@ class Wheel {
   }
 
   momentOftouch = e => {
+    // debug
+    return;
     if (typeof e.body.matrixRouletteId === 'undefined') return;
     console.log("Collided with number:", e.body.matrixRouletteId);
     dispatchEvent(new CustomEvent('matrix.roulette.win.number', {
@@ -46498,7 +46500,7 @@ class Wheel {
     }
   };
   fireBall = props => {
-    if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4., -11.4, 3], [-11000, 320, 11]];
+    if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4, -12.4, 3], [-5000, 420, 1]];
     console.log("props", props.detail);
     roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2]); // matrixEngine.App.sounds.play('spining')
 
@@ -46509,6 +46511,7 @@ class Wheel {
   };
   addBall = (j, posArg, force) => {
     if (this.ballBody !== null) {
+      this.speedRollInit = 0.15;
       console.log('Ball already created. POS : ', posArg[0], ' - ', posArg[1], ' - ', posArg[2]);
       this.ballBody.position.set(posArg[0], posArg[1], posArg[2]);
       this.ballBody.angularVelocity.setZero();
@@ -46527,7 +46530,7 @@ class Wheel {
     matrixEngine.matrixWorld.world.Add("sphereLightTex", j, "ball", tex);
     this.ballBody = new CANNON.Body({
       mass: 6,
-      linearDamping: 0.01,
+      linearDamping: 0.1,
       angularDamping: 0.01,
       sleepSpeedLimit: 0.0,
       // Body will feel sleepy if speed<1 (speed == norm of velocity)
@@ -46601,7 +46604,7 @@ class Wheel {
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, 0.05, -21)
+      position: new CANNON.Vec3(0, 3.5, -21)
     });
     this.pWorld.world.addBody(bigWheelTop);
     App.scene.bigWheelTop.physics.currentBody = bigWheelTop;
@@ -46626,8 +46629,73 @@ class Wheel {
       mix_operation: "multiply"
     }; // wheel config
 
-    var outerRad = 6.2;
-    var inner_rad = 2;
+    var outerRad = 6.4;
+    var inner_rad = 1.9;
+    var wheelsPoly = 128; // [matrix-engine 1.9.20] custom_type: 'torus',
+
+    matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "centerWheel", tex, {
+      custom_type: 'torus',
+      slices: wheelsPoly,
+      loops: wheelsPoly,
+      inner_rad: inner_rad,
+      outerRad: outerRad
+    }); // no need at all in prodc
+
+    App.scene.centerWheel.visible = false; // cannon
+
+    var centerWheel = new CANNON.Body({
+      mass: 0,
+      type: CANNON.Body.STATIC,
+      shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
+      position: new CANNON.Vec3(0, -21, 0.05)
+    }); // dev
+    // window.centerWheel = centerWheel;
+
+    this.pWorld.world.addBody(centerWheel);
+    App.scene.centerWheel.physics.currentBody = centerWheel;
+    App.scene.centerWheel.physics.enabled = true;
+    App.scene.centerWheel.LightsData.directionLight.g = 0;
+    App.scene.centerWheel.LightsData.directionLight.r = 0; // 3d object is decoration no direct connection with cannonjs
+
+    var loadCenterObj = new Promise((resolve, reject) => {
+      var name = 'centerRollDecoration';
+
+      function onLoadObj(meshes) {
+        try {
+          matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes[name]);
+          var tex = {
+            source: ["res/3d-objects/center.png"],
+            mix_operation: "multiply"
+          };
+          matrixEngine.matrixWorld.world.Add("obj", 100, name, tex, meshes[name]);
+          App.scene[name].raycast.enabled = false;
+          App.scene[name].position.y = 1;
+          App.scene[name].position.z = -21;
+          App.scene[name].mesh.setScale(43.5);
+          App.scene.centerRollDecoration.LightsData.ambientLight.set(0.5, 0.5, 0);
+          App.scene.centerRollDecoration.LightsData.lightingDirection.set(1, 1.2, 0);
+          App.scene.centerRollDecoration.LightsData.directionLight.g = 0;
+          App.scene.centerRollDecoration.LightsData.directionLight.r = 0;
+          resolve(App.scene[name]);
+        } catch (err) {
+          reject('Loading obj chip error: ' + err);
+        }
+      }
+
+      var _name = {};
+      _name[name] = "res/3d-objects/center.obj";
+      matrixEngine.objLoader.downloadMeshes(_name, onLoadObj);
+    });
+  }
+
+  addBigTOPstatic() {
+    var tex = {
+      source: ["res/images/wheel-roll/skin/skin1.jpg"],
+      mix_operation: "multiply"
+    }; // wheel config
+
+    var outerRad = 6.4;
+    var inner_rad = 1.9;
     var wheelsPoly = 128; // [matrix-engine 1.9.20] custom_type: 'torus',
 
     matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "centerWheel", tex, {
