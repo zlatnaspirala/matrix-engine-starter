@@ -10,6 +10,7 @@ import ClientConfig from "../client-config.js";
 import {byId} from "matrix-engine/lib/utility.js";
 import {RCSAccount} from "./rocket-crafting-account.js";
 import {REDLOG} from "./dom";
+import {VideoChat} from "./video-chat.js";
 
 export class MatrixRoulette {
 	// General physics and ME world
@@ -347,6 +348,8 @@ export class MatrixRoulette {
 			// App.scene[name].LightsData.ambientLight.set(1, 0, 0);
 			// App.scene[name].net.enable = true;
 			// App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
+
+			let test = new VideoChat(byId(e.detail.streamManager.id))
 		})
 
 		var ONE_TIME = 0;
@@ -429,6 +432,10 @@ export class MatrixRoulette {
 				}
 			}
 		})
+
+
+
+
 		// ---------------------------------------
 
 		// addEventListener('stream-loaded', (e) => {

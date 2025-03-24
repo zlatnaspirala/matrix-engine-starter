@@ -44330,7 +44330,7 @@ function create2dHUDStatusLine(nidza, status) {
   });
 }
 
-},{"../../matrix-slot/scripts/standard-fonts":74,"./table-events":72,"matrix-engine":12,"matrix-engine-plugins":7}],68:[function(require,module,exports){
+},{"../../matrix-slot/scripts/standard-fonts":75,"./table-events":72,"matrix-engine":12,"matrix-engine-plugins":7}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44912,6 +44912,8 @@ var _rocketCraftingAccount = require("./rocket-crafting-account.js");
 
 var _dom = require("./dom");
 
+var _videoChat = require("./video-chat.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -45284,6 +45286,8 @@ class MatrixRoulette {
       // App.scene[name].LightsData.ambientLight.set(1, 0, 0);
       // App.scene[name].net.enable = true;
       // App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
+
+      let test = new _videoChat.VideoChat((0, _utility.byId)(e.detail.streamManager.id));
     });
     var ONE_TIME = 0;
     addEventListener('streamPlaying', e => {
@@ -45753,7 +45757,7 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"../client-config.js":66,"./2d-draw.js":67,"./dom":68,"./rocket-crafting-account.js":69,"./table-events.js":72,"./wheel.js":73,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":41,"nidza":46}],71:[function(require,module,exports){
+},{"../client-config.js":66,"./2d-draw.js":67,"./dom":68,"./rocket-crafting-account.js":69,"./table-events.js":72,"./video-chat.js":73,"./wheel.js":74,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":41,"nidza":46}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47117,6 +47121,89 @@ exports.default = TableEvents;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.VideoChat = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+class VideoChat {
+  slots = [true, false, false, false, false];
+  slotsPos = [{
+    x: 4,
+    y: 3,
+    z: -21
+  }, {
+    x: 4,
+    y: 3,
+    z: -20
+  }, {
+    x: 4,
+    y: 3,
+    z: -19
+  }, {
+    x: 4,
+    y: 3,
+    z: -18
+  }, {
+    x: 4,
+    y: 3,
+    z: -17
+  }];
+
+  constructor(arg) {
+    // local media
+    this.createTV(arg);
+  }
+
+  createTV(arg) {
+    var tex = {
+      source: ["res/images/ball.png"],
+      mix_operation: "multiply"
+    };
+    matrixEngine.matrixWorld.world.Add("squareTex", 2, "TV1", tex);
+    App.scene.TV1.position.setPosition(-4, 4, -21);
+    App.scene.TV1.streamTextures = matrixEngine.Engine.DOM_VT(arg);
+    this.slots[0] = true;
+  }
+
+  getFreeSlot() {
+    var r = {};
+
+    for (var j = 0; j < this.slots.length; j++) {
+      if (this.slots[j] == false) {
+        r = this.slotsPos[j];
+        this.slots[j] = true;
+        break;
+      }
+    }
+
+    return r;
+  }
+
+  createRemoteTV(arg) {
+    console.log("getFreeSlot() :", getFreeSlot());
+    var tex = {
+      source: ["res/images/ball.png"],
+      mix_operation: "multiply"
+    };
+    matrixEngine.matrixWorld.world.Add("squareTex", 2, "TV1", tex);
+    App.scene.TV1.position.setPosition(4, 4, -21);
+    App.scene.TV1.streamTextures = matrixEngine.Engine.DOM_VT(arg);
+  }
+
+}
+
+exports.VideoChat = VideoChat;
+
+},{"matrix-engine":12}],74:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = void 0;
 
 var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
@@ -47446,7 +47533,7 @@ class Wheel {
   }
 
   animateRoll() {
-    console.warn('ONCE <><>');
+    // console.warn('ONCE!')
     this.C = 100;
     this.rollTimer = {};
 
@@ -47457,12 +47544,9 @@ class Wheel {
           y: 0.1,
           z: 0
         };
-        p = this.orbit(0, 9, i / 5.9 + this.C, p); // var p3 = p;
-        // var p3 = {x: 0.1, y: 0.1, z: 0};
-        // p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
-
+        p = this.orbit(0, 9, i / 5.9 + this.C, p);
         App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.3);
-        App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3); // console.warn('>>>>', p)
+        App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3);
 
         if (App.scene.centerRollDecoration) {
           App.scene.centerRollDecoration.rotation.rotationSpeed.y = this.speedRollInit * 1000;
@@ -47475,10 +47559,7 @@ class Wheel {
       } else {
         this.speedRollInit = this.speedRollInit - 0.00085;
       }
-    }; // setInterval(() => {
-    // 	this.rollTimer.UPDATE()
-    // }, 10);
-
+    };
 
     App.updateBeforeDraw.push(this.rollTimer);
   }
@@ -47535,9 +47616,7 @@ class Wheel {
         type: CANNON.Body.STATIC,
         shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
         position: new CANNON.Vec3(0, -21, 3.6)
-      }); // dev
-      // window.centerWheel = centerWheel;
-
+      });
       this.pWorld.world.addBody(centerWheel);
       App.scene['centerWheel' + i].physics.currentBody = centerWheel;
       App.scene['centerWheel' + i].physics.enabled = true;
@@ -47567,7 +47646,7 @@ function createTetra() {
   ]);
 }
 
-},{"cannon":5,"matrix-engine":12}],74:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":12}],75:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

@@ -72,7 +72,7 @@ export default class Wheel {
 	addBall = (j, posArg, force) => {
 		this.speedRollInit = 0.15;
 		if(this.ballBody !== null) {
-			console.log('Ball already created. POS : ', posArg[0], ' - ',  posArg[1],' - ', posArg[2])
+			console.log('Ball already created. POS : ', posArg[0], ' - ', posArg[1], ' - ', posArg[2])
 			this.ballBody.position.set(posArg[0], posArg[1], posArg[2])
 			this.ballBody.angularVelocity.setZero()
 			this.ballBody.quaternion.set(0, 0, 0, 0)
@@ -349,7 +349,7 @@ export default class Wheel {
 	}
 
 	animateRoll() {
-		console.warn('ONCE <><>')
+		// console.warn('ONCE!')
 		this.C = 100;
 		this.rollTimer = {};
 
@@ -357,17 +357,12 @@ export default class Wheel {
 			for(var i = 0;i < 37;i++) {
 				var p = {x: 0.1, y: 0.1, z: 0};
 				p = this.orbit(0, 9, i / 5.9 + this.C, p);
-				// var p3 = p;
-				// var p3 = {x: 0.1, y: 0.1, z: 0};
-				// p3 = this.orbit(0, 9, i / 5.9 + this.C, p3);
 				App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.3)
 				App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3)
-
-				// console.warn('>>>>', p)
 				if(App.scene.centerRollDecoration) {
 					App.scene.centerRollDecoration.rotation.rotationSpeed.y = this.speedRollInit * 1000
 				}
-			} 
+			}
 			this.C = this.C - this.speedRollInit
 			if(this.speedRollInit < 0.001) {
 				// clearInterval(this.rollTimer)
@@ -375,11 +370,6 @@ export default class Wheel {
 				this.speedRollInit = this.speedRollInit - 0.00085
 			}
 		}
-
-		// setInterval(() => {
-		// 	this.rollTimer.UPDATE()
-		// }, 10);
-
 		App.updateBeforeDraw.push(this.rollTimer)
 	}
 
@@ -437,8 +427,6 @@ export default class Wheel {
 				shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
 				position: new CANNON.Vec3(0, -21, 3.6)
 			});
-			// dev
-			// window.centerWheel = centerWheel;
 			this.pWorld.world.addBody(centerWheel);
 			App.scene['centerWheel' + i].physics.currentBody = centerWheel;
 			App.scene['centerWheel' + i].physics.enabled = true;
