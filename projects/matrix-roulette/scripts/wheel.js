@@ -4,7 +4,7 @@ import * as CANNON from 'cannon';
 /**
  * @description
  * Single object single physics body system
- * No collide because i use STATIC bodies
+ * No collide because i use STATIC bodies.
  */
 export default class Wheel {
 	ballBody = null;
@@ -14,7 +14,7 @@ export default class Wheel {
 	ballCollideFlag = false;
 
 	constructor(pWorld) {
-		console.log('wheel constructor')
+		console.log('wheel constructor', createTetra)
 		this.pWorld = pWorld;
 		this.texRollWheel = {
 			source: ["res/images/ball.png"],
@@ -42,10 +42,8 @@ export default class Wheel {
 	}
 
 	momentOftouch = (e) => {
-
 		// debug
-		return;
-
+		// return;
 		if(typeof e.body.matrixRouletteId === 'undefined') return;
 		console.log("Collided with number:", e.body.matrixRouletteId);
 		dispatchEvent(new CustomEvent('matrix.roulette.win.number', {detail: e.body.matrixRouletteId}))
@@ -58,11 +56,10 @@ export default class Wheel {
 			matrixEngine.App.sounds.audios.spining.pause();
 			matrixEngine.App.sounds.audios.spining.currentTime = 0;
 		}
-
 	}
 
 	fireBall = (props) => {
-		if(typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4, -12.4, 3], [-5000, 420, 1]];
+		if(typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.4, [4, -12.4, 3], [-5000, 420, 1]];
 		console.log("props", props.detail)
 		roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2])
 		// matrixEngine.App.sounds.play('spining')
@@ -73,10 +70,8 @@ export default class Wheel {
 	}
 
 	addBall = (j, posArg, force) => {
+		this.speedRollInit = 0.15;
 		if(this.ballBody !== null) {
-
-			this.speedRollInit = 0.15;
-
 			console.log('Ball already created. POS : ', posArg[0], ' - ',  posArg[1],' - ', posArg[2])
 			this.ballBody.position.set(posArg[0], posArg[1], posArg[2])
 			this.ballBody.angularVelocity.setZero()
@@ -129,6 +124,14 @@ export default class Wheel {
 			mix_operation: "multiply",
 		};
 
+		var texTop = {
+			// reflection-wheel
+			// source: ["res/images/wheel-roll/metal-separators/reflection-wheel.jpg"],
+			// source: ["res/images/wheel-roll/skin/skin.jpg"],
+			source: ["res/images/wheel-roll/center/wood.jpg"],
+			mix_operation: "multiply",
+		};
+
 		// wheel config
 		var outerRad = 12.8;
 		var inner_rad = 3.125;
@@ -164,10 +167,10 @@ export default class Wheel {
 
 		// top static big wheel
 		// wheel config
-		var outerRad = 12.8;
-		var inner_rad = 1.125;
+		var outerRad = 13;
+		var inner_rad = 0.85;
 		var wheelsPoly = 64;
-		matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheelTop", tex, {
+		matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheelTop", texTop, {
 			custom_type: 'torus',
 			slices: wheelsPoly,
 			loops: wheelsPoly,
@@ -181,21 +184,17 @@ export default class Wheel {
 			mass: 0,
 			type: CANNON.Body.STATIC,
 			shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-			position: new CANNON.Vec3(0, 3.5, -21)
+			position: new CANNON.Vec3(0, -21, 3.5)
 		})
 
 		this.pWorld.world.addBody(bigWheelTop);
 		App.scene.bigWheelTop.physics.currentBody = bigWheelTop;
 		App.scene.bigWheelTop.physics.enabled = true;
-		App.scene.bigWheelTop.position.y = 3;
-		App.scene.bigWheelTop.position.z = -21
 		App.scene.bigWheelTop.LightsData.directionLight.g = 0
 		App.scene.bigWheelTop.LightsData.directionLight.r = 0
-
-
 		// add simple square down from fields to eliminate empty space
 		matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, "bottomSquare", tex);
-		App.scene.bottomSquare.position.setPosition(0, -1.25, -21);
+		App.scene.bottomSquare.position.setPosition(0, -0.8, -21);
 		App.scene.bottomSquare.rotation.rotx = 90
 		App.scene.bottomSquare.rotation.rotationSpeed.z = 9
 		App.scene.bottomSquare.geometry.setScale(10.8)
@@ -430,15 +429,13 @@ export default class Wheel {
 				inner_rad: inner_rad,
 				outerRad: outerRad
 			})
-
 			// App.scene['centerWheel'+i].glDrawElements.mode = 'LINES'
-
 			// cannon
 			var centerWheel = new CANNON.Body({
 				mass: 0,
 				type: CANNON.Body.STATIC,
 				shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-				position: new CANNON.Vec3(0, -21, 3.55)
+				position: new CANNON.Vec3(0, -21, 3.6)
 			});
 			// dev
 			// window.centerWheel = centerWheel;
@@ -448,4 +445,30 @@ export default class Wheel {
 		}
 	}
 
+}
+
+function createTetra() {
+	var scale = 5;
+	var verts = [
+		new CANNON.Vec3(scale * 0, scale * 0, scale * 0),
+		new CANNON.Vec3(scale * 1, scale * 0, scale * 0),
+		new CANNON.Vec3(scale * 0, scale * 1, scale * 0),
+		new CANNON.Vec3(scale * 0, scale * 0, scale * 1)];
+
+	var offset = -0.35;
+	//  var offset = -1;
+
+	for(var i = 0;i < verts.length;i++) {
+		var v = verts[i];
+		v.x += offset;
+		v.y += offset;
+		v.z += offset;
+	}
+	return new CANNON.ConvexPolyhedron(verts,
+		[
+			[0, 3, 2], // -x
+			[0, 1, 3], // -y
+			[0, 2, 1], // -z
+			[1, 2, 3], // +xyz
+		]);
 }

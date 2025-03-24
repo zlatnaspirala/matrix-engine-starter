@@ -99,13 +99,13 @@ export default class TableChips {
 	}
 
 	clearAll() {
-		for (var x = this.register.length-1 ; x >= 0;x--) {
+		for(var x = this.register.length - 1;x >= 0;x--) {
 			this.register[x].chipObj.selfDestroy()
 			this.register[x].betPlace.tableEvents.chips = 0;
 		}
 		setTimeout(() => {
 			this.register = [];
-		  console.log('clearAll ', this.register)
+			console.log('clearAll ', this.register)
 		}, 200)
 	}
 
@@ -119,7 +119,8 @@ export default class TableChips {
 			winNumberColor = 'red'
 		} else if(RULES.black.indexOf(parseInt(winNumber)) != -1) {
 			winNumberColor = 'black';
-		} else if(e.detail == 0) {
+		} else if(winNumber == 0) {
+			console.log('confirm later msg..... good')
 			winNumberColor = 'ZERO'
 		}
 
@@ -290,10 +291,18 @@ export default class TableChips {
 					array[index].chipObj.selfDestroy()
 					console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace)
 				}
+			} else if(winNumberColor == "ZERO") {
+				if(array[index].betPlace.name == 'red' || array[index].betPlace.name == 'single0') {
+					array[index].betPlace.tableEvents.chips = 0;
+					array[index].chipObj.selfDestroy()
+					console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace)
+				}
+				if(array[index].betPlace.name == 'black' || array[index].betPlace.name == 'single0') {
+					array[index].betPlace.tableEvents.chips = 0;
+					array[index].chipObj.selfDestroy()
+					console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace)
+				}
 			}
-
-
-
 		})
 	}
 }

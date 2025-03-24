@@ -8,6 +8,8 @@ import {MTM} from 'matrix-engine-plugins';
 import ClientConfig from "../client-config.js";
 // import NUICommander from './nui.js';
 import {byId} from "matrix-engine/lib/utility.js";
+import {RCSAccount} from "./rocket-crafting-account.js";
+import {REDLOG} from "./dom";
 
 export class MatrixRoulette {
 	// General physics and ME world
@@ -19,6 +21,9 @@ export class MatrixRoulette {
 	preventDBTrigger = null;
 	// Optimal - control switch with url param nui=true or undefined.
 	NUI = null;
+
+	useRCSAccount = true;
+	RCSAccountDomain = 'https://maximumroulette.com';
 	// Top level vars
 	// - Initial line text
 	// - Delay interval on winning number
@@ -29,6 +34,15 @@ export class MatrixRoulette {
 		winNumberMomentDelay: 2000,
 		cameraView: 'bets',
 		game: 'MEDITATE'
+	}
+
+	videoChatEnabled() {
+		if(typeof matrixEngine.utility.QueryString.chat == 'undefined' ||
+			matrixEngine.utility.QueryString.chat == 'false') {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	constructor() {
@@ -94,7 +108,7 @@ export class MatrixRoulette {
 		App.camera.SceneController = true;
 		App.camera.sceneControllerEdgeCameraYawRate = 0.0001;
 		App.camera.speedAmp = 0.0001;
- 
+
 		// Add physics - ground and main instance of cannonjs
 		this.preparePhysics()
 		// Betting/Hovering/table screen/view
@@ -113,15 +127,18 @@ export class MatrixRoulette {
 		// Add canvas2d context to webgl
 		this.addHUD(this.playerInfo)
 
-		// Initial func for Networking general. Based on webRTC/MultiRTC lib.
-		// this.runVideoChat()
-		// New net2
-		// Activate networking
-		// matrixEngine.Engine.activateNet2(undefined,
-		// 	{
-		// 		sessionName: 'matrix-roulette',
-		// 		resolution: '240x160'
-		// 	});
+		if(this.videoChatEnabled() == true) {
+			console.log("Enable video-chat...")
+			// Initial func for Networking general. Based on webRTC/MultiRTC lib.
+			this.runVideoChat()
+			// New net2
+			// Activate networking
+			// matrixEngine.Engine.activateNet2(undefined,
+			// 	{
+			// 		sessionName: 'matrix-roulette',
+			// 		resolution: '240x160'
+			// 	});
+		}
 
 		this.cameraInMove = false;
 
@@ -140,7 +157,7 @@ export class MatrixRoulette {
 		if(this.isManual() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'manual'}))
 		if(this.serverGiveResults() == true) dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'server'}))
 
-			App.scene.FLOOR_STATIC.position.SetY(-2);
+		App.scene.FLOOR_STATIC.position.SetY(-2);
 	}
 
 	firstClick = (e) => {
@@ -294,10 +311,125 @@ export class MatrixRoulette {
 		// Sending class reference `ClientConfig` not object/instance
 		// matrixEngine.Engine.activateNet(ClientConfig)
 
+		// New net2
+		// Activate networking
+		matrixEngine.Engine.activateNet2(undefined,
+			{
+				sessionName: 'matrix-roulette',
+				resolution: '240x160'
+			});
+
 		var tex = {
 			source: ["res/images/field.png"],
 			mix_operation: "multiply"
 		}
+
+		// Networking
+		addEventListener(`LOCAL-STREAM-READY`, (e) => {
+			// App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
+			// console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
+			console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, REDLOG)
+			// test first
+			dispatchEvent(new CustomEvent(`onTitle`, {detail: `🕸️${e.detail.connection.connectionId}🕸️`}))
+			matrixEngine.utility.notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`)
+			var name = e.detail.connection.connectionId;
+			// byId('netHeaderTitle').click()
+			console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
+			// Make relation for net players
+
+			// App.scene.playerCollisonBox.position.yNetOffset = -2;
+			// App.scene.playerCollisonBox.net.enable = true;
+
+			// CAMERA VIEW FOR SELF LOCAL CAM
+			// world.Add("squareTex", 1, name, tex);
+			// App.scene[name].position.x = 0;
+			// App.scene[name].position.z = -20;
+			// App.scene[name].LightsData.ambientLight.set(1, 0, 0);
+			// App.scene[name].net.enable = true;
+			// App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
+		})
+
+		var ONE_TIME = 0;
+		addEventListener('streamPlaying', (e) => {
+			if(ONE_TIME == 0) {
+				ONE_TIME = 1;
+				// console.log('REMOTE-STREAM- streamPlaying [app level] ', e.detail.target.videos[0]);
+				// DIRECT REMOTE
+				var name = e.detail.target.stream.connection.connectionId;
+				// createNetworkPlayerCharacter(name)
+				// App.scene[name].net.active = true;
+				// matrixEngine.Engine.net.multiPlayer.init
+				// App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(e.detail.target.videos[0].video)
+			}
+		})
+
+		addEventListener('onStreamCreated', (e) => {
+			if(matrixEngine.Engine.net.connection == null) {
+				// local
+				console.log('MY CONNECTION IS NULL')
+				setTimeout(() => {
+					// test
+					if(typeof matrixEngine.Engine.net.connection === 'undefined' ||
+						matrixEngine.Engine.net.connection == null) return;
+
+					if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
+						console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+						var name = e.detail.event.stream.connection.connectionId;
+						// createNetworkPlayerCharacter(name)
+					}
+				}, 3000)
+				return;
+			}
+			if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
+				console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+				var name = e.detail.event.stream.connection.connectionId;
+				// createNetworkPlayerCharacter(name)
+			}
+		})
+
+		addEventListener('net-ready', (e) => {
+			// Star on load
+			byId('buttonCloseSession').remove();
+			matrixEngine.Engine.net.joinSessionUI.click()
+			// createPauseScreen()
+			// Next implementation RocketCrafringServer calls.
+			let profile = document.createElement('div')
+			profile.id = 'profile';
+			profile.innerHTML = `
+					Status: free for all
+				`;
+			byId('session').appendChild(profile)
+
+			let leaderboardBtn = document.createElement('div')
+			leaderboardBtn.id = 'Leaderboard';
+			leaderboardBtn.innerHTML = `
+					<button id="leaderboardBtn" class="btn">Leaderboard</button>
+				`;
+			byId('session').appendChild(leaderboardBtn)
+			if(this.useRCSAccount == true) {
+				App.myAccounts = new RCSAccount(this.RCSAccountDomain);
+				App.myAccounts.createDOM();
+
+				App.myAccounts.getLeaderboardFor3dContext()
+				// notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
+				console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, REDLOG);
+			}
+
+			matrixEngine.utility.byId('matrix-net').style.overflow = 'hidden';
+		})
+
+		addEventListener('connectionDestroyed', (e) => {
+			console.log(`%c connectionDestroyed  ${e.detail}`, REDLOG);
+			if(App.scene[e.detail.connectionId] !== 'undefined' &&
+				typeof e.detail.connectionId !== 'undefined') {
+				try {
+					App.scene[e.detail.connectionId].selfDestroy(1)
+				} catch(err) {
+					console.log('Old session user...')
+				}
+			}
+		})
+		// ---------------------------------------
 
 		// addEventListener('stream-loaded', (e) => {
 		// 	// Safe place for access socket io
@@ -511,7 +643,7 @@ export class MatrixRoulette {
 		setTimeout(() => {
 			// clear double call
 			// roulette.wheelSystem.fireBall()
-			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.28, [6., -10.4, 3], [-4000, 250, 10]]}))
+			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.32, [1., -10.2, 4], [-10000, 150, 10]]}))
 			removeEventListener('camera-view-wheel', this.prepareFire)
 		}, this.status.winNumberMomentDelay)
 	}
@@ -529,7 +661,7 @@ export class MatrixRoulette {
 				setTimeout(() => {
 					this.setupCameraView('bets')
 					dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'WIN NUM:' + ev.detail}))
-					setTimeout(() => {this.tableBet.chips.clearAll()}, this.status.winNumberMomentDelay*3)
+					setTimeout(() => {this.tableBet.chips.clearAll()}, this.status.winNumberMomentDelay * 3)
 				}, this.status.winNumberMomentDelay)
 
 			})

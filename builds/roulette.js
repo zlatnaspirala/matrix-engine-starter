@@ -43832,7 +43832,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/roulette":68,"matrix-engine":12}],66:[function(require,module,exports){
+},{"./scripts/roulette":70,"matrix-engine":12}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44330,7 +44330,559 @@ function create2dHUDStatusLine(nidza, status) {
   });
 }
 
-},{"../../matrix-slot/scripts/standard-fonts":72,"./table-events":70,"matrix-engine":12,"matrix-engine-plugins":7}],68:[function(require,module,exports){
+},{"../../matrix-slot/scripts/standard-fonts":74,"./table-events":72,"matrix-engine":12,"matrix-engine-plugins":7}],68:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createPauseScreen = createPauseScreen;
+exports.ROCK_RANK = exports.REDLOG = void 0;
+
+var _utility = require("matrix-engine/lib/utility");
+
+var REDLOG = "background:black;color: lime;font-size:15px;text-shadow: 1px 1px 2px lime, -1px -1px 2px lime";
+exports.REDLOG = REDLOG;
+
+function createPauseScreen() {
+  var root = document.createElement('div');
+  root.id = 'pauseScreen'; // root.style = '';
+
+  function hidePauseScreen() {
+    (0, _utility.byId)('pauseScreen').style.display = 'none';
+  }
+
+  root.innerHTML = `
+	  <h2 class="pauseScreenText">
+			Hang3d Matrix
+			<button id="pauseGame" class='btn'>PLAY</button>
+			<div style="font-size:15px;">Powered by matrix-engine</div>
+			<div style="display: grid;font-size:15px;">Source code: <a href="https://github.com/zlatnaspirala">github/zlatnaspirala</a></div>
+		</h2>
+	`;
+  document.body.appendChild(root);
+  (0, _utility.byId)('pauseGame').addEventListener('click', hidePauseScreen, {
+    passive: true
+  });
+}
+/**
+ * @description Hang3d reborn
+ * @author Nikola Lukic
+ * @email zlatnaspirala@gmail.com
+ */
+
+
+var ROCK_RANK = {
+  getRank: points => {
+    points = parseInt(points);
+
+    if (points < 1001) {
+      return "junior";
+    } else if (points < 2000) {
+      return "senior";
+    } else if (points < 3000) {
+      return "captain";
+    } else if (points < 5000) {
+      return "general";
+    } else {
+      return "ultimate-killer";
+    }
+  },
+  getRankMedalImg: rank => {
+    if (rank == 'junior') {
+      return `<img style="height: 60px" src="./res/icons/medals/1.png" />`;
+    } else if (points == 'senior') {
+      return `<img style="height: 60px" src="./res/icons/medals/2.png" />`;
+    } else if (points == 'captain') {
+      return `<img style="height: 60px" src="./res/icons/medals/3.png" />`;
+    } else if (points == 'general') {
+      return `<img style="height: 60px" src="./res/icons/medals/4.png" />`;
+    } else {
+      return `<img style="height: 60px" src="./res/icons/medals/5.png" />`;
+    }
+  }
+};
+exports.ROCK_RANK = ROCK_RANK;
+
+},{"matrix-engine/lib/utility":41}],69:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RCSAccount = void 0;
+
+var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
+
+var _dom = require("./dom.js");
+
+var _utility = require("matrix-engine/lib/utility.js");
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+/**
+ * This is clone from hang3d.
+ */
+const isMobile = matrixEngine.utility.isMobile;
+const byId = matrixEngine.utility.byId;
+const notify = matrixEngine.utility.notify;
+
+class RCSAccount {
+  email = null;
+  token = null;
+
+  constructor(apiDomain) {
+    this.apiDomain = apiDomain;
+    this.visitor();
+    addEventListener('F12', e => {
+      console.log(`%c[Debbuger] ${e.detail}`, REDLOG);
+      localStorage.removeItem("visitor");
+      this.visitor(e.detail);
+    });
+    this.leaderboardBtn = document.getElementById('leaderboardBtn');
+    this.leaderboardBtn.addEventListener("click", this.getLeaderboard);
+  }
+
+  createDOM = () => {
+    var parent = document.createElement('div');
+    this.parent = parent; //parent.classList.add('')
+
+    parent.id = 'myAccountLoginForm';
+    var logo = document.createElement('img');
+    logo.id = 'logologin';
+    logo.setAttribute('alt', 'Login');
+    logo.style = 'width: 100px;border-radius: 10px;padding: 6px;';
+    logo.src = './res/icons/512.webp';
+    var title = document.createElement('div');
+    title.style.display = 'flex';
+    title.innerHTML = `
+		
+		<div style='width:100%; margin: 5px 5px;'> <h2 style='margin: 5px 5px;'>Rocket GamePlay Login Form</h2>
+		 Maximumroulette.com</div>
+		`;
+    title.appendChild(logo);
+    var content = document.createElement('div');
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.background = 'transparent';
+    var emailLabel = document.createElement('label');
+    emailLabel.id = 'emailLabel';
+    emailLabel.innerHTML = `Email:`;
+    emailLabel.setAttribute('for', 'arg-email');
+    var email = document.createElement('input'); // email.classList.add('myInput')
+
+    email.id = 'arg-email';
+    var passLabel = document.createElement('label');
+    passLabel.id = 'passLabel';
+    passLabel.innerHTML = `Passw:`;
+    passLabel.setAttribute('for', 'arg-pass');
+    var pass = document.createElement('input');
+    pass.id = 'arg-pass'; // pass.classList.add('myInput')
+
+    var loginBtn = document.createElement('button');
+    loginBtn.id = 'loginRCSBtn';
+    loginBtn.innerHTML = `LOGIN`;
+    loginBtn.classList.add('btn');
+    loginBtn.classList.add('btnMargin');
+    loginBtn.addEventListener('click', this.login);
+    var gotoRegisterMyAccount = document.createElement('button');
+    gotoRegisterMyAccount.id = 'registerBtn';
+    gotoRegisterMyAccount.classList.add(`btn`);
+    gotoRegisterMyAccount.classList.add(`btnMargin`);
+    gotoRegisterMyAccount.innerHTML = `REGISTER`;
+    gotoRegisterMyAccount.addEventListener('click', this.register);
+    var hideLoginMyAccount = document.createElement('button');
+    hideLoginMyAccount.classList.add(`btn`);
+    hideLoginMyAccount.classList.add(`btnMargin`);
+    hideLoginMyAccount.innerHTML = `NO LOGIN -> INSTANT PLAY`;
+    hideLoginMyAccount.addEventListener('click', () => {
+      byId('myAccountLoginForm').remove();
+    });
+
+    if (isMobile() == false) {
+      var descText = document.createElement('div');
+      descText.id = 'descText';
+      descText.style = 'font-size:smaller;';
+      descText.innerHTML = `<span style="width:45%" >Hang3d use webcam for video chat and streaming data</span>
+		<span style="width:45%;" >Add Url params '?video=false&audio=false' to disable streaming</span>
+		<span> BLACK FLY by Audionautix | http://audionautix.com Music promoted by https://www.free-stock-music.com Creative Commons Attribution-ShareAlike 3.0 Unported</span>
+		`;
+    }
+
+    parent.appendChild(title);
+    parent.appendChild(content);
+    content.appendChild(emailLabel);
+    content.appendChild(email);
+    content.appendChild(passLabel);
+    content.appendChild(pass);
+    content.appendChild(loginBtn);
+    content.appendChild(gotoRegisterMyAccount);
+    content.appendChild(hideLoginMyAccount); // content.appendChild(logo)
+
+    if (isMobile() == false) content.appendChild(descText);
+    document.body.appendChild(parent);
+  };
+  createLeaderboardDOM = data => {
+    if (byId('leaderboard') != null) {
+      byId('leaderboard').style.display = 'block';
+      return;
+    } // console.log('TEST MOBILE +++')
+
+
+    var parent = document.createElement('div');
+    parent.style = ``;
+    parent.classList.add('leaderboard'); // if(isMobile() == true) {
+    // 	parent.style = `
+    // 	position: absolute;
+    // 	border-radius: 4px;
+    // 	top: 10%;
+    // 	left: 0%;
+    // 	width: 95%;
+    // 	padding: 10px;`;
+    // }
+
+    parent.id = 'leaderboard';
+    var title = document.createElement('div');
+    title.innerHTML = `<h3>Top 10 leaderboard [RocketCraftingServer]</h3>`;
+    parent.appendChild(title);
+    var tableLabel = document.createElement('div');
+    tableLabel.style.display = 'flex';
+    tableLabel.style.flexDirection = 'row';
+    var nicklabel = document.createElement('div');
+    nicklabel.innerText = 'Nickname';
+    nicklabel.style.width = '100%';
+    var pointslabel = document.createElement('div');
+    pointslabel.innerText = 'Points';
+    pointslabel.style.width = '100%';
+    tableLabel.appendChild(nicklabel);
+    tableLabel.appendChild(pointslabel);
+    parent.appendChild(tableLabel);
+    var parentForTable = document.createElement('div');
+    parentForTable.style.height = '70vh';
+    parentForTable.style.overflow = 'scroll';
+    parentForTable.style.overflowX = 'hidden';
+    data.forEach((element, index) => {
+      var table = document.createElement('div');
+      table.style.display = 'flex';
+      table.style.flexDirection = 'row';
+      table.style.justifyContent = 'center';
+      table.style.alignItems = 'center';
+      table.style.boxShadow = 'none';
+      var nick = document.createElement('div');
+      nick.innerText = element.nickname;
+      nick.style.width = '100%';
+
+      if (index == 0) {
+        nick.style.boxShadow = '0px 7px 2px -1px #ffe100';
+      } else if (index == 1) {
+        nick.style.boxShadow = '0px 7px 2px -1px white';
+      } else if (index == 2) {
+        nick.style.boxShadow = '0px 7px 2px -1px #a01010';
+      } else {
+        nick.style.boxShadow = '0px 7px 2px -1px #757471';
+      }
+
+      var points = document.createElement('div');
+      points.innerText = element.points;
+      points.style.width = '100%';
+
+      if (index == 0) {
+        points.style.boxShadow = '0px 7px 2px -1px #ffe100';
+      } else if (index == 1) {
+        points.style.boxShadow = '0px 7px 2px -1px white';
+      } else if (index == 2) {
+        points.style.boxShadow = '0px 7px 2px -1px #a01010';
+      } else {
+        points.style.boxShadow = '0px 7px 2px -1px #757471';
+      } // var medal = document.createElement('img');
+      // medal.id = 'medal';
+      // logo.src = './assets/icons/icon96.png';
+
+
+      table.appendChild(nick);
+      table.appendChild(points);
+      table.innerHTML += _dom.ROCK_RANK.getRankMedalImg(_dom.ROCK_RANK.getRank(element.points));
+      parentForTable.appendChild(table);
+    });
+    parent.appendChild(parentForTable);
+    var hideBtn = document.createElement('button');
+    hideBtn.classList = 'btn';
+    hideBtn.style.marginTop = '7px';
+    hideBtn.innerText = 'HIDE';
+    hideBtn.addEventListener('click', () => {
+      parent.style.display = 'none';
+    });
+    parent.appendChild(hideBtn);
+    document.body.appendChild(parent);
+  };
+  register = () => {
+    this.register_procedure(this);
+  };
+
+  async register_procedure() {
+    let route = this.apiDomain || location.origin;
+    byId('loginRCSBtn').disabled = true;
+    byId('registerBtn').disabled = true;
+    let args = {
+      emailField: byId('arg-email') != null ? byId('arg-email').value : null,
+      passwordField: byId('arg-pass') != null ? byId('arg-pass').value : null
+    };
+
+    if (args.emailField == null || args.passwordField == null) {
+      notify.show('Please fill up email and passw for login or register.');
+    }
+
+    fetch(route + '/rocket/register', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      notify.error(`${r.message}`);
+
+      if (r.message == "Check email for conmfirmation key.") {
+        this.email = byId('arg-email').value;
+        sessionStorage.setItem('email', byId('arg-email').value);
+        byId('emailLabel').remove();
+        byId('loginRCSBtn').remove();
+        byId('arg-email').remove();
+        byId("passLabel").innerHTML = 'ENTER CONFIRMATION CODE';
+        byId('arg-pass').value = "";
+        byId('registerBtn').removeEventListener('click', this.register);
+        byId('registerBtn').disabled = false;
+        byId('registerBtn').innerHTML = 'CONFIRM CODE FROM EMAIL';
+        byId('registerBtn').id = 'CC';
+        byId('CC').addEventListener('click', () => {
+          this.confirmation();
+        });
+        sessionStorage.setItem('RocketAcountRegister', 'Check email for conmfirmation key.');
+      } else {
+        setTimeout(() => {
+          notify.show("Next Register/Login call try in 5 secounds...");
+          this.preventDBLOG = false;
+          this.preventDBREG = false;
+          byId('loginRCSBtn').disabled = false;
+          byId('registerBtn').disabled = false;
+        }, 5000);
+      }
+    }).catch(err => {
+      console.log('[My Account Error]', err);
+      notify.show("Next Register call try in 5 secounds...");
+      setTimeout(() => {
+        this.preventDBLOG = false;
+        this.preventDBREG = false;
+        byId('loginRCSBtn').disabled = false;
+        byId('registerBtn').disabled = false;
+      }, 5000);
+      return;
+    });
+  }
+
+  confirmation = async () => {
+    let route = this.apiDomain;
+    const args = {
+      emailField: this.email,
+      tokenField: byId('arg-pass').value
+    };
+    fetch(route + '/rocket/confirmation', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      if (r.message == "Wrong confirmation code.") {} else if (r.message == "Confirmation done.") {
+        alert(r.message);
+        this.parent.innerHTML = ''; // ----
+
+        this.createDOM();
+      }
+
+      notify.error(`${r.message}`);
+    });
+  };
+  login = async () => {
+    let route = this.apiDomain || location.origin;
+    byId('loginRCSBtn').disabled = true;
+    byId('registerBtn').disabled = true;
+    let args = {
+      emailField: byId('arg-email') != null ? byId('arg-email').value : null,
+      passwordField: byId('arg-pass') != null ? byId('arg-pass').value : null
+    };
+    fetch(route + '/rocket/login', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      console.log(r.message);
+      notify.show(`${r.message}`);
+
+      if (r.message == "User logged") {
+        this.email = byId('arg-email').value;
+        byId('myAccountLoginForm').style.display = 'none';
+        sessionStorage.setItem('RocketAcount', JSON.stringify(r.flag));
+      }
+    }).catch(err => {
+      console.log('[My Account Error]', err);
+      notify.show("Next Login call try in 5 secounds...");
+      setTimeout(() => {
+        this.preventDBLOG = false;
+        this.preventDBREG = false;
+        byId('registerBtn').disabled = false;
+        byId('loginRCSBtn').disabled = false;
+      }, 5000);
+      return;
+    });
+  };
+
+  async visitor(isRegular) {
+    if (typeof isRegular === 'undefined') isRegular = 'Yes';
+    if (localStorage.getItem("visitor") == 'welcome') return;
+    let route = this.apiDomain;
+    let args = {
+      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
+      userAgent: navigator.userAgent.toString(),
+      fromUrl: location.href.toString(),
+      isRegular: isRegular
+    };
+    fetch(route + '/rocket/visitors', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(() => {
+      localStorage.setItem("visitor", "welcome");
+    }).catch(err => {
+      console.log('ERR', err);
+    });
+  }
+
+  getLeaderboard = async e => {
+    e.preventDefault();
+    byId('netHeaderTitle').click();
+    this.leaderboardBtn.disabled = true;
+    fetch(this.apiDomain + '/rocket/public-leaderboard', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify({})
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      notify.error(`${r.message}`);
+
+      if (r.message == "You got leaderboard data.") {
+        this.leaderboardData = r.leaderboard;
+        this.createLeaderboardDOM(r.leaderboard);
+      }
+
+      setTimeout(() => {
+        this.leaderboardBtn.disabled = false;
+      }, 5000);
+    }).catch(err => {
+      console.log('[Leaderboard Error]', err);
+      notify.show("Next call try in 5 secounds...");
+      setTimeout(() => {
+        this.leaderboardBtn.disabled = false;
+      }, 5000);
+      return;
+    });
+  };
+  getLeaderboardFor3dContext = async e => {
+    // e.preventDefault();
+    fetch(this.apiDomain + '/rocket/public-leaderboard', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify({})
+    }).then(d => {
+      return d.json();
+    }).then(r => {
+      notify.error(`${r.message}`);
+
+      if (r.message == "You got leaderboard data.") {
+        this.leaderboardData = r.leaderboard;
+        console.log('PREPARE FOR 3d context', this.leaderboardData);
+      }
+
+      setTimeout(() => {
+        this.leaderboardBtn.disabled = false;
+      }, 5000);
+    }).catch(err => {
+      console.log('[Leaderboard Error]', err);
+      notify.show("Next call try in 5 secounds...");
+      setTimeout(() => {
+        this.leaderboardBtn.disabled = false;
+      }, 5000);
+      return;
+    });
+  };
+
+  async points10() {
+    let route = this.apiDomain;
+
+    if (sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
+      console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'));
+      return;
+    }
+
+    let args = {
+      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
+      userAgent: navigator.userAgent.toString(),
+      fromUrl: location.href.toString(),
+      token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
+      mapName: 'hang3d-matrix-base0'
+    };
+    fetch(route + '/rocket/point-plus10', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(() => {
+      localStorage.setItem("visitor", "welcome");
+    }).catch(err => {
+      console.log('ERR', err);
+    });
+  }
+
+  async dead() {
+    let route = this.apiDomain;
+
+    if (sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
+      console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'));
+      return;
+    }
+
+    let args = {
+      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
+      userAgent: navigator.userAgent.toString(),
+      fromUrl: location.href.toString(),
+      token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
+      mapName: 'hang3d-matrix-base0'
+    };
+    fetch(route + '/rocket/point-plus10', {
+      method: 'POST',
+      headers: _utility.jsonHeaders,
+      body: JSON.stringify(args)
+    }).then(d => {
+      return d.json();
+    }).then(() => {
+      localStorage.setItem("visitor", "welcome");
+    }).catch(err => {
+      console.log('ERR', err);
+    });
+  }
+
+}
+
+exports.RCSAccount = RCSAccount;
+
+},{"./dom.js":68,"matrix-engine":12,"matrix-engine/lib/utility.js":41}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44356,6 +44908,10 @@ var _clientConfig = _interopRequireDefault(require("../client-config.js"));
 
 var _utility = require("matrix-engine/lib/utility.js");
 
+var _rocketCraftingAccount = require("./rocket-crafting-account.js");
+
+var _dom = require("./dom");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
@@ -44372,7 +44928,9 @@ class MatrixRoulette {
   wheelSystem = null;
   preventDBTrigger = null; // Optimal - control switch with url param nui=true or undefined.
 
-  NUI = null; // Top level vars
+  NUI = null;
+  useRCSAccount = true;
+  RCSAccountDomain = 'https://maximumroulette.com'; // Top level vars
   // - Initial line text
   // - Delay interval on winning number
   // - camera view bets/wheel
@@ -44387,6 +44945,14 @@ class MatrixRoulette {
     cameraView: 'bets',
     game: 'MEDITATE'
   };
+
+  videoChatEnabled() {
+    if (typeof matrixEngine.utility.QueryString.chat == 'undefined' || matrixEngine.utility.QueryString.chat == 'false') {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   constructor() {
     if (this.isManual() == false) {
@@ -44472,15 +45038,19 @@ class MatrixRoulette {
 
     this.setupCameraView('initbets'); // Add canvas2d context to webgl
 
-    this.addHUD(this.playerInfo); // Initial func for Networking general. Based on webRTC/MultiRTC lib.
-    // this.runVideoChat()
-    // New net2
-    // Activate networking
-    // matrixEngine.Engine.activateNet2(undefined,
-    // 	{
-    // 		sessionName: 'matrix-roulette',
-    // 		resolution: '240x160'
-    // 	});
+    this.addHUD(this.playerInfo);
+
+    if (this.videoChatEnabled() == true) {
+      console.log("Enable video-chat..."); // Initial func for Networking general. Based on webRTC/MultiRTC lib.
+
+      this.runVideoChat(); // New net2
+      // Activate networking
+      // matrixEngine.Engine.activateNet2(undefined,
+      // 	{
+      // 		sessionName: 'matrix-roulette',
+      // 		resolution: '240x160'
+      // 	});
+    }
 
     this.cameraInMove = false;
 
@@ -44682,10 +45252,113 @@ class MatrixRoulette {
     // DEPLACE OLD NET
     // Sending class reference `ClientConfig` not object/instance
     // matrixEngine.Engine.activateNet(ClientConfig)
+    // New net2
+    // Activate networking
+    matrixEngine.Engine.activateNet2(undefined, {
+      sessionName: 'matrix-roulette',
+      resolution: '240x160'
+    });
     var tex = {
       source: ["res/images/field.png"],
       mix_operation: "multiply"
-    }; // addEventListener('stream-loaded', (e) => {
+    }; // Networking
+
+    addEventListener(`LOCAL-STREAM-READY`, e => {
+      // App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
+      // console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
+      console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, _dom.REDLOG); // test first
+
+      dispatchEvent(new CustomEvent(`onTitle`, {
+        detail: `🕸️${e.detail.connection.connectionId}🕸️`
+      }));
+      matrixEngine.utility.notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`);
+      var name = e.detail.connection.connectionId; // byId('netHeaderTitle').click()
+
+      console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
+      // App.scene.playerCollisonBox.position.yNetOffset = -2;
+      // App.scene.playerCollisonBox.net.enable = true;
+      // CAMERA VIEW FOR SELF LOCAL CAM
+      // world.Add("squareTex", 1, name, tex);
+      // App.scene[name].position.x = 0;
+      // App.scene[name].position.z = -20;
+      // App.scene[name].LightsData.ambientLight.set(1, 0, 0);
+      // App.scene[name].net.enable = true;
+      // App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(byId(e.detail.streamManager.id))
+    });
+    var ONE_TIME = 0;
+    addEventListener('streamPlaying', e => {
+      if (ONE_TIME == 0) {
+        ONE_TIME = 1; // console.log('REMOTE-STREAM- streamPlaying [app level] ', e.detail.target.videos[0]);
+        // DIRECT REMOTE
+
+        var name = e.detail.target.stream.connection.connectionId; // createNetworkPlayerCharacter(name)
+        // App.scene[name].net.active = true;
+        // matrixEngine.Engine.net.multiPlayer.init
+        // App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(e.detail.target.videos[0].video)
+      }
+    });
+    addEventListener('onStreamCreated', e => {
+      if (matrixEngine.Engine.net.connection == null) {
+        // local
+        console.log('MY CONNECTION IS NULL');
+        setTimeout(() => {
+          // test
+          if (typeof matrixEngine.Engine.net.connection === 'undefined' || matrixEngine.Engine.net.connection == null) return;
+
+          if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
+            console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+            var name = e.detail.event.stream.connection.connectionId; // createNetworkPlayerCharacter(name)
+          }
+        }, 3000);
+        return;
+      }
+
+      if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
+        console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+        var name = e.detail.event.stream.connection.connectionId; // createNetworkPlayerCharacter(name)
+      }
+    });
+    addEventListener('net-ready', e => {
+      // Star on load
+      (0, _utility.byId)('buttonCloseSession').remove();
+      matrixEngine.Engine.net.joinSessionUI.click(); // createPauseScreen()
+      // Next implementation RocketCrafringServer calls.
+
+      let profile = document.createElement('div');
+      profile.id = 'profile';
+      profile.innerHTML = `
+					Status: free for all
+				`;
+      (0, _utility.byId)('session').appendChild(profile);
+      let leaderboardBtn = document.createElement('div');
+      leaderboardBtn.id = 'Leaderboard';
+      leaderboardBtn.innerHTML = `
+					<button id="leaderboardBtn" class="btn">Leaderboard</button>
+				`;
+      (0, _utility.byId)('session').appendChild(leaderboardBtn);
+
+      if (this.useRCSAccount == true) {
+        App.myAccounts = new _rocketCraftingAccount.RCSAccount(this.RCSAccountDomain);
+        App.myAccounts.createDOM();
+        App.myAccounts.getLeaderboardFor3dContext(); // notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
+
+        console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, _dom.REDLOG);
+      }
+
+      matrixEngine.utility.byId('matrix-net').style.overflow = 'hidden';
+    });
+    addEventListener('connectionDestroyed', e => {
+      console.log(`%c connectionDestroyed  ${e.detail}`, _dom.REDLOG);
+
+      if (App.scene[e.detail.connectionId] !== 'undefined' && typeof e.detail.connectionId !== 'undefined') {
+        try {
+          App.scene[e.detail.connectionId].selfDestroy(1);
+        } catch (err) {
+          console.log('Old session user...');
+        }
+      }
+    }); // ---------------------------------------
+    // addEventListener('stream-loaded', (e) => {
     // 	// Safe place for access socket io
     // 	// 'STATUS_MR' Event is only used for Matrix Roulette
     // 	// It is symbolic for now - results must fake physics to preview right number.
@@ -44898,7 +45571,7 @@ class MatrixRoulette {
       // clear double call
       // roulette.wheelSystem.fireBall()
       dispatchEvent(new CustomEvent('fire-ball', {
-        detail: [0.28, [6., -10.4, 3], [-4000, 250, 10]]
+        detail: [0.32, [1., -10.2, 4], [-10000, 150, 10]]
       }));
       removeEventListener('camera-view-wheel', this.prepareFire);
     }, this.status.winNumberMomentDelay);
@@ -45080,7 +45753,7 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"../client-config.js":66,"./2d-draw.js":67,"./table-events.js":70,"./wheel.js":71,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":41,"nidza":46}],69:[function(require,module,exports){
+},{"../client-config.js":66,"./2d-draw.js":67,"./dom":68,"./rocket-crafting-account.js":69,"./table-events.js":72,"./wheel.js":73,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":41,"nidza":46}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -45227,7 +45900,8 @@ class TableChips {
       winNumberColor = 'red';
     } else if (_tableEvents.RULES.black.indexOf(parseInt(winNumber)) != -1) {
       winNumberColor = 'black';
-    } else if (e.detail == 0) {
+    } else if (winNumber == 0) {
+      console.log('confirm later msg..... good');
       winNumberColor = 'ZERO';
     }
 
@@ -45404,6 +46078,18 @@ class TableChips {
           array[index].chipObj.selfDestroy();
           console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace);
         }
+      } else if (winNumberColor == "ZERO") {
+        if (array[index].betPlace.name == 'red' || array[index].betPlace.name == 'single0') {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy();
+          console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace);
+        }
+
+        if (array[index].betPlace.name == 'black' || array[index].betPlace.name == 'single0') {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy();
+          console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace);
+        }
       }
     });
   }
@@ -45412,7 +46098,7 @@ class TableChips {
 
 exports.default = TableChips;
 
-},{"./table-events":70,"cannon":5,"matrix-engine":12}],70:[function(require,module,exports){
+},{"./table-events":72,"cannon":5,"matrix-engine":12}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46425,7 +47111,7 @@ class TableEvents {
 
 exports.default = TableEvents;
 
-},{"./table-chips.js":69,"matrix-engine":12}],71:[function(require,module,exports){
+},{"./table-chips.js":71,"matrix-engine":12}],73:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46444,7 +47130,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 /**
  * @description
  * Single object single physics body system
- * No collide because i use STATIC bodies
+ * No collide because i use STATIC bodies.
  */
 class Wheel {
   ballBody = null; // speedRollInit = 0.15;
@@ -46454,7 +47140,7 @@ class Wheel {
   ballCollideFlag = false;
 
   constructor(pWorld) {
-    console.log('wheel constructor');
+    console.log('wheel constructor', createTetra);
     this.pWorld = pWorld;
     this.texRollWheel = {
       source: ["res/images/ball.png"],
@@ -46481,7 +47167,7 @@ class Wheel {
 
   momentOftouch = e => {
     // debug
-    return;
+    // return;
     if (typeof e.body.matrixRouletteId === 'undefined') return;
     console.log("Collided with number:", e.body.matrixRouletteId);
     dispatchEvent(new CustomEvent('matrix.roulette.win.number', {
@@ -46500,7 +47186,7 @@ class Wheel {
     }
   };
   fireBall = props => {
-    if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.3, [4, -12.4, 3], [-5000, 420, 1]];
+    if (typeof props.detail === 'undefined' || props.detail === null) props.detail = [0.4, [4, -12.4, 3], [-5000, 420, 1]];
     console.log("props", props.detail);
     roulette.wheelSystem.addBall(props.detail[0], props.detail[1], props.detail[2]); // matrixEngine.App.sounds.play('spining')
 
@@ -46510,8 +47196,9 @@ class Wheel {
     }
   };
   addBall = (j, posArg, force) => {
+    this.speedRollInit = 0.15;
+
     if (this.ballBody !== null) {
-      this.speedRollInit = 0.15;
       console.log('Ball already created. POS : ', posArg[0], ' - ', posArg[1], ' - ', posArg[2]);
       this.ballBody.position.set(posArg[0], posArg[1], posArg[2]);
       this.ballBody.angularVelocity.setZero();
@@ -46557,6 +47244,13 @@ class Wheel {
       // source: ["res/images/wheel-roll/skin/skin.jpg"],
       source: ["res/images/wheel-roll/center/wood.jpg"],
       mix_operation: "multiply"
+    };
+    var texTop = {
+      // reflection-wheel
+      // source: ["res/images/wheel-roll/metal-separators/reflection-wheel.jpg"],
+      // source: ["res/images/wheel-roll/skin/skin.jpg"],
+      source: ["res/images/wheel-roll/center/wood.jpg"],
+      mix_operation: "multiply"
     }; // wheel config
 
     var outerRad = 12.8;
@@ -46588,10 +47282,10 @@ class Wheel {
     App.scene.bigWheel.LightsData.directionLight.r = 0; // top static big wheel
     // wheel config
 
-    var outerRad = 12.8;
-    var inner_rad = 1.125;
+    var outerRad = 13;
+    var inner_rad = 0.85;
     var wheelsPoly = 64;
-    matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheelTop", tex, {
+    matrixEngine.matrixWorld.world.Add("generatorLightTex", 1, "bigWheelTop", texTop, {
       custom_type: 'torus',
       slices: wheelsPoly,
       loops: wheelsPoly,
@@ -46604,18 +47298,16 @@ class Wheel {
       mass: 0,
       type: CANNON.Body.STATIC,
       shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-      position: new CANNON.Vec3(0, 3.5, -21)
+      position: new CANNON.Vec3(0, -21, 3.5)
     });
     this.pWorld.world.addBody(bigWheelTop);
     App.scene.bigWheelTop.physics.currentBody = bigWheelTop;
     App.scene.bigWheelTop.physics.enabled = true;
-    App.scene.bigWheelTop.position.y = 3;
-    App.scene.bigWheelTop.position.z = -21;
     App.scene.bigWheelTop.LightsData.directionLight.g = 0;
     App.scene.bigWheelTop.LightsData.directionLight.r = 0; // add simple square down from fields to eliminate empty space
 
     matrixEngine.matrixWorld.world.Add("cubeLightTex", 1, "bottomSquare", tex);
-    App.scene.bottomSquare.position.setPosition(0, -1.25, -21);
+    App.scene.bottomSquare.position.setPosition(0, -0.8, -21);
     App.scene.bottomSquare.rotation.rotx = 90;
     App.scene.bottomSquare.rotation.rotationSpeed.z = 9;
     App.scene.bottomSquare.geometry.setScale(10.8);
@@ -46842,7 +47534,7 @@ class Wheel {
         mass: 0,
         type: CANNON.Body.STATIC,
         shape: CANNON.Trimesh.createTorus(outerRad, inner_rad, wheelsPoly, wheelsPoly),
-        position: new CANNON.Vec3(0, -21, 3.55)
+        position: new CANNON.Vec3(0, -21, 3.6)
       }); // dev
       // window.centerWheel = centerWheel;
 
@@ -46856,7 +47548,26 @@ class Wheel {
 
 exports.default = Wheel;
 
-},{"cannon":5,"matrix-engine":12}],72:[function(require,module,exports){
+function createTetra() {
+  var scale = 5;
+  var verts = [new CANNON.Vec3(scale * 0, scale * 0, scale * 0), new CANNON.Vec3(scale * 1, scale * 0, scale * 0), new CANNON.Vec3(scale * 0, scale * 1, scale * 0), new CANNON.Vec3(scale * 0, scale * 0, scale * 1)];
+  var offset = -0.35; //  var offset = -1;
+
+  for (var i = 0; i < verts.length; i++) {
+    var v = verts[i];
+    v.x += offset;
+    v.y += offset;
+    v.z += offset;
+  }
+
+  return new CANNON.ConvexPolyhedron(verts, [[0, 3, 2], // -x
+  [0, 1, 3], // -y
+  [0, 2, 1], // -z
+  [1, 2, 3] // +xyz
+  ]);
+}
+
+},{"cannon":5,"matrix-engine":12}],74:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
