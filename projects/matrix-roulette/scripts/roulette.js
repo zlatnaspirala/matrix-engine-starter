@@ -5,13 +5,17 @@ import * as CANNON from 'cannon';
 import {Nidza} from 'nidza';
 import {create2dHUD, createStatusBoxHUD, create2dHUDStatusLine} from "./2d-draw.js";
 import {MTM} from 'matrix-engine-plugins';
-import ClientConfig from "../client-config.js";
 // import NUICommander from './nui.js';
 import {byId} from "matrix-engine/lib/utility.js";
-import {RCSAccount} from "./rocket-crafting-account.js";
+// import {RCSAccount} from "./rocket-crafting-account.js";
 import {REDLOG} from "./dom";
 import {VideoChat} from "./video-chat.js";
 
+/**
+ * @author Nikola Lukic 
+ * @email zlatnaspirala@gmail.com
+ * @website https://maximumroulette.com
+ */
 export class MatrixRoulette {
 	// General physics and ME world
 	physics = null;
@@ -46,23 +50,37 @@ export class MatrixRoulette {
 		}
 	}
 
+	isLocalhost() {
+		if(location.hostname.toString().indexOf('localhost') != -1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	constructor() {
 
 		if(this.isManual() == false) {
-			console.log('ServerEvent[maximumroulette.com/matrix-roulette]')
-			const events = new EventSource('https://maximumroulette.com/matrix-roulette');
+			let events = null;
+			if(this.isLocalhost() == true) {
+				events = new EventSource('https://localhost:8080/matrix-roulette');
+				console.log('ServerEvent[localhost:8080/matrix-roulette]')
+			} else {
+				events = new EventSource('https://maximumroulette.com/matrix-roulette');
+				console.log('ServerEvent[maximumroulette.com/matrix-roulette]')
+			}
+
 			events.onmessage = (event) => {
 				const parsedData = JSON.parse(event.data);
 				if(typeof parsedData.matrixRoulette === 'undefined') {return }
-				console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status)
+				console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status, " : ", parsedData.matrixRoulette)
 				if(parsedData.matrixRoulette.status == "MEDITATE") {
-					// 
 					this.status.game = 'MEDITATE';
-					dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: parsedData.matrixRoulette.counter}))
+					dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: parsedData.matrixRoulette}))
 				} else if(parsedData.matrixRoulette.status == "RESULT") {
-					// 
 					this.status.game = 'RESULT';
 					console.log('[serverEvent:matrix-roulette[win number]]', parsedData.matrixRoulette.winNumber)
+					dispatchEvent(new CustomEvent('RESULT', {detail: parsedData.matrixRoulette}))
 				} else {
 					alert()
 				}
@@ -122,23 +140,16 @@ export class MatrixRoulette {
 		this.attachGamePlayEvents()
 		// nidza.js / 2d canvas small library
 		// Text oriented - transformation also 3d context variant of components shader oriented.
-		this.nidza = new Nidza();
+		this.nidza = new Nidza()
 		// First view
 		this.setupCameraView('initbets')
 		// Add canvas2d context to webgl
-		this.addHUD(this.playerInfo)
+		this.addHUD()
 
 		if(this.videoChatEnabled() == true) {
 			console.log("Enable video-chat...")
 			// Initial func for Networking general. Based on webRTC/MultiRTC lib.
 			this.runVideoChat()
-			// New net2
-			// Activate networking
-			// matrixEngine.Engine.activateNet2(undefined,
-			// 	{
-			// 		sessionName: 'matrix-roulette',
-			// 		resolution: '240x160'
-			// 	});
 		}
 
 		this.cameraInMove = false;
@@ -152,6 +163,9 @@ export class MatrixRoulette {
 			matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3', 2)
 			matrixEngine.App.sounds.audios.background.loop = true
 			let testAutoPlay = matrixEngine.App.sounds.audios.background.play();
+			matrixEngine.App.sounds.audios.background.volume = 0.2;
+			matrixEngine.App.sounds.audios.clear.volume = 1;
+			matrixEngine.App.sounds.audios.chip.volume = 1;
 			testAutoPlay.catch((err) => {})
 		}
 
@@ -308,39 +322,29 @@ export class MatrixRoulette {
 	}
 
 	runVideoChat() {
-		// DEPLACE OLD NET
-		// Sending class reference `ClientConfig` not object/instance
-		// matrixEngine.Engine.activateNet(ClientConfig)
-
-		// New net2
+		// net2 feature in matrix-engine (Use openvidu/kurento server in back)
 		// Activate networking
 		matrixEngine.Engine.activateNet2(undefined,
 			{
 				sessionName: 'matrix-roulette',
 				resolution: '240x160'
 			});
-
-		var tex = {
-			source: ["res/images/field.png"],
-			mix_operation: "multiply"
-		}
-
+		// var tex = {
+		// 	source: ["res/images/field.png"],
+		// 	mix_operation: "multiply"
+		// }
 		// Networking
 		addEventListener(`LOCAL-STREAM-READY`, (e) => {
 			// App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
 			// console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
 			console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, REDLOG)
-			// test first
 			dispatchEvent(new CustomEvent(`onTitle`, {detail: `🕸️${e.detail.connection.connectionId}🕸️`}))
 			matrixEngine.utility.notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`)
 			var name = e.detail.connection.connectionId;
 			// byId('netHeaderTitle').click()
-			console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId);
 			// Make relation for net players
-
 			// App.scene.playerCollisonBox.position.yNetOffset = -2;
 			// App.scene.playerCollisonBox.net.enable = true;
-
 			// CAMERA VIEW FOR SELF LOCAL CAM
 			// world.Add("squareTex", 1, name, tex);
 			// App.scene[name].position.x = 0;
@@ -376,9 +380,9 @@ export class MatrixRoulette {
 						matrixEngine.Engine.net.connection == null) return;
 
 					if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
-						console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
+						console.log('+2 sec/REMOTE-STREAM-READY: ', e.detail.event.stream.connection.connectionId);
 						var name = e.detail.event.stream.connection.connectionId;
-						// createNetworkPlayerCharacter(name)
+						// ...
 					}
 				}, 3000)
 				return;
@@ -386,7 +390,7 @@ export class MatrixRoulette {
 			if(e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
 				console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
 				var name = e.detail.event.stream.connection.connectionId;
-				// createNetworkPlayerCharacter(name)
+				// ...
 			}
 		})
 
@@ -394,7 +398,6 @@ export class MatrixRoulette {
 			// Star on load
 			byId('buttonCloseSession').remove();
 			matrixEngine.Engine.net.joinSessionUI.click()
-			// createPauseScreen()
 			// Next implementation RocketCrafringServer calls.
 			let profile = document.createElement('div')
 			profile.id = 'profile';
@@ -403,20 +406,21 @@ export class MatrixRoulette {
 				`;
 			byId('session').appendChild(profile)
 
-			let leaderboardBtn = document.createElement('div')
-			leaderboardBtn.id = 'Leaderboard';
-			leaderboardBtn.innerHTML = `
-					<button id="leaderboardBtn" class="btn">Leaderboard</button>
-				`;
-			byId('session').appendChild(leaderboardBtn)
-			if(this.useRCSAccount == true) {
-				App.myAccounts = new RCSAccount(this.RCSAccountDomain);
-				App.myAccounts.createDOM();
+			// let leaderboardBtn = document.createElement('div')
+			// leaderboardBtn.id = 'Leaderboard';
+			// leaderboardBtn.innerHTML = `
+			// 		<button id="leaderboardBtn" class="btn">Leaderboard</button>
+			// 	`;
+			// byId('session').appendChild(leaderboardBtn)
 
-				App.myAccounts.getLeaderboardFor3dContext()
-				// notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
-				console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, REDLOG);
-			}
+			// if(this.useRCSAccount == true) {
+			// 	App.myAccounts = new RCSAccount(this.RCSAccountDomain);
+			// 	App.myAccounts.createDOM();
+
+			// 	App.myAccounts.getLeaderboardFor3dContext()
+			// 	// notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
+			// 	console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, REDLOG);
+			// }
 
 			matrixEngine.utility.byId('matrix-net').style.overflow = 'hidden';
 		})
@@ -432,90 +436,6 @@ export class MatrixRoulette {
 				}
 			}
 		})
-
-
-
-
-		// ---------------------------------------
-
-		// addEventListener('stream-loaded', (e) => {
-		// 	// Safe place for access socket io
-		// 	// 'STATUS_MR' Event is only used for Matrix Roulette
-		// 	// It is symbolic for now - results must fake physics to preview right number.
-		// 	App.network.connection.socket.on('STATUS_MR', (e) => {
-		// 		if(e.message == 'RESULTS') {
-		// 			console.log('tick-> ', e.message)
-		// 			console.log('winNumber-> ', e.winNumber)
-		// 			dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {detail: e.winNumber}))
-		// 		} else {
-		// 			// console.log('tick-> ', e.counter)
-		// 			if(e.message == 'MEDITATE') dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: e.counter}))
-		// 			if(e.message == 'RESULT') dispatchEvent(new CustomEvent('RESULT', {detail: e.counter}))
-		// 		}
-		// 	})
-
-		// 	var _ = document.querySelectorAll('.media-box')
-		// 	var name = "videochat_" + e.detail.data.userId;
-		// 	_.forEach((i) => {
-		// 		var name = "videochat_" + e.detail.data.userId;
-		// 		if(e.detail.data.userId != App.network.connection.userid &&
-		// 			App.scene[name] !== 'undefined' &&
-		// 			sessionStorage.getItem('a_' + name) == null) {
-		// 			sessionStorage.setItem('a_' + name, name)
-		// 			// This is video element!
-		// 			console.log("stream-loaded => ", name)
-		// 			matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-		// 			console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length)
-		// 			App.scene[name].position.x = 10;
-		// 			App.scene[name].position.z = -20;
-		// 			App.scene[name].position.y = 7;
-		// 			App.scene[name].geometry.setScale(-1) // invert tex coords
-		// 			App.scene[name].geometry.setScaleByX(-2)
-		// 			App.scene[name].LightsData.ambientLight.set(1, 1, 1);
-		// 			// App.scene[name].net.enable = false;
-		// 			console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length)
-		// 			//  App.scene[name].net.activate();
-		// 			App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1])
-		// 			addEventListener('net.remove-user', (event) => {
-		// 				var n = "videochat_" + event.detail.data.userid;
-		// 				if(typeof App.scene[n] !== 'undefined' &&
-		// 					typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
-		// 					App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
-		// 					App.scene[n].selfDestroy(1)
-		// 				}
-		// 			})
-		// 		} else {
-		// 			// own stream 
-
-		// 			if(App.network.connection.isInitiator == true) {
-		// 				console.log('isInitiator is TRUE!')
-		// 			}
-
-		// 			if(sessionStorage.getItem('alocal_' + name) == null) {
-		// 				var name = 'LOCAL_STREAM';
-		// 				matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-		// 				App.scene[name].position.x = 0;
-		// 				App.scene[name].position.z = -30;
-		// 				App.scene[name].position.y = 7;
-		// 				App.scene[name].geometry.setScale(-1)
-		// 				App.scene[name].geometry.setScaleByX(-2)
-		// 				App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-		// 				// TV OBJ
-		// 				// function onLoadObj(meshes) {
-		// 				//   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
-		// 				//   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
-		// 				//   App.scene.TV.position.setPosition(-20, 2, -25)
-		// 				//   App.scene.TV.mesh.setScale(7)
-		// 				//   // App.scene.TV.rotation.rotateY(90);
-		// 				//   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
-		// 				//   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-		// 				// }
-		// 				// sessionStorage.setItem('alocal_' + name, name)
-		// 				// matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
-		// 			}
-		// 		}
-		// 	})
-		// })
 
 		// hide networking html dom div.
 		setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200)
@@ -563,7 +483,7 @@ export class MatrixRoulette {
 		// matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
 		canvas.addEventListener('mousedown', (ev) => {
 			App.onlyClicksPass = true;
-			// no need maybe ?!!!?
+			// no need maybe ?
 			matrixEngine.raycaster.checkingProcedure(ev);
 			setTimeout(() => {
 				App.onlyClicksPass = false;
@@ -576,8 +496,6 @@ export class MatrixRoulette {
 
 		var LAST_HOVER = null;
 		window.addEventListener('ray.hit.event', (ev) => {
-			// all physics chips have name prefix chips_
-			// must be fixed from matrix engine source !!!
 			if(ev.detail.hitObject.name.indexOf('chips_') != -1 ||
 				ev.detail.hitObject.name.indexOf('roll') != -1) {
 				// console.log("PREVENT NO CHIPS TRAY: ", ev.detail.hitObject.name)
@@ -618,9 +536,7 @@ export class MatrixRoulette {
 			}
 
 			if(ev.detail.hitObject.raycast.enabled != true) {return }
-			console.log('dispatch=>chip-bet')
 			if(this.playerInfo.balance >= 1) dispatchEvent(new CustomEvent("chip-bet", {detail: ev.detail.hitObject}))
-
 		});
 	}
 
@@ -633,23 +549,15 @@ export class MatrixRoulette {
 		});
 		this.physics.broadphase = new CANNON.NaiveBroadphase();
 		this.physics.world.solver.iterations = 10;
-
-		// ori in comment
 		// this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
 		// this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
-
 		App.scene.FLOOR_STATIC.geometry.setScale(3)
 		App.scene.FLOOR_STATIC.geometry.setTexCoordScaleFactor(3.5)
 	}
 
 	prepareFire() {
-
-		// add later validator for  no bets  status
 		dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {detail: 'Lets go'}))
-
 		setTimeout(() => {
-			// clear double call
-			// roulette.wheelSystem.fireBall()
 			dispatchEvent(new CustomEvent('fire-ball', {detail: [0.32, [1., -10.2, 4], [-10000, 150, 10]]}))
 			removeEventListener('camera-view-wheel', this.prepareFire)
 		}, this.status.winNumberMomentDelay)
@@ -664,7 +572,6 @@ export class MatrixRoulette {
 				// For now only for manual status
 				console.log('Winning number: ' + ev.detail)
 				this.tableBet.chips.removeLostChips(ev.detail)
-
 				setTimeout(() => {
 					this.setupCameraView('bets')
 					dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'WIN NUM:' + ev.detail}))
@@ -674,9 +581,18 @@ export class MatrixRoulette {
 			})
 
 			addEventListener('SPIN', (e) => {
-				console.log('SPIN PROCEDUTE')
-				addEventListener('camera-view-wheel', this.prepareFire, {passive: true})
-				this.setupCameraView('wheel')
+				if(this.playerInfo.balance < 1) {
+					dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'Balance 0'}))
+					return;
+				}
+				if(roulette.status.game == "MEDITATE") {
+					roulette.status.game = "RESULTS";
+					console.log('SPIN PROCEDUTE [regime]', roulette.status.game)
+					addEventListener('camera-view-wheel', this.prepareFire, {passive: true})
+					this.setupCameraView('wheel')
+				} else {
+					dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'Wait 1 secound'}))
+				}
 			})
 
 			addEventListener('view-wheel', (e) => {
@@ -689,19 +605,33 @@ export class MatrixRoulette {
 
 		}
 
-		// ONLY SYNTETIC - ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER
-		// IT IS THE PHYSICS REALM
+		// ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER IN PHYSICS DOMAIN
+		// With UrlParam ?server=true we can control winnnings but no wheel screen.
 		addEventListener('MEDITATE_SERVER', (e) => {
 			this.status.game = 'MEDITATE';
+			if(e.detail.counter < 19) {
+				dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'Place your bets'}))
+			} else {
+				dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'Bets are closed'}))
+			}
 		})
 
 		addEventListener('RESULT', (e) => {
 			this.status.game = 'RESULTS';
+			if(e.detail.winNumber != 'hold') {
+				dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: 'Win Number ' + e.detail.winNumber}))
+				console.log('[removeLostChips]:', e.detail.winNumber)
+				this.tableBet.chips.removeLostChips(e.detail.winNumber)
+			} else {
+				dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {detail: e.detail.winNumber}))
+				// console.log('SERVER [RESULT H]:', e.detail.winNumber)
+			}
 		})
 	}
 
-	addHUD(playerInfo) {
-		// 2d canvas nidza.js lib
+	addHUD() {
+		// 2d canvas nidza.js lib - you can see nidza.js custom canvas2d feature
+		// You can put any canvas2d code if custom draw is setup.
 		this.tex = {
 			source: ["res/images/chip1.png"],
 			mix_operation: "multiply",
@@ -726,19 +656,13 @@ export class MatrixRoulette {
 			}
 		})
 
-		addEventListener('update-balance', (e) => {
-			console.info('Event: update-balance => ', e.detail)
-			var t = this.playerInfo.balance - e.detail;
-			this.playerInfo.balance = t;
-			roulette.nidza.access.footerLabel.elements[0].text = t
-		})
+
 
 		this.addHUDBtns()
 		this.addHUDStatus()
 	}
 
 	addHUDBtns() {
-
 		var n = 'bottomStatusLine';
 		matrixEngine.matrixWorld.world.Add("squareTex", 1, n, {
 			source: ["res/images/spin.png"],
@@ -827,11 +751,9 @@ export class MatrixRoulette {
 		App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[6];
 		App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
 		App.scene.statusBox.rotation.rotx = 122;
-
-		// Attaching canvas2d tot he webgl surface.
+		// Attaching canvas2d to the webGL surface.
 		createStatusBoxHUD(this.nidza, this.playerInfo).then(canvas2d => {
 			App.scene.statusBox.streamTextures = {videoImage: canvas2d}
 		})
 	}
-
 }

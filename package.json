@@ -10,6 +10,7 @@
 		"slot": "watchify projects/matrix-slot/App.js -p [esmify --noImplicitAny] -o builds/slot.js",
 		"roulette": "watchify projects/matrix-roulette/App.js -p [esmify --noImplicitAny] -o builds/roulette.js",
 		"hang3d": "watchify projects/hang3d/App.js -p [esmify --noImplicitAny] -o builds/hang3d.js",
+		"video-editor": "watchify projects/matrix-video-editor/App.js -p [esmify --noImplicitAny] -o builds/matrix-video-editor.js",
 		"build.roulette": "browserify projects/matrix-roulette/App.js -p esmify > builds/roulette.js",
 		"build.hang3d": "browserify projects/hang3d/App.js -p esmify > builds/hang3d.js",
 		"build.examples": "browserify App-Examples.js -p esmify > builds/examples.me.js",
@@ -76,7 +77,8 @@
 		"matrix-network": "^1.0.12",
 		"nidza": "^1.2.15",
 		"nui-commander": "0.0.7",
-		"voice-commander": "0.0.5"
+		"voice-commander": "0.0.5",
+		"record-canvas": "^1.2.7"
 	},
 	"devDependencies": {
 		"browserify": "^17.0.0",

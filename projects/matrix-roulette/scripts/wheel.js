@@ -357,8 +357,8 @@ export default class Wheel {
 			for(var i = 0;i < 37;i++) {
 				var p = {x: 0.1, y: 0.1, z: 0};
 				p = this.orbit(0, 9, i / 5.9 + this.C, p);
-				App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.3)
-				App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3)
+				if (App.scene['roll' + i]) App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.3)
+				if (App.scene['centerWheel' + i]) App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3)
 				if(App.scene.centerRollDecoration) {
 					App.scene.centerRollDecoration.rotation.rotationSpeed.y = this.speedRollInit * 1000
 				}

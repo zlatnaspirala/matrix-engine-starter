@@ -1,4 +1,3 @@
-
 export const stdFonts = {
   Arial: "Arial",
   Verdana: "Verdana",

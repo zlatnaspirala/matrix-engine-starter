@@ -23,7 +23,7 @@ export function createPauseScreen () {
 }
 
 /**
- * @description Hang3d reborn
+ * @description Hang3d reborn clone
  * @author Nikola Lukic
  * @email zlatnaspirala@gmail.com
  */

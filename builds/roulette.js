@@ -43832,133 +43832,7 @@ window.addEventListener("load", () => {
 var _default = App;
 exports.default = _default;
 
-},{"./scripts/roulette":70,"matrix-engine":12}],66:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-/**
- * @description
- * ClientConfig is config file for client part of networking.
- */
-class ClientConfig {
-  // Not implemented yet
-  // Free to define what ever -> injectCanvas
-  recordCanvasOption = {
-    injectCanvas: () => document.getElementsByTagName("canvas")[0],
-    frameRequestRate: 30,
-    videoDuration: 20,
-    outputFilename: "record-gameplay.mp4",
-    mineType: "video/mp4",
-    resolutions: '800x600'
-  };
-  /**
-   * @description
-   * Default setup is `dev`.
-   * recommendent to use for local propose LAN ip
-   * like : 192.168.0.XXX if you wanna run ant test app with server.
-   */
-  // domain = "maximumroulette.com";
-
-  domain = "localhost";
-  /**
-   * @description Important note for this property: if you
-   * disable (false) you can't use Account system or any other
-   * network. Use 'false' if you wanna make single player game.
-   * In other way keep it 'true'.
-   */
-
-  showBroadcasterOnInt = false;
-  /**
-   * networkDeepLogs control of dev logs for webRTC context only.
-   */
-
-  networkDeepLogs = false;
-  /**
-   * masterServerKey is channel access id used to connect
-   * multimedia server channel/multiRTC3
-   */
-
-  masterServerKey = "maximumroulette.matrix-engine.roulette";
-  /**
-   * @description
-   * constructor will save interest data for game platform
-   * For now it is just name of the game. I use it in
-   * pre gameplay UI game selector.
-   */
-
-  constructor() {}
-
-  getRecordCanvasOptions() {
-    return this.recordCanvasOption;
-  }
-
-  getRunBroadcasterOnInt() {
-    return this.runBroadcasterOnInt;
-  }
-
-  didAppUseBroadcast() {
-    return this.appUseBroadcaster;
-  }
-
-  getStunList() {
-    return this.stunList;
-  }
-
-  getBroadcastSockRoute() {
-    return this.getProtocolFromAddressBar() + this.getDomain() + ":" + this.broadcasterPort + "/";
-  }
-
-  getDomain() {
-    // localhost vs prodc domain not works CORS not equal!
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      return window.location.hostname;
-    }
-
-    return this.domain;
-  }
-
-  getBroadcastAutoConnect() {
-    return this.broadcastAutoConnect;
-  }
-
-  getShowBroadcasterOnInt() {
-    return this.showBroadcasterOnInt;
-  }
-
-  getBroadcasterPort() {
-    return this.broadcasterPort;
-  }
-
-  getBroadcasterSessionDefaults() {
-    return this.broadcasterSessionDefaults;
-  }
-
-  getProtocolFromAddressBar() {
-    return location.protocol === "https:" ? "https://" : "http://";
-  }
-
-  setNetworkDeepLog(newState) {
-    this.networkDeepLogs = newState;
-  }
-
-  getNetworkDeepLog() {
-    return this.networkDeepLogs;
-  }
-
-  getMasterServerKey() {
-    return this.masterServerKey;
-  }
-
-}
-
-var _default = ClientConfig;
-exports.default = _default;
-
-},{}],67:[function(require,module,exports){
+},{"./scripts/roulette":68,"matrix-engine":12}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44027,71 +43901,19 @@ var create2dHUD = ref => {
     // statusMessageBox.rotation.osc.setDelay( 0 )
 
     ref.nidza.access.footerLabel.canvasDom.setAttribute("style", "position: absolute; left: 0;display:none");
-    resolve(texCanvas); // return texCanvas;
+    resolve(texCanvas);
   });
 };
 
 exports.create2dHUD = create2dHUD;
 
-function balanceDecorations(nidza, wwwwwwwwwwwwwwww, ref) {
-  // var A1 = 111,
-  //   f1 = 2,
-  //   p1 = 1 / 2,
-  //   d1 = 0.2;
-  // var A2 = 22,
-  //   f2 = 4,
-  //   p2 = 3 / 2,
-  //   d2 = 0.0315;
-  // var A3 = 31,
-  //   f3 = 4,
-  //   p3 = 13 / 15,
-  //   d3 = 0.0012;
-  // var A4 = 50,
-  //   f4 = 4,
-  //   p4 = 1,
-  //   d4 = 0.012;
-  // var r = 110,
-  //   g = 110,
-  //   b = 110;
-  // var makeHarmonograph = function(c) {
-  //   f1 = (f1 / 10) % 10;
-  //   f2 = (f2 / 40) % 10;
-  //   f3 = (f3 + Math.random() / 80) % 10;
-  //   f4 = (f4 + Math.random() / 411) % 10;
-  //   p1 += 0.5 % (Math.PI * 2);
-  //   if(p1 > 500) p1 = 0;
-  //   drawHarmonograph(c);
-  // }
-  var drawHarmonograph = function (ctx) {
-    ctx.clearRect(0, 0, 600, 400);
-    ctx.save();
-    ctx.fillStyle = "rgb(" + A1 + "," + g + "," + b + ")";
-    ctx.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
-    ctx.fillRect(0, 0, 600, 400);
-    ctx.translate(0, 100);
-    ctx.beginPath();
-
-    for (var t = 0; t < 22; t += 0.2) {
-      var x = A1 * Math.sin(f1 * t + Math.PI * p1) * Math.exp(-d1 * t) + A2 * Math.sin(f2 * t + Math.PI * p2) * Math.exp(-d2 * t);
-      var y = A3 * Math.sin(f3 * t + Math.PI * p1) * Math.exp(-d3 * t) + A4 * Math.sin(f4 * t + Math.PI * p4) * Math.exp(-d4 * t);
-      ctx.lineTo(x * x + 1, y + 1 / x);
-    }
-
-    ctx.stroke();
-    ctx.restore();
-  };
-
-  var byY_ = new matrixEngine.utility.OSCILLATOR(90, 110, 0.3); // console.log('WARN THIS ', ref)
-
+function balanceDecorations(nidza, arg, ref) {
+  // var byY_ = new matrixEngine.utility.OSCILLATOR(90, 110, 0.3);
+  // console.log('WARN THIS ', ref)
   let myStarElement = nidza.access.footerLabel.addCustom2dComponent({
     id: "CUSTOM",
     draw: function (e) {
-      if (e instanceof CanvasRenderingContext2D == false) return; // e.fillStyle = 'red';
-      // makeHarmonograph(e)
-      // e.clearRect(0, 0, 600, 400);
-      // e.fillStyle = "rgb(" + matrixEngine.utility.randomIntFromTo(0,250) + "," +  matrixEngine.utility.randomIntFromTo(0,250) + "," +  matrixEngine.utility.randomIntFromTo(0,250) + ")";
-      // e.strokeStyle = "rgb(" + p1 + "," + g + "," + b + ")";
-
+      if (e instanceof CanvasRenderingContext2D == false) return;
       e.fillStyle = "rgb(113,145,144)";
       e.fillRect(0, 0, 600, 400);
       e.fillStyle = 'rgba(0,0,0,0.4)';
@@ -44145,27 +43967,22 @@ function createStatusBoxHUD(nidza, playerInfo) {
     var colorForLastMoment = 'rgba(255,15,15,1)';
     var p1 = 0;
     addEventListener('MEDITATE_SERVER', e => {
-      p1 = e.detail * 17;
+      p1 = e.detail.counter * 17;
+      colorForCOLOR = colorForOpenGame;
+    });
+    addEventListener('ANIM_1', e => {
+      p1 = e.detail.counter * 17;
+      console.log('test anim ');
       colorForCOLOR = colorForOpenGame;
     });
     addEventListener('RESULT', e => {
-      // console.log('SYMBOLIC ONLY - CONNECT WITH PROGRESS BAR IN 2d HUD', e)
-      p1 = e.detail * 17;
       colorForCOLOR = colorForLastMoment;
-    });
-    addEventListener('RESULTS_FROM_SERVER', e => {
-      console.log('RESULTS_FROM_SERVER ADD TO LAST 10 ', e.detail);
-      last10.push(e.detail);
+      p1 = p1 + 9; // console.log('CONNECT WITH p1 ', e.detail.counter)
 
-      if (_tableEvents.RULES.red.indexOf(parseInt(e.detail)) != -1) {
-        previewR = e.detail;
-        previewR__ = '🔴';
-      } else if (_tableEvents.RULES.black.indexOf(parseInt(e.detail)) != -1) {
-        previewR = e.detail;
-        previewR__ = '⚫';
-      } else if (e.detail == 0) {
-        previewR = 'ZERO ' + e.detail;
-        previewR__ = '';
+      if (e.detail.counter > 27) {
+        dispatchEvent(new CustomEvent('clear-chips', {
+          detail: 'CLEAR BETS'
+        }));
       }
     });
     addEventListener('RESULTS_FROM_MANUAL', e => {
@@ -44184,11 +44001,11 @@ function createStatusBoxHUD(nidza, playerInfo) {
       }
     });
     addEventListener('SET_STATUSBOX_TEXT', e => {
-      console.log('previewTitle CONNECT WITH PROGRESS BAR IN 2d HUD', e);
+      // console.log('previewTitle CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       previewR = e.detail;
     });
     addEventListener('SET_STATUSBOX_TITLE', e => {
-      console.log('SET_STATUSBOX_TEXT CONNECT WITH PROGRESS BAR IN 2d HUD', e);
+      // console.log('SET_STATUSBOX_TEXT CONNECT WITH PROGRESS BAR IN 2d HUD', e)
       previewTitle = e.detail;
     });
     let myStarElement = nidza.access.statusBox.addCustom2dComponent({
@@ -44203,16 +44020,15 @@ function createStatusBoxHUD(nidza, playerInfo) {
         e.fillRect(50, 180, 500 - 20 * 17, 3);
         e.fillRect(50, 209, 500 - 20 * 17, 3);
         e.textAlign = 'center';
-        e.fillStyle = 'rgba(250,250,250,1)'; // if (previewR != -1) 
-
+        e.fillStyle = 'rgba(250,250,250,1)';
         e.font = 'bold 60px stormfaze';
-        e.fillText("" + previewR__.toString(), 340, 152, 250);
+        e.fillText("" + previewR__.toString(), 350, 160, 255);
         e.font = 'bold 40px stormfaze';
         e.fillText("" + previewR.toString(), 340, 148, 250);
         e.fillRect(170, 66, 250, 43);
         e.textAlign = 'left';
-        e.font = 'normal 20px stormfaze';
-        e.fillStyle = 'rgba(250,250,250,1)';
+        e.font = 'normal 20px stormfaze'; // e.fillStyle = 'rgba(250,250,250,1)';
+
         e.fillStyle = 'rgba(250,50,50,1)';
         e.fillText(`maximumroulette.com`, 170, 78, 250, 33);
         e.fillText(`github.com/zlatnaspirala`, 170, 100, 250, 33);
@@ -44220,7 +44036,7 @@ function createStatusBoxHUD(nidza, playerInfo) {
         e.fillStyle = 'rgba(250,250,250,1)';
         e.fillText(previewTitle, 20, 50, 550, 25);
         e.fillStyle = 'rgba(250,250,250,1)';
-        e.fillText(`Game status`, 20, 160, 250, 25); // var myGradient = e.createLinearGradient(0, 0, 650, 250);
+        e.fillText(`Game type`, 20, 160, 250, 25); // var myGradient = e.createLinearGradient(0, 0, 650, 250);
         // myGradient.addColorStop(0, 'red');
         // myGradient.addColorStop(1, 'orange');
         // e.fillStyle = myGradient;
@@ -44330,7 +44146,7 @@ function create2dHUDStatusLine(nidza, status) {
   });
 }
 
-},{"../../matrix-slot/scripts/standard-fonts":75,"./table-events":72,"matrix-engine":12,"matrix-engine-plugins":7}],68:[function(require,module,exports){
+},{"../../matrix-slot/scripts/standard-fonts":73,"./table-events":70,"matrix-engine":12,"matrix-engine-plugins":7}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44366,7 +44182,7 @@ function createPauseScreen() {
   });
 }
 /**
- * @description Hang3d reborn
+ * @description Hang3d reborn clone
  * @author Nikola Lukic
  * @email zlatnaspirala@gmail.com
  */
@@ -44404,485 +44220,7 @@ var ROCK_RANK = {
 };
 exports.ROCK_RANK = ROCK_RANK;
 
-},{"matrix-engine/lib/utility":41}],69:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.RCSAccount = void 0;
-
-var matrixEngine = _interopRequireWildcard(require("matrix-engine"));
-
-var _dom = require("./dom.js");
-
-var _utility = require("matrix-engine/lib/utility.js");
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-/**
- * This is clone from hang3d.
- */
-const isMobile = matrixEngine.utility.isMobile;
-const byId = matrixEngine.utility.byId;
-const notify = matrixEngine.utility.notify;
-
-class RCSAccount {
-  email = null;
-  token = null;
-
-  constructor(apiDomain) {
-    this.apiDomain = apiDomain;
-    this.visitor();
-    addEventListener('F12', e => {
-      console.log(`%c[Debbuger] ${e.detail}`, REDLOG);
-      localStorage.removeItem("visitor");
-      this.visitor(e.detail);
-    });
-    this.leaderboardBtn = document.getElementById('leaderboardBtn');
-    this.leaderboardBtn.addEventListener("click", this.getLeaderboard);
-  }
-
-  createDOM = () => {
-    var parent = document.createElement('div');
-    this.parent = parent; //parent.classList.add('')
-
-    parent.id = 'myAccountLoginForm';
-    var logo = document.createElement('img');
-    logo.id = 'logologin';
-    logo.setAttribute('alt', 'Login');
-    logo.style = 'width: 100px;border-radius: 10px;padding: 6px;';
-    logo.src = './res/icons/512.webp';
-    var title = document.createElement('div');
-    title.style.display = 'flex';
-    title.innerHTML = `
-		
-		<div style='width:100%; margin: 5px 5px;'> <h2 style='margin: 5px 5px;'>Rocket GamePlay Login Form</h2>
-		 Maximumroulette.com</div>
-		`;
-    title.appendChild(logo);
-    var content = document.createElement('div');
-    content.style.display = 'flex';
-    content.style.flexDirection = 'column';
-    content.style.background = 'transparent';
-    var emailLabel = document.createElement('label');
-    emailLabel.id = 'emailLabel';
-    emailLabel.innerHTML = `Email:`;
-    emailLabel.setAttribute('for', 'arg-email');
-    var email = document.createElement('input'); // email.classList.add('myInput')
-
-    email.id = 'arg-email';
-    var passLabel = document.createElement('label');
-    passLabel.id = 'passLabel';
-    passLabel.innerHTML = `Passw:`;
-    passLabel.setAttribute('for', 'arg-pass');
-    var pass = document.createElement('input');
-    pass.id = 'arg-pass'; // pass.classList.add('myInput')
-
-    var loginBtn = document.createElement('button');
-    loginBtn.id = 'loginRCSBtn';
-    loginBtn.innerHTML = `LOGIN`;
-    loginBtn.classList.add('btn');
-    loginBtn.classList.add('btnMargin');
-    loginBtn.addEventListener('click', this.login);
-    var gotoRegisterMyAccount = document.createElement('button');
-    gotoRegisterMyAccount.id = 'registerBtn';
-    gotoRegisterMyAccount.classList.add(`btn`);
-    gotoRegisterMyAccount.classList.add(`btnMargin`);
-    gotoRegisterMyAccount.innerHTML = `REGISTER`;
-    gotoRegisterMyAccount.addEventListener('click', this.register);
-    var hideLoginMyAccount = document.createElement('button');
-    hideLoginMyAccount.classList.add(`btn`);
-    hideLoginMyAccount.classList.add(`btnMargin`);
-    hideLoginMyAccount.innerHTML = `NO LOGIN -> INSTANT PLAY`;
-    hideLoginMyAccount.addEventListener('click', () => {
-      byId('myAccountLoginForm').remove();
-    });
-
-    if (isMobile() == false) {
-      var descText = document.createElement('div');
-      descText.id = 'descText';
-      descText.style = 'font-size:smaller;';
-      descText.innerHTML = `<span style="width:45%" >Hang3d use webcam for video chat and streaming data</span>
-		<span style="width:45%;" >Add Url params '?video=false&audio=false' to disable streaming</span>
-		<span> BLACK FLY by Audionautix | http://audionautix.com Music promoted by https://www.free-stock-music.com Creative Commons Attribution-ShareAlike 3.0 Unported</span>
-		`;
-    }
-
-    parent.appendChild(title);
-    parent.appendChild(content);
-    content.appendChild(emailLabel);
-    content.appendChild(email);
-    content.appendChild(passLabel);
-    content.appendChild(pass);
-    content.appendChild(loginBtn);
-    content.appendChild(gotoRegisterMyAccount);
-    content.appendChild(hideLoginMyAccount); // content.appendChild(logo)
-
-    if (isMobile() == false) content.appendChild(descText);
-    document.body.appendChild(parent);
-  };
-  createLeaderboardDOM = data => {
-    if (byId('leaderboard') != null) {
-      byId('leaderboard').style.display = 'block';
-      return;
-    } // console.log('TEST MOBILE +++')
-
-
-    var parent = document.createElement('div');
-    parent.style = ``;
-    parent.classList.add('leaderboard'); // if(isMobile() == true) {
-    // 	parent.style = `
-    // 	position: absolute;
-    // 	border-radius: 4px;
-    // 	top: 10%;
-    // 	left: 0%;
-    // 	width: 95%;
-    // 	padding: 10px;`;
-    // }
-
-    parent.id = 'leaderboard';
-    var title = document.createElement('div');
-    title.innerHTML = `<h3>Top 10 leaderboard [RocketCraftingServer]</h3>`;
-    parent.appendChild(title);
-    var tableLabel = document.createElement('div');
-    tableLabel.style.display = 'flex';
-    tableLabel.style.flexDirection = 'row';
-    var nicklabel = document.createElement('div');
-    nicklabel.innerText = 'Nickname';
-    nicklabel.style.width = '100%';
-    var pointslabel = document.createElement('div');
-    pointslabel.innerText = 'Points';
-    pointslabel.style.width = '100%';
-    tableLabel.appendChild(nicklabel);
-    tableLabel.appendChild(pointslabel);
-    parent.appendChild(tableLabel);
-    var parentForTable = document.createElement('div');
-    parentForTable.style.height = '70vh';
-    parentForTable.style.overflow = 'scroll';
-    parentForTable.style.overflowX = 'hidden';
-    data.forEach((element, index) => {
-      var table = document.createElement('div');
-      table.style.display = 'flex';
-      table.style.flexDirection = 'row';
-      table.style.justifyContent = 'center';
-      table.style.alignItems = 'center';
-      table.style.boxShadow = 'none';
-      var nick = document.createElement('div');
-      nick.innerText = element.nickname;
-      nick.style.width = '100%';
-
-      if (index == 0) {
-        nick.style.boxShadow = '0px 7px 2px -1px #ffe100';
-      } else if (index == 1) {
-        nick.style.boxShadow = '0px 7px 2px -1px white';
-      } else if (index == 2) {
-        nick.style.boxShadow = '0px 7px 2px -1px #a01010';
-      } else {
-        nick.style.boxShadow = '0px 7px 2px -1px #757471';
-      }
-
-      var points = document.createElement('div');
-      points.innerText = element.points;
-      points.style.width = '100%';
-
-      if (index == 0) {
-        points.style.boxShadow = '0px 7px 2px -1px #ffe100';
-      } else if (index == 1) {
-        points.style.boxShadow = '0px 7px 2px -1px white';
-      } else if (index == 2) {
-        points.style.boxShadow = '0px 7px 2px -1px #a01010';
-      } else {
-        points.style.boxShadow = '0px 7px 2px -1px #757471';
-      } // var medal = document.createElement('img');
-      // medal.id = 'medal';
-      // logo.src = './assets/icons/icon96.png';
-
-
-      table.appendChild(nick);
-      table.appendChild(points);
-      table.innerHTML += _dom.ROCK_RANK.getRankMedalImg(_dom.ROCK_RANK.getRank(element.points));
-      parentForTable.appendChild(table);
-    });
-    parent.appendChild(parentForTable);
-    var hideBtn = document.createElement('button');
-    hideBtn.classList = 'btn';
-    hideBtn.style.marginTop = '7px';
-    hideBtn.innerText = 'HIDE';
-    hideBtn.addEventListener('click', () => {
-      parent.style.display = 'none';
-    });
-    parent.appendChild(hideBtn);
-    document.body.appendChild(parent);
-  };
-  register = () => {
-    this.register_procedure(this);
-  };
-
-  async register_procedure() {
-    let route = this.apiDomain || location.origin;
-    byId('loginRCSBtn').disabled = true;
-    byId('registerBtn').disabled = true;
-    let args = {
-      emailField: byId('arg-email') != null ? byId('arg-email').value : null,
-      passwordField: byId('arg-pass') != null ? byId('arg-pass').value : null
-    };
-
-    if (args.emailField == null || args.passwordField == null) {
-      notify.show('Please fill up email and passw for login or register.');
-    }
-
-    fetch(route + '/rocket/register', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify(args)
-    }).then(d => {
-      return d.json();
-    }).then(r => {
-      notify.error(`${r.message}`);
-
-      if (r.message == "Check email for conmfirmation key.") {
-        this.email = byId('arg-email').value;
-        sessionStorage.setItem('email', byId('arg-email').value);
-        byId('emailLabel').remove();
-        byId('loginRCSBtn').remove();
-        byId('arg-email').remove();
-        byId("passLabel").innerHTML = 'ENTER CONFIRMATION CODE';
-        byId('arg-pass').value = "";
-        byId('registerBtn').removeEventListener('click', this.register);
-        byId('registerBtn').disabled = false;
-        byId('registerBtn').innerHTML = 'CONFIRM CODE FROM EMAIL';
-        byId('registerBtn').id = 'CC';
-        byId('CC').addEventListener('click', () => {
-          this.confirmation();
-        });
-        sessionStorage.setItem('RocketAcountRegister', 'Check email for conmfirmation key.');
-      } else {
-        setTimeout(() => {
-          notify.show("Next Register/Login call try in 5 secounds...");
-          this.preventDBLOG = false;
-          this.preventDBREG = false;
-          byId('loginRCSBtn').disabled = false;
-          byId('registerBtn').disabled = false;
-        }, 5000);
-      }
-    }).catch(err => {
-      console.log('[My Account Error]', err);
-      notify.show("Next Register call try in 5 secounds...");
-      setTimeout(() => {
-        this.preventDBLOG = false;
-        this.preventDBREG = false;
-        byId('loginRCSBtn').disabled = false;
-        byId('registerBtn').disabled = false;
-      }, 5000);
-      return;
-    });
-  }
-
-  confirmation = async () => {
-    let route = this.apiDomain;
-    const args = {
-      emailField: this.email,
-      tokenField: byId('arg-pass').value
-    };
-    fetch(route + '/rocket/confirmation', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify(args)
-    }).then(d => {
-      return d.json();
-    }).then(r => {
-      if (r.message == "Wrong confirmation code.") {} else if (r.message == "Confirmation done.") {
-        alert(r.message);
-        this.parent.innerHTML = ''; // ----
-
-        this.createDOM();
-      }
-
-      notify.error(`${r.message}`);
-    });
-  };
-  login = async () => {
-    let route = this.apiDomain || location.origin;
-    byId('loginRCSBtn').disabled = true;
-    byId('registerBtn').disabled = true;
-    let args = {
-      emailField: byId('arg-email') != null ? byId('arg-email').value : null,
-      passwordField: byId('arg-pass') != null ? byId('arg-pass').value : null
-    };
-    fetch(route + '/rocket/login', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify(args)
-    }).then(d => {
-      return d.json();
-    }).then(r => {
-      console.log(r.message);
-      notify.show(`${r.message}`);
-
-      if (r.message == "User logged") {
-        this.email = byId('arg-email').value;
-        byId('myAccountLoginForm').style.display = 'none';
-        sessionStorage.setItem('RocketAcount', JSON.stringify(r.flag));
-      }
-    }).catch(err => {
-      console.log('[My Account Error]', err);
-      notify.show("Next Login call try in 5 secounds...");
-      setTimeout(() => {
-        this.preventDBLOG = false;
-        this.preventDBREG = false;
-        byId('registerBtn').disabled = false;
-        byId('loginRCSBtn').disabled = false;
-      }, 5000);
-      return;
-    });
-  };
-
-  async visitor(isRegular) {
-    if (typeof isRegular === 'undefined') isRegular = 'Yes';
-    if (localStorage.getItem("visitor") == 'welcome') return;
-    let route = this.apiDomain;
-    let args = {
-      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
-      userAgent: navigator.userAgent.toString(),
-      fromUrl: location.href.toString(),
-      isRegular: isRegular
-    };
-    fetch(route + '/rocket/visitors', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify(args)
-    }).then(d => {
-      return d.json();
-    }).then(() => {
-      localStorage.setItem("visitor", "welcome");
-    }).catch(err => {
-      console.log('ERR', err);
-    });
-  }
-
-  getLeaderboard = async e => {
-    e.preventDefault();
-    byId('netHeaderTitle').click();
-    this.leaderboardBtn.disabled = true;
-    fetch(this.apiDomain + '/rocket/public-leaderboard', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify({})
-    }).then(d => {
-      return d.json();
-    }).then(r => {
-      notify.error(`${r.message}`);
-
-      if (r.message == "You got leaderboard data.") {
-        this.leaderboardData = r.leaderboard;
-        this.createLeaderboardDOM(r.leaderboard);
-      }
-
-      setTimeout(() => {
-        this.leaderboardBtn.disabled = false;
-      }, 5000);
-    }).catch(err => {
-      console.log('[Leaderboard Error]', err);
-      notify.show("Next call try in 5 secounds...");
-      setTimeout(() => {
-        this.leaderboardBtn.disabled = false;
-      }, 5000);
-      return;
-    });
-  };
-  getLeaderboardFor3dContext = async e => {
-    // e.preventDefault();
-    fetch(this.apiDomain + '/rocket/public-leaderboard', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify({})
-    }).then(d => {
-      return d.json();
-    }).then(r => {
-      notify.error(`${r.message}`);
-
-      if (r.message == "You got leaderboard data.") {
-        this.leaderboardData = r.leaderboard;
-        console.log('PREPARE FOR 3d context', this.leaderboardData);
-      }
-
-      setTimeout(() => {
-        this.leaderboardBtn.disabled = false;
-      }, 5000);
-    }).catch(err => {
-      console.log('[Leaderboard Error]', err);
-      notify.show("Next call try in 5 secounds...");
-      setTimeout(() => {
-        this.leaderboardBtn.disabled = false;
-      }, 5000);
-      return;
-    });
-  };
-
-  async points10() {
-    let route = this.apiDomain;
-
-    if (sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
-      console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'));
-      return;
-    }
-
-    let args = {
-      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
-      userAgent: navigator.userAgent.toString(),
-      fromUrl: location.href.toString(),
-      token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
-      mapName: 'hang3d-matrix-base0'
-    };
-    fetch(route + '/rocket/point-plus10', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify(args)
-    }).then(d => {
-      return d.json();
-    }).then(() => {
-      localStorage.setItem("visitor", "welcome");
-    }).catch(err => {
-      console.log('ERR', err);
-    });
-  }
-
-  async dead() {
-    let route = this.apiDomain;
-
-    if (sessionStorage.getItem('RocketAcount') != null && JSON.parse(sessionStorage.getItem('RocketAcount')).token) {
-      console.log("NO ACCOUNT USER", sessionStorage.getItem('RocketAcount'));
-      return;
-    }
-
-    let args = {
-      email: byId('arg-email') != null ? byId('arg-email').value : 'no-email',
-      userAgent: navigator.userAgent.toString(),
-      fromUrl: location.href.toString(),
-      token: JSON.parse(sessionStorage.getItem('RocketAcount')).token,
-      mapName: 'hang3d-matrix-base0'
-    };
-    fetch(route + '/rocket/point-plus10', {
-      method: 'POST',
-      headers: _utility.jsonHeaders,
-      body: JSON.stringify(args)
-    }).then(d => {
-      return d.json();
-    }).then(() => {
-      localStorage.setItem("visitor", "welcome");
-    }).catch(err => {
-      console.log('ERR', err);
-    });
-  }
-
-}
-
-exports.RCSAccount = RCSAccount;
-
-},{"./dom.js":68,"matrix-engine":12,"matrix-engine/lib/utility.js":41}],70:[function(require,module,exports){
+},{"matrix-engine/lib/utility":41}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44904,11 +44242,7 @@ var _dDraw = require("./2d-draw.js");
 
 var _matrixEnginePlugins = require("matrix-engine-plugins");
 
-var _clientConfig = _interopRequireDefault(require("../client-config.js"));
-
 var _utility = require("matrix-engine/lib/utility.js");
-
-var _rocketCraftingAccount = require("./rocket-crafting-account.js");
 
 var _dom = require("./dom");
 
@@ -44921,6 +44255,13 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 // import NUICommander from './nui.js';
+// import {RCSAccount} from "./rocket-crafting-account.js";
+
+/**
+ * @author Nikola Lukic 
+ * @email zlatnaspirala@gmail.com
+ * @website https://maximumroulette.com
+ */
 class MatrixRoulette {
   // General physics and ME world
   physics = null;
@@ -44956,10 +44297,25 @@ class MatrixRoulette {
     }
   }
 
+  isLocalhost() {
+    if (location.hostname.toString().indexOf('localhost') != -1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   constructor() {
     if (this.isManual() == false) {
-      console.log('ServerEvent[maximumroulette.com/matrix-roulette]');
-      const events = new EventSource('https://maximumroulette.com/matrix-roulette');
+      let events = null;
+
+      if (this.isLocalhost() == true) {
+        events = new EventSource('https://localhost:8080/matrix-roulette');
+        console.log('ServerEvent[localhost:8080/matrix-roulette]');
+      } else {
+        events = new EventSource('https://maximumroulette.com/matrix-roulette');
+        console.log('ServerEvent[maximumroulette.com/matrix-roulette]');
+      }
 
       events.onmessage = event => {
         const parsedData = JSON.parse(event.data);
@@ -44968,18 +44324,19 @@ class MatrixRoulette {
           return;
         }
 
-        console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status);
+        console.log('[serverEvent:matrix-roulette]', parsedData.matrixRoulette.status, " : ", parsedData.matrixRoulette);
 
         if (parsedData.matrixRoulette.status == "MEDITATE") {
-          // 
           this.status.game = 'MEDITATE';
           dispatchEvent(new CustomEvent('MEDITATE_SERVER', {
-            detail: parsedData.matrixRoulette.counter
+            detail: parsedData.matrixRoulette
           }));
         } else if (parsedData.matrixRoulette.status == "RESULT") {
-          // 
           this.status.game = 'RESULT';
           console.log('[serverEvent:matrix-roulette[win number]]', parsedData.matrixRoulette.winNumber);
+          dispatchEvent(new CustomEvent('RESULT', {
+            detail: parsedData.matrixRoulette
+          }));
         } else {
           alert();
         }
@@ -45040,18 +44397,12 @@ class MatrixRoulette {
 
     this.setupCameraView('initbets'); // Add canvas2d context to webgl
 
-    this.addHUD(this.playerInfo);
+    this.addHUD();
 
     if (this.videoChatEnabled() == true) {
       console.log("Enable video-chat..."); // Initial func for Networking general. Based on webRTC/MultiRTC lib.
 
-      this.runVideoChat(); // New net2
-      // Activate networking
-      // matrixEngine.Engine.activateNet2(undefined,
-      // 	{
-      // 		sessionName: 'matrix-roulette',
-      // 		resolution: '240x160'
-      // 	});
+      this.runVideoChat();
     }
 
     this.cameraInMove = false;
@@ -45065,6 +44416,9 @@ class MatrixRoulette {
       matrixEngine.App.sounds.createAudio('clear', 'res/audios/clear.mp3', 2);
       matrixEngine.App.sounds.audios.background.loop = true;
       let testAutoPlay = matrixEngine.App.sounds.audios.background.play();
+      matrixEngine.App.sounds.audios.background.volume = 0.2;
+      matrixEngine.App.sounds.audios.clear.volume = 1;
+      matrixEngine.App.sounds.audios.chip.volume = 1;
       testAutoPlay.catch(err => {});
     }
 
@@ -45251,32 +44605,27 @@ class MatrixRoulette {
   }
 
   runVideoChat() {
-    // DEPLACE OLD NET
-    // Sending class reference `ClientConfig` not object/instance
-    // matrixEngine.Engine.activateNet(ClientConfig)
-    // New net2
+    // net2 feature in matrix-engine (Use openvidu/kurento server in back)
     // Activate networking
     matrixEngine.Engine.activateNet2(undefined, {
       sessionName: 'matrix-roulette',
       resolution: '240x160'
-    });
-    var tex = {
-      source: ["res/images/field.png"],
-      mix_operation: "multiply"
-    }; // Networking
+    }); // var tex = {
+    // 	source: ["res/images/field.png"],
+    // 	mix_operation: "multiply"
+    // }
+    // Networking
 
     addEventListener(`LOCAL-STREAM-READY`, e => {
       // App.scene.playerCollisonBox.position.netObjId = e.detail.connection.connectionId;
       // console.log('LOCAL-STREAM-READY [app level] ', e.detail.streamManager.id)
-      console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, _dom.REDLOG); // test first
-
+      console.log(`%cLOCAL-STREAM-READY [app level] ${e.detail.connection.connectionId}`, _dom.REDLOG);
       dispatchEvent(new CustomEvent(`onTitle`, {
         detail: `🕸️${e.detail.connection.connectionId}🕸️`
       }));
       matrixEngine.utility.notify.show(`Connected 🕸️${e.detail.connection.connectionId}🕸️`);
       var name = e.detail.connection.connectionId; // byId('netHeaderTitle').click()
-
-      console.log('LOCAL-STREAM-READY [SETUP FAKE UNIQNAME POSITION] ', e.detail.connection.connectionId); // Make relation for net players
+      // Make relation for net players
       // App.scene.playerCollisonBox.position.yNetOffset = -2;
       // App.scene.playerCollisonBox.net.enable = true;
       // CAMERA VIEW FOR SELF LOCAL CAM
@@ -45310,8 +44659,8 @@ class MatrixRoulette {
           if (typeof matrixEngine.Engine.net.connection === 'undefined' || matrixEngine.Engine.net.connection == null) return;
 
           if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
-            console.log('++ 2 sec++++++REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
-            var name = e.detail.event.stream.connection.connectionId; // createNetworkPlayerCharacter(name)
+            console.log('+2 sec/REMOTE-STREAM-READY: ', e.detail.event.stream.connection.connectionId);
+            var name = e.detail.event.stream.connection.connectionId; // ...
           }
         }, 3000);
         return;
@@ -45319,35 +44668,32 @@ class MatrixRoulette {
 
       if (e.detail.event.stream.connection.connectionId != matrixEngine.Engine.net.connection.connectionId) {
         console.log('REMOTE-STREAM-READY [app level] ', e.detail.event.stream.connection.connectionId);
-        var name = e.detail.event.stream.connection.connectionId; // createNetworkPlayerCharacter(name)
+        var name = e.detail.event.stream.connection.connectionId; // ...
       }
     });
     addEventListener('net-ready', e => {
       // Star on load
       (0, _utility.byId)('buttonCloseSession').remove();
-      matrixEngine.Engine.net.joinSessionUI.click(); // createPauseScreen()
-      // Next implementation RocketCrafringServer calls.
+      matrixEngine.Engine.net.joinSessionUI.click(); // Next implementation RocketCrafringServer calls.
 
       let profile = document.createElement('div');
       profile.id = 'profile';
       profile.innerHTML = `
 					Status: free for all
 				`;
-      (0, _utility.byId)('session').appendChild(profile);
-      let leaderboardBtn = document.createElement('div');
-      leaderboardBtn.id = 'Leaderboard';
-      leaderboardBtn.innerHTML = `
-					<button id="leaderboardBtn" class="btn">Leaderboard</button>
-				`;
-      (0, _utility.byId)('session').appendChild(leaderboardBtn);
-
-      if (this.useRCSAccount == true) {
-        App.myAccounts = new _rocketCraftingAccount.RCSAccount(this.RCSAccountDomain);
-        App.myAccounts.createDOM();
-        App.myAccounts.getLeaderboardFor3dContext(); // notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
-
-        console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, _dom.REDLOG);
-      }
+      (0, _utility.byId)('session').appendChild(profile); // let leaderboardBtn = document.createElement('div')
+      // leaderboardBtn.id = 'Leaderboard';
+      // leaderboardBtn.innerHTML = `
+      // 		<button id="leaderboardBtn" class="btn">Leaderboard</button>
+      // 	`;
+      // byId('session').appendChild(leaderboardBtn)
+      // if(this.useRCSAccount == true) {
+      // 	App.myAccounts = new RCSAccount(this.RCSAccountDomain);
+      // 	App.myAccounts.createDOM();
+      // 	App.myAccounts.getLeaderboardFor3dContext()
+      // 	// notify.show("You can reg/login on GamePlay ROCK platform. Welcome my friends.")
+      // 	console.log(`%c<RocketCraftingServer [Account]> ${App.myAccounts}`, REDLOG);
+      // }
 
       matrixEngine.utility.byId('matrix-net').style.overflow = 'hidden';
     });
@@ -45361,83 +44707,7 @@ class MatrixRoulette {
           console.log('Old session user...');
         }
       }
-    }); // ---------------------------------------
-    // addEventListener('stream-loaded', (e) => {
-    // 	// Safe place for access socket io
-    // 	// 'STATUS_MR' Event is only used for Matrix Roulette
-    // 	// It is symbolic for now - results must fake physics to preview right number.
-    // 	App.network.connection.socket.on('STATUS_MR', (e) => {
-    // 		if(e.message == 'RESULTS') {
-    // 			console.log('tick-> ', e.message)
-    // 			console.log('winNumber-> ', e.winNumber)
-    // 			dispatchEvent(new CustomEvent('RESULTS_FROM_SERVER', {detail: e.winNumber}))
-    // 		} else {
-    // 			// console.log('tick-> ', e.counter)
-    // 			if(e.message == 'MEDITATE') dispatchEvent(new CustomEvent('MEDITATE_SERVER', {detail: e.counter}))
-    // 			if(e.message == 'RESULT') dispatchEvent(new CustomEvent('RESULT', {detail: e.counter}))
-    // 		}
-    // 	})
-    // 	var _ = document.querySelectorAll('.media-box')
-    // 	var name = "videochat_" + e.detail.data.userId;
-    // 	_.forEach((i) => {
-    // 		var name = "videochat_" + e.detail.data.userId;
-    // 		if(e.detail.data.userId != App.network.connection.userid &&
-    // 			App.scene[name] !== 'undefined' &&
-    // 			sessionStorage.getItem('a_' + name) == null) {
-    // 			sessionStorage.setItem('a_' + name, name)
-    // 			// This is video element!
-    // 			console.log("stream-loaded => ", name)
-    // 			matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-    // 			console.log('App.network.connection.getAllParticipants().length => ' + App.network.connection.getAllParticipants().length)
-    // 			App.scene[name].position.x = 10;
-    // 			App.scene[name].position.z = -20;
-    // 			App.scene[name].position.y = 7;
-    // 			App.scene[name].geometry.setScale(-1) // invert tex coords
-    // 			App.scene[name].geometry.setScaleByX(-2)
-    // 			App.scene[name].LightsData.ambientLight.set(1, 1, 1);
-    // 			// App.scene[name].net.enable = false;
-    // 			console.log('App.network.c  h => ' + App.network.connection.getAllParticipants().length)
-    // 			//  App.scene[name].net.activate();
-    // 			App.scene[name].streamTextures = matrixEngine.Engine.DOM_VT(i.children[1])
-    // 			addEventListener('net.remove-user', (event) => {
-    // 				var n = "videochat_" + event.detail.data.userid;
-    // 				if(typeof App.scene[n] !== 'undefined' &&
-    // 					typeof App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL === 'undefined') {
-    // 					App.scene[n].CUSTOM_FLAG_PREVENT_DBCALL = true;
-    // 					App.scene[n].selfDestroy(1)
-    // 				}
-    // 			})
-    // 		} else {
-    // 			// own stream 
-    // 			if(App.network.connection.isInitiator == true) {
-    // 				console.log('isInitiator is TRUE!')
-    // 			}
-    // 			if(sessionStorage.getItem('alocal_' + name) == null) {
-    // 				var name = 'LOCAL_STREAM';
-    // 				matrixEngine.matrixWorld.world.Add("squareTex", 3, name, tex);
-    // 				App.scene[name].position.x = 0;
-    // 				App.scene[name].position.z = -30;
-    // 				App.scene[name].position.y = 7;
-    // 				App.scene[name].geometry.setScale(-1)
-    // 				App.scene[name].geometry.setScaleByX(-2)
-    // 				App.scene.LOCAL_STREAM.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-    // 				// TV OBJ
-    // 				// function onLoadObj(meshes) {
-    // 				//   matrixEngine.objLoader.initMeshBuffers(matrixEngine.matrixWorld.world.GL.gl, meshes.TV);
-    // 				//   matrixEngine.matrixWorld.world.Add("obj", 1, "TV", tex, meshes.TV);
-    // 				//   App.scene.TV.position.setPosition(-20, 2, -25)
-    // 				//   App.scene.TV.mesh.setScale(7)
-    // 				//   // App.scene.TV.rotation.rotateY(90);
-    // 				//   App.scene.TV.LightsData.ambientLight.set(1, 1, 1);
-    // 				//   App.scene.TV.streamTextures = new matrixEngine.Engine.DOM_VT(i.children[1]);
-    // 				// }
-    // 				// sessionStorage.setItem('alocal_' + name, name)
-    // 				// matrixEngine.objLoader.downloadMeshes({TV: "res/3d-objects/tv.obj"}, onLoadObj);
-    // 			}
-    // 		}
-    // 	})
-    // })
-    // hide networking html dom div.
+    }); // hide networking html dom div.
 
     setTimeout(() => matrixEngine.utility.byId('matrix-net').style.display = 'none', 2200);
   }
@@ -45478,7 +44748,7 @@ class MatrixRoulette {
     // look like inverse - inside matrix-engine must be done
     // matrixEngine.raycaster.touchCoordinate.stopOnFirstDetectedHit = true
     canvas.addEventListener('mousedown', ev => {
-      App.onlyClicksPass = true; // no need maybe ?!!!?
+      App.onlyClicksPass = true; // no need maybe ?
 
       matrixEngine.raycaster.checkingProcedure(ev);
       setTimeout(() => {
@@ -45490,8 +44760,6 @@ class MatrixRoulette {
     });
     var LAST_HOVER = null;
     window.addEventListener('ray.hit.event', ev => {
-      // all physics chips have name prefix chips_
-      // must be fixed from matrix engine source !!!
       if (ev.detail.hitObject.name.indexOf('chips_') != -1 || ev.detail.hitObject.name.indexOf('roll') != -1) {
         // console.log("PREVENT NO CHIPS TRAY: ", ev.detail.hitObject.name)
         return;
@@ -45543,7 +44811,6 @@ class MatrixRoulette {
         return;
       }
 
-      console.log('dispatch=>chip-bet');
       if (this.playerInfo.balance >= 1) dispatchEvent(new CustomEvent("chip-bet", {
         detail: ev.detail.hitObject
       }));
@@ -45558,8 +44825,7 @@ class MatrixRoulette {
       mix_operation: "multiply"
     });
     this.physics.broadphase = new CANNON.NaiveBroadphase();
-    this.physics.world.solver.iterations = 10; // ori in comment
-    // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
+    this.physics.world.solver.iterations = 10; // this.physics.world.defaultContactMaterial.contactEquationStiffness = 1e6;
     // this.physics.world.defaultContactMaterial.contactEquationRelaxation = 10;
 
     App.scene.FLOOR_STATIC.geometry.setScale(3);
@@ -45567,13 +44833,10 @@ class MatrixRoulette {
   }
 
   prepareFire() {
-    // add later validator for  no bets  status
     dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {
       detail: 'Lets go'
     }));
     setTimeout(() => {
-      // clear double call
-      // roulette.wheelSystem.fireBall()
       dispatchEvent(new CustomEvent('fire-ball', {
         detail: [0.32, [1., -10.2, 4], [-10000, 150, 10]]
       }));
@@ -45599,11 +44862,25 @@ class MatrixRoulette {
         }, this.status.winNumberMomentDelay);
       });
       addEventListener('SPIN', e => {
-        console.log('SPIN PROCEDUTE');
-        addEventListener('camera-view-wheel', this.prepareFire, {
-          passive: true
-        });
-        this.setupCameraView('wheel');
+        if (this.playerInfo.balance < 1) {
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+            detail: 'Balance 0'
+          }));
+          return;
+        }
+
+        if (roulette.status.game == "MEDITATE") {
+          roulette.status.game = "RESULTS";
+          console.log('SPIN PROCEDUTE [regime]', roulette.status.game);
+          addEventListener('camera-view-wheel', this.prepareFire, {
+            passive: true
+          });
+          this.setupCameraView('wheel');
+        } else {
+          dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+            detail: 'Wait 1 secound'
+          }));
+        }
       });
       addEventListener('view-wheel', e => {
         this.setupCameraView('wheel');
@@ -45611,20 +44888,43 @@ class MatrixRoulette {
       addEventListener('view-table', e => {
         this.setupCameraView('bets');
       });
-    } // ONLY SYNTETIC - ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER
-    // IT IS THE PHYSICS REALM
+    } // ROULETTE HAVE NOT SYSTEM FOR SET WIN NUMBER IN PHYSICS DOMAIN
+    // With UrlParam ?server=true we can control winnnings but no wheel screen.
 
 
     addEventListener('MEDITATE_SERVER', e => {
       this.status.game = 'MEDITATE';
+
+      if (e.detail.counter < 19) {
+        dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+          detail: 'Place your bets'
+        }));
+      } else {
+        dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+          detail: 'Bets are closed'
+        }));
+      }
     });
     addEventListener('RESULT', e => {
       this.status.game = 'RESULTS';
+
+      if (e.detail.winNumber != 'hold') {
+        dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+          detail: 'Win Number ' + e.detail.winNumber
+        }));
+        console.log('[removeLostChips]:', e.detail.winNumber);
+        this.tableBet.chips.removeLostChips(e.detail.winNumber);
+      } else {
+        dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+          detail: e.detail.winNumber
+        })); // console.log('SERVER [RESULT H]:', e.detail.winNumber)
+      }
     });
   }
 
-  addHUD(playerInfo) {
-    // 2d canvas nidza.js lib
+  addHUD() {
+    // 2d canvas nidza.js lib - you can see nidza.js custom canvas2d feature
+    // You can put any canvas2d code if custom draw is setup.
     this.tex = {
       source: ["res/images/chip1.png"],
       mix_operation: "multiply"
@@ -45647,7 +44947,7 @@ class MatrixRoulette {
       };
     });
     addEventListener('update-balance', e => {
-      console.info('Event: update-balance => ', e.detail);
+      console.info('[update-balance]=> ', e.detail);
       var t = this.playerInfo.balance - e.detail;
       this.playerInfo.balance = t;
       roulette.nidza.access.footerLabel.elements[0].text = t;
@@ -45744,7 +45044,7 @@ class MatrixRoulette {
     App.scene[n].glBlend.blendEnabled = true;
     App.scene[n].glBlend.blendParamSrc = matrixEngine.utility.ENUMERATORS.glBlend.param[6];
     App.scene[n].glBlend.blendParamDest = matrixEngine.utility.ENUMERATORS.glBlend.param[4];
-    App.scene.statusBox.rotation.rotx = 122; // Attaching canvas2d tot he webgl surface.
+    App.scene.statusBox.rotation.rotx = 122; // Attaching canvas2d to the webGL surface.
 
     (0, _dDraw.createStatusBoxHUD)(this.nidza, this.playerInfo).then(canvas2d => {
       App.scene.statusBox.streamTextures = {
@@ -45757,7 +45057,7 @@ class MatrixRoulette {
 
 exports.MatrixRoulette = MatrixRoulette;
 
-},{"../client-config.js":66,"./2d-draw.js":67,"./dom":68,"./rocket-crafting-account.js":69,"./table-events.js":72,"./video-chat.js":73,"./wheel.js":74,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":41,"nidza":46}],71:[function(require,module,exports){
+},{"./2d-draw.js":66,"./dom":67,"./table-events.js":70,"./video-chat.js":71,"./wheel.js":72,"cannon":5,"matrix-engine":12,"matrix-engine-plugins":7,"matrix-engine/lib/utility.js":41,"nidza":46}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -45775,9 +45075,16 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+/**
+ * @author Nikola Lukic 
+ * @email zlatnaspirala@gmail.com
+ * @website https://maximumroulette.com
+ */
 class TableChips {
   constructor(pWorld, registerBetPlaces) {
-    this.physics = pWorld;
+    this.physics = pWorld; // Every chips (per real 3d obj) is pushed intro register array.
+    // Resolve proper removing (clera chips procedure)
+
     this.register = [];
     this.registerBetPlaces = registerBetPlaces;
     this.tex = {
@@ -45802,10 +45109,10 @@ class TableChips {
             if (roulette.soundsEnabled() == true) {
               matrixEngine.App.sounds.play('chip');
             }
-
-            console.log('Add chip game status =>', roulette.status.game);
           } else {
-            console.log('Add chip PREVENT MODE RESULTS');
+            dispatchEvent(new CustomEvent('SET_STATUSBOX_TEXT', {
+              detail: 'Please wait...'
+            }));
           }
         }
       }
@@ -45814,7 +45121,7 @@ class TableChips {
       this.clearAll();
       dispatchEvent(new CustomEvent('SET_STATUS_LINE_TEXT', {
         detail: '✫CLEAR BETS✫'
-      })); // test this hot fix 
+      }));
 
       try {
         matrixEngine.App.sounds.play('clear');
@@ -45824,7 +45131,7 @@ class TableChips {
 
   addChip(o) {
     // o is matrix engine scene obj
-    var size = 0.25; // is not to mush interest but need be uniq
+    var size = 0.25; // Need to be uniq name
 
     var name = "chips_" + o.name + "_" + this.register.length;
     this.addObjChip(name).then(d => {
@@ -45879,13 +45186,28 @@ class TableChips {
 
   clearAll() {
     for (var x = this.register.length - 1; x >= 0; x--) {
-      this.register[x].chipObj.selfDestroy();
-      this.register[x].betPlace.tableEvents.chips = 0;
-    }
+      console.log('clear -> ', this.register[x].betPlace.tableEvents.chips);
+
+      if (this.register[x].betPlace.tableEvents.chips == 0) {
+        // alredy removed like a lost one.
+        // console.log('alredy chips 0 -> ', this.register[x].chipObj.name)
+        if (typeof App.scene[this.register[x].chipObj.name] != 'undefined' && App.scene[this.register[x].chipObj.name] != null) {
+          App.scene[this.register[x].chipObj.name].selfDestroy(); // console.log('alredy chips 0 -> but remove visuals direct from scene ')
+        } else {// console.log('alredy chips 0 -> not exist in scene ')
+          }
+      } else {
+        this.register[x].chipObj.selfDestroy();
+        this.register[x].betPlace.tableEvents.chips = 0;
+      }
+    } // Double validation
+
 
     setTimeout(() => {
       this.register = [];
-      console.log('clearAll ', this.register);
+      var T = matrixEngine.matrixWorld.world.contentList.filter(item => item.name.indexOf('chips') != -1);
+      T.forEach(i => {
+        i.selfDestroy();
+      }); // console.log('clearAll ', this.register);
     }, 200);
   }
 
@@ -45895,7 +45217,8 @@ class TableChips {
 
   isEven(x) {
     return !(x & 1);
-  }
+  } // Also winning calc...
+
 
   removeLostChips(winNumber) {
     var winNumberColor = '';
@@ -45905,24 +45228,28 @@ class TableChips {
     } else if (_tableEvents.RULES.black.indexOf(parseInt(winNumber)) != -1) {
       winNumberColor = 'black';
     } else if (winNumber == 0) {
-      console.log('confirm later msg..... good');
       winNumberColor = 'ZERO';
     }
 
     var test = this.register.filter(o => o.betPlace.tableEvents.chips > 0).map(o => {
-      console.log('ONLY PLAYED ', o);
+      // console.log('ONLY PLAYED ', o)
       return o;
     });
     test.forEach((item, index, array) => {
       if (array[index].betPlace.name.indexOf('single') != -1) {
         // it is a single number
         if (winNumber != parseFloat(array[index].betPlace.name.split('gle')[1])) {
-          //
           array[index].betPlace.tableEvents.chips = 0;
           array[index].chipObj.selfDestroy();
+        } else {
+          // winning number
+          // console.log('TEST SINGLE WIN CALC')
+          var winForSingle = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+          dispatchEvent(new CustomEvent('update-balance', {
+            detail: -winForSingle
+          }));
         }
-      } // console.log('  CORNER remove lost chips ')
-      // CORNER 
+      } // CORNER 
 
 
       var test = false,
@@ -45940,10 +45267,20 @@ class TableChips {
             array[index].betPlace.tableEvents.chips = 0;
             array[index].chipObj.selfDestroy();
             passedCorner = null;
+          } else {
+            // win calc
+            if (array[index].betPlace.tableEvents.chips > 0) {
+              // console.log('TEST QUATER WIN CALC: ', array[index].betPlace.tableEvents)
+              var winForQuater = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+              array[index].betPlace.tableEvents.chips = 0; // eliminate 
+
+              dispatchEvent(new CustomEvent('update-balance', {
+                detail: -winForQuater
+              }));
+            }
           }
         });
-      } // console.log('  split remove lost chips ')
-      // SPLIT
+      } // SPLIT
 
 
       var testSplit = false,
@@ -45961,6 +45298,14 @@ class TableChips {
             array[index].betPlace.tableEvents.chips = 0;
             array[index].chipObj.selfDestroy();
             passedSplit = null;
+          } else {
+            // console.log('SPLIT test winnning...');
+            var winForSplit = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+            array[index].betPlace.tableEvents.chips = 0; // eliminate 
+
+            dispatchEvent(new CustomEvent('update-balance', {
+              detail: -winForSplit
+            }));
           }
         });
       } // STREET
@@ -45981,10 +45326,17 @@ class TableChips {
             array[index].betPlace.tableEvents.chips = 0;
             array[index].chipObj.selfDestroy();
             passedStreet = null;
+          } else {
+            // console.log('STREET test winnning...');
+            var winForStreet = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+            array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+            dispatchEvent(new CustomEvent('update-balance', {
+              detail: -winForStreet
+            }));
           }
         });
-      } // console.log('  split remove lost chips ')
-      // LINE
+      } // LINE
 
 
       var testLine = false,
@@ -46002,97 +45354,248 @@ class TableChips {
             array[index].betPlace.tableEvents.chips = 0;
             array[index].chipObj.selfDestroy();
             passedLine = null;
+          } else {
+            // console.log('LINE test winnning...');
+            var winForLine = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+            array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+            dispatchEvent(new CustomEvent('update-balance', {
+              detail: -winForLine
+            }));
           }
         });
-      } // no ball
+      } // column_1 2 3
 
 
       if (array[index].betPlace.name == 'column_1' && _tableEvents.RULES.column1.indexOf(winNumber) == -1) {
-        console.log('column_1 column FIELD1  chips ');
+        // console.log('column_1 column FIELD1  chips ')
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].chipObj.selfDestroy();
+        }
+      }
+
+      if (array[index].betPlace.name == 'column_1' && _tableEvents.RULES.column1.indexOf(winNumber) != -1) {
+        // console.log('COLUMN1 test winnning...');
+        var winForCOLUMN1 = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForCOLUMN1
+        }));
       }
 
       if (array[index].betPlace.name == 'column_2' && _tableEvents.RULES.column2.indexOf(winNumber) == -1) {
-        console.log('column_2 column FIELD1  chips ');
+        // console.log('column_2 column FIELD1  chips ')
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].chipObj.selfDestroy();
+        }
+      }
+
+      if (array[index].betPlace.name == 'column_2' && _tableEvents.RULES.column2.indexOf(winNumber) != -1) {
+        // console.log('COLUMN2 test winnning...');
+        var winForCOLUMN2 = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForCOLUMN2
+        }));
       }
 
       if (array[index].betPlace.name == 'column_3' && _tableEvents.RULES.column3.indexOf(winNumber) == -1) {
-        console.log('column_3 column FIELD1  chips ');
+        // console.log('column_3 column FIELD1  chips ')
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].chipObj.selfDestroy();
+        }
       }
 
-      if (array[index].betPlace.name.indexOf('from1_12') != -1 && winNumber > 12) {
-        console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
-        array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+      if (array[index].betPlace.name == 'column_3' && _tableEvents.RULES.column3.indexOf(winNumber) != -1) {
+        // console.log('COLUMN3 test winnning...');
+        var winForCOLUMN3 = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForCOLUMN3
+        }));
       }
 
-      if (array[index].betPlace.name.indexOf('from13_24') != -1 && (winNumber < 12 || winNumber > 24)) {
+      if (array[index].betPlace.name.indexOf('from1_12') != -1 && winNumber > 12 || array[index].betPlace.name.indexOf('from1_12') != -1 && winNumber == 0) {
         console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].chipObj.selfDestroy();
+        }
+      } //win calc
+
+
+      if (array[index].betPlace.name.indexOf('from1_12') != -1 && winNumber > 0 && winNumber < 13) {
+        var winForFrom1to12 = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForFrom1to12
+        }));
+      }
+
+      if (array[index].betPlace.name.indexOf('from13_24') != -1 && winNumber < 13 || array[index].betPlace.name.indexOf('from13_24') != -1 && winNumber > 24) {
+        array[index].betPlace.tableEvents.chips = 0;
+
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].chipObj.selfDestroy();
+        }
+      } // win calc
+
+
+      if (array[index].betPlace.name.indexOf('from13_24') != -1 && winNumber > 12 && winNumber < 24) {
+        var winForFrom13to24 = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForFrom13to24
+        }));
       }
 
       if (array[index].betPlace.name.indexOf('from25_36') != -1 && winNumber < 25) {
-        console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
         array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].chipObj.selfDestroy();
+        }
+      } // win calc
+
+
+      if (array[index].betPlace.name.indexOf('from25_36') != -1 && winNumber > 24) {
+        var winForFrom25to36 = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForFrom25to36
+        }));
       }
 
-      if (array[index].betPlace.name.indexOf('even') != -1 && this.isOdd(winNumber) == true && winNumber != 0) {
-        console.log('weven remove lost   chips ', array[index].betPlace.tableEvents);
-        array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+      if (array[index].betPlace.name.indexOf('even') != -1 && this.isOdd(winNumber) == true || array[index].betPlace.name.indexOf('even') != -1 && winNumber == 0) {
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy();
+        }
+      } // win calc
+
+
+      if (array[index].betPlace.name.indexOf('even') != -1 && this.isEven(winNumber) == true && winNumber != 0) {
+        var winForEven = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForEven
+        }));
       }
 
-      if (array[index].betPlace.name.indexOf('odd') != -1 && this.isEven(winNumber) == true && winNumber != 0) {
-        console.log('  odd FIELD1  chips ', array[index].tableEvents);
-        array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+      if (array[index].betPlace.name.indexOf('odd') != -1 && this.isEven(winNumber) == true || array[index].betPlace.name.indexOf('odd') != -1 && winNumber == 0) {
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          // console.log('!odd remove stack chips!', array[index].chipObj.name)
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy();
+        }
+      } // win calc
+
+
+      if (array[index].betPlace.name.indexOf('odd') != -1 && this.isOdd(winNumber) == true && winNumber != 0) {
+        var winForOdd = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForOdd
+        }));
       }
 
-      if (array[index].betPlace.name.indexOf('low') != -1 && winNumber >= 19 && winNumber != 0) {
-        console.log('HIGH remove lost   chips ', array[index].betPlace.tableEvents);
-        array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+      if (array[index].betPlace.name.indexOf('low') != -1 && winNumber >= 19 || array[index].betPlace.name.indexOf('low') != -1 && winNumber == 0) {
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy();
+        }
+      } // win calc
+
+
+      if (array[index].betPlace.name.indexOf('low') != -1 && winNumber < 19 && winNumber != 0) {
+        var winForLow = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForLow
+        }));
       }
 
-      if (array[index].betPlace.name.indexOf('high') != -1 && winNumber <= 18 && winNumber != 0) {
-        console.log('  HIGH FIELD1  chips ', array[index].tableEvents);
-        array[index].betPlace.tableEvents.chips = 0;
-        array[index].chipObj.selfDestroy();
+      if (array[index].betPlace.name.indexOf('high') != -1 && winNumber <= 18 || array[index].betPlace.name.indexOf('high') != -1 && winNumber == 0) {
+        if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+          array[index].betPlace.tableEvents.chips = 0;
+          array[index].chipObj.selfDestroy();
+        }
+      } // win calc
+
+
+      if (array[index].betPlace.name.indexOf('high') != -1 && winNumber > 18) {
+        var winForHigh = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+        array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+        dispatchEvent(new CustomEvent('update-balance', {
+          detail: -winForHigh
+        }));
       }
 
       if (winNumberColor == 'red') {
         // check zero name ???
         if (array[index].betPlace.name == 'black' || array[index].betPlace.name == 'single0') {
-          array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy();
-          console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace);
+          if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(); // console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace)
+          }
+        } // win calc
+
+
+        if (array[index].betPlace.name == 'red') {
+          var winForRed = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
+          array[index].betPlace.tableEvents.chips = 0; // eliminate
+
+          dispatchEvent(new CustomEvent('update-balance', {
+            detail: -winForRed
+          }));
         }
       } else if (winNumberColor == 'black') {
-        console.log('win is balck TEST FILTER2 ');
-
+        // console.log('win is balck TEST FILTER2 ')
         if (array[index].betPlace.name == 'red' || array[index].betPlace.name == 'single0') {
+          if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy();
+          }
+        } // win calc
+
+
+        if (array[index].betPlace.name == 'black') {
+          var winForBlack = array[index].betPlace.tableEvents.chips * array[index].betPlace.tableEvents.q;
           array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy();
-          console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace);
+          dispatchEvent(new CustomEvent('update-balance', {
+            detail: -winForBlack
+          }));
         }
       } else if (winNumberColor == "ZERO") {
-        if (array[index].betPlace.name == 'red' || array[index].betPlace.name == 'single0') {
-          array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy();
-          console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace);
+        if (array[index].betPlace.name == 'red') {
+          if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(); // console.log('win is black reset red  array[index].betPlace = ', array[index].betPlace)
+          }
         }
 
-        if (array[index].betPlace.name == 'black' || array[index].betPlace.name == 'single0') {
-          array[index].betPlace.tableEvents.chips = 0;
-          array[index].chipObj.selfDestroy();
-          console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace);
+        if (array[index].betPlace.name == 'black') {
+          if (typeof array[index].chipObj != 'undefined' && array[index].chipObj != null) {
+            array[index].betPlace.tableEvents.chips = 0;
+            array[index].chipObj.selfDestroy(); // console.log('win is red reset blacks  array[index].betPlace = ', array[index].betPlace)
+          }
         }
       }
     });
@@ -46102,7 +45605,7 @@ class TableChips {
 
 exports.default = TableChips;
 
-},{"./table-events":72,"cannon":5,"matrix-engine":12}],72:[function(require,module,exports){
+},{"./table-events":70,"cannon":5,"matrix-engine":12}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46121,9 +45624,12 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 /**
- * @description
- * Player gameplay bet MAP
- * 
+ * @description Player gameplay bet map.
+ * This class used for bet place objects
+ * To memory chips data.
+ * @author Nikola Lukic 
+ * @email zlatnaspirala@gmail.com
+ * @website https://maximumroulette.com
  */
 const RULES = {
   red: [1, 3, 5, 7, 9, 10, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
@@ -46132,12 +45638,6 @@ const RULES = {
   column2: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
   column1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
 };
-/**
- * @description
- * This class used for bet place objects
- * To memory chips data.
- */
-
 exports.RULES = RULES;
 
 class TableEvents {
@@ -46177,16 +45677,8 @@ class TableEvents {
     App.scene.atable.position.SetX(0);
     App.scene.atable.rotation.rotx = -90;
     App.scene.atable.geometry.setScaleByX(5);
-    App.scene.atable.geometry.setScaleByY(1.8); // new class
-
-    this.chips = new _tableChips.default(pWorld, this.registerBetPlaces); // fake results - not working for wheel just test
-    // also calc for win sum.
-
-    addEventListener('RESULTS_FROM_SERVER', e => {
-      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY ', e.detail);
-      var t = this.calculateWin(e.detail);
-      console.log('RESULTS_FROM_SERVER SYMBOLIC ONLY CALCULATION FOR WIN=> ', t);
-    });
+    App.scene.atable.geometry.setScaleByY(1.8);
+    this.chips = new _tableChips.default(pWorld, this.registerBetPlaces); // fake results - not working for wheel just for ?server=true
   }
 
   constructSingleNums() {
@@ -46441,8 +45933,7 @@ class TableEvents {
     };
 
     this.registerBetPlaces.push(App.scene[name]);
-    name = 'split_0_2'; // 2_5_8_11_14_17_20_23_26_29_32_35
-
+    name = 'split_0_2';
     matrixEngine.matrixWorld.world.Add("squareTex", 1, name, this.markTex);
     App.scene[name].tableEvents = {
       chips: 0,
@@ -46965,130 +46456,6 @@ class TableEvents {
     }
   }
 
-  calculateWin(winningNumber) {
-    winningNumber = parseFloat(winningNumber);
-    var win = 0;
-    this.registerBetPlaces.forEach(ele => {
-      if (ele.tableEvents.chips > 0) {
-        if (ele.name == 'red') {
-          if (RULES.red.indexOf(winningNumber) != -1) {
-            win += ele.tableEvents.chips * ele.tableEvents.q;
-          }
-        } else if (ele.name == 'black') {
-          if (RULES.black.indexOf(winningNumber) != -1) {
-            win += ele.tableEvents.chips * ele.tableEvents.q;
-          }
-        }
-
-        if (ele.name.indexOf('single') != -1 && winningNumber == parseFloat(ele.name.split('gle')[1])) {
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-          console.log('WINNER SINGLE FIELD1  chips ', ele.tableEvents);
-        }
-
-        if (ele.name.indexOf('low') != -1 && winningNumber <= 18 && winningNumber != 0) {
-          console.log('WINNER LOW FIELD1  chips ', ele.tableEvents);
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-
-        if (ele.name.indexOf('high') != -1 && winningNumber >= 19 && winningNumber != 0) {
-          console.log('WINNER HIGH FIELD1  chips ', ele.tableEvents);
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-
-        var test = false;
-
-        if (ele.name.indexOf('corner') != -1 && ele.name.split('orner').length == 2) {
-          test = ele.name.split('orner')[1].split('_');
-          test.forEach(num => {
-            if (winningNumber == parseFloat(num)) {
-              console.log('WINNER CORNER FIELD1  chips ', num);
-              win += ele.tableEvents.chips * ele.tableEvents.q;
-            }
-          });
-        }
-
-        var testSplit = false;
-
-        if (ele.name.indexOf('split') != -1 && ele.name.split('plit').length == 2) {
-          // testSplit = ele.name.split('plit_')[1].split('_') no problem
-          testSplit = ele.name.split('plit')[1].split('_');
-          testSplit.forEach(num => {
-            if (winningNumber == parseFloat(num)) {
-              console.log('WINNER SPLIT FIELD chips ', num);
-              win += ele.tableEvents.chips * ele.tableEvents.q;
-            }
-          });
-        }
-
-        var testStreet = false;
-
-        if (ele.name.indexOf('street') != -1 && ele.name.split('treet').length == 2) {
-          testStreet = ele.name.split('treet')[1].split('_');
-          testStreet.forEach(num => {
-            if (winningNumber == parseFloat(num)) {
-              console.log('WINNER testStreet FIELD chips ', num);
-              win += ele.tableEvents.chips * ele.tableEvents.q;
-            }
-          });
-        }
-
-        var testLine = false;
-
-        if (ele.name.indexOf('line_') != -1 && ele.name.split('ine_').length == 2) {
-          testLine = ele.name.split('ine_')[1].split('_');
-          testLine.forEach(num => {
-            if (winningNumber == parseFloat(num)) {
-              console.log('WINNER test Line chips ', num);
-              win += ele.tableEvents.chips * ele.tableEvents.q;
-            }
-          });
-        }
-
-        if (ele.name == 'column_1' && RULES.column1.indexOf(winningNumber) != -1) {
-          console.log('WINNER column FIELD1  chips ', ele.tableEvents);
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-
-        if (ele.name == 'column_2' && RULES.column2.indexOf(winningNumber) != -1) {
-          console.log('WINNER column FIELD2  chips ', ele.tableEvents);
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-
-        if (ele.name == 'column_3' && RULES.column3.indexOf(winningNumber) != -1) {
-          console.log('WINNER column FIELD3  chips ', ele.tableEvents);
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-
-        var isOdd = function (x) {
-          return x & 1;
-        };
-
-        var isEven = function (x) {
-          return !(x & 1);
-        };
-
-        if (ele.name == 'even' && isEven(winningNumber) == true) {
-          console.log('WINNER even FIELD3  chips ', ele.tableEvents);
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-
-        if (ele.name == 'odd' && isOdd(winningNumber) == true) {
-          console.log('WINNER odd FIELD3  chips ', ele.tableEvents);
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-
-        if (ele.name == 'from1_12' && winningNumber <= 12) {
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        } else if (ele.name == 'from13_24' && winningNumber >= 13 && winningNumber <= 24) {
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        } else if (ele.name == 'from25_36' && winningNumber >= 25) {
-          win += ele.tableEvents.chips * ele.tableEvents.q;
-        }
-      }
-    });
-    return win;
-  }
-
   getBetMap(winningNumber) {
     var playerBetMap = [];
     var played = [];
@@ -47115,7 +46482,7 @@ class TableEvents {
 
 exports.default = TableEvents;
 
-},{"./table-chips.js":71,"matrix-engine":12}],73:[function(require,module,exports){
+},{"./table-chips.js":69,"matrix-engine":12}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47198,7 +46565,7 @@ class VideoChat {
 
 exports.VideoChat = VideoChat;
 
-},{"matrix-engine":12}],74:[function(require,module,exports){
+},{"matrix-engine":12}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -47545,8 +46912,8 @@ class Wheel {
           z: 0
         };
         p = this.orbit(0, 9, i / 5.9 + this.C, p);
-        App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.3);
-        App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3);
+        if (App.scene['roll' + i]) App.scene['roll' + i].physics.currentBody.position.set(p.x, p.y - 30, -0.3);
+        if (App.scene['centerWheel' + i]) App.scene['centerWheel' + i].physics.currentBody.position.set(p.x, p.y - 30, .3);
 
         if (App.scene.centerRollDecoration) {
           App.scene.centerRollDecoration.rotation.rotationSpeed.y = this.speedRollInit * 1000;
@@ -47646,7 +47013,7 @@ function createTetra() {
   ]);
 }
 
-},{"cannon":5,"matrix-engine":12}],75:[function(require,module,exports){
+},{"cannon":5,"matrix-engine":12}],73:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

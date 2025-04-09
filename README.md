@@ -156,6 +156,11 @@ Implemented skeletal system ~ 20mb data
 
   ![matrix-slot](https://github.com/zlatnaspirala/matrix-engine-starter/blob/main/non-project/slot.png)
 
+## Matrix Video Editor 
+   [DEEP WIP]
+   From canvas to mp4 
+	 
+
 ### Demo from this repo [matrix-engine-starter]
 
 - https://maximumroulette.com/apps/matrix-engine-starter/projects/matrix-roulette/
@@ -200,6 +205,13 @@ ROOT Bone
 		OFFSET 0.000000 0.000000 1.000000
 	}
 }
+```
+
+### About videos optimisation 
+
+```js
+   ffmpeg -i 503148_inn.mp4 -codec:a copy -vcodec libx264 -crf 24 503148.mp4
+   ffmpeg  -i 503148_inn.mp4 -codec:a copy -preset ultrafast -vcodec h264 -b:v 1000k -acodec mp3 503148.mp4
 ```
 
 

@@ -16893,7 +16893,7 @@ var _app = require("../networking2/app");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-if (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true') {
+if (typeof _utility.QueryString.offScreen !== 'undefined' && (_manifest.default.offScreenCanvas == true || _utility.QueryString.offScreen == 'true')) {
   _manifest.default.offScreenCanvas = true;
   console.log('[matrix-engine] offScreenCanvas activated =>', _manifest.default.offScreenCanvas);
 
@@ -16961,6 +16961,7 @@ let activateNet2 = (CustomConfig, sessionOption) => {
 
 
     if (typeof sessionOption === 'undefined') {
+      var sessionOption = {};
       sessionOption.sessionName = 'matrix-engine-random';
       sessionOption.resolution = '160x240';
     }
@@ -18478,26 +18479,32 @@ var _matrixWorld = require("./matrix-world");
  * @constructor
  *
  * @param {String} objectData a string representation of an OBJ file with newlines preserved.
+ * 
+ * Fro group only detect special case `mesh name`
+ *  - COLLIDER
+ *  - Destruct
+ * Generate vert , norm , texCord.
  */
 class constructMesh {
   constructor(objectData, inputArg) {
+    this.name = '';
     this.inputArg = inputArg;
     this.objectData = objectData;
     this.create(objectData, inputArg);
 
     this.setScale = s => {
       this.inputArg.scale = s;
-      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg));
+      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg, undefined, this));
     }; // Never used
 
 
     this.updateBuffers = () => {
       this.inputArg.scale = 1;
-      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg));
+      initMeshBuffers(_matrixWorld.world.GL.gl, this.create(this.objectData, this.inputArg, undefined, this));
     };
   }
 
-  create = (objectData, inputArg, callback) => {
+  create = (objectData, inputArg, callback, root) => {
     if (typeof callback === 'undefined') callback = function () {};
     let initOrientation = [0, 1, 2];
     /*
@@ -18570,7 +18577,8 @@ class constructMesh {
     unpacked.textures = [];
     unpacked.hashindices = {};
     unpacked.indices = [];
-    unpacked.index = 0; // array of lines separated by the newline
+    unpacked.index = 0;
+    var TEST_FACES = []; // array of lines separated by the newline
 
     var lines = objectData.split('\n'); // test group catch data bpund or center
 
@@ -18592,7 +18600,6 @@ class constructMesh {
       elements.shift();
 
       if (VERTEX_RE.test(line)) {
-        // if this is a vertex
         verts.push.apply(verts, elements);
 
         if (objGroups.length > 0) {
@@ -18600,10 +18607,18 @@ class constructMesh {
         }
       } else if (NORMAL_RE.test(line)) {
         // if this is a vertex normal
-        vertNormals.push.apply(vertNormals, elements);
+        vertNormals.push.apply(vertNormals, elements); // TEST 
+
+        if (objGroups.length > 0) {
+          objGroups[objGroups.length - 1].groupNorm.push(elements);
+        }
       } else if (TEXTURE_RE.test(line)) {
         // if this is a texture
-        textures.push.apply(textures, elements);
+        textures.push.apply(textures, elements); // TEST 
+
+        if (objGroups.length > 0) {
+          objGroups[objGroups.length - 1].groupTexCord.push(elements);
+        }
       } else if (FACE_RE.test(line)) {
         // if this is a face
 
@@ -18614,6 +18629,7 @@ class constructMesh {
         	becomes:
         		['16/92/11', '14/101/22', '1/69/1'];
         	*/
+        // 		unpacked.index = 0;
         var quad = false;
 
         for (var j = 0, eleLen = elements.length; j < eleLen; j++) {
@@ -18629,7 +18645,7 @@ class constructMesh {
           }
 
           if (elements[j] in unpacked.hashindices) {
-            unpacked.indices.push(unpacked.hashindices[elements[j]]);
+            unpacked.indices.push(unpacked.hashindices[elements[j]]); // console.log('HASH INDICES >>>> elements[j] ', elements[j])
           } else {
             /*
             			Each element of the face line array is a vertex which has its
@@ -18666,11 +18682,13 @@ class constructMesh {
             if (typeof inputArg.scale == "number") {
               unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale);
               unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[1]] * inputArg.scale);
-              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale);
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale); // console.log('VERT PUSH >> (vertex[0] - 1) * 3 >>  ', (vertex[0] - 1) * 3)
+
+              TEST_FACES.push(vertex[0] - 1);
             } else {
               unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[0]] * inputArg.scale.x);
               unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[1]] * inputArg.scale.y);
-              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale.z);
+              unpacked.verts.push(+verts[(vertex[0] - 1) * 3 + initOrientation[2]] * inputArg.scale.z); // console.log('VERT PUSH2   >> (vertex[0] - 1) * 3 >>  ', (vertex[0] - 1) * 3)
             } // vertex textures
 
 
@@ -18698,6 +18716,9 @@ class constructMesh {
       } else {
         if (line.indexOf('# ') != -1) {// console.log('obj loader comment:', line)
         } else if (line.indexOf('mtllib') != -1) {// console.log('obj loader MTL file:', line)
+        } else if (line.indexOf('o ') != -1) {
+          console.log('obj loader object name:', line.split(' ')[1]);
+          this.name = line.split(' ')[1];
         } else if (line.indexOf('g ') != -1) {
           // console.log('obj loader group :', line)
           var nameOFGroup = line.split(' ')[1];
@@ -18706,7 +18727,19 @@ class constructMesh {
             // console.log('obj loader group [SPECIAL CASE COLLIDER]:', nameOFGroup)
             objGroups.push({
               groupName: nameOFGroup,
-              groupVert: []
+              groupVert: [],
+              groupNorm: [],
+              groupTexCord: [],
+              groupIndices: []
+            });
+          } else if (nameOFGroup.indexOf('Destruct') != -1) {
+            // console.log('obj loader group [SPECIAL CASE Destruct] [reset] :', nameOFGroup)
+            objGroups.push({
+              groupName: nameOFGroup,
+              groupVert: [],
+              groupNorm: [],
+              groupTexCord: [],
+              groupIndices: []
             });
           }
         }
@@ -18717,6 +18750,11 @@ class constructMesh {
     this.vertexNormals = unpacked.norms;
     this.textures = unpacked.textures;
     this.indices = unpacked.indices;
+    verts = verts.map(function (item) {
+      return parseFloat(item);
+    });
+    this.TEST_verts = verts;
+    this.TEST_FACES = TEST_FACES;
 
     if (objGroups.length > 0) {
       this.groups = objGroups;
@@ -20227,7 +20265,7 @@ _manifest.default.operation.draws.cube = function (object, ray) {
     if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
     var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.z, object.rotation.axis.y);
     object.rotation.axisSystem[0].normalize();
-    var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), parseFloat(object.rotation.axisSystem[0].z.toFixed(2)), parseFloat(object.rotation.axisSystem[0].y.toFixed(2)));
+    var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].z.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].y.toFixed(2)));
     var MY_ANGLE = 2 * Math.acos(QP.w);
     mat4.rotate(object.mvMatrix, object.mvMatrix, MY_ANGLE, AXIS);
   } else if (object.isHUD === true) {
@@ -20856,12 +20894,29 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
 
   _matrixWorld.world.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
-  if (object.isHUD === true) {
+  if (object.physics.enabled == true && object.rotation.axisSystem) {
+    if (_manifest.default.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (_manifest.default.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
+
+    var QP = object.physics.currentBody.quaternion;
+    QP.normalize();
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    if (raycaster.checkingProcedureCalcObj && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
+    var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.z, object.rotation.axis.y);
+    object.rotation.axisSystem[0].normalize(); // TEST - Yes ultimate - MAybe even cube will be better
+
+    var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].z.toFixed(2)), -parseFloat(object.rotation.axisSystem[0].y.toFixed(2)));
+    var MY_ANGLE = 2 * Math.acos(QP.w);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, MY_ANGLE, AXIS);
+  } else if (object.isHUD === true) {
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
-    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
+    if (raycaster.checkingProcedureCalcObj) raycaster.checkingProcedureCalcObj(object);
   } else {
     if (_manifest.default.camera.FirstPersonController == true) {
       _events.camera.setCamera(object);
@@ -20870,7 +20925,7 @@ _manifest.default.operation.draws.drawObj = function (object, ray) {
     }
 
     mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-    if (raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
+    if (raycaster.checkingProcedureCalcObj && typeof ray === 'undefined') raycaster.checkingProcedureCalcObj(object);
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
     mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
@@ -21694,17 +21749,50 @@ _manifest.default.operation.draws.sphere = function (object, ray) {
   mat4.identity(object.mvMatrix);
   this.mvPushMatrix(object.mvMatrix, this.mvMatrixStack);
 
-  if (_manifest.default.camera.FirstPersonController == true) {
-    _events.camera.setCamera(object);
-  } else if (_manifest.default.camera.SceneController == true) {
-    _events.camera.setSceneCamera(object);
-  } // no ray for now !!!
+  if (object.physics.enabled == true) {
+    if (_manifest.default.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (_manifest.default.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
 
+    if (object.custom_type != 'torus') {
+      var QP = object.physics.currentBody.quaternion;
+      QP.normalize();
+      mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation); // if(raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
 
-  mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
-  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
-  mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ()); // V
+      var t = vec3.fromValues(object.rotation.axis.x, object.rotation.axis.y, object.rotation.axis.z);
+      object.rotation.axisSystem[0].normalize(); // TEST - Yes ultimate - MAybe even cube will be better
+
+      var AXIS = vec3.fromValues(-parseFloat(object.rotation.axisSystem[0].x.toFixed(2)), parseFloat(object.rotation.axisSystem[0].y.toFixed(2)), parseFloat(object.rotation.axisSystem[0].z.toFixed(2)));
+      var MY_ANGLE = 2 * Math.acos(QP.w);
+      mat4.rotate(object.mvMatrix, object.mvMatrix, MY_ANGLE, AXIS);
+    } else if (object.custom_type == 'torus') {
+      mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation); // if(raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+
+      mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+      mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+      mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
+    }
+  } else if (object.isHUD === true) {
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation);
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ()); // if(raycaster.checkingProcedureCalc) raycaster.checkingProcedureCalc(object);
+  } else {
+    if (_manifest.default.camera.FirstPersonController == true) {
+      _events.camera.setCamera(object);
+    } else if (_manifest.default.camera.SceneController == true) {
+      _events.camera.setSceneCamera(object);
+    }
+
+    mat4.translate(object.mvMatrix, object.mvMatrix, object.position.worldLocation); // if(raycaster.checkingProcedureCalc && typeof ray === 'undefined') raycaster.checkingProcedureCalc(object);
+
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rx), object.rotation.getRotDirX());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.ry), object.rotation.getRotDirY());
+    mat4.rotate(object.mvMatrix, object.mvMatrix, (0, _engine.degToRad)(object.rotation.rz), object.rotation.getRotDirZ());
+  } // V
+
 
   if (object.vertexPositionBuffer) {
     _matrixWorld.world.GL.gl.bindBuffer(_matrixWorld.world.GL.gl.ARRAY_BUFFER, object.vertexPositionBuffer);
@@ -22205,6 +22293,7 @@ class Position {
     this.targetY = y;
     this.targetZ = z;
     this.thrust = 0.01;
+    this.phySleepOn2digits = false;
     return this;
   }
 
@@ -25558,7 +25647,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
         var local = _matrixWorld.world.contentList[physicsLooper];
 
         if (local.physics.currentBody.shapeOrientations.length == 1) {
-          if (local.position.x.toFixed(2) == local.physics.currentBody.position.x.toFixed(2)) {// console.log(' TEST SLEEP RENDER local.position.x', local.position.x.toFixed(2), " VS ", local.physics.currentBody.position.x.toFixed(2))
+          if (local.position.x.toFixed(2) == local.physics.currentBody.position.x.toFixed(2) && local.position.phySleepOn2digits == true) {// console.log(' TEST SLEEP RENDER local.position.x', local.position.x.toFixed(2), " VS ", local.physics.currentBody.position.x.toFixed(2))
           } else {
             local.position.SetX(local.physics.currentBody.position.x);
             local.position.SetZ(local.physics.currentBody.position.y);
@@ -25566,9 +25655,15 @@ _manifest.default.operation.reDrawGlobal = function (time) {
           }
 
           if (_matrixWorld.world.contentList[physicsLooper].custom_type && _matrixWorld.world.contentList[physicsLooper].custom_type == 'torus') {
-            _matrixWorld.world.contentList[physicsLooper].rotation.rotx = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]) + 90;
+            // [NOT PERFECT]
+            _matrixWorld.world.contentList[physicsLooper].rotation.rotx = 90 + (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
             _matrixWorld.world.contentList[physicsLooper].rotation.roty = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
-            _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]);
+            _matrixWorld.world.contentList[physicsLooper].rotation.rotz = (0, _utility.radToDeg)(local.physics.currentBody.quaternion.toAxisAngle()[1]); // var axisAngle = local.physics.currentBody.quaternion.toAxisAngle()[1];
+            // world.contentList[physicsLooper].rotation.angle = axisAngle;
+            // world.contentList[physicsLooper].rotation.axisSystem = local.physics.currentBody.quaternion.toAxisAngle();
+            // world.contentList[physicsLooper].rotation.axis.x = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].x.toFixed(2));
+            // world.contentList[physicsLooper].rotation.axis.z = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].y.toFixed(2));
+            // world.contentList[physicsLooper].rotation.axis.y = parseFloat(local.physics.currentBody.quaternion.toAxisAngle()[0].z.toFixed(2));
           } else {
             var axisAngle = local.physics.currentBody.quaternion.toAxisAngle()[1];
             _matrixWorld.world.contentList[physicsLooper].rotation.angle = axisAngle;
@@ -25728,7 +25823,7 @@ _manifest.default.operation.reDrawGlobal = function (time) {
           _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
           _matrixWorld.world.drawSquareTex(_matrixWorld.world.contentList[_engine.looper]), 'noray';
-        } else if ('sphereLightTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
+        } else if ('sphereLighstTex' == _matrixWorld.world.contentList[_engine.looper].type || 'sphere' == _matrixWorld.world.contentList[_engine.looper].type || 'generatorLightTex' == _matrixWorld.world.contentList[_engine.looper].type) {
           _matrixWorld.world.GL.gl.useProgram(_matrixWorld.world.contentList[_engine.looper].shaderProgram);
 
           _matrixWorld.world.drawSphere(_matrixWorld.world.contentList[_engine.looper], 'noray');
@@ -27589,8 +27684,9 @@ window.quat2 = glMatrix.quat2;
 window.vec2 = glMatrix.vec2;
 window.vec3 = glMatrix.vec3;
 window.vec4 = glMatrix.vec4;
-console.info(`%cMatrix-Engine %c 2.2.0 [beta-test-shadows] 🛸`, CS1, CS1);
+console.info(`%cMatrix-Engine %c 2.3.0 [wip-convexphys] 🛸`, CS1, CS1);
 var lastChanges = `
+[2.3.0] Look in cube_light_and_texture.js
 [2.2.0] Look in cube_light_and_texture.js
 [2.0.0] New networking based on kurento service and OpenVide web client
 [1.9.40] First version with both support opengles11/2 and opengles300
@@ -29164,6 +29260,9 @@ function defineworld(canvas, renderType) {
         directionLight: new _matrixGeometry.COLOR(1, 1, 1),
         ambientLight: new _matrixGeometry.COLOR(1, 1, 1),
         lightingDirection: new _matrixGeometry.COLOR(1, 1, 0)
+      };
+      customObject.raycast = {
+        enabled: true
       }; // Physics
 
       customObject.physics = {
@@ -30894,7 +30993,7 @@ class MatrixPhysics {
     // Makes the body static
     var groundBody = new CANNON.Body({
       mass: 0,
-      position: new CANNON.Vec3(0, -15, -2)
+      position: new CANNON.Vec3(0, -15, 0)
     });
     var groundShape = new CANNON.Plane();
     groundBody.addShape(groundShape);
@@ -30903,7 +31002,7 @@ class MatrixPhysics {
     world.Add("squareTex", 1, "FLOOR_STATIC", tex);
     App.scene.FLOOR_STATIC.geometry.setScaleByX(15);
     App.scene.FLOOR_STATIC.geometry.setScaleByY(15);
-    App.scene.FLOOR_STATIC.position.SetY(-2);
+    App.scene.FLOOR_STATIC.position.SetY(0);
     App.scene.FLOOR_STATIC.position.SetZ(-15);
     App.scene.FLOOR_STATIC.rotation.rotx = 90;
   }
@@ -43953,7 +44052,7 @@ function createNidzaHudLinesInfo(nidza) {
       font: {
         fontSize: "18px",
         fontStyle: "normal",
-        fontName: _standardFonts.stdFonts.CourierNew
+        fontName: "stormfaze"
       }
     }); // Create one simple oscillator
     // let rotationOption = new nidza.Osc( 0, 360, 2 );

@@ -3,7 +3,10 @@ import {ROCK_RANK} from "./dom.js";
 import {jsonHeaders} from "matrix-engine/lib/utility.js";
 
 /**
- * This is clone from hang3d.
+ * @description This is clone from hang3d.
+ * @author Nikola Lukic 
+ * @email zlatnaspirala@gmail.com
+ * @website https://maximumroulette.com
  */
 const isMobile = matrixEngine.utility.isMobile;
 const byId = matrixEngine.utility.byId;

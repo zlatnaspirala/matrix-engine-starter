@@ -112,7 +112,7 @@ export function createNidzaHudLinesInfo( nidza ) {
         font: {
           fontSize: "18px",
           fontStyle: "normal",
-          fontName: stdFonts.CourierNew
+          fontName: "stormfaze"
         }
       });
 
