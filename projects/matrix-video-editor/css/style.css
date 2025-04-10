@@ -271,9 +271,9 @@ span {
 
 .timeLineSlider,
 p {
-	background: rgba(12, 122, 22, 0.5);
-	width: 100%;
-	margin: 5px 5px 5px 5px;
+	background: rgb(187 69 32 / 50%);
+	width:100%;
+	padding: 1px 1px 1px 1px;
 }
 
 /* For animation Line */

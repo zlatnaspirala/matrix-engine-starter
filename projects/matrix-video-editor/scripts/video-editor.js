@@ -1,6 +1,6 @@
 import * as matrixEngine from "matrix-engine";
 // import {planeFont, planeUVFont} from "matrix-engine-plugins";
-import {startSpin, stopSpin} from "./matrix-audio";
+// import {startSpin, stopSpin} from "./matrix-audio";
 import {
 	createNidzaTextureText,
 	createNidzaHudLinesInfo,
@@ -12,8 +12,9 @@ import {
 } from "./active-textures";
 import RC from "record-canvas";
 import {Nidza} from "nidza";
-import {beep} from "./audio-gen";
+// import {beep} from "./audio-gen";
 import {byId} from "matrix-engine/lib/utility";
+import {SceneAnimator} from "./scene-animation";
 
 let OSC = matrixEngine.utility.OSCILLATOR;
 let App = matrixEngine.App;
@@ -32,10 +33,10 @@ export default class MatrixVideoEditor {
 			// injectCanvas: injectCanvas,
 			injectCanvas: document.getElementsByTagName("canvas")[0],
 			frameRequestRate: 30,
-			videoDuration: 10,
-			outputFilename: "record-canvas.mp4",
+			videoDuration: (matrixEngine.utility.QueryString.duration ? matrixEngine.utility.QueryString.duration : 10),
+			outputFilename: (matrixEngine.utility.QueryString.output ? matrixEngine.utility.QueryString.output : "record-canvas.mp4"),
 			mineType: "video/mp4",
-			resolutions: '800x600'
+			resolutions: (matrixEngine.utility.QueryString.resolution ? matrixEngine.utility.QueryString.resolution : '800x600')
 		};
 		this.createNidzaHudBalance = createNidzaHudBalance;
 		this.nidza = new Nidza();
@@ -45,6 +46,8 @@ export default class MatrixVideoEditor {
 
 		byId('fps').style.display = 'none'
 		byId('debugBox').style.display = 'none'
+		//
+		
 
 		this.addMashine(world)
 
@@ -264,6 +267,8 @@ export default class MatrixVideoEditor {
 		App.operation.squareTex_buffer_procedure(App.scene.footerLines);
 		// App.operation.squareTex_buffer_procedure(App.scene.footerBalance);
 		console.info("Video Editor is constructed.");
+
+		this.sceneController = new SceneAnimator(world);
 	};
 
 	addRaycaster = () => {
@@ -298,4 +303,5 @@ export default class MatrixVideoEditor {
 		window.RC = RC;
 		window.recordCanvas = this.recordCanvas;
 	}
+
 }

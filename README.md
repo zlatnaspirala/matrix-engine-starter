@@ -236,7 +236,6 @@ ROOT Bone
 
 Projects folder 
  -`projects/hang3d`
- -`projects/matrix-roulette`
  -`projects/matrix-slot`
  under licence:
 `MIT Licence`
@@ -248,6 +247,9 @@ Projects folder:
  -`projects/web-anatomy`
  under GPL v3 + CCAttribution-Share Alike 2.1 Japan
 
+ -`projects/matrix-roulette`
+ under GPL v3
+ 
 ### Credits
 
 - Used in HANG3d Matrix template:
