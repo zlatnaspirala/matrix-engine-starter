@@ -91,7 +91,7 @@ export function createNidzaHudLinesInfo( nidza ) {
       id: "footerLinesInfo",
       size: {
         width: 350,
-        height: 55
+        height: 200
       }
     };
     footerLinesInfo = nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
@@ -106,11 +106,11 @@ export function createNidzaHudLinesInfo( nidza ) {
           y: 44
         },
         dimension: {
-          width: 220,
-          height: 20
+          width: 200,
+          height: 200
         },
         font: {
-          fontSize: "18px",
+          fontSize: "28px",
           fontStyle: "normal",
           fontName: "stormfaze"
         }

@@ -1,6 +1,5 @@
 import * as matrixEngine from "matrix-engine";
-// import {planeFont, planeUVFont} from "matrix-engine-plugins";
-// import {startSpin, stopSpin} from "./matrix-audio";
+
 import {
 	createNidzaTextureText,
 	createNidzaHudLinesInfo,
@@ -25,12 +24,10 @@ export default class MatrixVideoEditor {
 	constructor(world, config) {
 		this.config = config;
 		this.world = world;
-		// Slot status general
 		this.status = "free";
 		// inject voice commander
 		this.vc = {};
 		this.options = {
-			// injectCanvas: injectCanvas,
 			injectCanvas: document.getElementsByTagName("canvas")[0],
 			frameRequestRate: 30,
 			videoDuration: (matrixEngine.utility.QueryString.duration ? matrixEngine.utility.QueryString.duration : 10),
@@ -46,15 +43,14 @@ export default class MatrixVideoEditor {
 
 		byId('fps').style.display = 'none'
 		byId('debugBox').style.display = 'none'
-		//
-		
-
-		this.addMashine(world)
-
+		this.addMashine(world);
 		this.addRaycaster();
+	}
 
-		window.addEventListener("mve.free", (e) => {
-			// console.info("MASHINE STATUS IS FREE");
+	addEvents = () => {
+		window.addEventListener("onRecording", (e) => {
+			console.info("<onRecording>");
+
 			// App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
 		});
 	}
@@ -213,20 +209,20 @@ export default class MatrixVideoEditor {
 			"res/videos/lava1.mkv", "lava1", {mixWithCanvas2d: true}
 		);
 
-		App.scene.footerLines.streamTextures.UPDATE = function () {
+		App.scene.footerLines.streamTextures.UPDATE = function() {
 			var ROOT = this;
-			if (ROOT.options.mixWithCanvas2d == false) return;
-	
-			if (ROOT.video.readyState === ROOT.video.HAVE_ENOUGH_DATA) {
+			if(ROOT.options.mixWithCanvas2d == false) return;
+
+			if(ROOT.video.readyState === ROOT.video.HAVE_ENOUGH_DATA) {
 				ROOT.videoImageContext.drawImage(ROOT.video, 0, 0, ROOT.videoImage.width, ROOT.videoImage.height);
 				ROOT.videoImageContext.font = '60px Georgia';
 				ROOT.videoImageContext.fillStyle = 'black';
-				ROOT.videoImageContext.fillText(' MATRIX VIDEO EDITOR  ', 10 , 125);
+				ROOT.videoImageContext.fillText(' MATRIX VIDEO EDITOR  ', 10, 125);
 				ROOT.videoImageContext.fillText(' HTML5 FOR EVER', 20, 50);
 			}
 		};
 
-		App.scene.topHeader.streamTextures =  {video: document.getElementsByTagName('video')[2]}
+		App.scene.topHeader.streamTextures = {video: document.getElementsByTagName('video')[2]}
 		// App.scene.footerLines.streamTextures = {video: document.getElementsByTagName('video')[1]}
 
 		world.Add("squareTex", 1, "title1", texTopHeader);
@@ -297,9 +293,10 @@ export default class MatrixVideoEditor {
 	};
 
 	record = () => {
+		dispatchEvent(new CustomEvent('onRecording', {}))
 		this.recordCanvas = new RC.RecordCanvas(this.options);
 		this.recordCanvas.run()
-
+		// Only devs - globals
 		window.RC = RC;
 		window.recordCanvas = this.recordCanvas;
 	}

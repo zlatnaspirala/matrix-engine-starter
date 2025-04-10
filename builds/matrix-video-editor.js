@@ -25911,9 +25911,9 @@ _manifest.default.operation.reDrawGlobal = function (time) {
 
     if (_matrixWorld.world.timeline.subCommands[_matrixWorld.world.globalAnimCounter]) {
       if (_matrixWorld.world.timeline.subCommands[_matrixWorld.world.globalAnimCounter].onlyForSeq == null || _matrixWorld.world.timeline.subCommands[_matrixWorld.world.globalAnimCounter].onlyForSeq == _matrixWorld.world.globalAnimCurSequence) {
-        console.log("TIMELINE FRAMEID EXE");
+        console.log("[timeline]FRAMEID EXE");
 
-        _matrixWorld.world.timeline.subCommands[_matrixWorld.world.globalAnimCounter]();
+        _matrixWorld.world.timeline.subCommands[_matrixWorld.world.globalAnimCounter].COMMAND();
       }
     }
 
@@ -43958,7 +43958,7 @@ function createNidzaHudLinesInfo(nidza) {
       id: "footerLinesInfo",
       size: {
         width: 350,
-        height: 55
+        height: 200
       }
     };
     exports.footerLinesInfo = footerLinesInfo = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
@@ -43972,11 +43972,11 @@ function createNidzaHudLinesInfo(nidza) {
         y: 44
       },
       dimension: {
-        width: 220,
-        height: 20
+        width: 200,
+        height: 200
       },
       font: {
-        fontSize: "18px",
+        fontSize: "28px",
         fontStyle: "normal",
         fontName: "stormfaze"
       }
@@ -44262,13 +44262,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.SceneAnimator = void 0;
 
+var _matrixEngine = require("matrix-engine");
+
+var _matrixWorld = require("matrix-engine/lib/matrix-world");
+
 class SceneAnimator {
   constructor(world) {
-    world.useAnimationLine({
-      sequenceSize: 200,
-      totalSequence: 10
-    });
-    this.addTimelineAnim();
+    setTimeout(() => {
+      world.useAnimationLine({
+        sequenceSize: 200,
+        totalSequence: 10
+      });
+      this.addTimelineAnim();
+    }, 2000);
   }
 
   addTimelineAnim = () => {
@@ -44277,15 +44283,23 @@ class SceneAnimator {
     // 		console.log("WHAT EVER HERE 10 ")
     // 	}, 10
     // )
+    _matrixEngine.App.scene.title1.position.thrust = 0.1;
     matrixEngine.matrixWorld.world.addSubCommand(function () {
-      console.log("do it for only 100 frame on 3 seq FRAMEID!");
-    }, 100, 3);
+      _matrixEngine.App.scene.title1.position.translateByX(-10);
+
+      console.log("1 seq FRAMEID!");
+    }, 150, 1);
+    matrixEngine.matrixWorld.world.addSubCommand(function () {
+      _matrixEngine.App.scene.title1.position.translateByX(10);
+
+      console.log("2 seq FRAMEID!");
+    }, 50, 3);
   };
 }
 
 exports.SceneAnimator = SceneAnimator;
 
-},{}],67:[function(require,module,exports){
+},{"matrix-engine":8,"matrix-engine/lib/matrix-world":25}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44332,8 +44346,6 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-// import {planeFont, planeUVFont} from "matrix-engine-plugins";
-// import {startSpin, stopSpin} from "./matrix-audio";
 // import {beep} from "./audio-gen";
 let OSC = matrixEngine.utility.OSCILLATOR;
 let App = matrixEngine.App;
@@ -44343,13 +44355,11 @@ let VT = matrixEngine.Engine.VT;
 class MatrixVideoEditor {
   constructor(world, config) {
     this.config = config;
-    this.world = world; // Slot status general
-
+    this.world = world;
     this.status = "free"; // inject voice commander
 
     this.vc = {};
     this.options = {
-      // injectCanvas: injectCanvas,
       injectCanvas: document.getElementsByTagName("canvas")[0],
       frameRequestRate: 30,
       videoDuration: matrixEngine.utility.QueryString.duration ? matrixEngine.utility.QueryString.duration : 10,
@@ -44363,15 +44373,16 @@ class MatrixVideoEditor {
     this.createNidzaHudLinesInfo = _activeTextures.createNidzaHudLinesInfo;
     this.createNidzaHudLine1 = _activeTextures.createNidzaHudLine1;
     (0, _utility.byId)('fps').style.display = 'none';
-    (0, _utility.byId)('debugBox').style.display = 'none'; //
-
+    (0, _utility.byId)('debugBox').style.display = 'none';
     this.addMashine(world);
     this.addRaycaster();
-    window.addEventListener("mve.free", e => {// console.info("MASHINE STATUS IS FREE");
-      // App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
-    });
   }
 
+  addEvents = () => {
+    window.addEventListener("onRecording", e => {
+      console.info("<onRecording>"); // App.slot.mashine.nidza.access.footerLabel.elements[0].text = "Mashine is ready for next spin...";
+    });
+  };
   addMashine = function (world) {
     var texTopHeader = {
       source: ["res/icons/512.webp"],
@@ -44596,8 +44607,10 @@ class MatrixVideoEditor {
     }
   };
   record = () => {
+    dispatchEvent(new CustomEvent('onRecording', {}));
     this.recordCanvas = new _recordCanvas.default.RecordCanvas(this.options);
-    this.recordCanvas.run();
+    this.recordCanvas.run(); // Only devs - globals
+
     window.RC = _recordCanvas.default;
     window.recordCanvas = this.recordCanvas;
   };
