@@ -66,8 +66,9 @@ export class MatrixRoulette {
 				events = new EventSource('https://localhost:8080/matrix-roulette');
 				console.log('ServerEvent[localhost:8080/matrix-roulette]')
 			} else {
-				events = new EventSource('https://maximumroulette.com/matrix-roulette');
-				console.log('ServerEvent[maximumroulette.com/matrix-roulette]')
+        const address = RCSAccountDomain + '/matrix-roulette';
+				events = new EventSource(address);
+				console.log(`ServerEvent[${address}]`)
 			}
 
 			events.onmessage = (event) => {

@@ -11,8 +11,8 @@ let options = null;
 if(URL_ARG.indexOf("localhost") !== -1) {
 	console.log('Dev regime is active...');
 	options = {
-		key: fs.readFileSync(__dirname + "/self-cert/privatekey.pem"),
-		cert: fs.readFileSync(__dirname + "/self-cert/certificate.pem")
+		key: fs.readFileSync(__dirname + "/self-cert/key.pem"),
+		cert: fs.readFileSync(__dirname + "/self-cert/localhost.pem")
 	};
 } else {
 	options = {

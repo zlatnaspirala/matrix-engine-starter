@@ -4,7 +4,7 @@
   "description": "matrix-roulette-server",
   "main": "matrix-roulette-server.js",
   "scripts": {
-    "start": "node matrix-roulette-server.js",
+    "start": "node matrix-roulette-server.js prodc",
     "dev": "node matrix-roulette-server.js localhost"
   },
   "repository": {
