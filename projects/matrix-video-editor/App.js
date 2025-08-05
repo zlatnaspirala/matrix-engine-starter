@@ -47,7 +47,10 @@ function webGLStart() {
 window.addEventListener("load", () => {
 	setTimeout(() => {
 		matrixEngine.Engine.initApp(webGLStart);
+		console.log('pwa btns', pwaBtns)
 	}, 200);
+	var pwaBtns = document.querySelector(".button2")
+	pwaBtns.click()
 }, false);
 
 export default App;

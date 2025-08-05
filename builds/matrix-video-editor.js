@@ -43840,7 +43840,10 @@ function webGLStart() {
 window.addEventListener("load", () => {
   setTimeout(() => {
     matrixEngine.Engine.initApp(webGLStart);
+    console.log('pwa btns', pwaBtns);
   }, 200);
+  var pwaBtns = document.querySelector(".button2");
+  pwaBtns.click();
 }, false);
 var _default = App;
 exports.default = _default;
@@ -43854,7 +43857,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.createNidzaTextureText = createNidzaTextureText;
 exports.incActiveLines = incActiveLines;
 exports.createNidzaHudLinesInfo = createNidzaHudLinesInfo;
-exports.showActiveLinesByIndex = showActiveLinesByIndex;
 exports.createNidzaHudLine1 = createNidzaHudLine1;
 exports.createNidzaHudBalance = createNidzaHudBalance;
 exports.activeLinePriview = exports.footerBalance = exports.footerLinesInfo = void 0;
@@ -43957,26 +43959,26 @@ function createNidzaHudLinesInfo(nidza) {
     let myFirstNidzaObjectOptions = {
       id: "footerLinesInfo",
       size: {
-        width: 350,
-        height: 200
+        width: 512,
+        height: 100
       }
     };
     exports.footerLinesInfo = footerLinesInfo = nidza.createNidzaIndentity(myFirstNidzaObjectOptions);
     let texCanvas = document.getElementById('footerLinesInfo');
     let activeLines = footerLinesInfo.addTextComponent({
       id: "linesInfo",
-      text: "Active lines",
+      text: "MatrixVideoScriptEditor",
       color: "lime",
       position: {
-        x: 25,
-        y: 44
+        x: 100,
+        y: 50
       },
       dimension: {
-        width: 200,
+        width: 512,
         height: 200
       },
       font: {
-        fontSize: "28px",
+        fontSize: "50px",
         fontStyle: "normal",
         fontName: "stormfaze"
       }
@@ -43999,71 +44001,6 @@ function createNidzaHudLinesInfo(nidza) {
       texCanvas: texCanvas,
       activeLines: activeLines
     }); // return texCanvas;
-  });
-}
-
-function showActiveLinesByIndex(i) {
-  footerLinesInfo.elements = [footerLinesInfo.elements[0]];
-  footerLinesInfo.elements[0].position.translateX(25);
-  App.slot.config.winnigLines.forEach((winShemaIndex, Sindex) => {
-    winShemaIndex.forEach((winShema, index) => {
-      if (Sindex != i) return;
-
-      for (var curIndex = 0; curIndex < 3; curIndex++) {
-        if (curIndex == winShema) {
-          // console.log("WIN MARK")
-          let activaLine = footerLinesInfo.addTextComponent({
-            id: "linesInfo",
-            text: "✅",
-            color: "green",
-            position: {
-              x: 55 + 5.5 * index,
-              y: 25 + curIndex * 25
-            },
-            dimension: {
-              width: 14,
-              height: 14
-            },
-            font: {
-              fontSize: "14px",
-              fontStyle: "normal",
-              fontName: "arial"
-            }
-          });
-        } else {
-          // console.log("LOSE MARK")
-          let activaLine = footerLinesInfo.addTextComponent({
-            id: "linesInfo",
-            text: "❌",
-            color: "red",
-            position: {
-              x: 55 + 5.5 * index,
-              y: 25 + curIndex * 25
-            },
-            dimension: {
-              width: 14,
-              height: 14
-            },
-            font: {
-              fontSize: "14px",
-              fontStyle: "normal",
-              fontName: "arial"
-            }
-          });
-        }
-      }
-      /*
-      var oscAng = new matrixEngine.utility.OSCILLATOR( 1, 100, 5 );
-      activaLine.position.translateX(oscAng.UPDATE())
-      activaLine.position.onTargetReached = () => {
-      activaLine.position.translateX(oscAng.UPDATE())
-      };
-      // console.log("aaa ->>>>>>>>>>>>>>>>>>", activaLine);
-      oscAng.on_maximum_value = function ( osc ) {
-      };
-      */
-
-    });
   });
 }
 /**
@@ -44491,7 +44428,8 @@ class MatrixVideoEditor {
         this.geometry.texCoordsPoints.right_bottom.x += osc_var.UPDATE();
         this.runShake();
       }, 20);
-    };
+    }; // Record 3d button
+
 
     world.Add("cubeLightTex", 1, "recordBtn", texTopHeader);
     App.scene.recordBtn.geometry.setScaleByX(-0.2);
@@ -44499,24 +44437,19 @@ class MatrixVideoEditor {
     App.scene.recordBtn.position.y = -2.56;
     App.scene.recordBtn.position.z = -10;
     App.scene.recordBtn.rotation.roty = -90;
-    App.scene.recordBtn.rotation.rotx = 90; // Adapt active textures because it is inverted by nature.
-    // App.scene.recordBtn.rotation.rotx = -180;
-
+    App.scene.recordBtn.rotation.rotx = 90;
     this.createNidzaTextureText(this.nidza).then(what => {
-      // console.log('TEST createNidzaTextureText', what)
       App.scene.recordBtn.streamTextures = {
         videoImage: what
       };
-    }); // Footer active lines
+    }); // video + canvas2d object
 
     world.Add("squareTex", 1, "footerLines", texTopHeader);
     App.scene.footerLines.geometry.setScaleByX(2);
     App.scene.footerLines.geometry.setScaleByY(2);
     App.scene.footerLines.position.SetY(1);
     App.scene.footerLines.position.SetZ(-6);
-    App.scene.footerLines.position.SetX(-4); // Adapt active textures because it is inverted by nature.
-    // App.scene.footerLines.rotation.rotx = 180;
-
+    App.scene.footerLines.position.SetX(-4);
     App.scene.footerLines.rotation.rotz = 0;
     App.scene.footerLines.rotation.rotx = 0;
     App.scene.footerLines.rotation.roty = 0;
@@ -44532,15 +44465,14 @@ class MatrixVideoEditor {
         ROOT.videoImageContext.drawImage(ROOT.video, 0, 0, ROOT.videoImage.width, ROOT.videoImage.height);
         ROOT.videoImageContext.font = '60px Georgia';
         ROOT.videoImageContext.fillStyle = 'black';
-        ROOT.videoImageContext.fillText(' MATRIX VIDEO EDITOR  ', 10, 125);
+        ROOT.videoImageContext.fillText(' MATRIX VIDEO EDITOR  ', 10, 50);
         ROOT.videoImageContext.fillText(' HTML5 FOR EVER', 20, 50);
       }
     };
 
     App.scene.topHeader.streamTextures = {
       video: document.getElementsByTagName('video')[2]
-    }; // App.scene.footerLines.streamTextures = {video: document.getElementsByTagName('video')[1]}
-
+    };
     world.Add("squareTex", 1, "title1", texTopHeader);
     App.scene.title1.geometry.setScaleByX(2);
     App.scene.title1.geometry.setScaleByY(2);
@@ -44557,6 +44489,7 @@ class MatrixVideoEditor {
       App.scene.title1.streamTextures = {
         videoImage: r.texCanvas
       };
+      this.footerLinesInfo = _activeTextures.footerLinesInfo;
     }); // Footer balance
     // world.Add("squareTex", 1, "footerBalance", texTopHeader);
     // App.scene.footerBalance.geometry.setScaleByX(1.15);

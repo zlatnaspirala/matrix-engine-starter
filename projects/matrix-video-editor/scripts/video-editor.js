@@ -175,8 +175,7 @@ export default class MatrixVideoEditor {
 			}, 20);
 		};
 
-
-
+		// Record 3d button
 		world.Add("cubeLightTex", 1, "recordBtn", texTopHeader);
 		App.scene.recordBtn.geometry.setScaleByX(-0.2);
 		App.scene.recordBtn.geometry.setScaleByY(-0.7);
@@ -184,46 +183,38 @@ export default class MatrixVideoEditor {
 		App.scene.recordBtn.position.z = -10;
 		App.scene.recordBtn.rotation.roty = -90
 		App.scene.recordBtn.rotation.rotx = 90
-		// Adapt active textures because it is inverted by nature.
-		// App.scene.recordBtn.rotation.rotx = -180;
 		this.createNidzaTextureText(this.nidza).then(what => {
-			// console.log('TEST createNidzaTextureText', what)
 			App.scene.recordBtn.streamTextures = {
 				videoImage: what,
 			};
 		});
 
-		// Footer active lines
+		// video + canvas2d object
 		world.Add("squareTex", 1, "footerLines", texTopHeader);
 		App.scene.footerLines.geometry.setScaleByX(2);
 		App.scene.footerLines.geometry.setScaleByY(2);
 		App.scene.footerLines.position.SetY(1);
 		App.scene.footerLines.position.SetZ(-6);
 		App.scene.footerLines.position.SetX(-4);
-		// Adapt active textures because it is inverted by nature.
-		// App.scene.footerLines.rotation.rotx = 180;
 		App.scene.footerLines.rotation.rotz = 0;
 		App.scene.footerLines.rotation.rotx = 0;
 		App.scene.footerLines.rotation.roty = 0;
 		App.scene.footerLines.streamTextures = new matrixEngine.Engine.VT(
 			"res/videos/lava1.mkv", "lava1", {mixWithCanvas2d: true}
 		);
-
 		App.scene.footerLines.streamTextures.UPDATE = function() {
 			var ROOT = this;
 			if(ROOT.options.mixWithCanvas2d == false) return;
-
 			if(ROOT.video.readyState === ROOT.video.HAVE_ENOUGH_DATA) {
 				ROOT.videoImageContext.drawImage(ROOT.video, 0, 0, ROOT.videoImage.width, ROOT.videoImage.height);
 				ROOT.videoImageContext.font = '60px Georgia';
 				ROOT.videoImageContext.fillStyle = 'black';
-				ROOT.videoImageContext.fillText(' MATRIX VIDEO EDITOR  ', 10, 125);
+				ROOT.videoImageContext.fillText(' MATRIX VIDEO EDITOR  ', 10, 50);
 				ROOT.videoImageContext.fillText(' HTML5 FOR EVER', 20, 50);
 			}
 		};
 
 		App.scene.topHeader.streamTextures = {video: document.getElementsByTagName('video')[2]}
-		// App.scene.footerLines.streamTextures = {video: document.getElementsByTagName('video')[1]}
 
 		world.Add("squareTex", 1, "title1", texTopHeader);
 		App.scene.title1.geometry.setScaleByX(2);
@@ -237,6 +228,7 @@ export default class MatrixVideoEditor {
 			localCtx.translate(0, -r.texCanvas.height);
 			footerLinesInfo.elements[0].position.translateX(25.3);
 			App.scene.title1.streamTextures = {videoImage: r.texCanvas};
+			this.footerLinesInfo = footerLinesInfo;
 		});
 
 		// Footer balance

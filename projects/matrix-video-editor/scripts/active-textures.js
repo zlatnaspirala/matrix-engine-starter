@@ -90,8 +90,8 @@ export function createNidzaHudLinesInfo( nidza ) {
     let myFirstNidzaObjectOptions = {
       id: "footerLinesInfo",
       size: {
-        width: 350,
-        height: 200
+        width: 512,
+        height: 100
       }
     };
     footerLinesInfo = nidza.createNidzaIndentity( myFirstNidzaObjectOptions );
@@ -99,18 +99,18 @@ export function createNidzaHudLinesInfo( nidza ) {
     let activeLines = footerLinesInfo.addTextComponent(
       {
         id: "linesInfo",
-        text: "Active lines",
+        text: "MatrixVideoScriptEditor",
         color: "lime",
         position: {
-          x: 25,
-          y: 44
+          x: 100,
+          y: 50
         },
         dimension: {
-          width: 200,
+          width: 512,
           height: 200
         },
         font: {
-          fontSize: "28px",
+          fontSize: "50px",
           fontStyle: "normal",
           fontName: "stormfaze"
         }
@@ -136,83 +136,6 @@ export function createNidzaHudLinesInfo( nidza ) {
     // return texCanvas;
   } );
 
-}
-
-export function showActiveLinesByIndex(i) {
-
-  footerLinesInfo.elements = [ footerLinesInfo.elements[0] ]
-  footerLinesInfo.elements[0].position.translateX(25);
-
-  App.slot.config.winnigLines.forEach((winShemaIndex, Sindex) => {
-
-    winShemaIndex.forEach((winShema, index) => {
-
-      if (Sindex != i) return;
-
-      for (var curIndex = 0;curIndex < 3;curIndex++) {
-
-        if (curIndex == winShema) {
-          // console.log("WIN MARK")
-
-          let activaLine = footerLinesInfo.addTextComponent(
-            {
-              id: "linesInfo",
-              text: "✅",
-              color: "green",
-              position: {
-                x: 55 + 5.5*index,
-                y: 25 + curIndex* 25
-              },
-              dimension: {
-                width: 14,
-                height: 14
-              },
-              font: {
-                fontSize: "14px",
-                fontStyle: "normal",
-                fontName: "arial"
-              }
-          });
-
-        } else {
-          // console.log("LOSE MARK")
-
-          let activaLine = footerLinesInfo.addTextComponent(
-            {
-              id: "linesInfo",
-              text: "❌",
-              color: "red",
-              position: {
-                x: 55  + 5.5*index,
-                y: 25 + curIndex* 25
-              },
-              dimension: {
-                width: 14,
-                height: 14
-              },
-              font: {
-                fontSize: "14px",
-                fontStyle: "normal",
-                fontName: "arial"
-              }
-          });
-
-        }
-
-      }
-
-      /*
-    var oscAng = new matrixEngine.utility.OSCILLATOR( 1, 100, 5 );
-    activaLine.position.translateX(oscAng.UPDATE())
-    activaLine.position.onTargetReached = () => {
-      activaLine.position.translateX(oscAng.UPDATE())
-    };
-      // console.log("aaa ->>>>>>>>>>>>>>>>>>", activaLine);
-      oscAng.on_maximum_value = function ( osc ) {
-      };
-      */
-    });
-  });
 }
 
 /**
