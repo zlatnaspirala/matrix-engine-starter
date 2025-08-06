@@ -72,7 +72,7 @@
 	"homepage": "https://github.com/zlatnaspirala/matrix-engine#readme",
 	"dependencies": {
 		"audio-commander": "^1.0.3",
-		"matrix-engine": "2.3.67",
+		"matrix-engine": "2.3.68",
 		"matrix-engine-plugins": "0.1.0",
 		"nidza": "^1.2.15",
 		"nui-commander": "^0.0.3",

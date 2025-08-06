@@ -16785,6 +16785,12 @@ Object.defineProperty(exports, "defineShader", {
     return _buildinMyShaders.defineShader;
   }
 });
+Object.defineProperty(exports, "downloadMeshes", {
+  enumerable: true,
+  get: function () {
+    return _loaderObj.downloadMeshes;
+  }
+});
 Object.defineProperty(exports, "freeShadersToy", {
   enumerable: true,
   get: function () {
@@ -16796,6 +16802,12 @@ Object.defineProperty(exports, "meMapLoader", {
   enumerable: true,
   get: function () {
     return _mapLoader.meMapLoader;
+  }
+});
+Object.defineProperty(exports, "meshDataCache", {
+  enumerable: true,
+  get: function () {
+    return _loaderObj.meshDataCache;
   }
 });
 exports.objLoader = void 0;
@@ -16836,8 +16848,9 @@ var Engine = _interopRequireWildcard(require("./lib/engine"));
 exports.Engine = Engine;
 var Events = _interopRequireWildcard(require("./lib/events"));
 exports.Events = Events;
-var objLoader = _interopRequireWildcard(require("./lib/loader-obj"));
-exports.objLoader = objLoader;
+var _loaderObj = _interopRequireWildcard(require("./lib/loader-obj"));
+var objLoader = _loaderObj;
+exports.objLoader = _loaderObj;
 var _matrixBuffers = _interopRequireDefault(require("./lib/matrix-buffers"));
 var _matrixTextures = _interopRequireDefault(require("./lib/matrix-textures"));
 var utility = _interopRequireWildcard(require("./lib/utility"));
@@ -18273,7 +18286,8 @@ if (_manifest.default.pwa.addToHomePage === true) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeObjSeqArg = exports.initMeshBuffers = exports.downloadMeshes = exports.deleteMeshBuffers = exports.constructMesh = void 0;
+exports.clearMeshCache = clearMeshCache;
+exports.meshDataCache = exports.makeObjSeqArg = exports.initMeshBuffers = exports.downloadMeshes = exports.deleteMeshBuffers = exports.constructMesh = void 0;
 exports.play = play;
 var _matrixWorld = require("./matrix-world");
 /**
@@ -18601,16 +18615,16 @@ var Ajax = function () {
  * @param {Object} meshes In case other meshes are loaded separately or if a previously declared variable is desired to be used, pass in a (possibly empty) json object of the pattern: { '<mesh_name>': OBJ.Mesh }
  *
  */
+
+function clearMeshCache() {
+  Object.keys(meshDataCache).forEach(key => delete meshDataCache[key]);
+}
+const meshDataCache = exports.meshDataCache = {};
 var downloadMeshes = function (nameAndURLs, completionCallback, inputArg) {
-  // the total number of meshes. this is used to implement "blocking"
   var semaphore = Object.keys(nameAndURLs).length;
-  // if error is true, an alert will given
   var error = false;
-  // this is used to check if all meshes have been downloaded
-  // if meshes is supplied, then it will be populated, otherwise
-  // a new object is created. this will be passed into the completionCallback
   if (typeof inputArg === 'undefined') {
-    var inputArg = {
+    inputArg = {
       scale: 1,
       swap: [null]
     };
@@ -18618,33 +18632,40 @@ var downloadMeshes = function (nameAndURLs, completionCallback, inputArg) {
   if (typeof inputArg.scale === 'undefined') inputArg.scale = 1;
   if (typeof inputArg.swap === 'undefined') inputArg.swap = [null];
   var meshes = {};
-
-  // loop over the mesh_name,url key,value pairs
   for (var mesh_name in nameAndURLs) {
     if (nameAndURLs.hasOwnProperty(mesh_name)) {
-      new Ajax().get(nameAndURLs[mesh_name], function (name) {
-        return function (data, status) {
-          if (status === 200) {
-            meshes[name] = new constructMesh(data, inputArg);
-          } else {
-            error = true;
-            console.error('An error has occurred and the mesh "' + name + '" could not be downloaded.');
-          }
-          // the request has finished, decrement the counter
-          semaphore--;
-          if (semaphore === 0) {
-            if (error) {
-              // if an error has occurred, the user is notified here and the
-              // callback is not called
-              console.error('An error has occurred and one or meshes has not been ' + 'downloaded. The execution of the script has terminated.');
-              throw '';
+      const url = nameAndURLs[mesh_name];
+
+      // ✅ Check cache first
+      if (meshDataCache[url]) {
+        // Use cached raw data
+        meshes[mesh_name] = new constructMesh(meshDataCache[url], inputArg);
+        semaphore--;
+        if (semaphore === 0 && !error) {
+          completionCallback(meshes);
+        }
+      } else {
+        // Otherwise fetch and cache
+        new Ajax().get(url, function (name, url) {
+          return function (data, status) {
+            if (status === 200) {
+              meshDataCache[url] = data; // ✅ Save to cache
+              meshes[name] = new constructMesh(data, inputArg);
+            } else {
+              error = true;
+              console.error('An error has occurred and the mesh "' + name + '" could not be downloaded.');
             }
-            // there haven't been any errors in retrieving the meshes
-            // call the callback
-            completionCallback(meshes);
-          }
-        };
-      }(mesh_name));
+            semaphore--;
+            if (semaphore === 0) {
+              if (error) {
+                console.error('An error has occurred and one or more meshes has not been downloaded.');
+                throw '';
+              }
+              completionCallback(meshes);
+            }
+          };
+        }(mesh_name, url));
+      }
     }
   }
 };
@@ -26074,15 +26095,30 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  * @description
  * initTextures Load image file procedure.
  */
+
+_manifest.default.textureCache = {};
+_manifest.default.clearTextureCache = (gl, src) => {
+  const tex = _manifest.default.textureCache[src];
+  if (tex) {
+    gl.deleteTexture(tex);
+    delete _manifest.default.textureCache[src];
+  }
+};
 _manifest.default.tools.loadTextureImage = function (gl, src, params) {
-  var texture = gl.createTexture();
+  // Return cached texture if already loaded
+  if (_manifest.default.textureCache[src]) {
+    return _manifest.default.textureCache[src];
+  }
+  const texture = gl.createTexture();
   texture.image = new Image();
   texture.image.crossOrigin = 'anonymous';
   texture.image.onload = () => {
-    // console.log("params tex: ", params)
     _matrixWorld.world.handleLoadedTexture(texture, gl, params);
   };
   texture.image.src = src;
+
+  // Store in cache
+  _manifest.default.textureCache[src] = texture;
   return texture;
 };
 
@@ -26447,6 +26483,8 @@ function defineworld(canvas, renderType) {
   /* Initialize shader fragment                        */
   world.initShaders = _engine.initShaders;
   world.handleLoadedTexture = _manifest.default.tools.BasicTextures;
+
+  // Normal loading images
   world.initTexture = _manifest.default.tools.loadTextureImage;
 
   // DEPLACED
