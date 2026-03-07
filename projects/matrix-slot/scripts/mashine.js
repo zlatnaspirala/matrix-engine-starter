@@ -1,5 +1,4 @@
 import * as matrixEngine from "matrix-engine";
-// import {planeFont, planeUVFont} from "matrix-engine-plugins";
 import {startSpin, stopSpin} from "./matrix-audio";
 import {
 	createNidzaTextureText,
@@ -493,6 +492,11 @@ export default class Mashines {
 		var VW = App.slot.config.verticalSize;
 		let VT = matrixEngine.Engine.VT;
 
+		let fov = 45 * Math.PI / 180;
+		let aspect = window.innerWidth / window.innerHeight;
+		let distance = 9; // your Z distance
+		let visibleWidth = 2 * Math.tan(fov / 2) * distance * aspect;
+
 		App.slot.config.wheels.forEach((wheel, indexWheel) => {
 			var localHandler = [],
 				localHandlerPos = [],
@@ -503,25 +507,14 @@ export default class Mashines {
 					source: field.textures,
 					mix_operation: "multiply",
 				};
-
 				var name = "wheel" + indexWheel + "field" + indexField;
 				world.Add(field.geo, 1, name, textuteArg);
 				localHandler.push(name);
-				// Referent done for default camera position.
-				var O = (window.innerWidth / 1000) * WW;
-				var O2 = (window.innerWidth / 1005) * WW;
-
-				if(isMobile() == true) {
-					O = (window.innerWidth / 400) * WW;
-					O2 = (window.innerWidth / 405) * WW;
-				}
-
 				App.scene[name].LightsData.ambientLight.set(
 					field.color.r,
 					field.color.g,
 					field.color.b
 				);
-
 				if(field.videoTex && field.videoTex !== false) {
 					App.scene[name].streamTextures = new VT(field.videoTex)
 				}
@@ -546,7 +539,9 @@ export default class Mashines {
 				}
 
 				App.scene[name].specialId = field.id;
-				var _x = -O * 0.5 + indexWheel * O2 * 0.2;
+				let spacing = visibleWidth / WW * 0.9;
+				let rightOffset = visibleWidth * 0.125;
+				var _x = -visibleWidth * 0.5 + spacing * indexWheel + rightOffset;
 				var _y = -2 + indexField * 2;
 				var _z = -9;
 				App.scene[name].position.z = _z;
